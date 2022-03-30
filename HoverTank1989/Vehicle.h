@@ -867,7 +867,7 @@ private:
     void UpdateTerrainNorm();
 
     float WindVaningVal(const HeliData& aHeliData, const float aTimeStep);
-
+    
     Environment const*              m_environment;
     HeliData                        m_heli;
     HeliModel                       m_heliModel;

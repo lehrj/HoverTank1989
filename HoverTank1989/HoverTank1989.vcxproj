@@ -169,6 +169,7 @@
     <ClInclude Include="FireControl.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Lighting.h" />
+    <ClInclude Include="NPCController.h" />
     <ClInclude Include="NPCVehicle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sounds.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NPCController.cpp" />
     <ClCompile Include="NPCVehicle.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -36,6 +36,9 @@ Game::Game() noexcept(false)
     m_camera->SetVehicleFocus(m_vehicle);
     m_camera->SetCameraEnvironment(m_environment);
 
+    m_npcController = new NPCController();
+    m_npcController->SetNPCEnvironment(m_environment);
+
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
@@ -108,6 +111,19 @@ void Game::Initialize(HWND window, int width, int height)
     auto context = m_deviceResources->GetD3DDeviceContext();
     m_vehicle->InitializeVehicle(context);
     
+    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 50.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, -10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(30.0f, 3.0f, -90.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, 35.0f));
+
     // testing new terrain map
     m_terrainVector.clear();
 }
@@ -478,6 +494,7 @@ Game::~Game()
     delete m_camera;
     delete m_environment;
     delete m_lighting;
+    delete m_npcController;
     delete m_vehicle;
 
     
@@ -490,7 +507,6 @@ Game::~Game()
     m_terrainStartScreen.terrainVertexArray = 0;
     delete[] m_terrainStartScreen.terrainVertexArrayBase;
     m_terrainStartScreen.terrainVertexArrayBase = 0;
-    
 }
 
 #pragma region Frame Update
@@ -516,8 +532,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     float time = float(aTimer.GetTotalSeconds());
     UpdateInput(aTimer);
 
-    //m_world = DirectX::SimpleMath::Matrix::CreateRotationZ(cosf(time) * 2.f);
-
+    m_npcController->UpdateNPCs(aTimer.GetElapsedSeconds());
     m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
     m_camera->UpdateCamera(aTimer);
     m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
@@ -1091,6 +1106,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
+        m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
     }
 

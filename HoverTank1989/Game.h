@@ -16,6 +16,7 @@
 #include "Lighting.h"
 #include "sounds.h"
 #include "Vehicle.h"
+#include "NPCController.h"
 #include <sstream>
 
 
@@ -114,12 +115,11 @@ private:
     std::unique_ptr<DirectX::IEffectFactory> m_fxFactory;
     std::unique_ptr<DirectX::Model> m_model;
     
-
-    Camera* m_camera;
-    Vehicle* m_vehicle;
+    Camera* m_camera;   
     Environment* m_environment;
     Lighting* m_lighting;
-
+    NPCController* m_npcController;
+    Vehicle* m_vehicle;
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;
     using VertexType2 = DirectX::VertexPositionNormalColor;

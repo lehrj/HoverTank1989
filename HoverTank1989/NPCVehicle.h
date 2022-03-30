@@ -2,7 +2,7 @@
 #include "Environment.h"
 
 
-struct Motion
+struct MotionNPC
 {
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
@@ -34,14 +34,16 @@ struct VehicleHardPoints
 
 struct VehicleData
 {
+    Utility::Torque             bodyTorqueForce;
     Environment                 const* environment;
     float                       dragCoefficient;
     float                       frontalArea;
     float                       hitPoints;
     float                       mass;
-    Motion                      q;
+    MotionNPC                   q;
     float                       terrainHightAtPos;
     DirectX::SimpleMath::Vector3 terrainNormal;
+    float                       time;
     DirectX::SimpleMath::Matrix alignment;
     DirectX::SimpleMath::Vector3 forward;
     DirectX::SimpleMath::Vector3 right;
@@ -51,16 +53,43 @@ struct VehicleData
     NPCType                     npcType;
 
     NPCModel                    npcModel;
+
 };
 
 class NPCVehicle
 {
 public:
-    void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, VehicleData& aNPCVehicle, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
+    //NPCVehicle();
+
+    static void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
+        VehicleData& aNPCVehicle, const DirectX::SimpleMath::Vector3 aHeading, 
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
+    void InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+        const DirectX::SimpleMath::Vector3 aHeading,
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
+    static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+        const DirectX::SimpleMath::Vector3 aHeading,
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
+
+    void DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+
+    void UpdateNPC(const double aTimeDelta);
+    
 
 private:
-    void InitializeNPCData(VehicleData& aVehicleData, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, const NPCType aNPCType, Environment const* aEnvironment);
-    void InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCModel& aModel);
+    static void InitializeNPCData(VehicleData& aVehicleData, 
+        const DirectX::SimpleMath::Vector3 aHeading, 
+        const DirectX::SimpleMath::Vector3 aPosition, 
+        const NPCType aNPCType, Environment const* aEnvironment);
+    static void InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
+        NPCModel& aModel);
+
+    void RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ);
+    void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
+
+    void UpdateAlignment();
+    void UpdateNPCModel(const double aTimeDelta);
+    
 
     VehicleData m_vehicleData;
 };

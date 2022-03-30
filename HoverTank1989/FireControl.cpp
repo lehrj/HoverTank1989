@@ -85,7 +85,6 @@ void FireControl::InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceC
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
 
-
 void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
 {
     //  Compute the intermediate values of the 
@@ -98,6 +97,7 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
     DirectX::SimpleMath::Vector3 gravForce = DirectX::SimpleMath::Vector3(0.0f, -9.8f, 0.0f);
     velocityUpdate += gravForce;
 
+    
     float mass = 0.5f;
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);

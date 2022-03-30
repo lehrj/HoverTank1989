@@ -28,6 +28,7 @@
     <ClInclude Include="sounds.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="NPCVehicle.h" />
+    <ClInclude Include="NPCController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -43,6 +44,7 @@
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="Vehicle.cpp" />
     <ClCompile Include="NPCVehicle.cpp" />
+    <ClCompile Include="NPCController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
