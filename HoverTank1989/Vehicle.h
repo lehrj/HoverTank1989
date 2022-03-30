@@ -818,7 +818,7 @@ public:
     void UpdateVehicle(const double aTimeDelta);
 
     void TestFire();
-
+    void TestFire2();
 private:
     float CalculateLiftCoefficient(const float aAngle);
 

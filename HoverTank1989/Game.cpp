@@ -935,27 +935,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->InputThrottle(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
-    if (kb.I)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_lightPos2.x += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
-        }
-    }
-    if (kb.K)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_lightPos2.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
-        }
-    }
-    if (kb.J)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_lightPos2.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
-        }
-    }
     if (m_kbStateTracker.pressed.R)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1052,6 +1031,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->TestFire();
+        }
+    }
+    if (m_kbStateTracker.pressed.J)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->TestFire2();
         }
     }
     auto mouse = m_mouse->GetState();

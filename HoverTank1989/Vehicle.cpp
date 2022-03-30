@@ -4231,7 +4231,13 @@ void Vehicle::TestFire()
     DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
     //DirectX::SimpleMath::Vector3 launchDir = m_heli.forward;
     DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
-    m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, velocity);
-    
+    m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, m_heli.right, velocity);
+}
 
+void Vehicle::TestFire2()
+{
+    DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
+    DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+    DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
+    m_fireControl->FireProjectileShotGun(AmmoType::AMMOTYPE_BALL01, pos, launchDir, m_heli.right, velocity);
 }
