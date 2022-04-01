@@ -114,7 +114,8 @@ private:
     std::unique_ptr<DirectX::CommonStates> m_states;
     std::unique_ptr<DirectX::IEffectFactory> m_fxFactory;
     std::unique_ptr<DirectX::Model> m_model;
-    
+    std::unique_ptr<DirectX::Model> m_modelTank01;
+
     Camera* m_camera;   
     Environment* m_environment;
     Lighting* m_lighting;

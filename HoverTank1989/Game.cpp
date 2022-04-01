@@ -124,6 +124,7 @@ void Game::Initialize(HWND window, int width, int height)
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, 35.0f));
 
+    
     // testing new terrain map
     m_terrainVector.clear();
 }
@@ -1087,12 +1088,21 @@ void Game::Render()
 
     context->IASetInputLayout(m_inputLayout.Get());
 
+    DirectX::SimpleMath::Matrix modelWorld0 = DirectX::SimpleMath::Matrix::Identity;
+    modelWorld0 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 5.0f, 0.0f));
+    //m_model->Draw(context, *m_states, modelWorld0, m_camera->GetViewMatrix(), m_proj);
+
+    DirectX::SimpleMath::Matrix modelWorld1 = DirectX::SimpleMath::Matrix::Identity;
+    modelWorld1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 5.0f, 10.0f));
+    //modelWorld1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.021f, 0.021f, 0.021f));
+    m_modelTank01->Draw(context, *m_states, modelWorld1, m_camera->GetViewMatrix(), m_proj);
+   
     m_batch->Begin();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
-        m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
+        //m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
+        //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
     }
 
@@ -1114,12 +1124,6 @@ void Game::Render()
 
     m_batch2->Begin();
 
-    if (1 == 1)
-    {
-        DirectX::VertexPositionNormalColor v1(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::White);
-        DirectX::VertexPositionNormalColor v2(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::White);
-        //m_batch2->DrawLine(v1, v2);
-    }
 
     DrawTerrainNew(m_terrainGamePlay);
     m_batch2->End();
@@ -1270,6 +1274,7 @@ void Game::CreateDeviceDependentResources()
 
     m_states = std::make_unique<CommonStates>(device);
     m_fxFactory = std::make_unique<EffectFactory>(device);
+
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_effect = std::make_unique<NormalMapEffect>(device);
 
@@ -1327,8 +1332,13 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexPositionNormalColor>(device, m_effect4.get(), m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch4 = std::make_unique<PrimitiveBatch<VertexPositionNormalColor>>(context);
 
-
+    
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
     m_model = Model::CreateFromCMO(device, L"cup.cmo", *m_fxFactory);
+    m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
+
+    int testBreak = 0;
+    testBreak++;
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -1374,7 +1384,7 @@ void Game::OnDeviceLost()
     m_states.reset();
     m_fxFactory.reset();
     m_model.reset();
-
+    m_modelTank01.reset();
 
     m_raster.Reset(); // anti-aliased lines
     m_states.reset();

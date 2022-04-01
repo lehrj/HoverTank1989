@@ -53,9 +53,6 @@
     <Image Include="directx.ico">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="cup.jpg">
-      <Filter>Assets</Filter>
-    </Image>
     <Image Include="Art\Textures\blankTexture.jpg">
       <Filter>Assets</Filter>
     </Image>
@@ -158,6 +155,9 @@
     <Image Include="Art\HeightMaps\heightmapStartScreen.bmp">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\Models\Cup\cup.jpg">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">
@@ -165,7 +165,6 @@
     </Manifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cup.cmo" />
     <None Include="packages.config" />
     <None Include="Art\Fonts\bitwise16.spritefont" />
     <None Include="Art\Fonts\bitwise20.spritefont" />
@@ -173,5 +172,15 @@
     <None Include="Art\Fonts\myfile.spritefont" />
     <None Include="Art\Fonts\titleFont.spritefont" />
     <None Include="Art\Audio\AudioBank.xwb" />
+    <None Include="Art\Models\Cup\cup._obj" />
+    <None Include="Art\Models\Cup\cup.cmo" />
+    <None Include="Art\Models\Cup\cup.mtl" />
+    <None Include="HoverTank01.3ds" />
+    <None Include="HoverTank01.cmo" />
+    <None Include="HoverTank01.fbx">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="HoverTank01.mtl" />
+    <None Include="HoverTank01.obj" />
   </ItemGroup>
 </Project>
