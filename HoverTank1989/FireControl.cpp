@@ -30,29 +30,74 @@ void FireControl::DrawProjectile(const DirectX::SimpleMath::Matrix aView, const 
 
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
-        DirectX::SimpleMath::Matrix projMat = m_ballAmmo.ammoModel.localProjectileMatrix;
+        DirectX::SimpleMath::Matrix projMat = m_ballAmmoStruct.ammoModel.localProjectileMatrix;
         projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_projectileVec[i].q.position);
-        m_ballAmmo.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
+        m_ballAmmoStruct.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
     }
 }
 
 void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
+    /*
+    ProjectileData firedProjectile;
+    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
+    firedProjectile.q.position = aLaunchPos;    
+    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.collisionSphere.Center = aLaunchPos;
+    
+    firedProjectile.time = 0.0f;
+    m_projectileVec.push_back(firedProjectile);
+    */
+
+
+    AmmoData firedAmmo;
+    if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
+    {
+        firedAmmo = m_ballAmmoStruct.ammoData;
+    }
+    else
+    {
+        firedAmmo = m_ballAmmoStruct.ammoData;
+    }
+
     ProjectileData firedProjectile;
     firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ballAmmo.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.collisionSphere.Center = aLaunchPos;
+    firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
+    firedProjectile.isCollisionTrue = false;
     firedProjectile.time = 0.0f;
     m_projectileVec.push_back(firedProjectile);
-
 }
 
 void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
+    /*
     ProjectileData firedProjectile;
     firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ballAmmo.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.time = 0.0f;
+    m_projectileVec.push_back(firedProjectile);
+    */
+    AmmoData firedAmmo;
+    if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
+    {
+        firedAmmo = m_ballAmmoStruct.ammoData;
+    }
+    else
+    {
+        firedAmmo = m_ballAmmoStruct.ammoData;
+    }
+
+    ProjectileData firedProjectile;
+    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
+    firedProjectile.q.position = aLaunchPos;
+    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.collisionSphere.Center = aLaunchPos;
+    firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
+    firedProjectile.isCollisionTrue = false;
     firedProjectile.time = 0.0f;
     m_projectileVec.push_back(firedProjectile);
 
@@ -63,7 +108,7 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
     float chokeAngle = 5.0f;
     float upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
     float rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    DirectX::SimpleMath::Vector3 shotCenterAim = m_ballAmmo.launchVelocity * aLaunchDirectionForward;
+    DirectX::SimpleMath::Vector3 shotCenterAim = m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward;
     DirectX::SimpleMath::Matrix upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
     DirectX::SimpleMath::Matrix rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
     shot.q.velocity = shotCenterAim;
@@ -162,6 +207,29 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
     // 10
 }
 
+void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
+{
+    AmmoData firedAmmo;
+    if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
+    {
+        firedAmmo = m_ballAmmoStruct.ammoData;
+    }
+    else
+    {
+        firedAmmo = m_ballAmmoStruct.ammoData;
+    }
+
+    ProjectileData firedProjectile;
+    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
+    firedProjectile.q.position = aLaunchPos;
+    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.collisionSphere.Center = aLaunchPos;
+    firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
+    firedProjectile.isCollisionTrue = false;
+    firedProjectile.time = 0.0f;
+    m_projectileVec.push_back(firedProjectile);
+}
+
 void FireControl::InitializeAmmo(AmmoData& aAmmo)
 {
     aAmmo.ammoType = AmmoType::AMMOTYPE_BALL01;
@@ -172,14 +240,34 @@ void FireControl::InitializeAmmo(AmmoData& aAmmo)
     aAmmo.mass = 0.2f;
     aAmmo.surfaceArea = 0.15f;
     aAmmo.radius = 0.2f;
+
+    aAmmo.collisionSphere.Radius = aAmmo.radius;
+    aAmmo.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
+}
+
+void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
+{
+    aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
+    aAmmo.ammoData.airDensity = 1.25f;
+    aAmmo.ammoData.dragCoefficient = 0.3f;
+    aAmmo.ammoData.gravity = -9.8f;
+    aAmmo.ammoData.launchVelocity = 45.0f;
+    aAmmo.ammoData.mass = 0.2f;
+    aAmmo.ammoData.surfaceArea = 0.15f;
+    aAmmo.ammoData.radius = 0.2f;
+
+    aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
+    aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, Environment const* aEnvironment)
 {
     m_projectileVec.clear();
     m_environment = aEnvironment;
-    InitializeAmmo(m_ballAmmo);
-    InitializeProjectileModel(aContext, m_ballAmmo);
+    //InitializeAmmo(m_ballAmmo);
+    InitializeAmmoStruct(m_ballAmmoStruct);
+    //InitializeProjectileModel(aContext, m_ballAmmo);
+    InitializeProjectileModelStruct(aContext, m_ballAmmoStruct);
     InitializeLauncherData(m_launcherData, aLaunchPos, aLaunchDirection);
 }
 
@@ -192,11 +280,22 @@ void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX:
     aLauncher.coolDownTimer = 0.0f;
 }
 
+/*
 void FireControl::InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoData& aAmmo)
 {
     const float ammoSize = aAmmo.radius;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateIcosahedron(aContext.Get(), ammoSize);   
+    aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
+}
+*/
+
+void FireControl::InitializeProjectileModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
+{
+    const float ammoSize = aAmmo.ammoData.radius;
+    //const float ammoSize = 2.0f;
+    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);  
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
@@ -215,6 +314,7 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
 
     
     float mass = 0.5f;
+  
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;

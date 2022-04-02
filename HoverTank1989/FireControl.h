@@ -4,6 +4,7 @@
 enum class AmmoType
 {
     AMMOTYPE_BALL01,
+    AMMOTYPE_SHOTGUNBALL01,
 };
 
 struct LauncherData
@@ -38,6 +39,13 @@ struct AmmoData
     float   mass;
     float   surfaceArea;
     float   radius;
+    //ProjectileModel ammoModel;
+    DirectX::BoundingSphere collisionSphere;
+};
+
+struct AmmoStruct
+{
+    AmmoData ammoData;
     ProjectileModel ammoModel;
 };
 
@@ -46,6 +54,8 @@ struct ProjectileData
     AmmoType projectileAmmoType;
     //AmmoData& const ammo;
     ProjectileMotion q;
+    DirectX::BoundingSphere collisionSphere;
+    bool isCollisionTrue;
     float time;
 };
 
@@ -56,11 +66,15 @@ public:
     void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, Environment const* aEnvironment);
     void FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    void FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    
     void UpdateProjectileVec(double aTimeDelta);
 private:
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void InitializeAmmo(AmmoData& aAmmo);
+    void InitializeAmmoStruct(AmmoStruct& aAmmo);
     void InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoData& aModel);
+    void InitializeProjectileModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileData(const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aVelocity);
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     
@@ -73,6 +87,7 @@ private:
     LauncherData m_launcherData;
 
     AmmoData m_ballAmmo;
+    AmmoStruct m_ballAmmoStruct;
 
     std::vector<ProjectileData> m_projectileVec;
 };

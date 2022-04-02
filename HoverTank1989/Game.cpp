@@ -1095,14 +1095,14 @@ void Game::Render()
     DirectX::SimpleMath::Matrix modelWorld1 = DirectX::SimpleMath::Matrix::Identity;
     modelWorld1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 5.0f, 10.0f));
     //modelWorld1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.021f, 0.021f, 0.021f));
-    m_modelTank01->Draw(context, *m_states, modelWorld1, m_camera->GetViewMatrix(), m_proj);
+    //m_modelTank01->Draw(context, *m_states, modelWorld1, m_camera->GetViewMatrix(), m_proj);
    
     m_batch->Begin();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
-        //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
+        m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
+        m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
     }
 
