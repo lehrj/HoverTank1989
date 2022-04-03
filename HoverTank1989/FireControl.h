@@ -33,6 +33,7 @@ struct AmmoData
 {
     AmmoType ammoType;
     float   airDensity;
+    float   baseDamage;
     float   dragCoefficient;
     float   gravity;
     float   launchVelocity;

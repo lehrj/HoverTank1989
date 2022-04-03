@@ -35,7 +35,8 @@ struct VehicleHardPoints
 struct VehicleData
 {
     Utility::Torque             bodyTorqueForce;
-    Environment                 const* environment;
+    //Environment                 const* environment;
+    DirectX::SimpleMath::Vector3 dimensions;
     float                       dragCoefficient;
     float                       frontalArea;
     float                       hitPoints;
@@ -51,9 +52,16 @@ struct VehicleData
 
     VehicleHardPoints           hardPoints;
     NPCType                     npcType;
+    DirectX::BoundingSphere     collisionBox;
+    bool                        isCollisionTrue;
+    //NPCModel                    npcModel;
+};
 
+struct VehicleStruct
+{
+    VehicleData                 vehicleData;
+    Environment                 const* environment;
     NPCModel                    npcModel;
-
 };
 
 class NPCVehicle
@@ -81,8 +89,14 @@ private:
         const DirectX::SimpleMath::Vector3 aHeading, 
         const DirectX::SimpleMath::Vector3 aPosition, 
         const NPCType aNPCType, Environment const* aEnvironment);
+    static void InitializeNPCStruct(VehicleStruct& aVehicleStruct,
+        const DirectX::SimpleMath::Vector3 aHeading,
+        const DirectX::SimpleMath::Vector3 aPosition,
+        const NPCType aNPCType, Environment const* aEnvironment);
     static void InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         NPCModel& aModel);
+    static void InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+        NPCModel& aModel, const DirectX::SimpleMath::Vector3 aDimensions);
 
     void RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ);
     void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
@@ -91,6 +105,7 @@ private:
     void UpdateNPCModel(const double aTimeDelta);
     
 
-    VehicleData m_vehicleData;
+    //VehicleData m_vehicleData;
+    VehicleStruct m_vehicleStruct00;
 };
 
