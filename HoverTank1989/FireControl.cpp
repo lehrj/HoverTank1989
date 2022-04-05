@@ -1,6 +1,19 @@
 #include "pch.h"
 #include "FireControl.h"
 
+FireControl::FireControl()
+{
+}
+
+void FireControl::CheckCollisions()
+{
+    //std::vector<NPCVehicle*> m_npcVec = 
+    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    {
+       // m_projectileVec[i].collisionSphere.
+    }
+}
+
 void FireControl::DeleteProjectileFromVec(const unsigned int aIndex)
 {
     if (aIndex > m_projectileVec.size())
@@ -261,7 +274,9 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
-void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, Environment const* aEnvironment)
+void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
+    const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, 
+    Environment const* aEnvironment)
 {
     m_projectileVec.clear();
     m_environment = aEnvironment;
@@ -351,12 +366,19 @@ void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDe
     aProjectile->q.position = q.position;
 }
 
+void FireControl::SetNPCController(NPCController* aNPCController)
+{
+    m_npcController = aNPCController;
+}
+
 void FireControl::UpdateProjectileVec(double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
         RungeKutta4(&m_projectileVec[i], aTimeDelta);
     }
+
+    CheckCollisions();
 
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {

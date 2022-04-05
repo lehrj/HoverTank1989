@@ -17,6 +17,7 @@
 #include "sounds.h"
 #include "Vehicle.h"
 #include "NPCController.h"
+//#include "FireControl.h"
 #include <sstream>
 
 

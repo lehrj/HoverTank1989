@@ -109,22 +109,30 @@ void Game::Initialize(HWND window, int width, int height)
     }
 
     auto context = m_deviceResources->GetD3DDeviceContext();
-    m_vehicle->InitializeVehicle(context);
-    
-    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f));
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 50.0f));
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f));
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, -10.0f));
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(30.0f, 3.0f, -90.0f));
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(60.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, 35.0f));
+    m_vehicle->InitializeVehicle(context, m_npcController);
+    //m_vehicle->InitializeVehicle(context);
 
+    const float rotation = 90.0f;
+    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
     
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 50.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, -10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(30.0f, 3.0f, 60.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, 35.0f));
+    
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
+
     // testing new terrain map
     m_terrainVector.clear();
 }

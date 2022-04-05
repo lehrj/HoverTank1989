@@ -1,7 +1,7 @@
 #pragma once
-//#include "NPCController.h"
+#include "pch.h"
 #include "NPCVehicle.h"
-
+//#include "FireControl.h"
 
 class NPCController
 {
@@ -19,10 +19,16 @@ public:
     void AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, 
         const DirectX::SimpleMath::Vector3 aPosition);
+
+    //bool CheckProjectileCollisions(ProjectileData aProjectile);
+
     void UpdateNPCs(const double aTimeDelta);
+
+    std::vector<NPCVehicle*>& GetVec() { return m_npcVec; };
 
 private:
     Environment const* m_environment;
+    
 
     std::vector<VehicleData*> m_npcVec2;
     std::vector<NPCVehicle*> m_npcVec;

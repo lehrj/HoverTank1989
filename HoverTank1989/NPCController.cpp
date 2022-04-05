@@ -30,6 +30,14 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     m_npcVec.push_back(testNPC);
 }
 
+/*
+bool NPCController::CheckProjectileCollisions(ProjectileData& aProjectile)
+{
+    bool isCollisionTrue = false;
+    return isCollisionTrue;
+}
+*/
+
 void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
@@ -60,5 +68,22 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->UpdateNPC(aTimeDelta);
+    }
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        for (unsigned int j = 0; j < m_npcVec.size(); ++j)
+        {
+            VehicleData testV1 = m_npcVec[i]->GetVehicleData();
+            if (i != j)
+            {
+                VehicleData testV2 = m_npcVec[j]->GetVehicleData();
+
+                if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
+                {
+                    m_npcVec[i]->SetCollisionVal(true);
+                }
+            }
+        }
     }
 }

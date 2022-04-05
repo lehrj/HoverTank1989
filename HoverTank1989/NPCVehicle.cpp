@@ -10,8 +10,14 @@ NPCVehicle::NPCVehicle()
 
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
+    DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    if (m_vehicleStruct00.vehicleData.isCollisionTrue == true)
+    {
+        color = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    }
     //m_vehicleData.npcModel.modelShape->Draw(m_vehicleData.npcModel.worldModelMatrix, aView, aProj, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, color);
+
 }
 
 /*
@@ -64,8 +70,11 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.dragCoefficient = 0.5f;
     aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 9.5f);
+    aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(14.0f, 14.0f, 14.0f);
     // to do update when transisioned from sphere to box
-    aVehicleStruct.vehicleData.collisionBox.Radius = aVehicleStruct.vehicleData.dimensions.x;
+    //aVehicleStruct.vehicleData.collisionBox.Radius = aVehicleStruct.vehicleData.dimensions.x;
+    aVehicleStruct.vehicleData.collisionBox.Extents = aVehicleStruct.vehicleData.dimensions * 0.5f;
+
     aVehicleStruct.vehicleData.collisionBox.Center = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.isCollisionTrue = false;
 
@@ -191,8 +200,9 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.terrainNormal = m_vehicleStruct00.environment->GetTerrainNormal(m_vehicleStruct00.vehicleData.q.position);
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
-    UpdateNPCModel(aTimeDelta);
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
+    UpdateNPCModel(aTimeDelta);
+    m_vehicleStruct00.vehicleData.isCollisionTrue = false;
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
@@ -206,4 +216,12 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
     m_vehicleStruct00.npcModel.worldModelMatrix = m_vehicleStruct00.npcModel.localModelMatrix;
     m_vehicleStruct00.npcModel.worldModelMatrix *= updateMat;
+
+    
+}
+
+
+void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
+{
+    m_vehicleStruct00.vehicleData.isCollisionTrue = aIsCollisionTrue;
 }

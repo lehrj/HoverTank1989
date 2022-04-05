@@ -52,7 +52,7 @@ struct VehicleData
 
     VehicleHardPoints           hardPoints;
     NPCType                     npcType;
-    DirectX::BoundingSphere     collisionBox;
+    DirectX::BoundingBox        collisionBox;
     bool                        isCollisionTrue;
     //NPCModel                    npcModel;
 };
@@ -83,7 +83,10 @@ public:
 
     void UpdateNPC(const double aTimeDelta);
     
+    VehicleData GetVehicleData() {return m_vehicleStruct00.vehicleData; };
 
+    void SetCollisionVal(const bool aIsCollisionTrue);
+    
 private:
     static void InitializeNPCData(VehicleData& aVehicleData, 
         const DirectX::SimpleMath::Vector3 aHeading, 

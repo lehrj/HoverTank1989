@@ -797,7 +797,8 @@ public:
 
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_heli.q.velocity; };
   
-    void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
+    void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController);
+    //void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
     // helicopter functions
     void InputCollective(const float aCollectiveInput);

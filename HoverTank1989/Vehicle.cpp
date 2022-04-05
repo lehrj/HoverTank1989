@@ -2066,7 +2066,8 @@ void Vehicle::InitializeRotorBlades(HeliData& aHeliData)
     }
 }
 
-void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
+//void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
+void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController)
 {
     InitializeFlightControls(m_heli.controlInput);
 
@@ -2156,6 +2157,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_fireControl = new FireControl();
     m_fireControl->InitializeFireControl(aContext, m_heli.localWeaponPos, m_heli.localWeaponDirection, m_environment);
+    m_fireControl->SetNPCController(aNPCController);
 }
 
 void Vehicle::InputCollective(const float aCollectiveInput)

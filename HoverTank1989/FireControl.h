@@ -1,5 +1,6 @@
 #pragma once
 #include "Environment.h"
+#include "NPCController.h"
 
 enum class AmmoType
 {
@@ -63,14 +64,20 @@ struct ProjectileData
 class FireControl
 {
 public:
+    FireControl();
+
     void DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
-    void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, Environment const* aEnvironment);
+    void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
+        const DirectX::SimpleMath::Vector3 aLaunchPos, 
+        const DirectX::SimpleMath::Vector3 aLaunchDirection, 
+        Environment const* aEnvironment);
     void FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
-    
+    void SetNPCController(NPCController* aNPCController);
     void UpdateProjectileVec(double aTimeDelta);
 private:
+    void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void InitializeAmmo(AmmoData& aAmmo);
     void InitializeAmmoStruct(AmmoStruct& aAmmo);
@@ -85,6 +92,9 @@ private:
     
 
     Environment const* m_environment;
+
+    NPCController* m_npcController;
+   
     LauncherData m_launcherData;
 
     AmmoData m_ballAmmo;
