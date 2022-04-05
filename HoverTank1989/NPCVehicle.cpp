@@ -8,6 +8,30 @@ NPCVehicle::NPCVehicle()
 }
 */
 
+void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpact)
+{
+    float mass1 = aImpact.impactMass;
+    float mass2 = m_vehicleStruct00.vehicleData.mass;
+    float e = 0.9f;
+
+    float tmp = 1.0f / (mass1 + mass2);
+    DirectX::SimpleMath::Vector3 vx1 = aImpact.impactVelocity;
+    DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
+    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
+        (1.0 + e) * mass2 * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
+        (mass2 - e * mass1) * vx2 * tmp;
+
+    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
+    m_vehicleStruct00.vehicleData.impactForce.impactVelocity += newVx2;
+
+
+    DirectX::SimpleMath::Vector3 testV = aImpact.impactVelocity;
+    testV.Normalize();
+    testV *= 4000.0f;
+    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = testV;
+}
+
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -89,6 +113,11 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.up = DirectX::SimpleMath::Vector3::UnitY;
     aVehicleStruct.vehicleData.right = aVehicleStruct.vehicleData.forward.Cross(aVehicleStruct.vehicleData.up);
     aVehicleStruct.vehicleData.alignment = DirectX::SimpleMath::Matrix::Identity;
+
+    aVehicleStruct.vehicleData.impactForce.impactVelocity = DirectX::SimpleMath::Vector3::Zero;
+    aVehicleStruct.vehicleData.impactForce.impactMass = 0.0f;
+
+    aVehicleStruct.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void NPCVehicle::InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCModel& aModel)
@@ -136,17 +165,35 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
 
+    float v = sqrt(newQ.velocity.Length() * newQ.velocity.Length()) + 1.0e-8f;
+
+    //  Compute the total drag force
+    float airDensity = 1.225f; // ToDo rework to pull data from environment
+    float dragCoefficient = aVehicle->dragCoefficient;
+    float frontSurfaceArea = aVehicle->frontalArea;
+    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
+    float mass = 1.0f;
+    //mass = aVehicle->mass;
+    DirectX::SimpleMath::Vector3 velocityNorm = aVehicle->q.velocity;
+    velocityNorm.Normalize();
+
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (static_cast<float>(aTimeDelta) * (-frontDragResistance / mass));
+    //DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
+
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
-    velocityUpdate = aVehicle->forward * cos(m_vehicleStruct00.vehicleData.time) * 10.0f;
+    //velocityUpdate = aVehicle->forward * cos(m_vehicleStruct00.vehicleData.time) * 10.0f;
+    velocityUpdate = aVehicle->testForce;
 
+    velocityUpdate += m_vehicleStruct00.vehicleData.impactForce.impactVelocity;
+    velocityUpdate += airResistance;
     //velocityUpdate.z = cos(m_vehicleData.time) * 10.0f;
     //velocityUpdate.x = cos(m_vehicleData.time) * 5.0f;
     DirectX::SimpleMath::Vector3 gravForce = DirectX::SimpleMath::Vector3(0.0f, -9.8f, 0.0f);
     //velocityUpdate += gravForce;
 
 
-    float mass = 0.5f;
+    
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -203,6 +250,10 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
     UpdateNPCModel(aTimeDelta);
     m_vehicleStruct00.vehicleData.isCollisionTrue = false;
+
+    m_vehicleStruct00.vehicleData.impactForce.impactMass = 0.0f;
+    m_vehicleStruct00.vehicleData.impactForce.impactVelocity = DirectX::SimpleMath::Vector3::Zero;
+    m_vehicleStruct00.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
@@ -224,4 +275,11 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
 {
     m_vehicleStruct00.vehicleData.isCollisionTrue = aIsCollisionTrue;
+}
+
+void NPCVehicle::UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal)
+{
+    
+    //m_vehicleStruct00.vehicleData.testForce += aForce;
+    m_vehicleStruct00.vehicleData.testForce += m_vehicleStruct00.vehicleData.forward * aVal * 10.0f;
 }

@@ -11,6 +11,7 @@ void FireControl::CheckCollisions()
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
        // m_projectileVec[i].collisionSphere.
+        m_npcController->CheckProjectileCollisions(m_projectileVec[i].collisionData);
     }
 }
 
@@ -80,6 +81,13 @@ void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::
     firedProjectile.collisionSphere.Center = aLaunchPos;
     firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
     firedProjectile.isCollisionTrue = false;
+
+    // collision data
+    firedProjectile.collisionData.collisionSphere = firedProjectile.collisionSphere;
+    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+    firedProjectile.collisionData.mass = firedAmmo.mass;
+    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+
     firedProjectile.time = 0.0f;
     m_projectileVec.push_back(firedProjectile);
 }
@@ -265,7 +273,7 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.gravity = -9.8f;
-    aAmmo.ammoData.launchVelocity = 45.0f;
+    aAmmo.ammoData.launchVelocity = 345.0f;
     aAmmo.ammoData.mass = 0.2f;
     aAmmo.ammoData.surfaceArea = 0.15f;
     aAmmo.ammoData.radius = 0.2f;
@@ -364,6 +372,8 @@ void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDe
     q.position += posUpdate;
     aProjectile->q.velocity = q.velocity;
     aProjectile->q.position = q.position;
+    aProjectile->collisionData.collisionSphere.Center = q.position;
+    aProjectile->collisionData.velocity = q.velocity;
 }
 
 void FireControl::SetNPCController(NPCController* aNPCController)

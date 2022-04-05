@@ -1,6 +1,6 @@
 #pragma once
 #include "Environment.h"
-
+#include "Utility.h"
 
 struct MotionNPC
 {
@@ -55,6 +55,8 @@ struct VehicleData
     DirectX::BoundingBox        collisionBox;
     bool                        isCollisionTrue;
     //NPCModel                    npcModel;
+    Utility::ImpactForce        impactForce;
+    DirectX::SimpleMath::Vector3 testForce;
 };
 
 struct VehicleStruct
@@ -68,6 +70,8 @@ class NPCVehicle
 {
 public:
     //NPCVehicle();
+
+    void CalculateImpactForce(const Utility::ImpactForce aImpact);
 
     static void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         VehicleData& aNPCVehicle, const DirectX::SimpleMath::Vector3 aHeading, 
@@ -84,9 +88,12 @@ public:
     void UpdateNPC(const double aTimeDelta);
     
     VehicleData GetVehicleData() {return m_vehicleStruct00.vehicleData; };
+    const DirectX::BoundingBox& GetCollisionData() { return m_vehicleStruct00.vehicleData.collisionBox; };
 
     void SetCollisionVal(const bool aIsCollisionTrue);
     
+    void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
+
 private:
     static void InitializeNPCData(VehicleData& aVehicleData, 
         const DirectX::SimpleMath::Vector3 aHeading, 

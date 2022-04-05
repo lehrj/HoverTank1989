@@ -30,13 +30,22 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     m_npcVec.push_back(testNPC);
 }
 
-/*
-bool NPCController::CheckProjectileCollisions(ProjectileData& aProjectile)
+void NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile)
 {
     bool isCollisionTrue = false;
-    return isCollisionTrue;
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetCollisionData().Intersects(aProjectile.collisionSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aProjectile.collisionSphere) == true)
+        {
+            m_npcVec[i]->SetCollisionVal(true);
+            Utility::ImpactForce projectileForce;
+            //projectileForce.impactMass = aProjectile.mass;
+            projectileForce.impactMass = 10000000.0f;
+            projectileForce.impactVelocity = aProjectile.velocity;
+            m_npcVec[i]->CalculateImpactForce(projectileForce);
+        }
+    }
 }
-*/
 
 void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
@@ -65,8 +74,14 @@ void NPCController::UpdateNPCController(const double aTimeDelta)
 
 void NPCController::UpdateNPCs(const double aTimeDelta)
 {
+    m_testTimer += static_cast<float>(aTimeDelta);
+
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
+        if (i == 7)
+        {
+            m_npcVec[i]->UpdateTestForce(DirectX::SimpleMath::Vector3::Zero, cos(m_testTimer * 0.5f));
+        }
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
 
@@ -82,6 +97,12 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
                 {
                     m_npcVec[i]->SetCollisionVal(true);
+
+                    Utility::ImpactForce projectileForce;
+                    projectileForce.impactMass = testV2.mass;
+                    //projectileForce.impactMass = 10000000.0f;
+                    projectileForce.impactVelocity = testV2.q.velocity;
+                    m_npcVec[i]->CalculateImpactForce(projectileForce);
                 }
             }
         }

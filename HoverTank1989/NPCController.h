@@ -1,5 +1,5 @@
 #pragma once
-#include "pch.h"
+//#include "pch.h"
 #include "NPCVehicle.h"
 //#include "FireControl.h"
 
@@ -21,6 +21,7 @@ public:
         const DirectX::SimpleMath::Vector3 aPosition);
 
     //bool CheckProjectileCollisions(ProjectileData aProjectile);
+    void CheckProjectileCollisions(Utility::CollisionData& aProjectile);
 
     void UpdateNPCs(const double aTimeDelta);
 
@@ -32,5 +33,7 @@ private:
 
     std::vector<VehicleData*> m_npcVec2;
     std::vector<NPCVehicle*> m_npcVec;
+
+    float m_testTimer = 0.0f;
 };
 

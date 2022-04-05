@@ -17,6 +17,20 @@ public:
         float                        magnitude;
     };
 
+    struct CollisionData
+    {
+        DirectX::BoundingSphere      collisionSphere;
+        DirectX::SimpleMath::Vector3 velocity;
+        float                        mass;
+        bool                         isCollisionTrue;
+    };
+
+    struct ImpactForce
+    {
+        DirectX::SimpleMath::Vector3 impactVelocity;
+        float                        impactMass;
+    };
+
     template<typename T>
     static T WrapAngle(T aTheta) noexcept
     {
