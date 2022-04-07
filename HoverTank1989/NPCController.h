@@ -29,7 +29,7 @@ public:
 
 private:
     Environment const* m_environment;
-    
+
 
     std::vector<VehicleData*> m_npcVec2;
     std::vector<NPCVehicle*> m_npcVec;

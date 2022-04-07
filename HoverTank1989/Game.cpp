@@ -112,7 +112,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->InitializeVehicle(context, m_npcController);
     //m_vehicle->InitializeVehicle(context);
 
-    const float rotation = 90.0f;
+    const float rotation = 60.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
     
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f));

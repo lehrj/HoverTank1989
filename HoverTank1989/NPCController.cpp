@@ -25,9 +25,9 @@ NPCController::~NPCController()
 
 void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition)
 {
-    NPCVehicle* testNPC = new NPCVehicle;
-    testNPC->InitializeNPCVehicle2(aContext, aHeading, aPosition, m_environment);
-    m_npcVec.push_back(testNPC);
+    NPCVehicle* newNPC = new NPCVehicle;
+    newNPC->InitializeNPCVehicle2(aContext, aHeading, aPosition, m_environment);
+    m_npcVec.push_back(newNPC);
 }
 
 void NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile)
@@ -42,7 +42,7 @@ void NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
             //projectileForce.impactMass = aProjectile.mass;
             projectileForce.impactMass = 10000000.0f;
             projectileForce.impactVelocity = aProjectile.velocity;
-            m_npcVec[i]->CalculateImpactForce(projectileForce);
+            m_npcVec[i]->CalculateImpactForce(projectileForce, aProjectile.collisionSphere.Center);
         }
     }
 }
@@ -102,7 +102,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                     projectileForce.impactMass = testV2.mass;
                     //projectileForce.impactMass = 10000000.0f;
                     projectileForce.impactVelocity = testV2.q.velocity;
-                    m_npcVec[i]->CalculateImpactForce(projectileForce);
+                    m_npcVec[i]->CalculateImpactForce(projectileForce, testV1.collisionBox.Center);
                 }
             }
         }

@@ -6,6 +6,7 @@ struct MotionNPC
 {
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
+    Utility::Torque              bodyTorqueForce;
 };
 
 enum class NPCType
@@ -24,18 +25,20 @@ struct NPCModel
 
 struct VehicleHardPoints
 {
-    DirectX::SimpleMath::Vector3 centerOfMass;
-    DirectX::SimpleMath::Vector3 localCenterOfMass;
+    DirectX::SimpleMath::Vector3 centerOfMassPos;
+    DirectX::SimpleMath::Vector3 localCenterOfMassPos;
     DirectX::SimpleMath::Vector3 weaponDirection;
     DirectX::SimpleMath::Vector3 localWeaponDirection;
     DirectX::SimpleMath::Vector3 weaponPos;
     DirectX::SimpleMath::Vector3 localWeaponPos;
+
+    DirectX::SimpleMath::Vector3 testArmPos;
+    DirectX::SimpleMath::Vector3 localTestArmPos;
 };
 
 struct VehicleData
 {
-    Utility::Torque             bodyTorqueForce;
-    //Environment                 const* environment;
+    //Utility::Torque             bodyTorqueForce;
     DirectX::SimpleMath::Vector3 dimensions;
     float                       dragCoefficient;
     float                       frontalArea;
@@ -71,7 +74,8 @@ class NPCVehicle
 public:
     //NPCVehicle();
 
-    void CalculateImpactForce(const Utility::ImpactForce aImpact);
+    void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
+    void CalculateSelfRightingTorque();
 
     static void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         VehicleData& aNPCVehicle, const DirectX::SimpleMath::Vector3 aHeading, 
@@ -113,7 +117,9 @@ private:
 
     void UpdateAlignment();
     void UpdateNPCModel(const double aTimeDelta);
-    
+    void UpdateHardPoints();
+
+    //Environment const* m_environment;
 
     //VehicleData m_vehicleData;
     VehicleStruct m_vehicleStruct00;
