@@ -11,6 +11,7 @@ NPCVehicle::NPCVehicle()
 void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
     float mass1 = aImpactForce.impactMass;
+    mass1 = 5000000.0f;
     float mass2 = m_vehicleStruct00.vehicleData.mass;
     float e = 0.9f;
 
@@ -22,8 +23,10 @@ void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, c
     DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
         (mass2 - e * mass1) * vx2 * tmp;
 
+    float newVX1Length = newVx1.Length();
+    float newVX2Length = newVx2.Length();
     //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
-    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity += newVx2;
+    m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
 
 
     DirectX::SimpleMath::Vector3 testV = aImpactForce.impactVelocity;
@@ -38,7 +41,6 @@ void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, c
 
     m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis += impactTorque.axis * impactTorque.magnitude;
     m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude += impactTorque.magnitude;
-
 }
 
 void NPCVehicle::CalculateSelfRightingTorque()
@@ -219,13 +221,19 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
 
     velocityUpdate += m_vehicleStruct00.vehicleData.impactForce.impactVelocity;
     velocityUpdate += airResistance;
-    //velocityUpdate.z = cos(m_vehicleData.time) * 10.0f;
-    //velocityUpdate.x = cos(m_vehicleData.time) * 5.0f;
+
     DirectX::SimpleMath::Vector3 gravForce = DirectX::SimpleMath::Vector3(0.0f, -9.8f, 0.0f);
     //velocityUpdate += gravForce;
 
-
+    m_debugData->DebugPushUILineDecimalNumber(std::string("impactVelocity"), m_vehicleStruct00.vehicleData.impactForce.impactVelocity.Length(), std::string(""));
     
+    float vLength = velocityUpdate.Length();
+    //m_debugData->DebugPushUILineDecimalNumber(std::string("vLength"), vLength, std::string(""));
+    if (vLength > 2.0f)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -334,8 +342,23 @@ void NPCVehicle::UpdateAlignment()
 }
 
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
-{
-    
+{  
+    /*
+    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.position.x"), m_vehicleStruct00.vehicleData.q.position.x, std::string(""));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.position.y"), m_vehicleStruct00.vehicleData.q.position.y, std::string(""));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.position.z"), m_vehicleStruct00.vehicleData.q.position.z, std::string(""));
+    */
+    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.velocity.x"), m_vehicleStruct00.vehicleData.q.velocity.x, std::string(""));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.velocity.y"), m_vehicleStruct00.vehicleData.q.velocity.y, std::string(""));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.velocity.z"), m_vehicleStruct00.vehicleData.q.velocity.z, std::string(""));
+
+    float vLength = m_vehicleStruct00.vehicleData.q.velocity.Length();
+    if (vLength > 50.0f || vLength < 0.0f)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
     m_vehicleStruct00.vehicleData.terrainHightAtPos = m_vehicleStruct00.environment->GetTerrainHeightAtPos(m_vehicleStruct00.vehicleData.q.position);    
     m_vehicleStruct00.vehicleData.terrainNormal = m_vehicleStruct00.environment->GetTerrainNormal(m_vehicleStruct00.vehicleData.q.position);
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
@@ -363,6 +386,11 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
     m_vehicleStruct00.npcModel.worldModelMatrix = m_vehicleStruct00.npcModel.localModelMatrix;
     m_vehicleStruct00.npcModel.worldModelMatrix *= updateMat;
+}
+
+void NPCVehicle::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
+{
+    m_debugData = aDebugPtr;
 }
 
 void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)

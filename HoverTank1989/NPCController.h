@@ -13,6 +13,8 @@ public:
     void UpdateNPCController(const double aTimeDelta);
     void DrawNPCs();
     
+    void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
+
     void SetNPCEnvironment(Environment const* aEnvironment);
 
 
@@ -20,8 +22,8 @@ public:
         NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, 
         const DirectX::SimpleMath::Vector3 aPosition);
 
-    //bool CheckProjectileCollisions(ProjectileData aProjectile);
-    void CheckProjectileCollisions(Utility::CollisionData& aProjectile);
+
+    bool CheckProjectileCollisions(Utility::CollisionData& aProjectile);
 
     void UpdateNPCs(const double aTimeDelta);
 
@@ -29,7 +31,7 @@ public:
 
 private:
     Environment const* m_environment;
-
+    std::shared_ptr<DebugData> m_debugData;
 
     std::vector<VehicleData*> m_npcVec2;
     std::vector<NPCVehicle*> m_npcVec;

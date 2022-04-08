@@ -7,11 +7,22 @@ FireControl::FireControl()
 
 void FireControl::CheckCollisions()
 {
-    //std::vector<NPCVehicle*> m_npcVec = 
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
-       // m_projectileVec[i].collisionSphere.
-        m_npcController->CheckProjectileCollisions(m_projectileVec[i].collisionData);
+        bool isHitTrue = m_npcController->CheckProjectileCollisions(m_projectileVec[i].collisionData);
+        if (isHitTrue == true)
+        {
+            m_projectileVec[i].isCollisionTrue = true;
+        }
+        else if (m_projectileVec[i].time > m_maxProjectileLifeTime)
+        {
+            m_projectileVec[i].isCollisionTrue = true;
+        }
+        
+        else if (m_projectileVec[i].q.position.y < m_environment->GetTerrainHeightAtPos(m_projectileVec[i].q.position))
+        {
+            m_projectileVec[i].isCollisionTrue == true;
+        }   
     }
 }
 
@@ -392,13 +403,21 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
 
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
-        if (m_projectileVec[i].time > 20.0f)
+        /*
+        if (m_projectileVec[i].time > 20.02f)
         {
-            DeleteProjectileFromVec(i);
+            //DeleteProjectileFromVec(i);
+            m_projectileVec[i].isCollisionTrue == true;
         }
 
         //float altitude = m_environment->GetTerrainHeightAtPos(m_projectileVec[i].q.position);
         if (m_projectileVec[i].q.position.y < m_environment->GetTerrainHeightAtPos(m_projectileVec[i].q.position))
+        {
+            //DeleteProjectileFromVec(i);
+            m_projectileVec[i].isCollisionTrue == true;
+        }
+        */
+        if (m_projectileVec[i].isCollisionTrue == true)
         {
             DeleteProjectileFromVec(i);
         }

@@ -1,6 +1,8 @@
 #pragma once
 #include "Environment.h"
 #include "Utility.h"
+#include "DebugData.h"
+
 
 struct MotionNPC
 {
@@ -94,6 +96,8 @@ public:
     VehicleData GetVehicleData() {return m_vehicleStruct00.vehicleData; };
     const DirectX::BoundingBox& GetCollisionData() { return m_vehicleStruct00.vehicleData.collisionBox; };
 
+    void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
+
     void SetCollisionVal(const bool aIsCollisionTrue);
     
     void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
@@ -120,6 +124,7 @@ private:
     void UpdateHardPoints();
 
     //Environment const* m_environment;
+    std::shared_ptr<DebugData> m_debugData;
 
     //VehicleData m_vehicleData;
     VehicleStruct m_vehicleStruct00;

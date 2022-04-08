@@ -22,6 +22,7 @@ Game::Game() noexcept(false)
     srand(0);
 
     m_environment = new Environment();
+    m_debugData = std::make_shared<DebugData>();
 
     // WLJ ToDo : get default window size on launch
     //m_camera = new Camera(m_outputWidth, m_outputHeight);
@@ -38,6 +39,7 @@ Game::Game() noexcept(false)
 
     m_npcController = new NPCController();
     m_npcController->SetNPCEnvironment(m_environment);
+    m_npcController->SetDebugData(m_debugData);
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
@@ -115,7 +117,9 @@ void Game::Initialize(HWND window, int width, int height)
     const float rotation = 60.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
     
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f));
+
+    /*
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 50.0f));
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
@@ -132,6 +136,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
+    */
 
     // testing new terrain map
     m_terrainVector.clear();
@@ -537,11 +542,12 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     // TODO: Add your game logic here.
     elapsedTime;
+    m_debugData->DebugClearUI();
 
     float time = float(aTimer.GetTotalSeconds());
     UpdateInput(aTimer);
 
-    m_npcController->UpdateNPCs(aTimer.GetElapsedSeconds());
+    m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
     m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
     m_camera->UpdateCamera(aTimer);
     m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
@@ -1151,6 +1157,8 @@ void Game::Render()
 
     m_spriteBatch->Begin();
 
+    DrawDebugDataUI();
+
     m_spriteBatch->End();
 
     m_deviceResources->PIXEndEvent();
@@ -1370,6 +1378,29 @@ void Game::CreateWindowSizeDependentResources()
 
     m_effect4->SetView(m_view);
     m_effect4->SetProjection(m_proj);
+}
+
+void Game::DrawDebugDataUI()
+{
+    std::vector<std::string> uiVector = m_debugData->DebugGetUIVector();
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
+    textLinePos.x = 200;
+    textLinePos.y += 30;
+    for (int i = 0; i < uiVector.size(); ++i)
+    {
+        std::string textLine = uiVector[i];
+        DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+        textLinePos.x = textLineOrigin.x + 20;
+        m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+        textLinePos.y += 30;
+    }
+    
+    // Draw Timer
+    std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
 }
 
 void Game::DrawSky()

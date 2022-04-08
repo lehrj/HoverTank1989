@@ -27,10 +27,11 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
 {
     NPCVehicle* newNPC = new NPCVehicle;
     newNPC->InitializeNPCVehicle2(aContext, aHeading, aPosition, m_environment);
+    newNPC->SetDebugData(m_debugData);
     m_npcVec.push_back(newNPC);
 }
 
-void NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile)
+bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile)
 {
     bool isCollisionTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
@@ -39,12 +40,12 @@ void NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
         {
             m_npcVec[i]->SetCollisionVal(true);
             Utility::ImpactForce projectileForce;
-            //projectileForce.impactMass = aProjectile.mass;
-            projectileForce.impactMass = 10000000.0f;
+            projectileForce.impactMass = aProjectile.mass;
             projectileForce.impactVelocity = aProjectile.velocity;
             m_npcVec[i]->CalculateImpactForce(projectileForce, aProjectile.collisionSphere.Center);
         }
     }
+    return isCollisionTrue;
 }
 
 void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
@@ -61,6 +62,10 @@ void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceC
     //AddNPC(NPCType::NPCTYPE_NPC00, const DirectX::SimpleMath::Vector3(10.0f, 2.0f, 0.0f));
 }
 
+void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
+{
+    m_debugData = aDebugPtr;
+}
 
 void NPCController::SetNPCEnvironment(Environment const* aEnvironment)
 {
@@ -74,6 +79,10 @@ void NPCController::UpdateNPCController(const double aTimeDelta)
 
 void NPCController::UpdateNPCs(const double aTimeDelta)
 {
+    m_debugData->DebugPushUILineDecimalNumber(std::string("hi"), 01.0f, std::string("hi"));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("hi"), 01.0f, std::string("hi"));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("hi"), 01.0f, std::string("hi"));
+
     m_testTimer += static_cast<float>(aTimeDelta);
 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
@@ -100,7 +109,6 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
 
                     Utility::ImpactForce projectileForce;
                     projectileForce.impactMass = testV2.mass;
-                    //projectileForce.impactMass = 10000000.0f;
                     projectileForce.impactVelocity = testV2.q.velocity;
                     m_npcVec[i]->CalculateImpactForce(projectileForce, testV1.collisionBox.Center);
                 }

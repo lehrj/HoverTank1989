@@ -364,6 +364,11 @@ std::vector<DirectX::VertexPositionColor> Environment::GetTerrainColorVertex()
     return vertPosColor;
 }
 
+bool Environment::QuickGetIsPosAboveTerrain(const DirectX::XMFLOAT3 aPos, const float aOffset) const
+{
+    return false;
+}
+
 float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
 {
     DirectX::SimpleMath::Vector3 prePos = aPos;
@@ -386,7 +391,7 @@ float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
         {
             return aPos.y;
         }
-
+        /*
         float f = prePos.x;
         float g = prePos.z;
         DirectX::SimpleMath::Vector3 baryPos = DirectX::SimpleMath::Vector3::Barycentric(vertex1, vertex2, vertex3, f, g);
@@ -408,6 +413,7 @@ float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
 
             return aPos.y;
         }
+        */
     }
     float errorHeight = aPos.y;
     return errorHeight;

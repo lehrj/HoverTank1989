@@ -91,17 +91,14 @@ private:
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
 
-    
-
     Environment const* m_environment;
-
     NPCController* m_npcController;
    
     LauncherData m_launcherData;
 
     AmmoData m_ballAmmo;
     AmmoStruct m_ballAmmoStruct;
-
+    const float m_maxProjectileLifeTime = 20.0f;
     std::vector<ProjectileData> m_projectileVec;
 };
 

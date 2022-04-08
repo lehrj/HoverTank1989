@@ -18,6 +18,7 @@
 #include "Vehicle.h"
 #include "NPCController.h"
 //#include "FireControl.h"
+#include "DebugData.h"
 #include <sstream>
 
 
@@ -73,6 +74,8 @@ private:
     void DrawDebugLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
     void DrawDebugNormalLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
     void DrawDebugLinesVector();
+
+    void DrawDebugDataUI();
     void DrawGridForStartScreen();
     void DrawGamePlayStart();
     void DrawIntroScene();
@@ -122,6 +125,8 @@ private:
     Lighting* m_lighting;
     NPCController* m_npcController;
     Vehicle* m_vehicle;
+
+    std::shared_ptr<DebugData> m_debugData;
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;
     using VertexType2 = DirectX::VertexPositionNormalColor;
