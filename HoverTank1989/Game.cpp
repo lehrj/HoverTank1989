@@ -40,6 +40,7 @@ Game::Game() noexcept(false)
     m_npcController = new NPCController();
     m_npcController->SetNPCEnvironment(m_environment);
     m_npcController->SetDebugData(m_debugData);
+    //m_vehicle->SetDebugData(m_debugData);
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
@@ -112,6 +113,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     auto context = m_deviceResources->GetD3DDeviceContext();
     m_vehicle->InitializeVehicle(context, m_npcController);
+    m_vehicle->SetDebugData(m_debugData);
     //m_vehicle->InitializeVehicle(context);
 
     const float rotation = 60.0f;

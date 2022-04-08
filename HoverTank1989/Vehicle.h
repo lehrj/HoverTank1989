@@ -812,6 +812,8 @@ public:
     void Jump();
 
     void ResetVehicle();
+
+    void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetEnvironment(Environment* aEnviron);
 
     void ToggleLandingGearState();
@@ -873,6 +875,7 @@ private:
     HeliData                        m_heli;
     HeliModel                       m_heliModel;
     FireControl*                    m_fireControl;
+    std::shared_ptr<DebugData>      m_debugData;
 
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);

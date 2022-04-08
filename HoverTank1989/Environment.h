@@ -97,6 +97,12 @@ struct HeightMap
     int                          terrainHeight = 0;
     int                          terrainLength = 0;
     int                          terrainWidth = 0;
+
+    float                        maxElevation = 0.0f;
+    float                        xPosMax = 0.0f;
+    float                        xPosMin = 0.0f;
+    float                        zPosMax = 0.0f;
+    float                        zPosMin = 0.0f;
 };
 
 struct Terrain
@@ -139,7 +145,7 @@ public:
     DirectX::SimpleMath::Vector3 GetTeePosition() const { return m_currentEnviron.teePosition; };
 
 
-    bool QuickGetIsPosAboveTerrain(const DirectX::XMFLOAT3 aPos, const float aOffset) const;
+    bool GetIsPosInPlay(const DirectX::XMFLOAT3 aPos, const float aOffset) const;
     float GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const;
     float GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const;
     DirectX::SimpleMath::Vector3 GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const;

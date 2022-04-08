@@ -2763,6 +2763,12 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     }
 }
 
+void Vehicle::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
+{
+    m_debugData = aDebugPtr;
+    m_fireControl->SetDebugData(aDebugPtr);
+}
+
 void Vehicle::SetEnvironment(Environment* aEnviron)
 {
     m_environment = aEnviron;

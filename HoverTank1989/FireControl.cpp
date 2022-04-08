@@ -18,10 +18,9 @@ void FireControl::CheckCollisions()
         {
             m_projectileVec[i].isCollisionTrue = true;
         }
-        
-        else if (m_projectileVec[i].q.position.y < m_environment->GetTerrainHeightAtPos(m_projectileVec[i].q.position))
+        else if (m_environment->GetIsPosInPlay(m_projectileVec[i].q.position, 0.0f) == false)
         {
-            m_projectileVec[i].isCollisionTrue == true;
+            m_projectileVec[i].isCollisionTrue = true;
         }   
     }
 }
@@ -284,7 +283,7 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.gravity = -9.8f;
-    aAmmo.ammoData.launchVelocity = 345.0f;
+    aAmmo.ammoData.launchVelocity = 25.0f;
     aAmmo.ammoData.mass = 0.2f;
     aAmmo.ammoData.surfaceArea = 0.15f;
     aAmmo.ammoData.radius = 0.2f;
@@ -387,6 +386,11 @@ void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDe
     aProjectile->collisionData.velocity = q.velocity;
 }
 
+void FireControl::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
+{
+    m_debugData = aDebugPtr;
+}
+
 void FireControl::SetNPCController(NPCController* aNPCController)
 {
     m_npcController = aNPCController;
@@ -400,7 +404,7 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
     }
 
     CheckCollisions();
-
+    int deleteCount = 0;
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
         /*
@@ -419,7 +423,11 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
         */
         if (m_projectileVec[i].isCollisionTrue == true)
         {
+            deleteCount++;
             DeleteProjectileFromVec(i);
         }
     }
+
+    m_debugData->DebugPushUILineDecimalNumber(std::string("Projectile Count = "), static_cast<float>(m_projectileVec.size()), std::string(""));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("delete Count = "), static_cast<float>(deleteCount), std::string(""));
 }

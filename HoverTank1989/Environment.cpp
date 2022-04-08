@@ -364,9 +364,29 @@ std::vector<DirectX::VertexPositionColor> Environment::GetTerrainColorVertex()
     return vertPosColor;
 }
 
-bool Environment::QuickGetIsPosAboveTerrain(const DirectX::XMFLOAT3 aPos, const float aOffset) const
+bool Environment::GetIsPosInPlay(const DirectX::XMFLOAT3 aPos, const float aOffset) const
 {
-    return false;
+    if (aPos.x > m_heightMapGamePlayData.xPosMax || aPos.x < m_heightMapGamePlayData.xPosMin
+        || aPos.z > m_heightMapGamePlayData.zPosMax || aPos.z < m_heightMapGamePlayData.zPosMin)
+    {
+        return false;
+    }
+    else if (aPos.y > m_heightMapGamePlayData.maxElevation)
+    {
+        return true;
+    }
+    else
+    {
+        float terrainHeight = GetTerrainHeightAtPos(aPos);
+        if (terrainHeight > aPos.y)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
 
 float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
@@ -1322,6 +1342,36 @@ void Environment::ScaleTerrain(HeightMap& aMap)
         aMap.terrainModel[i].position.x += xTransform;
         aMap.terrainModel[i].position.y += yTransform;
         aMap.terrainModel[i].position.z += zTransform;
+
+        if (i == 0)
+        {
+            aMap.maxElevation = aMap.terrainModel[i].position.y;
+            aMap.xPosMax = aMap.terrainModel[i].position.x;
+            aMap.xPosMin = aMap.terrainModel[i].position.x;
+            aMap.zPosMax = aMap.terrainModel[i].position.z;
+            aMap.zPosMin = aMap.terrainModel[i].position.z;
+        }
+
+        if (aMap.terrainModel[i].position.y > aMap.maxElevation)
+        {
+            aMap.maxElevation = aMap.terrainModel[i].position.y;
+        }
+        if (aMap.terrainModel[i].position.x > aMap.xPosMax)
+        {
+            aMap.xPosMax = aMap.terrainModel[i].position.x;
+        }
+        if (aMap.terrainModel[i].position.x < aMap.xPosMin)
+        {
+            aMap.xPosMin = aMap.terrainModel[i].position.x;
+        }
+        if (aMap.terrainModel[i].position.z > aMap.zPosMax)
+        {
+            aMap.zPosMax = aMap.terrainModel[i].position.z;
+        }
+        if (aMap.terrainModel[i].position.z < aMap.zPosMin)
+        {
+            aMap.zPosMin = aMap.terrainModel[i].position.z;
+        }
     }
 }
 

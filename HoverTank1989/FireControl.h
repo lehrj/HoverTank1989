@@ -76,6 +76,7 @@ public:
     void FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(NPCController* aNPCController);
     void UpdateProjectileVec(double aTimeDelta);
 private:
@@ -93,12 +94,13 @@ private:
 
     Environment const* m_environment;
     NPCController* m_npcController;
-   
+    std::shared_ptr<DebugData> m_debugData;
+
     LauncherData m_launcherData;
 
     AmmoData m_ballAmmo;
     AmmoStruct m_ballAmmoStruct;
-    const float m_maxProjectileLifeTime = 20.0f;
+    const float m_maxProjectileLifeTime = 10.0f;
     std::vector<ProjectileData> m_projectileVec;
 };
 
