@@ -4,6 +4,23 @@
 #include "DebugData.h"
 
 
+struct HoverData
+{
+    const float groundNormalForceRange = 5.0f;
+    const float hoverNeutralBoyantAlt = 0.52f;
+    const float hoverRangeLower = 0.5f;
+    const float hoverRangeMid = 1.0f;
+    const float hoverRangeUpper = 3.0f;
+    const float forwardThrustMax = 5000.0f;
+
+    DirectX::SimpleMath::Vector3    hoverLiftMax;
+    DirectX::SimpleMath::Vector3    hoverLiftNeutralWithGrav;
+    DirectX::SimpleMath::Vector3    hoverLiftCurrent;
+
+    float turnRateCurrent;
+    float turnRateMax;
+};
+
 struct MotionNPC
 {
     DirectX::SimpleMath::Vector3 position;
@@ -36,11 +53,15 @@ struct VehicleHardPoints
 
     DirectX::SimpleMath::Vector3 testArmPos;
     DirectX::SimpleMath::Vector3 localTestArmPos;
+
+    DirectX::SimpleMath::Vector3 basePos;
+    DirectX::SimpleMath::Vector3 localBasePos;
+
 };
 
 struct VehicleData
-{
-    
+{   
+    float                       altitude;
     DirectX::SimpleMath::Vector3 dimensions;
     float                       dragCoefficient;
     float                       frontalArea;
@@ -63,6 +84,7 @@ struct VehicleData
     Utility::ImpactForce        impactForce;
     Utility::Torque             impactTorque;
     DirectX::SimpleMath::Vector3 testForce;
+    HoverData                    hoverData;
 };
 
 struct VehicleStruct
@@ -80,9 +102,6 @@ public:
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateSelfRightingTorque();
 
-    static void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
-        VehicleData& aNPCVehicle, const DirectX::SimpleMath::Vector3 aHeading, 
-        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
     void InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
@@ -104,6 +123,9 @@ public:
     void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
 
 private:
+    DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
+    DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
+    DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
     static void InitializeNPCData(VehicleData& aVehicleData, 
         const DirectX::SimpleMath::Vector3 aHeading, 
         const DirectX::SimpleMath::Vector3 aPosition, 
@@ -125,7 +147,8 @@ private:
     void UpdateNPCModel(const double aTimeDelta);
     void UpdateHardPoints();
 
-    //Environment const* m_environment;
+    Environment const* m_environment;
+    
     std::shared_ptr<DebugData> m_debugData;
 
     //VehicleData m_vehicleData;
