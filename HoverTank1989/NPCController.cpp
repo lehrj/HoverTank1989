@@ -79,10 +79,6 @@ void NPCController::UpdateNPCController(const double aTimeDelta)
 
 void NPCController::UpdateNPCs(const double aTimeDelta)
 {
-    m_debugData->DebugPushUILineDecimalNumber(std::string("hi"), 01.0f, std::string("hi"));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("hi"), 01.0f, std::string("hi"));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("hi"), 01.0f, std::string("hi"));
-
     m_testTimer += static_cast<float>(aTimeDelta);
 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)

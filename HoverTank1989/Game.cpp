@@ -1148,12 +1148,9 @@ void Game::Render()
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
     m_batch3->Begin();
-    if (1 == 1)
-    {
-        DirectX::VertexPositionColor v1(DirectX::SimpleMath::Vector3::Zero, DirectX::Colors::White);
-        DirectX::VertexPositionColor v2(DirectX::SimpleMath::Vector3::UnitX, DirectX::Colors::White);
-        m_batch3->DrawLine(v1, v2);
-    }
+
+    DrawDebugLinesVector();
+
     m_batch3->End();
 
 
@@ -1403,6 +1400,18 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
+}
+
+void Game::DrawDebugLinesVector()
+{
+    std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector4>> lineTup = m_debugData->DebugGetTestLines();
+    for (unsigned int i = 0; i < lineTup.size(); ++i)
+    {
+        DirectX::SimpleMath::Vector4 lineColor = std::get<2>(lineTup[i]);
+        VertexPositionColor lineStart(std::get<0>(lineTup[i]), lineColor);
+        VertexPositionColor lineEnd(std::get<1>(lineTup[i]), lineColor);
+        m_batch3->DrawLine(lineStart, lineEnd);
+    }
 }
 
 void Game::DrawSky()

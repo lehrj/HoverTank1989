@@ -40,7 +40,7 @@ struct VehicleHardPoints
 
 struct VehicleData
 {
-    //Utility::Torque             bodyTorqueForce;
+    
     DirectX::SimpleMath::Vector3 dimensions;
     float                       dragCoefficient;
     float                       frontalArea;
@@ -59,8 +59,9 @@ struct VehicleData
     NPCType                     npcType;
     DirectX::BoundingBox        collisionBox;
     bool                        isCollisionTrue;
-    //NPCModel                    npcModel;
+
     Utility::ImpactForce        impactForce;
+    Utility::Torque             impactTorque;
     DirectX::SimpleMath::Vector3 testForce;
 };
 
@@ -120,6 +121,7 @@ private:
     void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
 
     void UpdateAlignment();
+    Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
     void UpdateNPCModel(const double aTimeDelta);
     void UpdateHardPoints();
 

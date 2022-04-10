@@ -12,7 +12,11 @@ void FireControl::CheckCollisions()
         bool isHitTrue = m_npcController->CheckProjectileCollisions(m_projectileVec[i].collisionData);
         if (isHitTrue == true)
         {
-            m_projectileVec[i].isCollisionTrue = true;
+            m_projectileVec[i].liveTimeTick--;
+            if (m_projectileVec[i].liveTimeTick <= 0)
+            {
+                m_projectileVec[i].isCollisionTrue = true;
+            }
         }
         else if (m_projectileVec[i].time > m_maxProjectileLifeTime)
         {
@@ -91,6 +95,7 @@ void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::
     firedProjectile.collisionSphere.Center = aLaunchPos;
     firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
     firedProjectile.isCollisionTrue = false;
+    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
     // collision data
     firedProjectile.collisionData.collisionSphere = firedProjectile.collisionSphere;
@@ -261,21 +266,6 @@ void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vect
     m_projectileVec.push_back(firedProjectile);
 }
 
-void FireControl::InitializeAmmo(AmmoData& aAmmo)
-{
-    aAmmo.ammoType = AmmoType::AMMOTYPE_BALL01;
-    aAmmo.airDensity = 1.25f;
-    aAmmo.dragCoefficient = 0.3f;
-    aAmmo.gravity = -9.8f;
-    aAmmo.launchVelocity = 45.0f;
-    aAmmo.mass = 0.2f;
-    aAmmo.surfaceArea = 0.15f;
-    aAmmo.radius = 0.2f;
-
-    aAmmo.collisionSphere.Radius = aAmmo.radius;
-    aAmmo.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
-}
-
 void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
@@ -283,11 +273,11 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.gravity = -9.8f;
-    aAmmo.ammoData.launchVelocity = 25.0f;
+    aAmmo.ammoData.launchVelocity = 225.0f;
     aAmmo.ammoData.mass = 0.2f;
     aAmmo.ammoData.surfaceArea = 0.15f;
     aAmmo.ammoData.radius = 0.2f;
-
+    aAmmo.ammoData.tickDownCounter = 5;
     aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
     aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }

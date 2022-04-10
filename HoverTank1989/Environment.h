@@ -33,6 +33,7 @@ struct Environ
     std::string                         airDensityStr;
     DirectX::SimpleMath::Vector3        holePosition;
     float                              gravity;           // in m/s^2
+    DirectX::SimpleMath::Vector3        gravityVec;
     std::string                         gravityStr;
     float                              landingFrictionScale;
     std::string                         landingFrictionScaleStr;
@@ -129,6 +130,7 @@ public:
     std::vector<Fixture> GetFixtureBucket() { return m_fixtureBucket; };
 
     float GetGravity() const { return m_currentEnviron.gravity; };
+    DirectX::SimpleMath::Vector3 GetGravityVec() const { return m_currentEnviron.gravityVec; };
     std::string GetGravityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravityStr; };
     float GetGravity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravity; };
     std::vector<DirectX::VertexPositionColor> GetFlagVertex() const { return m_flagVertex; };

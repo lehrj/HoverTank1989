@@ -42,7 +42,8 @@ struct AmmoData
     float   mass;
     float   surfaceArea;
     float   radius;
-    //ProjectileModel ammoModel;
+    int tickDownCounter;  // value to tick down as collisions occure, to be used for penetration and ricochet 
+
     DirectX::BoundingSphere collisionSphere;
 };
 
@@ -61,6 +62,7 @@ struct ProjectileData
     Utility::CollisionData  collisionData;
     bool isCollisionTrue;
     float time;
+    int liveTimeTick;
 };
 
 class FireControl
