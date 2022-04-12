@@ -1,12 +1,15 @@
 #include "pch.h"
 #include "NPCVehicle.h"
 
-/*
+
 NPCVehicle::NPCVehicle()
 {
+    //unique_ptr<Animal> p1 = make_unique<Animal>();
+
+    m_npcAI = std::make_unique<NpcAI>(this);
 
 }
-*/
+
 
 void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
@@ -133,6 +136,12 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetDamperForce(const VehicleData& aVehi
     return damperForce;
 }
 
+DirectX::SimpleMath::Vector3 NPCVehicle::GetForwardThrust(const VehicleData& aVehicleData)
+{
+    DirectX::SimpleMath::Vector3 thrustUpdate = aVehicleData.forward * (aVehicleData.hoverData.forwardThrust);
+    return thrustUpdate;
+}
+
 DirectX::SimpleMath::Vector3 NPCVehicle::GetHoverLift(const VehicleData& aVehicleData)
 {
     //DirectX::SimpleMath::Vector3 liftForce = aVehicleData.hoverData.hoverLiftNeutralWithGrav;
@@ -216,6 +225,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
 
+    aVehicleStruct.vehicleData.hoverData.forwardThrust = 0.0f;
     aVehicleStruct.vehicleData.hoverData.hoverLiftNeutralWithGrav = -aEnvironment->GetGravityVec();
     aVehicleStruct.vehicleData.hoverData.hoverLiftMax = -aEnvironment->GetGravityVec() * 1.2f;
     aVehicleStruct.vehicleData.hoverData.hoverLiftCurrent = DirectX::SimpleMath::Vector3::Zero;
@@ -247,6 +257,7 @@ void NPCVehicle::InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContex
     m_environment = aEnvironment;
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.dimensions);
+    m_npcAI->InitializeAI(aEnvironment);
 }
 
 void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
@@ -278,6 +289,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     m_debugData->DebugPushUILineDecimalNumber(std::string("airRLength = "), airRLength, std::string(""));
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
+    velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
     //velocityUpdate = aVehicle->testForce;
 
     if (aVehicle->altitude < 10.0f)
@@ -513,6 +525,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, .0f));
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.forward, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, .0f));
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.right, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+    m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)

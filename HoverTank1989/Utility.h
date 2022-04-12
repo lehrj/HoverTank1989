@@ -31,6 +31,28 @@ public:
         float                        impactMass;
     };
 
+    struct Waypoint
+    {
+        DirectX::SimpleMath::Vector3 waypointPos;
+        float                        waypointRadius;
+    };
+
+    struct WayPath
+    {
+        int nodeCount;
+        int targetNode;
+        bool                  isPathLooped;
+        std::vector<Waypoint> wayPath;       
+    };
+
+    static void ClearWayPath(WayPath& aWayPath)
+    {
+        aWayPath.nodeCount = 0;
+        aWayPath.targetNode = 0;
+        aWayPath.wayPath.clear();
+        aWayPath.isPathLooped = false;
+    }
+
     template<typename T>
     static T WrapAngle(T aTheta) noexcept
     {

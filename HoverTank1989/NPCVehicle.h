@@ -1,7 +1,9 @@
 #pragma once
-#include "Environment.h"
-#include "Utility.h"
 #include "DebugData.h"
+#include "Environment.h"
+#include "NpcAI.h"
+#include "Utility.h"
+
 
 
 struct HoverData
@@ -12,7 +14,7 @@ struct HoverData
     const float hoverRangeMid = 1.0f;
     const float hoverRangeUpper = 3.0f;
     const float forwardThrustMax = 5000.0f;
-
+    float forwardThrust;
     DirectX::SimpleMath::Vector3    hoverLiftMax;
     DirectX::SimpleMath::Vector3    hoverLiftNeutralWithGrav;
     DirectX::SimpleMath::Vector3    hoverLiftCurrent;
@@ -97,7 +99,7 @@ struct VehicleStruct
 class NPCVehicle
 {
 public:
-    //NPCVehicle();
+    NPCVehicle();
 
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateSelfRightingTorque();
@@ -125,6 +127,7 @@ public:
 private:
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
+    DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
     static void InitializeNPCData(VehicleData& aVehicleData, 
         const DirectX::SimpleMath::Vector3 aHeading, 
@@ -150,6 +153,8 @@ private:
     Environment const* m_environment;
     
     std::shared_ptr<DebugData> m_debugData;
+
+    std::unique_ptr<NpcAI> m_npcAI;
 
     //VehicleData m_vehicleData;
     VehicleStruct m_vehicleStruct00;
