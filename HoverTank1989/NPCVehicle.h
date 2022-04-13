@@ -5,6 +5,26 @@
 #include "Utility.h"
 
 
+struct NpcControlInput
+{
+    // input control data
+    const float inputDeadZone = 0.7;  // small deadzone to ignore nominal control input
+
+    float       throttleInput;
+    const float throttleInputDecayRate = 0.6f;
+    const float throttleInputMin = 0.0f;
+    const float throttleInputMax = 1.0f;
+    const float throttleInputRate = 0.4f;
+
+    bool        stearingIsPressed;
+    float       steeringInput;
+    const float steeringDecayRate = 0.2f;
+    const float steeringInputMax = 9.0f;
+    const float steeringInputMin = -9.0f;
+    const float steeringInputRate = 9.95f;
+
+    float       angleToDestination;
+};
 
 struct HoverData
 {
@@ -65,6 +85,7 @@ struct VehicleData
 {   
     float                       altitude;
     DirectX::SimpleMath::Vector3 dimensions;
+    
     float                       dragCoefficient;
     float                       frontalArea;
     float                       hitPoints;
@@ -87,6 +108,8 @@ struct VehicleData
     Utility::Torque             impactTorque;
     DirectX::SimpleMath::Vector3 testForce;
     HoverData                    hoverData;
+    NpcControlInput              controlInput;
+    DirectX::SimpleMath::Vector3 playerPos;
 };
 
 struct VehicleStruct
@@ -94,6 +117,7 @@ struct VehicleStruct
     VehicleData                 vehicleData;
     Environment                 const* environment;
     NPCModel                    npcModel;
+    
 };
 
 class NPCVehicle
@@ -107,6 +131,10 @@ public:
     void InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
+
+    DirectX::SimpleMath::Vector3 GetForward() { return m_vehicleStruct00.vehicleData.forward; };
+    const float GetMaxTurnRate() { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
+    
     static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
@@ -122,6 +150,8 @@ public:
 
     void SetCollisionVal(const bool aIsCollisionTrue);
     
+    void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
+
     void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
 
 private:
@@ -129,10 +159,7 @@ private:
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
-    static void InitializeNPCData(VehicleData& aVehicleData, 
-        const DirectX::SimpleMath::Vector3 aHeading, 
-        const DirectX::SimpleMath::Vector3 aPosition, 
-        const NPCType aNPCType, Environment const* aEnvironment);
+
     static void InitializeNPCStruct(VehicleStruct& aVehicleStruct,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition,
@@ -147,6 +174,7 @@ private:
 
     void UpdateAlignment();
     Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
+    void UpdateControlInput();
     void UpdateNPCModel(const double aTimeDelta);
     void UpdateHardPoints();
 
@@ -158,5 +186,6 @@ private:
 
     //VehicleData m_vehicleData;
     VehicleStruct m_vehicleStruct00;
+    //Vehicle const* m_player;
 };
 

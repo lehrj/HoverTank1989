@@ -549,7 +549,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     float time = float(aTimer.GetTotalSeconds());
     UpdateInput(aTimer);
 
-    m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
+    m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
     m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
     m_camera->UpdateCamera(aTimer);
     m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());

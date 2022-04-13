@@ -72,8 +72,12 @@ void NPCController::SetNPCEnvironment(Environment const* aEnvironment)
     m_environment = aEnvironment;
 }
 
-void NPCController::UpdateNPCController(const double aTimeDelta)
+void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta)
 {
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        m_npcVec[i]->UpdatePlayerPos(aPlayerPos);
+    }
     UpdateNPCs(aTimeDelta);
 }
 

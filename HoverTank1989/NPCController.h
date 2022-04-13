@@ -2,6 +2,7 @@
 //#include "pch.h"
 #include "NPCVehicle.h"
 //#include "FireControl.h"
+//#include "Vehicle.h"
 
 class NPCController
 {
@@ -10,7 +11,7 @@ public:
     ~NPCController();
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment);
-    void UpdateNPCController(const double aTimeDelta);
+    void UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta);
     void DrawNPCs();
     
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);

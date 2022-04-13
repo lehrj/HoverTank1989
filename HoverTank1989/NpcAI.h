@@ -1,5 +1,6 @@
 #pragma once
 #include "Environment.h"
+//#include "Vehicle.h"
 
 class NPCVehicle;
 
@@ -9,6 +10,8 @@ public:
     NpcAI();
     NpcAI(const NPCVehicle* aOwner);
     ~NpcAI();
+
+    float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);
 
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
     void InitializeAI(Environment const* aEnvironment);
@@ -35,5 +38,6 @@ private:
     //a pointer to the owner of this instance
     NPCVehicle const* m_npcOwner;
     Environment const* m_environment;
+    //Vehicle const* m_player;
 };
 
