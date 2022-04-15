@@ -36,6 +36,14 @@ public:
         DirectX::SimpleMath::Vector3 waypointPos;
         float                        waypointRadius;
     };
+    
+    static Waypoint CreateWaypoint(const DirectX::SimpleMath::Vector3 aPos, const float aRadius)
+    {
+        Waypoint wp;
+        wp.waypointPos = aPos;
+        wp.waypointRadius = aRadius;
+        return wp;
+    }
 
     struct WayPath
     {
@@ -51,6 +59,37 @@ public:
         aWayPath.targetNode = 0;
         aWayPath.wayPath.clear();
         aWayPath.isPathLooped = false;
+    }
+
+    static Waypoint GetWaypointFromPath(WayPath& aWayPath)
+    {
+        Waypoint wp;
+        wp.waypointPos = aWayPath.wayPath[aWayPath.targetNode].waypointPos;
+        wp.waypointRadius = aWayPath.wayPath[aWayPath.targetNode].waypointRadius;
+        return wp;
+    }
+
+    static void IncrementWayPath(WayPath& aWayPath)
+    {
+        if (aWayPath.targetNode < aWayPath.nodeCount - 1)
+        {
+            aWayPath.targetNode++;
+        }
+        else if (aWayPath.targetNode == aWayPath.nodeCount - 1 && aWayPath.isPathLooped == true)
+        {
+            aWayPath.targetNode = 0;
+        }
+        else
+        {
+            // leave target node as last node
+            // add error checking
+        }
+    }
+
+    static void PushWaypointToPath(WayPath& aWayPath, Waypoint aWaypoint)
+    {
+        aWayPath.wayPath.push_back(aWaypoint);
+        aWayPath.nodeCount++;
     }
 
     template<typename T>

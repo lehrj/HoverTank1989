@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "NPCController.h"
-
+#include "Vehicle.h"
 
 NPCController::NPCController()
 {
@@ -26,7 +26,7 @@ NPCController::~NPCController()
 void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition)
 {
     NPCVehicle* newNPC = new NPCVehicle;
-    newNPC->InitializeNPCVehicle2(aContext, aHeading, aPosition, m_environment);
+    newNPC->InitializeNPCVehicle2(aContext, aHeading, aPosition, m_environment, m_player);
     newNPC->SetDebugData(m_debugData);
     m_npcVec.push_back(newNPC);
 }
@@ -70,6 +70,11 @@ void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 void NPCController::SetNPCEnvironment(Environment const* aEnvironment)
 {
     m_environment = aEnvironment;
+}
+
+void NPCController::SetPlayer(Vehicle const* aVehicle)
+{
+    m_player = aVehicle;
 }
 
 void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta)

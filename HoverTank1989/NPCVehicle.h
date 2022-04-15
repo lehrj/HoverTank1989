@@ -33,7 +33,7 @@ struct HoverData
     const float hoverRangeLower = 0.5f;
     const float hoverRangeMid = 1.0f;
     const float hoverRangeUpper = 3.0f;
-    const float forwardThrustMax = 5000.0f;
+    const float forwardThrustMax = 500.0f;
     float forwardThrust;
     DirectX::SimpleMath::Vector3    hoverLiftMax;
     DirectX::SimpleMath::Vector3    hoverLiftNeutralWithGrav;
@@ -130,10 +130,14 @@ public:
 
     void InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
-        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, Vehicle const* aPlayer);
 
-    DirectX::SimpleMath::Vector3 GetForward() { return m_vehicleStruct00.vehicleData.forward; };
-    const float GetMaxTurnRate() { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
+    DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
+    DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
+    DirectX::SimpleMath::Vector3 GetUp() const { return m_vehicleStruct00.vehicleData.up; };
+    DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
+
+    float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
     
     static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,

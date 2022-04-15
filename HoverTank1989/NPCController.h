@@ -4,6 +4,8 @@
 //#include "FireControl.h"
 //#include "Vehicle.h"
 
+class Vehicle;
+
 class NPCController
 {
 public:
@@ -17,7 +19,7 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
 
     void SetNPCEnvironment(Environment const* aEnvironment);
-
+    void SetPlayer(Vehicle const* aVehicle);
 
     void AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, 
@@ -32,6 +34,7 @@ public:
 
 private:
     Environment const* m_environment;
+    Vehicle const* m_player;
     std::shared_ptr<DebugData> m_debugData;
 
     std::vector<VehicleData*> m_npcVec2;

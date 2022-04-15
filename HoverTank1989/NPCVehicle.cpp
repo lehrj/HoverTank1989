@@ -181,7 +181,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.dragCoefficient = 0.5f;
     aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 9.5f);
-    aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(14.0f, 14.0f, 14.0f);
+    aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
     // to do update when transisioned from sphere to box
     //aVehicleStruct.vehicleData.collisionBox.Radius = aVehicleStruct.vehicleData.dimensions.x;
     aVehicleStruct.vehicleData.collisionBox.Extents = aVehicleStruct.vehicleData.dimensions * 0.5f;
@@ -256,14 +256,14 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 }
 
 void NPCVehicle::InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
-    const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment)
+    const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, Vehicle const* aPlayer)
 {
     //InitializeNPCData(m_vehicleData, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     //InitializeNPCModel(aContext, m_vehicleData.npcModel);
     m_environment = aEnvironment;
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.dimensions);
-    m_npcAI->InitializeAI(aEnvironment);
+    m_npcAI->InitializeAI(aEnvironment, aPlayer);
 }
 
 void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
@@ -487,6 +487,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     }
     turnTestTorque.magnitude = m_vehicleStruct00.vehicleData.controlInput.steeringInput;
 
+
     DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (turnTestTorque.axis * turnTestTorque.magnitude);
     float torqueMag = impactTorque.magnitude + gravTorque.magnitude + turnTestTorque.magnitude;
     Utility::Torque updatedTorque;
@@ -517,6 +518,22 @@ void NPCVehicle::UpdateControlInput()
     {
         m_vehicleStruct00.vehicleData.controlInput.steeringInput = updatedYaw;
     }
+
+    // velocity
+    float absAngleToDest = abs(m_vehicleStruct00.vehicleData.controlInput.angleToDestination);
+    float rawThrottleInput = m_npcAI->GetThrottleInput();
+    float modThrottleInput = rawThrottleInput - absAngleToDest;
+    if (modThrottleInput < 0.0f)
+    {
+        m_vehicleStruct00.vehicleData.controlInput.throttleInput = 0.0f;
+    }
+    else
+    {
+        m_vehicleStruct00.vehicleData.controlInput.throttleInput = modThrottleInput;
+    }
+
+    //m_vehicleStruct00.vehicleData.controlInput.throttleInput = m_npcAI->GetThrottleInput();
+    m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
 }
 
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
@@ -557,13 +574,20 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     //CalculateSelfRightingTorque();
 
     m_vehicleStruct00.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
-
+    /*
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, .0f));
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.forward, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, .0f));
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.right, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+    */
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInput();
+
+
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(200.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(200.0f, 3.0f, 100.0f), DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, 3.0f, 100.0f), DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)

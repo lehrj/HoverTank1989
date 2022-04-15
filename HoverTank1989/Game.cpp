@@ -40,6 +40,7 @@ Game::Game() noexcept(false)
     m_npcController = new NPCController();
     m_npcController->SetNPCEnvironment(m_environment);
     m_npcController->SetDebugData(m_debugData);
+    m_npcController->SetPlayer(m_vehicle);
     //m_vehicle->SetDebugData(m_debugData);
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
@@ -121,7 +122,7 @@ void Game::Initialize(HWND window, int width, int height)
     
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f));
 
-    /*
+    
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 50.0f));
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
@@ -135,10 +136,10 @@ void Game::Initialize(HWND window, int width, int height)
     
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
-    */
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
+    
 
     // testing new terrain map
     m_terrainVector.clear();
@@ -1156,7 +1157,7 @@ void Game::Render()
 
     m_spriteBatch->Begin();
 
-    DrawDebugDataUI();
+    //DrawDebugDataUI();
 
     m_spriteBatch->End();
 
@@ -1347,13 +1348,9 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexPositionNormalColor>(device, m_effect4.get(), m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch4 = std::make_unique<PrimitiveBatch<VertexPositionNormalColor>>(context);
 
-    
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
     m_model = Model::CreateFromCMO(device, L"cup.cmo", *m_fxFactory);
     m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
-
-    int testBreak = 0;
-    testBreak++;
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
