@@ -121,6 +121,9 @@ private:
     std::unique_ptr<DirectX::Model> m_model;
     std::unique_ptr<DirectX::Model> m_modelTank01;
 
+    DirectX::ModelBone::TransformArray m_drawBones;
+    DirectX::ModelBone::TransformArray m_animBones;
+
     Camera* m_camera;   
     Environment* m_environment;
     Lighting* m_lighting;

@@ -1110,10 +1110,11 @@ void Game::Render()
     //m_model->Draw(context, *m_states, modelWorld0, m_camera->GetViewMatrix(), m_proj);
 
     DirectX::SimpleMath::Matrix modelWorld1 = DirectX::SimpleMath::Matrix::Identity;
-    modelWorld1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 5.0f, 10.0f));
-    //modelWorld1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.021f, 0.021f, 0.021f));
-    //m_modelTank01->Draw(context, *m_states, modelWorld1, m_camera->GetViewMatrix(), m_proj);
-   
+    //modelWorld1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 5.0f, 10.0f));
+    modelWorld1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(6.021f, 6.021f, 6.021f));
+    modelWorld1 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
+    m_modelTank01->Draw(context, *m_states, modelWorld1, m_camera->GetViewMatrix(), m_proj);
+    
     m_batch->Begin();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1350,7 +1351,18 @@ void Game::CreateDeviceDependentResources()
 
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
     m_model = Model::CreateFromCMO(device, L"cup.cmo", *m_fxFactory);
-    m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
+    //m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
+    //m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
+
+    size_t animsOffset;
+    m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo",
+        *m_fxFactory,
+        ModelLoader_CounterClockwise | ModelLoader_IncludeBones,
+        &animsOffset);
+
+    const size_t nbones = m_modelTank01->bones.size();
+    m_drawBones = ModelBone::MakeArray(nbones);
+    m_animBones = ModelBone::MakeArray(nbones);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.

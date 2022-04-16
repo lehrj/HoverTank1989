@@ -274,6 +274,12 @@
     <None Include="HoverTank01.cmo" />
     <None Include="HoverTank01.fbx" />
     <None Include="HoverTank01.mtl" />
+    <None Include="HoverTankBarrel01.cmo" />
+    <None Include="HoverTankBarrel01.mtl" />
+    <None Include="HoverTankBody01.cmo" />
+    <None Include="HoverTankBody01.mtl" />
+    <None Include="HoverTankTurret01.cmo" />
+    <None Include="HoverTankTurret01.mtl" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
