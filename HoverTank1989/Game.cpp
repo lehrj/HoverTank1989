@@ -43,6 +43,9 @@ Game::Game() noexcept(false)
     m_npcController->SetPlayer(m_vehicle);
     //m_vehicle->SetDebugData(m_debugData);
 
+    m_modelController = std::make_unique<ModelController>();
+
+
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
@@ -1110,16 +1113,38 @@ void Game::Render()
     //m_model->Draw(context, *m_states, modelWorld0, m_camera->GetViewMatrix(), m_proj);
 
     DirectX::SimpleMath::Matrix modelWorld1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix modelWorldBody01 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix modelWorldTurret01 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix modelWorldBarrel01 = DirectX::SimpleMath::Matrix::Identity;
     //modelWorld1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0, 5.0f, 10.0f));
-    modelWorld1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(6.021f, 6.021f, 6.021f));
+    modelWorld1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
     modelWorld1 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
-    m_modelTank01->Draw(context, *m_states, modelWorld1, m_camera->GetViewMatrix(), m_proj);
-    
+    //m_modelTank01->Draw(context, *m_states, modelWorld1, m_camera->GetViewMatrix(), m_proj);
+    DirectX::SimpleMath::Matrix bodyRoll = DirectX::SimpleMath::Matrix::CreateRotationZ(cos(m_timer.GetTotalSeconds()) * 0.4f);
+    modelWorldBody01 *= bodyRoll;
+    //modelWorldBody01 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.01f, 1.01f, 1.01f));
+    m_modelTankBody01->Draw(context, *m_states, modelWorldBody01, m_camera->GetViewMatrix(), m_proj);
+    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.0f, 1.6f, 0.3f);
+    modelWorldTurret01 *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
+    modelWorldTurret01 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
+    modelWorldTurret01 *= bodyRoll;
+    m_modelTankTurret01->Draw(context, *m_states, modelWorldTurret01, m_camera->GetViewMatrix(), m_proj);
+
+    DirectX::SimpleMath::Vector3 barrelTrans = turretTrans;
+    barrelTrans.y += -0.2f;
+    barrelTrans.z += -1.85f;
+    //modelWorldBarrel01 *= DirectX::SimpleMath::Matrix::CreateRotationX(cos(m_timer.GetTotalSeconds()) * 0.2f);
+    modelWorldBarrel01 *= DirectX::SimpleMath::Matrix::CreateTranslation(barrelTrans);
+    modelWorldBarrel01 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
+    modelWorldBarrel01 *= bodyRoll;
+    //m_modelTankBarrel01->Draw(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+
     m_batch->Begin();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
+        //m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
     }
@@ -1352,8 +1377,18 @@ void Game::CreateDeviceDependentResources()
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
     m_model = Model::CreateFromCMO(device, L"cup.cmo", *m_fxFactory);
     //m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
-    //m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
+    m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
+    m_modelTankBody01 = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
+    m_modelTankTurret01 = Model::CreateFromCMO(device, L"HoverTankTurret02.cmo", *m_fxFactory);
+    m_modelTankBarrel01 = Model::CreateFromCMO(device, L"HoverTankBarrel02.cmo", *m_fxFactory);
 
+    m_modelTest = Model::CreateFromCMO(device, L"HoverTankBarrel02.cmo", *m_fxFactory);
+    //Model testModel = m_modelTankBody01;
+    //testModel.
+    //= Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
+    m_modelController->InitModel2(m_modelTest);
+
+    /*
     size_t animsOffset;
     m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo",
         *m_fxFactory,
@@ -1363,6 +1398,7 @@ void Game::CreateDeviceDependentResources()
     const size_t nbones = m_modelTank01->bones.size();
     m_drawBones = ModelBone::MakeArray(nbones);
     m_animBones = ModelBone::MakeArray(nbones);
+    */
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -1444,6 +1480,9 @@ void Game::OnDeviceLost()
     m_fxFactory.reset();
     m_model.reset();
     m_modelTank01.reset();
+    m_modelTankBody01.reset();
+    m_modelTankTurret01.reset();
+    m_modelTankBarrel01.reset();
 
     m_raster.Reset(); // anti-aliased lines
     m_states.reset();

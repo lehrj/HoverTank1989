@@ -31,6 +31,7 @@
     <ClInclude Include="NPCController.h" />
     <ClInclude Include="DebugData.h" />
     <ClInclude Include="NpcAI.h" />
+    <ClInclude Include="ModelController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -49,6 +50,7 @@
     <ClCompile Include="NPCController.cpp" />
     <ClCompile Include="DebugData.cpp" />
     <ClCompile Include="NpcAI.cpp" />
+    <ClCompile Include="ModelController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

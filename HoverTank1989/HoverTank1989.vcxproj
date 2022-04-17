@@ -185,6 +185,7 @@
     <ClInclude Include="FireControl.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Lighting.h" />
+    <ClInclude Include="ModelController.h" />
     <ClInclude Include="NpcAI.h" />
     <ClInclude Include="NPCController.h" />
     <ClInclude Include="NPCVehicle.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ModelController.cpp" />
     <ClCompile Include="NpcAI.cpp" />
     <ClCompile Include="NPCController.cpp" />
     <ClCompile Include="NPCVehicle.cpp" />
