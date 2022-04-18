@@ -44,7 +44,7 @@ Game::Game() noexcept(false)
     //m_vehicle->SetDebugData(m_debugData);
 
     m_modelController = std::make_unique<ModelController>();
-
+    m_modelController->SetDebugData(m_debugData);
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
@@ -567,6 +567,19 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect->SetView(viewMatrix);
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
+
+    DirectX::SimpleMath::Matrix alignment = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(0.0, 0.0, 10.0);
+    float totalTime = float(aTimer.GetTotalSeconds());
+    float turretYaw = cos(totalTime);
+    //float barrelPitch = 0.0f;//cos(totalTime);
+    float barrelPitch = cos(totalTime) * 0.3f;
+    turretYaw = totalTime;
+    //turretYaw = Utility::ToRadians(0.0);
+    barrelPitch = Utility::ToRadians(90.0);
+
+    //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), barrelPitch, turretYaw);
+    m_modelController->UpdatePlayerModel(alignment, pos, barrelPitch, turretYaw);
 }
 #pragma endregion
 
@@ -1123,12 +1136,12 @@ void Game::Render()
     DirectX::SimpleMath::Matrix bodyRoll = DirectX::SimpleMath::Matrix::CreateRotationZ(cos(m_timer.GetTotalSeconds()) * 0.4f);
     modelWorldBody01 *= bodyRoll;
     //modelWorldBody01 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.01f, 1.01f, 1.01f));
-    m_modelTankBody01->Draw(context, *m_states, modelWorldBody01, m_camera->GetViewMatrix(), m_proj);
+    //m_modelTankBody01->Draw(context, *m_states, modelWorldBody01, m_camera->GetViewMatrix(), m_proj);
     DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.0f, 1.6f, 0.3f);
     modelWorldTurret01 *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
     modelWorldTurret01 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
     modelWorldTurret01 *= bodyRoll;
-    m_modelTankTurret01->Draw(context, *m_states, modelWorldTurret01, m_camera->GetViewMatrix(), m_proj);
+    //m_modelTankTurret01->Draw(context, *m_states, modelWorldTurret01, m_camera->GetViewMatrix(), m_proj);
 
     DirectX::SimpleMath::Vector3 barrelTrans = turretTrans;
     barrelTrans.y += -0.2f;
@@ -1138,8 +1151,10 @@ void Game::Render()
     modelWorldBarrel01 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
     modelWorldBarrel01 *= bodyRoll;
     //m_modelTankBarrel01->Draw(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
-    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    //m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
 
+    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    
     m_batch->Begin();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1388,6 +1403,12 @@ void Game::CreateDeviceDependentResources()
     //= Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
     m_modelController->InitModel2(m_modelTest);
 
+    m_modelTestBarrel = Model::CreateFromCMO(device, L"HoverTankBarrel02.cmo", *m_fxFactory);
+    m_modelTestBody = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
+    m_modelTestTurret = Model::CreateFromCMO(device, L"HoverTankTurret02.cmo", *m_fxFactory);
+
+    m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret);
+
     /*
     size_t animsOffset;
     m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo",
@@ -1483,6 +1504,12 @@ void Game::OnDeviceLost()
     m_modelTankBody01.reset();
     m_modelTankTurret01.reset();
     m_modelTankBarrel01.reset();
+
+    m_modelTest.reset();
+    m_modelTestBarrel.reset();
+    m_modelTestBody.reset();
+    m_modelTestTurret.reset();
+
 
     m_raster.Reset(); // anti-aliased lines
     m_states.reset();

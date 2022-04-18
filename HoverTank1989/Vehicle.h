@@ -793,7 +793,7 @@ public:
     double GetTime() { return m_heli.time; };
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_heli.up; };
     DirectX::SimpleMath::Matrix GetVehicleOrientation() const { return m_heli.cameraOrientation; };
-
+    DirectX::SimpleMath::Matrix GetAlignment() const { return m_heli.alignment; };
 
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_heli.q.velocity; };
   

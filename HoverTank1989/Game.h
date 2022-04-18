@@ -126,6 +126,9 @@ private:
     std::unique_ptr<DirectX::Model> m_modelTankBarrel01;
 
     std::shared_ptr<DirectX::Model> m_modelTest;
+    std::shared_ptr<DirectX::Model> m_modelTestBarrel;
+    std::shared_ptr<DirectX::Model> m_modelTestBody;
+    std::shared_ptr<DirectX::Model> m_modelTestTurret;
 
     DirectX::ModelBone::TransformArray m_drawBones;
     DirectX::ModelBone::TransformArray m_animBones;
