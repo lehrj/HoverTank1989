@@ -15,7 +15,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     //aModel.turretModel->Draw(deviceContext, states, aWorld, aView, aProjection);
 
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
-    //aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
+    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
     aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
 }
 
@@ -24,70 +24,46 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.barrelModel = aBarrel;
     aModel.bodyModel = aBody;
     aModel.turretModel = aTurret;
-  
+
     aModel.bodyLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.bodyLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
+    aModel.bodyLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
     aModel.bodyWorldMatrix = aModel.bodyLocalMatrix;
 
     aModel.turretLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
-    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(1.9f, 1.6f, 0.0f);
+    aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
+    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5);
+    aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
+    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
     aModel.turretWorldMatrix = aModel.turretLocalMatrix;
 
     aModel.barrelLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
-    //aModel.barrelLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
-    /*
-    DirectX::SimpleMath::Vector3 barrelTrans = turretTrans;
-    barrelTrans.y += -0.2f;
-    barrelTrans.x += 1.85f;
-    */
-    DirectX::SimpleMath::Vector3 barrelTrans = DirectX::SimpleMath::Vector3(1.85f, -0.0f, 0.0f);
+    aModel.barrelTransMatrix = aModel.turretLocalMatrix;
+    DirectX::SimpleMath::Vector3 barrelTrans = DirectX::SimpleMath::Vector3(0.0f, -0.2f, -1.85f);
     aModel.barrelLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(barrelTrans);
+    aModel.barrelLocalMatrix *= aModel.turretOffSetMatrix;
     aModel.barrelWorldMatrix = aModel.barrelLocalMatrix;
 }
 
 void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)
 {
-    //DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_heli.q.position, -m_heli.right, m_heli.up);
     DirectX::SimpleMath::Matrix updateMat = aAlignment;
     updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(aPos);
     aModel.bodyWorldMatrix = aModel.bodyLocalMatrix;
     aModel.bodyWorldMatrix *= updateMat;
 
     DirectX::SimpleMath::Matrix turretMat = DirectX::SimpleMath::Matrix::CreateRotationY(aTurretRotation);
-    aModel.turretWorldMatrix = turretMat;
+    aModel.turretWorldMatrix = aModel.turretOffSetMatrix;
+    aModel.turretWorldMatrix *= turretMat;
     aModel.turretWorldMatrix *= aModel.turretLocalMatrix;
     aModel.turretWorldMatrix *= updateMat;
 
     DirectX::SimpleMath::Matrix barrelMat = DirectX::SimpleMath::Matrix::CreateRotationX(aBarrelPitch);
     aModel.barrelWorldMatrix = barrelMat;
-    aModel.barrelWorldMatrix *= aModel.turretLocalMatrix;
-
+    aModel.barrelWorldMatrix *= aModel.barrelLocalMatrix;
     aModel.barrelWorldMatrix *= turretMat;
-    aModel.barrelWorldMatrix = aModel.barrelLocalMatrix;
-    aModel.barrelWorldMatrix *= barrelMat;
-    aModel.barrelWorldMatrix *= turretMat;
-    aModel.barrelWorldMatrix *= updateMat;
-
-    DirectX::SimpleMath::Vector3 testPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Matrix testMat = aModel.barrelWorldMatrix;
-    //testMat.Translation(testPos);
-    DirectX::SimpleMath::Vector3 testPos2 = testPos;
-    DirectX::SimpleMath::Vector3 testPos3 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Quaternion testQuat;
-
-    testMat.Decompose(testPos, testQuat, testPos3);
-    //m_debugData->DebugPushTestLinePositionIndicator(testPos3, 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    //DirectX::SimpleMath::Matrix testMat2 = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(aTurretRotation, aBarrelPitch, 0.0f);
-    DirectX::SimpleMath::Matrix testMat2 = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(aTurretRotation, 0.0, aBarrelPitch);
-    DirectX::SimpleMath::Vector3 testAim = DirectX::SimpleMath::Vector3::UnitX;
-    testAim = DirectX::SimpleMath::Vector3::Transform(testAim, testMat2);
-    m_debugData->DebugPushTestLine(testPos3, testAim, 6.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    int testBreak = 0;
-    testBreak++;
-  
+    aModel.barrelWorldMatrix *= aModel.barrelTransMatrix; 
+    aModel.barrelWorldMatrix *= updateMat; 
 }
 
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)

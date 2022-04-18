@@ -9,12 +9,15 @@ struct TankModel
     DirectX::SimpleMath::Matrix barrelLocalMatrix;
     DirectX::SimpleMath::Matrix barrelWorldMatrix;
 
+    DirectX::SimpleMath::Matrix barrelTransMatrix;
+
     std::shared_ptr<DirectX::Model> bodyModel;
     DirectX::SimpleMath::Matrix bodyLocalMatrix;
     DirectX::SimpleMath::Matrix bodyWorldMatrix;
 
     std::shared_ptr<DirectX::Model> turretModel;
     DirectX::SimpleMath::Matrix turretLocalMatrix;
+    DirectX::SimpleMath::Matrix turretOffSetMatrix;
     DirectX::SimpleMath::Matrix turretWorldMatrix;
 
 };

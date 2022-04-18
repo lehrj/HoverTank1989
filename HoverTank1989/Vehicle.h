@@ -44,6 +44,16 @@ struct ControlInput
     const float yawPedalInputMax = 1.0f;
     const float yawPedalInputMin = -1.0f;
     const float yawPedalInputRate = 0.15f;
+
+    float weaponPitch;
+    const float weaponPitchInputRate = 0.7f;
+    const float weaponPitchMax = Utility::ToRadians(20.0f);
+    const float weaponPitchMin = Utility::ToRadians(-20.0f);
+
+    float turretYaw;
+    const float turretYawInputRate = 0.7f;
+    const float turretYawMax = Utility::ToRadians(110.0f);
+    const float turretYawMin = Utility::ToRadians(-110.0f);
 };
 
 struct Engine
@@ -767,6 +777,7 @@ public:
     std::vector<std::string> DebugGetUIVector() { return m_debugUIVector; };
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector4>> DebugGetTestLines() const { return m_debugLinesVec; };
     void DebugInputVelocityZero();
+    void DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawModel(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     //void DrawModel(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     //void DrawModel(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -797,6 +808,9 @@ public:
 
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_heli.q.velocity; };
   
+    float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
+    float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
+
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController);
     //void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
 
@@ -807,7 +821,10 @@ public:
     void InputDecay(const double aTimeDelta);
     void InputJet(const float aJetInput);
     void InputThrottle(const float aThrottleInput);
+    void InputTurretYaw(const float aTurretYawInput);
     void InputYawPedal(const float aYawInput);
+    void InputWeaponPitch(const float aPitchInput);
+    
 
     void Jump();
 

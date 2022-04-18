@@ -86,7 +86,7 @@ void Vehicle::DebugToggle()
 //void Vehicle::DrawModel(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 void Vehicle::DrawModel(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
-    m_fireControl->DrawProjectile(aView, aProj);
+    //m_fireControl->DrawProjectile(aView, aProj);
 
     DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::Identity;
     //testMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(0.0f, 10.0f, 5.0f), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
@@ -326,8 +326,11 @@ void Vehicle::DrawModel(const DirectX::SimpleMath::Matrix aView, const DirectX::
     //  tail rotor edge stripe 2
     m_heliModel.tailRotorEdgeStripe2Shape->Draw(m_heliModel.tailRotorEdgeStripe2Matrix1, aView, aProj, m_heliModel.rotorStripeAltColor);
     m_heliModel.tailRotorEdgeStripe2Shape->Draw(m_heliModel.tailRotorEdgeStripe2Matrix2, aView, aProj, m_heliModel.rotorStripeAltColor);
+}
 
-
+void Vehicle::DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
+{
+    m_fireControl->DrawProjectile(aView, aProj);
 }
 
 void Vehicle::InitializeEngine(Engine& aEngine)
@@ -358,6 +361,9 @@ void Vehicle::InitializeFlightControls(ControlInput& aInput)
     aInput.throttleInput = 0.0f;
     aInput.yawPedalInput = 0.0f;
     aInput.yawPedalIsPressed = false;
+
+    aInput.weaponPitch = 0.0f;
+    aInput.turretYaw = 0.0f;
 }
 
 //void Vehicle::InitializeModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, HeliData& aHeliData, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
@@ -2152,8 +2158,15 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.landingGearPos = m_heli.localLandingGearPos;
 
 
- 
+
     RepositionModelCordinates(posShift, m_heliModel);
+
+ 
+    //DirectX::SimpleMath::Vector3 muzzleTrans = DirectX::SimpleMath::Vector3(2.06307507, 3.95000005, 0.00000000);
+    DirectX::SimpleMath::Vector3 muzzleTrans = DirectX::SimpleMath::Vector3(0.3, 1.32, 0.0);
+    m_heli.weaponPos = DirectX::SimpleMath::Vector3::Zero;
+    m_heli.weaponPos = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponPos, DirectX::SimpleMath::Matrix::CreateTranslation(muzzleTrans));
+    m_heli.localWeaponPos = m_heli.weaponPos;
 
     m_fireControl = new FireControl();
     m_fireControl->InitializeFireControl(aContext, m_heli.localWeaponPos, m_heli.localWeaponDirection, m_environment);
@@ -2366,6 +2379,27 @@ void Vehicle::InputJet(const float aJetInput)
     }
 }
 
+void Vehicle::InputTurretYaw(const float aTurretYawInput)
+{
+    const float updatedTurretYaw = (aTurretYawInput * m_heli.controlInput.turretYawInputRate) + m_heli.controlInput.turretYaw;
+    if (updatedTurretYaw > m_heli.controlInput.turretYawMax)
+    {
+        m_heli.controlInput.turretYaw = m_heli.controlInput.turretYawMax;
+    }
+    else if (updatedTurretYaw < m_heli.controlInput.turretYawMin)
+    {
+        m_heli.controlInput.turretYaw = m_heli.controlInput.turretYawMin;
+    }
+    else if (updatedTurretYaw < m_heli.controlInput.inputDeadZone && updatedTurretYaw > -m_heli.controlInput.inputDeadZone)
+    {
+        m_heli.controlInput.turretYaw = 0.0f;
+    }
+    else
+    {
+        m_heli.controlInput.turretYaw = updatedTurretYaw;
+    }
+}
+
 void Vehicle::InputThrottle(const float aThrottleInput)
 {
     const float updatedThrottle = (aThrottleInput * m_heli.controlInput.throttleInputRate) + m_heli.controlInput.throttleInput;
@@ -2405,6 +2439,27 @@ void Vehicle::InputYawPedal(const float aYawInput)
     }
 
     testYawInput += aYawInput * testInputMod;
+}
+
+void Vehicle::InputWeaponPitch(const float aPitchInput)
+{
+    const float updatedPitch = (aPitchInput * m_heli.controlInput.weaponPitchInputRate) + m_heli.controlInput.weaponPitch;
+    if (updatedPitch > m_heli.controlInput.weaponPitchMax)
+    {
+        m_heli.controlInput.weaponPitch = m_heli.controlInput.weaponPitchMax;
+    }
+    else if (updatedPitch < m_heli.controlInput.weaponPitchMin)
+    {
+        m_heli.controlInput.weaponPitch = m_heli.controlInput.weaponPitchMin;
+    }
+    else if (updatedPitch < m_heli.controlInput.inputDeadZone && updatedPitch > -m_heli.controlInput.inputDeadZone)
+    {
+        m_heli.controlInput.weaponPitch = 0.0f;
+    }
+    else
+    {
+        m_heli.controlInput.weaponPitch = updatedPitch;
+    }
 }
 
 void Vehicle::Jump()
@@ -3935,12 +3990,29 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aHeli)
     m_heli.landingGearPos = m_heli.localLandingGearPos;
     m_heli.landingGearPos = DirectX::SimpleMath::Vector3::Transform(m_heli.localLandingGearPos, updateMat);
 
+    /*
     m_heli.weaponPos = m_heli.localWeaponPos;
     m_heli.weaponPos = DirectX::SimpleMath::Vector3::Transform(m_heli.localWeaponPos, updateMat);
 
     DirectX::SimpleMath::Matrix weaponMuzzleMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);    
     m_heli.weaponDirection = m_heli.localWeaponDirection;
     m_heli.weaponDirection = DirectX::SimpleMath::Vector3::Transform(m_heli.localWeaponDirection, weaponMuzzleMat);
+    */
+
+    // update with new model
+    DirectX::SimpleMath::Matrix yawMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_heli.controlInput.turretYaw);
+    DirectX::SimpleMath::Matrix pitchMat = DirectX::SimpleMath::Matrix::CreateRotationZ(m_heli.controlInput.weaponPitch);
+    DirectX::SimpleMath::Matrix tempMat = yawMat * pitchMat;
+
+    m_heli.weaponPos = m_heli.localWeaponPos;
+    m_heli.weaponPos = DirectX::SimpleMath::Vector3::Transform(m_heli.localWeaponPos, updateMat);
+
+
+    DirectX::SimpleMath::Matrix weaponMuzzleMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
+    m_heli.weaponDirection = m_heli.localWeaponDirection;
+
+    m_heli.weaponDirection = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponDirection, tempMat);
+    m_heli.weaponDirection = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponDirection, weaponMuzzleMat);
 }
 
 void Vehicle::UpdateResistance()

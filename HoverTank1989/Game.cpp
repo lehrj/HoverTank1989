@@ -569,17 +569,18 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect3->SetView(viewMatrix);
 
     DirectX::SimpleMath::Matrix alignment = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(0.0, 0.0, 10.0);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(0.0, 0.0, 0.0);
     float totalTime = float(aTimer.GetTotalSeconds());
     float turretYaw = cos(totalTime);
     //float barrelPitch = 0.0f;//cos(totalTime);
     float barrelPitch = cos(totalTime) * 0.3f;
     turretYaw = totalTime;
     //turretYaw = Utility::ToRadians(0.0);
-    barrelPitch = Utility::ToRadians(90.0);
+    //barrelPitch = Utility::ToRadians(0.0);
 
     //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), barrelPitch, turretYaw);
-    m_modelController->UpdatePlayerModel(alignment, pos, barrelPitch, turretYaw);
+    m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
+    //m_modelController->UpdatePlayerModel(alignment, pos, barrelPitch, turretYaw);
 }
 #pragma endregion
 
@@ -738,7 +739,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            
         }
     }
     if (kb.Right)
@@ -1003,7 +1004,30 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->SpinCounterClockwise(static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_camera->SpinCounterClockwise(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
+        }
+    }
+    if (kb.L)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            
+            m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
+        }
+    }
+    if (kb.OemPeriod)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
+        }
+    }
+    if (kb.OemComma)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Z)
@@ -1160,6 +1184,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         //m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
+        m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
     }
@@ -1182,8 +1207,8 @@ void Game::Render()
 
     m_batch2->Begin();
 
-
     DrawTerrainNew(m_terrainGamePlay);
+    
     m_batch2->End();
     // m_batch2 end
 
