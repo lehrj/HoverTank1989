@@ -4,7 +4,7 @@
 #include "Utility.h"
 #include "Environment.h"
 #include "FireControl.h"
-
+#include "ModelController.h"
 
 struct ControlInput
 {
@@ -832,6 +832,7 @@ public:
 
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetEnvironment(Environment* aEnviron);
+    void SetModelController(std::shared_ptr<ModelController> aModelController);
 
     void ToggleLandingGearState();
 
@@ -893,6 +894,8 @@ private:
     HeliModel                       m_heliModel;
     FireControl*                    m_fireControl;
     std::shared_ptr<DebugData>      m_debugData;
+
+    std::shared_ptr<ModelController>      m_modelController;
 
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);

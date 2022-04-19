@@ -2829,6 +2829,11 @@ void Vehicle::SetEnvironment(Environment* aEnviron)
     m_environment = aEnviron;
 }
 
+void Vehicle::SetModelController(std::shared_ptr<ModelController> aModelController)
+{
+    m_modelController = aModelController;
+}
+
 void Vehicle::ToggleLandingGearState()
 {
     if (m_heli.landingGear.currentState == LandingGear::LandingGearState::LANDINGGEARSTATE_DOWN || m_heli.landingGear.currentState == LandingGear::LandingGearState::LANDINGGEARSTATE_DESCENDING)
@@ -4013,6 +4018,10 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aHeli)
 
     m_heli.weaponDirection = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponDirection, tempMat);
     m_heli.weaponDirection = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponDirection, weaponMuzzleMat);
+
+    m_heli.weaponDirection = m_modelController->GetWeaponDir();
+    m_heli.weaponPos = m_modelController->GetWeaponPos();
+    int testBreak = 0;
 }
 
 void Vehicle::UpdateResistance()

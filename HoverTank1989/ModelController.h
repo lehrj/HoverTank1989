@@ -8,7 +8,6 @@ struct TankModel
     std::shared_ptr<DirectX::Model> barrelModel;
     DirectX::SimpleMath::Matrix barrelLocalMatrix;
     DirectX::SimpleMath::Matrix barrelWorldMatrix;
-
     DirectX::SimpleMath::Matrix barrelTransMatrix;
 
     std::shared_ptr<DirectX::Model> bodyModel;
@@ -20,6 +19,10 @@ struct TankModel
     DirectX::SimpleMath::Matrix turretOffSetMatrix;
     DirectX::SimpleMath::Matrix turretWorldMatrix;
 
+    DirectX::SimpleMath::Vector3 weaponPosLocal;
+    DirectX::SimpleMath::Vector3 weaponPosWorld;
+    DirectX::SimpleMath::Vector3 weaponDirLocal;
+    DirectX::SimpleMath::Vector3 weaponDirWorld;
 };
 
 
@@ -34,19 +37,21 @@ public:
     
     
     //ID3D11Device
-    void InitializeModelController(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, std::unique_ptr<DirectX::IEffectFactory> aFxFactory);
+    //void InitializeModelController(Microsoft::WRL::ComPtr<ID3D11Device> aDevice, std::unique_ptr<DirectX::IEffectFactory> aFxFactory);
     //void InitializeModelController(std::unique_ptr<DX::DeviceResources> aDevice, std::unique_ptr<DirectX::IEffectFactory>& aFxFactory);
     //std::unique_ptr<DX::DeviceResources>
 
-    void InitModel(std::unique_ptr<DirectX::Model> aModel);
-    void InitModel2(std::shared_ptr<DirectX::Model> aModel);
-    void InitModel3(std::shared_ptr<DirectX::Model> aModel);
-    void InitModelData(DirectX::Model aModel);
+    //void InitModel(std::unique_ptr<DirectX::Model> aModel);
+    //void InitModel2(std::shared_ptr<DirectX::Model> aModel);
+    //void InitModel3(std::shared_ptr<DirectX::Model> aModel);
+    //void InitModelData(DirectX::Model aModel);
 
     void DrawModel(ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aWorld, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection);
 
-    void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
+    DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };
+    DirectX::SimpleMath::Vector3 GetWeaponDir() const { return m_playerModel.weaponDirWorld; };
 
+    void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation);
 
 

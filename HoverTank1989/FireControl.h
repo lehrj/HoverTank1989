@@ -39,6 +39,7 @@ struct AmmoData
     float   dragCoefficient;
     float   gravity;
     float   launchVelocity;
+    float   length;
     float   mass;
     float   surfaceArea;
     float   radius;

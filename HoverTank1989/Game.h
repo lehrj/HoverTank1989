@@ -138,7 +138,7 @@ private:
     Lighting* m_lighting;
     NPCController* m_npcController;
     Vehicle* m_vehicle;
-    std::unique_ptr<ModelController> m_modelController;
+    std::shared_ptr<ModelController> m_modelController;
 
     std::shared_ptr<DebugData> m_debugData;
 

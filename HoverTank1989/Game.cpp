@@ -43,8 +43,9 @@ Game::Game() noexcept(false)
     m_npcController->SetPlayer(m_vehicle);
     //m_vehicle->SetDebugData(m_debugData);
 
-    m_modelController = std::make_unique<ModelController>();
+    m_modelController = std::make_shared<ModelController>();
     m_modelController->SetDebugData(m_debugData);
+    m_vehicle->SetModelController(m_modelController);
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
@@ -1426,7 +1427,7 @@ void Game::CreateDeviceDependentResources()
     //Model testModel = m_modelTankBody01;
     //testModel.
     //= Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
-    m_modelController->InitModel2(m_modelTest);
+    //m_modelController->InitModel2(m_modelTest);
 
     m_modelTestBarrel = Model::CreateFromCMO(device, L"HoverTankBarrel02.cmo", *m_fxFactory);
     m_modelTestBody = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
