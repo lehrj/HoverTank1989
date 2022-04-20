@@ -1067,8 +1067,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_camera->SetSpinCameraStart();
-            m_vehicle->ToggleLandingGearState();
+
         }
     }
     if (m_kbStateTracker.pressed.Space)
@@ -1136,7 +1135,6 @@ void Game::Render()
     // TODO: Add your rendering code here.
     context;
 
-
     context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
     context->OMSetDepthStencilState(m_states->DepthNone(), 0);
     context->RSSetState(m_states->CullNone());
@@ -1184,7 +1182,6 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //m_vehicle->DrawModel(m_camera->GetViewMatrix(), m_proj);
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
