@@ -206,12 +206,13 @@ struct HeliData
     DirectX::SimpleMath::Vector3 testAccelVec = DirectX::SimpleMath::Vector3::Zero;
 
     ControlInput  controlInput;
-    Engine        engine;
+    //Engine        engine;
     LandingGear   landingGear;
     Rotor         mainRotor;
     Rotor         tailRotor;
 };
 
+/*
 struct HeliModel
 {
     // Colors for model parts
@@ -767,6 +768,7 @@ struct HeliModel
     DirectX::SimpleMath::Matrix tailRotorTranslationMatrix1;
     DirectX::SimpleMath::Matrix tailRotorTranslationMatrix2;
 };
+*/
 
 class Vehicle
 {
@@ -891,7 +893,7 @@ private:
     
     Environment const*              m_environment;
     HeliData                        m_heli;
-    HeliModel                       m_heliModel;
+    //HeliModel                       m_heliModel;
     FireControl*                    m_fireControl;
     std::shared_ptr<DebugData>      m_debugData;
 
