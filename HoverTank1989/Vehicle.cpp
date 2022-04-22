@@ -7,6 +7,20 @@ Vehicle::~Vehicle()
     delete m_fireControl;
 }
 
+DirectX::SimpleMath::Vector3 Vehicle::CalcHoverDriveForce(const struct HeliData& aHeli)
+{
+    float zForce = -m_heli.controlInput.cyclicInputRoll;
+    float xForce = m_heli.controlInput.cyclicInputPitch;
+    DirectX::SimpleMath::Vector3 driveForce = DirectX::SimpleMath::Vector3::Zero;
+    m_debugData->DebugPushUILineDecimalNumber(std::string("m_heli.controlInput.cyclicInputPitch = "), m_heli.controlInput.cyclicInputPitch, std::string(""));
+    driveForce.x = (xForce * m_heli.hoverDriveMagMax) / m_heli.mass;
+    driveForce.z = zForce * m_heli.hoverDriveMagMax;
+    driveForce = DirectX::SimpleMath::Vector3::Transform(driveForce, m_heli.alignment);
+
+
+    return driveForce;
+}
+
 float Vehicle::CalculateLiftCoefficient(const float aAngle)
 {
     //const float angleMax = m_heli.mainRotor.pitchAngleMax;
@@ -609,6 +623,12 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     rotorForce = UpdateRotorForceRunge();
     rotorForce *= (m_heli.mainRotor.bladeVec[0].liftForcePerSecond + m_heli.mainRotor.bladeVec[1].liftForcePerSecond);
 
+    // testing new controls
+    rotorForce = m_heli.hoverFloat;
+    rotorForce = DirectX::SimpleMath::Vector3::Transform(rotorForce, m_heli.alignment);
+    rotorForce = rotorForce * m_heli.mass;
+
+
     //  Compute the constants that define the
     //  torque curve line.
     // ToDo once physics equations are in place after testing model is finished
@@ -632,6 +652,8 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     //DirectX::SimpleMath::Vector3 gravForce = m_heli.gravity * static_cast<float>(aTimeDelta);
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+
+    velocityUpdate += CalcHoverDriveForce(m_heli);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
     velocityUpdate += damperForce;
@@ -980,6 +1002,11 @@ DirectX::SimpleMath::Vector3 Vehicle::GetDamperForce(const float aAltitude, cons
 DirectX::SimpleMath::Vector3 Vehicle::GetHoverLift(const DirectX::SimpleMath::Vector3 aLiftForce, const float aAltitude)
 {
     DirectX::SimpleMath::Vector3 liftForce = aLiftForce;
+
+    m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.x = "), liftForce.x, std::string(""));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.y = "), liftForce.y, std::string(""));
+    m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.z = "), liftForce.z, std::string(""));
+
     const float lowerCurveBound = m_heli.hoverRangeLower;
     const float midCurveBound = m_heli.hoverRangeMid;
     const float upperCurveBound = m_heli.hoverRangeUpper;

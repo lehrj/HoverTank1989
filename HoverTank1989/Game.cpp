@@ -1190,7 +1190,7 @@ void Game::Render()
 
     m_spriteBatch->Begin();
 
-    //DrawDebugDataUI();
+    DrawDebugDataUI();
 
     m_spriteBatch->End();
 

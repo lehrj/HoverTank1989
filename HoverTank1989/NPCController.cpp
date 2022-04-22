@@ -89,16 +89,12 @@ void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlay
 void NPCController::UpdateNPCs(const double aTimeDelta)
 {
     m_testTimer += static_cast<float>(aTimeDelta);
-
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        if (i == 7)
-        {
-            m_npcVec[i]->UpdateTestForce(DirectX::SimpleMath::Vector3::Zero, cos(m_testTimer * 0.5f));
-        }
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
 
+    // collisions, 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         for (unsigned int j = 0; j < m_npcVec.size(); ++j)

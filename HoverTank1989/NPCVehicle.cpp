@@ -292,7 +292,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, airResistance, 15.f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, .0f));
     
     float airRLength = airResistance.Length();
-    m_debugData->DebugPushUILineDecimalNumber(std::string("airRLength = "), airRLength, std::string(""));
+    
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
     velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
@@ -330,8 +330,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
 
     //velocityUpdate += gravForce;
 
-    m_debugData->DebugPushUILineDecimalNumber(std::string("impactVelocity"), m_vehicleStruct00.vehicleData.impactForce.impactVelocity.Length(), std::string(""));
-    
+
     Utility::Torque pendTorque;
     pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     pendTorque.magnitude = 0.0f;
@@ -538,20 +537,13 @@ void NPCVehicle::UpdateControlInput()
 
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
 {  
-    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.position.x"), m_vehicleStruct00.vehicleData.q.position.x, std::string(""));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.position.y"), m_vehicleStruct00.vehicleData.q.position.y, std::string(""));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.position.z"), m_vehicleStruct00.vehicleData.q.position.z, std::string(""));
-
-    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.velocity.x"), m_vehicleStruct00.vehicleData.q.velocity.x, std::string(""));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.velocity.y"), m_vehicleStruct00.vehicleData.q.velocity.y, std::string(""));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("m_vehicleStruct00.vehicleData.q.velocity.z"), m_vehicleStruct00.vehicleData.q.velocity.z, std::string(""));
-    
-    m_debugData->DebugPushUILineDecimalNumber(std::string("Altitude = "), m_vehicleStruct00.vehicleData.altitude, std::string(""));
-
     m_vehicleStruct00.vehicleData.terrainHightAtPos = m_vehicleStruct00.environment->GetTerrainHeightAtPos(m_vehicleStruct00.vehicleData.q.position);
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.hardPoints.basePos.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
     m_vehicleStruct00.vehicleData.terrainNormal = m_vehicleStruct00.environment->GetTerrainNormal(m_vehicleStruct00.vehicleData.q.position);
-    //m_vehicleStruct00.vehicleData.terrainNormal = m_environment->GetTerrainNormal(m_vehicleStruct00.vehicleData.q.position);
+
+    m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+    UpdateControlInput();
+
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
@@ -574,15 +566,11 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     //CalculateSelfRightingTorque();
 
     m_vehicleStruct00.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
-    /*
-    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, .0f));
-    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.forward, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, .0f));
-    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.right, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
-    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
-    */
-    m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-    UpdateControlInput();
 
+    //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+    //UpdateControlInput();
+
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
 
     m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(200.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
     m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(200.0f, 3.0f, 100.0f), DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
@@ -617,6 +605,5 @@ void NPCVehicle::UpdateHardPoints()
 
 void NPCVehicle::UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal)
 {
-    //m_vehicleStruct00.vehicleData.testForce += aForce;
     m_vehicleStruct00.vehicleData.testForce += m_vehicleStruct00.vehicleData.forward * aVal * 10.0f;
 }

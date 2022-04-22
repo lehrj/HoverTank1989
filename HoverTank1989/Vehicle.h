@@ -55,6 +55,7 @@ struct ControlInput
     const float turretYawMin = Utility::ToRadians(-110.0f);
 };
 
+/*
 struct LandingGear
 {
     const float angleAtDown = Utility::ToRadians(-110.0f);
@@ -71,6 +72,7 @@ struct LandingGear
     };
     LandingGearState currentState = LandingGearState::LANDINGGEARSTATE_DOWN;
 };
+*/
 
 struct Motion
 {
@@ -134,6 +136,12 @@ struct Rotor
 
 struct HeliData
 {
+    // test data for new controls
+    const DirectX::SimpleMath::Vector3 hoverFloat = DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f);
+    DirectX::SimpleMath::Vector3 hoverDriveNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    float hoverDriveMag = 0.0f;
+    const float hoverDriveMagMax = 10000000.0f;
+
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
     const float hoverRangeLower = 0.5f;
@@ -259,6 +267,9 @@ public:
     void TestFire();
     void TestFire2();
 private:
+
+    DirectX::SimpleMath::Vector3 CalcHoverDriveForce(const struct HeliData& aHeli);
+
     float CalculateLiftCoefficient(const float aAngle);
 
     void InitializeFlightControls(ControlInput& aInput);
