@@ -10,10 +10,14 @@ Vehicle::~Vehicle()
 DirectX::SimpleMath::Vector3 Vehicle::CalcHoverDriveForce(const struct HeliData& aHeli)
 {
     float zForce = -m_heli.controlInput.cyclicInputRoll;
+    zForce = zForce / m_heli.controlInput.cyclicInputMax;
     float xForce = m_heli.controlInput.cyclicInputPitch;
+    xForce = xForce / m_heli.controlInput.cyclicInputMax;
     DirectX::SimpleMath::Vector3 driveForce = DirectX::SimpleMath::Vector3::Zero;
-    m_debugData->DebugPushUILineDecimalNumber(std::string("m_heli.controlInput.cyclicInputPitch = "), m_heli.controlInput.cyclicInputPitch, std::string(""));
-    driveForce.x = (xForce * m_heli.hoverDriveMagMax) / m_heli.mass;
+    //m_debugData->DebugPushUILineDecimalNumber(std::string("m_heli.controlInput.cyclicInputPitch = "), m_heli.controlInput.cyclicInputPitch, std::string(""));
+    //driveForce.x = (xForce * m_heli.hoverDriveMagMax) / m_heli.mass;
+    //driveForce.z = zForce * m_heli.hoverDriveMagMax / m_heli.mass;
+    driveForce.x = xForce * m_heli.hoverDriveMagMax;
     driveForce.z = zForce * m_heli.hoverDriveMagMax;
     driveForce = DirectX::SimpleMath::Vector3::Transform(driveForce, m_heli.alignment);
 
@@ -628,28 +632,15 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     rotorForce = DirectX::SimpleMath::Vector3::Transform(rotorForce, m_heli.alignment);
     rotorForce = rotorForce * m_heli.mass;
 
-
-    //  Compute the constants that define the
-    //  torque curve line.
-    // ToDo once physics equations are in place after testing model is finished
-
-    //  Compute the velocity magnitude. The 1.0e-8 term
-    //  ensures there won't be a divide by zero later on
-    //  if all of the velocity components are zero.
-    float v = sqrt(newQ.velocity.Length() * newQ.velocity.Length()) + 1.0e-8f;
-
     //  Compute the total drag force.
     float airDensity = aHeli->airDensity;
     float dragCoefficient = aHeli->dragCoefficient;
     float frontSurfaceArea = aHeli->area;
-    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
-
+    float velocity = newQ.velocity.Length();
+    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
     DirectX::SimpleMath::Vector3 velocityNorm = m_heli.q.velocity;
     velocityNorm.Normalize();
-
-    //DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (static_cast<float>(aTimeDelta) * (-frontDragResistance / mass));
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
-    //DirectX::SimpleMath::Vector3 gravForce = m_heli.gravity * static_cast<float>(aTimeDelta);
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
@@ -657,9 +648,6 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
     velocityUpdate += damperForce;
-    //velocityUpdate += GetHoverGravForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
-    //GetAntiMassGravityForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass)
-    //DirectX::SimpleMath::Vector3 gravForce = GetAntiMassGravityForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
     DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
 
     velocityUpdate += gravForce;
@@ -667,7 +655,6 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     velocityUpdate += GetJetThrust(aHeli->forward, aHeli->controlInput.jetInput, aHeli->jetThrustMax);
     rotorForce = GetHoverLift(rotorForce, GetAltitude());
     velocityUpdate += rotorForce;
-    //DebugPushUILineDecimalNumber("rotorForce : ", rotorForce.Length(), "");
     velocityUpdate += GetSlopeForce(aHeli->terrainNormal, GetAltitude(), aHeli->groundNormalForceRange);
     Utility::Torque pendTorque;
     pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
@@ -1003,9 +990,9 @@ DirectX::SimpleMath::Vector3 Vehicle::GetHoverLift(const DirectX::SimpleMath::Ve
 {
     DirectX::SimpleMath::Vector3 liftForce = aLiftForce;
 
-    m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.x = "), liftForce.x, std::string(""));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.y = "), liftForce.y, std::string(""));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.z = "), liftForce.z, std::string(""));
+    //m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.x = "), liftForce.x, std::string(""));
+    //m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.y = "), liftForce.y, std::string(""));
+    //m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.z = "), liftForce.z, std::string(""));
 
     const float lowerCurveBound = m_heli.hoverRangeLower;
     const float midCurveBound = m_heli.hoverRangeMid;

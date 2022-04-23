@@ -69,7 +69,7 @@ private:
     std::unique_ptr<DirectX::Model> m_testModel;
     std::shared_ptr<DirectX::Model> m_testModel2;
     std::unique_ptr<DirectX::Model> m_testModel3;
-    DirectX::Model m_modelData;
+    //DirectX::Model m_modelData;
 
 };
 

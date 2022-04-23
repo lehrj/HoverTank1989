@@ -341,9 +341,7 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
     DirectX::SimpleMath::Vector3 gravForce = DirectX::SimpleMath::Vector3(0.0f, -9.8f, 0.0f);
     velocityUpdate += gravForce;
 
-    
-    float mass = 0.5f;
-  
+    const float mass = aProjectile->collisionData.mass;
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;

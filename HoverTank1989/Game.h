@@ -1,26 +1,24 @@
-//
-// Game.h
-//
-
 #pragma once
 
-#include "DeviceResources.h"
-#include "StepTimer.h"
-
-#include "Keyboard.h"
-#include "AnimatedTexture.h"
-#include "SpriteSheet.h"
-#include "WICTextureLoader.h"
-#include "Camera.h"
-#include "Environment.h"
-#include "Lighting.h"
-#include "sounds.h"
-#include "Vehicle.h"
-#include "NPCController.h"
-//#include "FireControl.h"
-#include "DebugData.h"
-#include "ModelController.h"
 #include <sstream>
+#include "AnimatedTexture.h"
+#include "DeviceResources.h"
+#include "Keyboard.h"
+#include "sounds.h"
+#include "SpriteSheet.h"
+#include "StepTimer.h"
+#include "WICTextureLoader.h"
+
+#include "Camera.h"
+#include "DebugData.h"
+#include "Environment.h"
+//#include "FireControl.h"
+#include "Lighting.h"
+#include "NPCController.h"
+#include "ModelController.h"
+#include "Vehicle.h"
+#include "VehicleBase.h"
+
 
 
 // A basic game implementation that creates a D3D11 device and

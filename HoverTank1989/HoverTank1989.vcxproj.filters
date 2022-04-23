@@ -32,6 +32,7 @@
     <ClInclude Include="DebugData.h" />
     <ClInclude Include="NpcAI.h" />
     <ClInclude Include="ModelController.h" />
+    <ClInclude Include="VehicleBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -51,6 +52,7 @@
     <ClCompile Include="DebugData.cpp" />
     <ClCompile Include="NpcAI.cpp" />
     <ClCompile Include="ModelController.cpp" />
+    <ClCompile Include="VehicleBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

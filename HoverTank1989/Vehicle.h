@@ -140,7 +140,7 @@ struct HeliData
     const DirectX::SimpleMath::Vector3 hoverFloat = DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f);
     DirectX::SimpleMath::Vector3 hoverDriveNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     float hoverDriveMag = 0.0f;
-    const float hoverDriveMagMax = 10000000.0f;
+    const float hoverDriveMagMax = 100000.0f;
 
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;

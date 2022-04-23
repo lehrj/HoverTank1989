@@ -273,14 +273,13 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     MotionNPC newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-
-    float v = sqrt(newQ.velocity.Length() * newQ.velocity.Length()) + 1.0e-8f;
-
+   
     //  Compute the total drag force
-    float airDensity = 1.225f; // ToDo rework to pull data from environment
-    float dragCoefficient = aVehicle->dragCoefficient;
-    float frontSurfaceArea = aVehicle->frontalArea;
-    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
+    const float v = newQ.velocity.Length();
+    const float airDensity = 1.225f; // ToDo rework to pull data from environment
+    const float dragCoefficient = aVehicle->dragCoefficient;
+    const float frontSurfaceArea = aVehicle->frontalArea;
+    const float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
     float mass = 1.0f;
     //mass = aVehicle->mass;
     DirectX::SimpleMath::Vector3 velocityNorm = aVehicle->q.velocity;
@@ -329,7 +328,6 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
 
     //velocityUpdate += gravForce;
-
 
     Utility::Torque pendTorque;
     pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;

@@ -60,6 +60,7 @@ struct ProjectileData
     //AmmoData& const ammo;
     ProjectileMotion q;
     DirectX::BoundingSphere collisionSphere;
+    
     Utility::CollisionData  collisionData;
     bool isCollisionTrue;
     float time;

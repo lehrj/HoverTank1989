@@ -195,6 +195,7 @@
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="VehicleBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -217,6 +218,7 @@
     </ClCompile>
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="Vehicle.cpp" />
+    <ClCompile Include="VehicleBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
