@@ -17,8 +17,8 @@
 #include "NPCController.h"
 #include "ModelController.h"
 #include "Vehicle.h"
-#include "VehicleBase.h"
-
+#include "VehiclePlayer.h"
+#include "VehicleNPC.h"
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -137,8 +137,11 @@ private:
     NPCController* m_npcController;
     Vehicle* m_vehicle;
     std::shared_ptr<ModelController> m_modelController;
-
     std::shared_ptr<DebugData> m_debugData;
+
+    std::shared_ptr<VehiclePlayer> m_testPlayer;
+    std::shared_ptr<VehicleNPC> m_testNPC;
+
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;
     using VertexType2 = DirectX::VertexPositionNormalColor;

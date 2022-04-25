@@ -47,6 +47,9 @@ Game::Game() noexcept(false)
     m_modelController->SetDebugData(m_debugData);
     m_vehicle->SetModelController(m_modelController);
 
+    m_testPlayer = std::make_shared<VehiclePlayer>();
+    m_testNPC = std::make_shared<VehicleNPC>();
+
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
@@ -144,6 +147,8 @@ void Game::Initialize(HWND window, int width, int height)
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
     
+    m_testPlayer->InitializePlayer(context, heading, DirectX::SimpleMath::Vector3::Zero, m_environment, m_debugData);
+    m_testNPC->InitializeNPC(context, heading, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f), m_environment, m_debugData);
 
     // testing new terrain map
     m_terrainVector.clear();
@@ -569,19 +574,11 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
 
-    DirectX::SimpleMath::Matrix alignment = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(0.0, 0.0, 0.0);
-    float totalTime = float(aTimer.GetTotalSeconds());
-    float turretYaw = cos(totalTime);
-    //float barrelPitch = 0.0f;//cos(totalTime);
-    float barrelPitch = cos(totalTime) * 0.3f;
-    turretYaw = totalTime;
-    //turretYaw = Utility::ToRadians(0.0);
-    //barrelPitch = Utility::ToRadians(0.0);
-
-    //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), barrelPitch, turretYaw);
     m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
-    //m_modelController->UpdatePlayerModel(alignment, pos, barrelPitch, turretYaw);
+
+    m_testPlayer->Update(aTimer.GetElapsedSeconds());
+    m_testNPC->UpdateNPC(aTimer.GetElapsedSeconds());
+    //m_testNPC->Update();
 }
 #pragma endregion
 
