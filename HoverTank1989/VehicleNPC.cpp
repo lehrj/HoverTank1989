@@ -13,13 +13,11 @@ void VehicleNPC::InitializeNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCon
 
 void VehicleNPC::Update(const double aTimeDelta)
 {
-    VehicleBase::Update(aTimeDelta);
-    int number = 1;
-    number++;
+    //VehicleBase::Update(aTimeDelta);
+
 }
 
 void VehicleNPC::UpdateNPC(const double aTimeDelta)
 {
-    int number = 2;
-    number++;
+
 }

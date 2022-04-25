@@ -2,14 +2,15 @@
 #include "pch.h"
 #include "Utility.h"
 #include "Environment.h"
+#include "DebugData.h"
 #include "FireControl.h"
-#include "ModelController.h"
+//#include "ModelController.h"
 
 
 class VehicleBase
 {
 public:
-    void Update(const double aTimeDelta);
+    
     
 protected:
     struct Motion1
@@ -56,7 +57,7 @@ protected:
         DirectX::SimpleMath::Vector3 right;
         DirectX::SimpleMath::Vector3 up;
 
-        VehicleHardPoints           hardPoints;
+        //VehicleHardPoints           hardPoints;
 
         DirectX::SimpleMath::Vector3 updateVelocityForce;
         Utility::Torque              updateTorqueForce;
@@ -76,7 +77,7 @@ protected:
     struct Vehicle
     {
         VehicleData vehicleData;
-        Environment const* environment;
+        //Environment const* environment;
     };
 
 public:
@@ -85,16 +86,14 @@ public:
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, std::shared_ptr<DebugData> aDebugPtr, Vehicle& aVehicle);
-
+    void Update(const double aTimeDelta, VehicleData& aVehicleData);
 protected:
     void InitializeVehicleData(const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Vehicle& aVehicle);
 
 private:
 
-    void RightHandSide(struct Vehicle* aVehicle, Motion1* aQ, Motion1* aDeltaQ, double aTimeDelta, float aQScale, Motion1* aDQ);
-    void RightHandSideTest(struct VehicleData* aVehicle, Motion1* aQ, Motion1* aDeltaQ, double aTimeDelta, float aQScale, Motion1* aDQ);
-    void RungeKutta4(struct Vehicle* aVehicle, double aTimeDelta);
-    void RungeKutta4Test(struct VehicleData* aVehicle, double aTimeDelta);
+    void RightHandSide(struct VehicleData* aVehicle, Motion1* aQ, Motion1* aDeltaQ, double aTimeDelta, float aQScale, Motion1* aDQ);
+    void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
     Vehicle m_vehicle;

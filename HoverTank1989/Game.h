@@ -19,6 +19,7 @@
 #include "Vehicle.h"
 #include "VehiclePlayer.h"
 #include "VehicleNPC.h"
+#include "VehicleHover.h"
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -139,9 +140,8 @@ private:
     std::shared_ptr<ModelController> m_modelController;
     std::shared_ptr<DebugData> m_debugData;
 
-    std::shared_ptr<VehiclePlayer> m_testPlayer;
-    std::shared_ptr<VehicleNPC> m_testNPC;
 
+    std::shared_ptr<VehicleHover> m_testVehicleHover;
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;
     using VertexType2 = DirectX::VertexPositionNormalColor;

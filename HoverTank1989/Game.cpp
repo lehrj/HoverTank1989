@@ -47,8 +47,7 @@ Game::Game() noexcept(false)
     m_modelController->SetDebugData(m_debugData);
     m_vehicle->SetModelController(m_modelController);
 
-    m_testPlayer = std::make_shared<VehiclePlayer>();
-    m_testNPC = std::make_shared<VehicleNPC>();
+    m_testVehicleHover = std::make_shared<VehicleHover>();
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
@@ -147,8 +146,7 @@ void Game::Initialize(HWND window, int width, int height)
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
     
-    m_testPlayer->InitializePlayer(context, heading, DirectX::SimpleMath::Vector3::Zero, m_environment, m_debugData);
-    m_testNPC->InitializeNPC(context, heading, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f), m_environment, m_debugData);
+    m_testVehicleHover->InitializeVehicleHover(context, heading, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f), m_environment, m_debugData);
 
     // testing new terrain map
     m_terrainVector.clear();
@@ -576,9 +574,7 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
 
-    m_testPlayer->Update(aTimer.GetElapsedSeconds());
-    m_testNPC->UpdateNPC(aTimer.GetElapsedSeconds());
-    //m_testNPC->Update();
+
 }
 #pragma endregion
 

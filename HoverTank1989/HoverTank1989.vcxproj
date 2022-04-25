@@ -196,8 +196,7 @@
     <ClInclude Include="Utility.h" />
     <ClInclude Include="Vehicle.h" />
     <ClInclude Include="VehicleBase.h" />
-    <ClInclude Include="VehicleNPC.h" />
-    <ClInclude Include="VehiclePlayer.h" />
+    <ClInclude Include="VehicleHover.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -221,8 +220,7 @@
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="Vehicle.cpp" />
     <ClCompile Include="VehicleBase.cpp" />
-    <ClCompile Include="VehicleNPC.cpp" />
-    <ClCompile Include="VehiclePlayer.cpp" />
+    <ClCompile Include="VehicleHover.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

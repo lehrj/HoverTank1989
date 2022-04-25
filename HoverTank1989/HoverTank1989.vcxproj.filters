@@ -33,8 +33,7 @@
     <ClInclude Include="NpcAI.h" />
     <ClInclude Include="ModelController.h" />
     <ClInclude Include="VehicleBase.h" />
-    <ClInclude Include="VehiclePlayer.h" />
-    <ClInclude Include="VehicleNPC.h" />
+    <ClInclude Include="VehicleHover.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -55,8 +54,7 @@
     <ClCompile Include="NpcAI.cpp" />
     <ClCompile Include="ModelController.cpp" />
     <ClCompile Include="VehicleBase.cpp" />
-    <ClCompile Include="VehiclePlayer.cpp" />
-    <ClCompile Include="VehicleNPC.cpp" />
+    <ClCompile Include="VehicleHover.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
