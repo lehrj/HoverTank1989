@@ -1,6 +1,7 @@
 #pragma once
 #include "Environment.h"
 //#include "Vehicle.h"
+#include "DebugData.h"
 
 class NPCVehicle;
 class Vehicle;
@@ -16,7 +17,7 @@ public:
     float GetThrottleInput();
 
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
-    void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer);
+    void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr);
 
     void UpdateAI(const float aTimeStep);
 
@@ -32,11 +33,35 @@ private:
         BEHAVIOR_SEPARATION = 0x00040,
         BEHAVIOR_WALL_AVOIDANCE = 0x00200,
     };
+
+    enum class Behavior
+    {
+       
+    };
+
+    struct DestinationTargets
+    {
+        DirectX::SimpleMath::Vector3 currentTarget;
+        DirectX::SimpleMath::Vector3 seekTarget;
+        DirectX::SimpleMath::Vector3 wanderTarget;
+        float wanderDistance;
+        float wanderJitter;
+        float wanderRadius;
+    };
+
     //binary flags to indicate whether or not a behavior should be active
     int           m_iFlags;
     BehaviorType m_behaviorType;
 
     void CreateWayPath();
+
+    void InitializeDestinationTargets();
+
+    DirectX::SimpleMath::Vector3 Wander();
+
+    DestinationTargets m_destinationTargets;
+
+  
 
     Utility::Waypoint m_currentWaypoint;
     Utility::WayPath m_currentWayPath;
@@ -45,6 +70,8 @@ private:
     NPCVehicle const* m_npcOwner;
     Vehicle const* m_playerVehicle;
     Environment const* m_environment;
+
+    std::shared_ptr<DebugData> m_debugData;
 
 };
 

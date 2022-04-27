@@ -96,10 +96,12 @@ float NpcAI::GetThrottleInput()
     }   
 }
 
-void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer)
+void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr)
 {
+    m_debugData = aDebugPtr;
     m_environment = aEnvironment;
     m_playerVehicle = aPlayer;
+    InitializeDestinationTargets();
     m_currentWaypoint.waypointPos = DirectX::SimpleMath::Vector3::Zero;
     m_currentWaypoint.waypointRadius = 1.0f;
     Utility::ClearWayPath(m_currentWayPath);
@@ -107,6 +109,17 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer
     CreateWayPath();
 
     m_currentDestination = DirectX::SimpleMath::Vector3::Zero;
+}
+
+void NpcAI::InitializeDestinationTargets()
+{
+    m_destinationTargets.currentTarget = DirectX::SimpleMath::Vector3::Zero;
+    m_destinationTargets.seekTarget = DirectX::SimpleMath::Vector3::Zero;
+    m_destinationTargets.wanderTarget = DirectX::SimpleMath::Vector3::Zero;
+
+    m_destinationTargets.wanderDistance = 100.0f;
+    m_destinationTargets.wanderJitter = 0.001f;
+    m_destinationTargets.wanderRadius = 10.0f;
 }
 
 void NpcAI::UpdateAI(const float aTimeStep)
@@ -119,7 +132,23 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
     m_currentWaypoint = Utility::GetWaypointFromPath(m_currentWayPath);
     m_currentDestination = m_currentWaypoint.waypointPos;
+    //m_currentDestination = Wander();
 
+    m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+}
 
+DirectX::SimpleMath::Vector3 NpcAI::Wander()
+{
+    float xWander = Utility::RandomClamped() * m_destinationTargets.wanderJitter;
+    float zWander = Utility::RandomClamped() * m_destinationTargets.wanderJitter; 
+    m_destinationTargets.wanderTarget == DirectX::SimpleMath::Vector3(xWander, m_npcOwner->GetHeight(), zWander);
+    m_destinationTargets.wanderTarget.Normalize();
+
+    m_destinationTargets.wanderTarget *= m_destinationTargets.wanderRadius;
+    DirectX::SimpleMath::Vector3 localTarget = m_destinationTargets.wanderTarget + DirectX::SimpleMath::Vector3(m_destinationTargets.wanderDistance, 0.0f, 0.0f);
     
+    DirectX::SimpleMath::Matrix worldMat = DirectX::SimpleMath::Matrix::CreateWorld(m_npcOwner->GetPos(), m_npcOwner->GetForward(), m_npcOwner->GetUp());
+    DirectX::SimpleMath::Vector3 worldTarget = DirectX::SimpleMath::Vector3::Transform(localTarget, worldMat);
+
+    return worldTarget - m_npcOwner->GetPos();
 }

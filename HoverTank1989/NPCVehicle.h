@@ -132,6 +132,7 @@ public:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, Vehicle const* aPlayer);
 
+    float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
     DirectX::SimpleMath::Vector3 GetUp() const { return m_vehicleStruct00.vehicleData.up; };

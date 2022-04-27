@@ -92,6 +92,16 @@ public:
         aWayPath.nodeCount++;
     }
 
+    static float RandFloat()
+    {
+        return ((rand()) / (RAND_MAX + 1.0));
+    }
+
+    static float RandomClamped()
+    {
+        return RandFloat() - RandFloat();
+    }
+
     template<typename T>
     static T WrapAngle(T aTheta) noexcept
     {

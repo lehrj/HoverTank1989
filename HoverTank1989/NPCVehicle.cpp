@@ -263,7 +263,7 @@ void NPCVehicle::InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContex
     m_environment = aEnvironment;
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.dimensions);
-    m_npcAI->InitializeAI(aEnvironment, aPlayer);
+    m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData);
 }
 
 void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
