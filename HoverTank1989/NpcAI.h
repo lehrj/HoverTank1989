@@ -14,6 +14,8 @@ public:
     ~NpcAI();
 
     float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);
+    DirectX::SimpleMath::Vector3 GetVecToDestination();
+
     float GetThrottleInput();
 
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }

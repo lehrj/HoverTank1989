@@ -22,8 +22,11 @@ struct NpcControlInput
     const float steeringInputMax = 9.0f;
     const float steeringInputMin = -9.0f;
     const float steeringInputRate = 9.95f;
+    DirectX::SimpleMath::Vector3 steeringVec;
 
     float       angleToDestination;
+
+    
 };
 
 struct HoverData
@@ -163,6 +166,7 @@ private:
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
+    DirectX::SimpleMath::Vector3 GetOmniDirectionalThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
 
     static void InitializeNPCStruct(VehicleStruct& aVehicleStruct,

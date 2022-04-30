@@ -68,6 +68,13 @@ float NpcAI::GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, Direct
     return angle;
 }
 
+DirectX::SimpleMath::Vector3 NpcAI::GetVecToDestination()
+{
+    DirectX::SimpleMath::Vector3 vecToDestination = m_currentDestination - m_npcOwner->GetPos();
+    vecToDestination.Normalize();
+    return vecToDestination;
+}
+
 float NpcAI::GetThrottleInput()
 {
     DirectX::SimpleMath::Vector3 pos = m_npcOwner->GetPos();

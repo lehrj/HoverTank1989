@@ -167,6 +167,12 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetHoverLift(const VehicleData& aVehicl
     return liftForce;
 }
 
+DirectX::SimpleMath::Vector3 NPCVehicle::GetOmniDirectionalThrust(const VehicleData& aVehicleData)
+{
+    DirectX::SimpleMath::Vector3 thrustUpdate = aVehicleData.controlInput.steeringVec * (aVehicleData.hoverData.forwardThrust);
+    return thrustUpdate;
+}
+
 void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     const DirectX::SimpleMath::Vector3 aHeading,
     const DirectX::SimpleMath::Vector3 aPosition,
@@ -234,6 +240,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.controlInput.throttleInput = 0.0f;
     aVehicleStruct.vehicleData.controlInput.stearingIsPressed = false;
     aVehicleStruct.vehicleData.controlInput.steeringInput = 0.0f;
+    aVehicleStruct.vehicleData.controlInput.steeringVec = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.controlInput.angleToDestination = 0.0f;
 
     aVehicleStruct.vehicleData.playerPos = DirectX::SimpleMath::Vector3::Zero;
@@ -295,7 +302,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
     velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
-    //velocityUpdate = aVehicle->testForce;
+    velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     if (aVehicle->altitude < 10.0f)
     {
@@ -495,6 +502,9 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
 
 void NPCVehicle::UpdateControlInput()
 {
+    m_vehicleStruct00.vehicleData.controlInput.steeringVec = m_npcAI->GetVecToDestination();
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.controlInput.steeringVec, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+
     m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
 
     const float yawInput = m_vehicleStruct00.vehicleData.controlInput.angleToDestination;
