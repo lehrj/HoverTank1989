@@ -2,6 +2,7 @@
 #include "DeviceResources.h"
 #include "DebugData.h"
 #include "Utility.h"
+#include <memory>
 
 struct TankModel
 {
@@ -70,6 +71,7 @@ private:
     std::shared_ptr<DirectX::Model> m_testModel2;
     std::unique_ptr<DirectX::Model> m_testModel3;
     //DirectX::Model m_modelData;
+
 
 };
 

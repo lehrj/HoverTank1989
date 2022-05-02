@@ -5,7 +5,7 @@
 class Utility
 {
 public:
-    Utility();
+    //Utility();
     static inline int GetNumericalPrecisionForUI() { return 2; }; // For setting the numerical precison displayed by UI
     static inline float GetPi() { return 3.1415926535897931; };
     static inline float ToDegrees(float r) { return r * 180.0f / GetPi(); };
@@ -200,6 +200,6 @@ public:
 
 private:
 
-    
+
 };
 

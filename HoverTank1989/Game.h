@@ -135,7 +135,10 @@ private:
     Camera* m_camera;   
     Environment* m_environment;
     Lighting* m_lighting;
-    NPCController* m_npcController;
+
+    //NPCController* m_npcController;
+    std::shared_ptr<NPCController> m_npcController;
+
     Vehicle* m_vehicle;
     std::shared_ptr<ModelController> m_modelController;
     std::shared_ptr<DebugData> m_debugData;

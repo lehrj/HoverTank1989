@@ -37,7 +37,9 @@ Game::Game() noexcept(false)
     m_camera->SetVehicleFocus(m_vehicle);
     m_camera->SetCameraEnvironment(m_environment);
 
-    m_npcController = new NPCController();
+    //m_npcController = new NPCController();
+    m_npcController = std::make_shared<NPCController>();
+
     m_npcController->SetNPCEnvironment(m_environment);
     m_npcController->SetDebugData(m_debugData);
     m_npcController->SetPlayer(m_vehicle);
@@ -126,19 +128,19 @@ void Game::Initialize(HWND window, int width, int height)
     const float rotation = 60.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
     
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), m_npcController);
 
     
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 50.0f));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 50.0f), m_npcController);
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f), m_npcController);
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, -10.0f));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, -10.0f), m_npcController);
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(30.0f, 3.0f, 60.0f));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(30.0f, 3.0f, 60.0f), m_npcController);
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, 35.0f));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, 35.0f), m_npcController);
     
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f));
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f)));
@@ -518,7 +520,7 @@ Game::~Game()
     delete m_camera;
     delete m_environment;
     delete m_lighting;
-    delete m_npcController;
+    //delete m_npcController;
     delete m_vehicle;
 
     

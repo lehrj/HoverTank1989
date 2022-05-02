@@ -81,7 +81,8 @@ public:
     void FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
-    void SetNPCController(NPCController* aNPCController);
+    //void SetNPCController(NPCController* aNPCController);
+    void SetNPCController(std::shared_ptr<NPCController> aNPCController);
     void UpdateProjectileVec(double aTimeDelta);
 private:
     void CheckCollisions();
@@ -97,7 +98,8 @@ private:
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
 
     Environment const* m_environment;
-    NPCController* m_npcController;
+    //NPCController* m_npcController;
+    std::shared_ptr<NPCController> m_npcController;
     std::shared_ptr<DebugData> m_debugData;
 
     LauncherData m_launcherData;

@@ -4,6 +4,8 @@
 #include "NpcAI.h"
 #include "Utility.h"
 
+class NPCController;
+
 
 struct NpcControlInput
 {
@@ -24,9 +26,7 @@ struct NpcControlInput
     const float steeringInputRate = 9.95f;
     DirectX::SimpleMath::Vector3 steeringVec;
 
-    float       angleToDestination;
-
-    
+    float       angleToDestination;   
 };
 
 struct HoverData
@@ -86,6 +86,7 @@ struct VehicleHardPoints
 
 struct VehicleData
 {   
+    unsigned int                id;
     float                       altitude;
     DirectX::SimpleMath::Vector3 dimensions;
     
@@ -108,7 +109,9 @@ struct VehicleData
     bool                        isCollisionTrue;
 
     Utility::ImpactForce        impactForce;
+    std::vector<Utility::ImpactForce> impactForceVec;
     Utility::Torque             impactTorque;
+    std::vector<Utility::Torque> impactTorqueVec;
     DirectX::SimpleMath::Vector3 testForce;
     HoverData                    hoverData;
     NpcControlInput              controlInput;
@@ -129,13 +132,17 @@ public:
     NPCVehicle();
 
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
+    void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
+
     void CalculateSelfRightingTorque();
 
     void InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
-        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, Vehicle const* aPlayer);
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, 
+        std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);
 
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
+    int GetID() const { return m_vehicleStruct00.vehicleData.id; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
     DirectX::SimpleMath::Vector3 GetUp() const { return m_vehicleStruct00.vehicleData.up; };
@@ -154,6 +161,9 @@ public:
     VehicleData GetVehicleData() {return m_vehicleStruct00.vehicleData; };
     const DirectX::BoundingBox& GetCollisionData() { return m_vehicleStruct00.vehicleData.collisionBox; };
 
+    void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
+    void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
+    
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
 
     void SetCollisionVal(const bool aIsCollisionTrue);
@@ -163,12 +173,16 @@ public:
     void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
 
 private:
+    bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
+
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
-    DirectX::SimpleMath::Vector3 GetOmniDirectionalThrust(const VehicleData& aVehicleData);
+    DirectX::SimpleMath::Vector3 GetImpactForceSum(const VehicleData& aVehicleData);
+    Utility::Torque GetImpactTorqueSum(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
-
+    DirectX::SimpleMath::Vector3 GetOmniDirectionalThrust(const VehicleData& aVehicleData);
+    
     static void InitializeNPCStruct(VehicleStruct& aVehicleStruct,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition,
@@ -184,14 +198,17 @@ private:
     void UpdateAlignment();
     Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
     void UpdateControlInput();
-    void UpdateNPCModel(const double aTimeDelta);
+    void UpdateForceTorqueVecs();
     void UpdateHardPoints();
+    void UpdateNPCModel(const double aTimeDelta);
+    
 
     Environment const* m_environment;
     
     std::shared_ptr<DebugData> m_debugData;
 
     std::unique_ptr<NpcAI> m_npcAI;
+    std::shared_ptr<NPCController> m_npcController;
 
     //VehicleData m_vehicleData;
     VehicleStruct m_vehicleStruct00;

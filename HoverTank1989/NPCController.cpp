@@ -5,7 +5,6 @@
 NPCController::NPCController()
 {
     m_npcVec.clear();
-    m_npcVec2.clear();
 }
 
 NPCController::~NPCController()
@@ -15,20 +14,13 @@ NPCController::~NPCController()
         delete p;
     }
     m_npcVec.clear();
-
-    for (auto p : m_npcVec2)
-    {
-        delete p;
-    }
-    m_npcVec2.clear();
 }
 
-void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition)
+void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, std::shared_ptr<NPCController> aNpcController)
 {
     NPCVehicle* newNPC = new NPCVehicle;
-    newNPC->SetDebugData(m_debugData);
-    newNPC->InitializeNPCVehicle2(aContext, aHeading, aPosition, m_environment, m_player);
-    
+    newNPC->SetDebugData(m_debugData);  
+    newNPC->InitializeNPCVehicle2(aContext, aHeading, aPosition, m_environment, aNpcController, m_player, GetUniqueID());
     m_npcVec.push_back(newNPC);
 }
 
@@ -57,8 +49,17 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
     }
 }
 
+unsigned int NPCController::GetUniqueID()
+{
+    const unsigned int idVal = m_nextUniqueID;
+    m_nextUniqueID++;
+    return idVal;
+}
+
 void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment)
 {
+    m_nextUniqueID = 0;
+    m_npcVec.clear();
     m_environment = aEnvironment;
     //AddNPC(NPCType::NPCTYPE_NPC00, const DirectX::SimpleMath::Vector3(10.0f, 2.0f, 0.0f));
 }
@@ -107,12 +108,14 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
 
                 if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
                 {
+                    
                     m_npcVec[i]->SetCollisionVal(true);
 
                     Utility::ImpactForce projectileForce;
                     projectileForce.impactMass = testV2.mass;
                     projectileForce.impactVelocity = testV2.q.velocity;
-                    m_npcVec[i]->CalculateImpactForce(projectileForce, testV1.collisionBox.Center);
+                    m_npcVec[i]->CalculateImpactForce2(projectileForce, testV1.collisionBox.Center);
+                    
                 }
             }
         }

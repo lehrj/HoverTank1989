@@ -211,7 +211,8 @@ void Vehicle::InitializeRotorBlades(HeliData& aHeliData)
     }
 }
 
-void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController)
+//void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController)
+void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController)
 {
     InitializeFlightControls(m_heli.controlInput);
 

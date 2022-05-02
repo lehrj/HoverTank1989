@@ -241,7 +241,8 @@ public:
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
     float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
 
-    void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController);
+    //void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController);
+    void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController);
 
     // helicopter functions
     void InputCollective(const float aCollectiveInput);

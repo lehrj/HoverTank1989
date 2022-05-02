@@ -385,7 +385,8 @@ void FireControl::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
     m_debugData = aDebugPtr;
 }
 
-void FireControl::SetNPCController(NPCController* aNPCController)
+//void FireControl::SetNPCController(NPCController* aNPCController)
+void FireControl::SetNPCController(std::shared_ptr<NPCController> aNPCController)
 {
     m_npcController = aNPCController;
 }
