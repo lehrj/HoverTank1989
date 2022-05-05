@@ -21,8 +21,8 @@ struct NpcControlInput
     bool        stearingIsPressed;
     float       steeringInput;
     const float steeringDecayRate = 0.2f;
-    const float steeringInputMax = 9.0f;
-    const float steeringInputMin = -9.0f;
+    const float steeringInputMax = 19.0f;
+    const float steeringInputMin = -19.0f;
     const float steeringInputRate = 9.95f;
     DirectX::SimpleMath::Vector3 steeringVec;
 
@@ -133,6 +133,7 @@ public:
 
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
+    void CalculateImpactForce3(const VehicleData& aVehicleHit);
 
     void CalculateSelfRightingTorque();
 

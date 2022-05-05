@@ -27,6 +27,7 @@ void NpcAI::CreateWayPath()
     DirectX::SimpleMath::Vector3 pos;
     Utility::Waypoint wp;
 
+    /*
     pos = DirectX::SimpleMath::Vector3(200.0f, 3.0f, 0.0f);
     wp = Utility::CreateWaypoint(pos, radius);
     Utility::PushWaypointToPath(m_currentWayPath, wp);
@@ -42,21 +43,45 @@ void NpcAI::CreateWayPath()
     pos = DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f);
     wp = Utility::CreateWaypoint(pos, radius);
     Utility::PushWaypointToPath(m_currentWayPath, wp);
+    */
+
+    Utility::Waypoint wp1;
+    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 0.0f);
+    wp1 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::Waypoint wp2;
+    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 200.0f);
+    wp2 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::Waypoint wp3;
+    pos = DirectX::SimpleMath::Vector3(50.0f, 3.0f, 200.0f);
+    wp3 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::Waypoint wp4;
+    pos = DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f);
+    wp4 = Utility::CreateWaypoint(pos, radius);
+
+    const int id = m_npcOwner->GetID();
+    if (id % 2)
+    {
+        Utility::PushWaypointToPath(m_currentWayPath, wp1);
+        Utility::PushWaypointToPath(m_currentWayPath, wp2);
+        Utility::PushWaypointToPath(m_currentWayPath, wp3);
+        Utility::PushWaypointToPath(m_currentWayPath, wp4);
+    }
+    else
+    {
+        Utility::PushWaypointToPath(m_currentWayPath, wp4);
+        Utility::PushWaypointToPath(m_currentWayPath, wp3);
+        Utility::PushWaypointToPath(m_currentWayPath, wp2);
+        Utility::PushWaypointToPath(m_currentWayPath, wp1);
+    }
+
     m_currentWayPath.targetNode = 0;
 }
 
 float NpcAI::GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest)
 {
-    /*
-    DirectX::SimpleMath::Vector3 dest = aDest - aPos;
-    dest.Normalize();
-    const DirectX::SimpleMath::Vector3 one = aForward;
-    const DirectX::SimpleMath::Vector3 two = dest;
-    const float dot = one.x * two.x + one.y * two.y + one.z * two.z;
-    //det =        x1 * y2    * zn    + x2    * yn    * z1    +   xn  * y1    * z2    - z1    * y2    * xn    - z2    * yn    * x1    - zn    * y1    * x2
-    const float det = one.x * two.y * aUp.z + two.x * aUp.y * one.z + aUp.x * one.y * two.z - one.z * two.y * aUp.x - two.z * aUp.y * one.x - aUp.z * one.y * two.x;
-    const float angle = atan2(det, dot);
-    */
     DirectX::SimpleMath::Vector3 dest = m_currentDestination - m_npcOwner->GetPos();
     dest.Normalize();
     const DirectX::SimpleMath::Vector3 one = m_npcOwner->GetForward();
