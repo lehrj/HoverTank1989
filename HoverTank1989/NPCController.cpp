@@ -105,17 +105,20 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
             if (i != j)
             {
                 VehicleData testV2 = m_npcVec[j]->GetVehicleData();
-
-                if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
+                const float distance = (testV1.q.position - testV2.q.position).Length();
+                const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
+                // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
+                if (distance < maxCollisionRange && distance > -1.0f)
                 {
-                    
-                    m_npcVec[i]->SetCollisionVal(true);
-
-                    Utility::ImpactForce projectileForce;
-                    projectileForce.impactMass = testV2.mass;
-                    projectileForce.impactVelocity = testV2.q.velocity;
-                    //m_npcVec[i]->CalculateImpactForce2(projectileForce, testV1.collisionBox.Center);
-                    m_npcVec[i]->CalculateImpactForce3(m_npcVec[j]->GetVehicleData());
+                    if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
+                    {
+                        m_npcVec[i]->SetCollisionVal(true);
+                        Utility::ImpactForce projectileForce;
+                        projectileForce.impactMass = testV2.mass;
+                        projectileForce.impactVelocity = testV2.q.velocity;
+                        //m_npcVec[i]->CalculateImpactForce2(projectileForce, testV1.collisionBox.Center);
+                        m_npcVec[i]->CalculateImpactForce3(m_npcVec[j]->GetVehicleData());
+                    }
                 }
             }
         }

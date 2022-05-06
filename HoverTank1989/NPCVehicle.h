@@ -89,7 +89,7 @@ struct VehicleData
     unsigned int                id;
     float                       altitude;
     DirectX::SimpleMath::Vector3 dimensions;
-    
+    float                       maxCollisionDetectionRange;
     float                       dragCoefficient;
     float                       frontalArea;
     float                       hitPoints;
@@ -183,7 +183,8 @@ private:
     Utility::Torque GetImpactTorqueSum(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetOmniDirectionalThrust(const VehicleData& aVehicleData);
-    
+    DirectX::SimpleMath::Vector3 GetRepulsionForce(const VehicleData& aRepulsorVehicleData);
+
     static void InitializeNPCStruct(VehicleStruct& aVehicleStruct,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition,
