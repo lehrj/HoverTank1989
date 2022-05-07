@@ -375,7 +375,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetOmniDirectionalThrust(const VehicleD
         thrust = 5.0f;
     }
 
-    m_debugData->DebugPushTestLine(aVehicleData.q.position, aVehicleData.controlInput.steeringVec, 15.0f, 20.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLine(aVehicleData.q.position, aVehicleData.controlInput.steeringVec, 15.0f, 20.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     //m_debugData->DebugPushUILineDecimalNumber("aVehicleData.controlInput.steeringVec ", aVehicleData.controlInput.steeringVec, "");
     //DirectX::SimpleMath::Vector3 thrustUpdate = aVehicleData.controlInput.steeringVec * (aVehicleData.hoverData.forwardThrust);
     DirectX::SimpleMath::Vector3 thrustUpdate = aVehicleData.controlInput.steeringVec * (aVehicleData.hoverData.forwardThrust);
@@ -383,7 +383,9 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetOmniDirectionalThrust(const VehicleD
     DirectX::SimpleMath::Vector3 thrustDir = aVehicleData.forward;
     thrustDir = DirectX::SimpleMath::Vector3::Transform(thrustDir, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aVehicleData.up, aVehicleData.controlInput.angleToDestination));
     thrustDir.Normalize();
+    m_debugData->DebugPushTestLine(aVehicleData.q.position, thrustDir, 15.0f, 20.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     thrustDir *= aVehicleData.controlInput.throttleInput * aVehicleData.hoverData.forwardThrustMax;
+    //thrustDir *= aVehicleData.hoverData.omniThrustMax;
     return thrustDir;
 }
 
@@ -470,6 +472,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
 
     aVehicleStruct.vehicleData.hoverData.forwardThrust = 0.0f;
+    aVehicleStruct.vehicleData.hoverData.omniThrust = 0.0f;
     aVehicleStruct.vehicleData.hoverData.hoverLiftNeutralWithGrav = -aEnvironment->GetGravityVec();
     aVehicleStruct.vehicleData.hoverData.hoverLiftMax = -aEnvironment->GetGravityVec() * 1.2f;
     aVehicleStruct.vehicleData.hoverData.hoverLiftCurrent = DirectX::SimpleMath::Vector3::Zero;
@@ -725,7 +728,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     Utility::Torque impactTorque = m_vehicleStruct00.vehicleData.impactTorque;
     impactTorque.axis.Normalize();
     impactTorque = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
-    impactTorque.magnitude *= 0.00001f;
+    impactTorque.magnitude *= 0.01f;
 
     DirectX::SimpleMath::Vector3 gravityForce = m_vehicleStruct00.environment->GetGravityVec() * modVal;
     gravityForce = m_vehicleStruct00.environment->GetGravityVec();
@@ -750,7 +753,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     }
     turnTestTorque.magnitude = m_vehicleStruct00.vehicleData.controlInput.steeringInput;
 
-    const float impactTol = 2.1f;
+    const float impactTol = 0.1f;
     DirectX::SimpleMath::Vector3 torqueAxis;
     float torqueMag;
     if (impactTorque.magnitude < impactTol)
@@ -767,10 +770,10 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
         torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude);
         torqueMag = impactTorque.magnitude + gravTorque.magnitude;
     }
-    torqueAxis = (gravTorque.axis * gravTorque.magnitude);
-    torqueMag = gravTorque.magnitude;
+    //torqueAxis = (gravTorque.axis * gravTorque.magnitude);
+    //torqueMag = gravTorque.magnitude;
     const float turnTol = 0.0f;
-    if (turnTestTorque.magnitude > turnTol)
+    if (abs(turnTestTorque.magnitude) > turnTol)
     {
         torqueAxis += (turnTestTorque.axis * turnTestTorque.magnitude);
         torqueMag += turnTestTorque.magnitude;

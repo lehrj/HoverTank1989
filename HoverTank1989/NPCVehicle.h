@@ -21,9 +21,9 @@ struct NpcControlInput
     bool        stearingIsPressed;
     float       steeringInput;
     const float steeringDecayRate = 0.2f;
-    const float steeringInputMax = 19.0f;
-    const float steeringInputMin = -19.0f;
-    const float steeringInputRate = 9.95f;
+    const float steeringInputMax = 3.0f;
+    const float steeringInputMin = -3.0f;
+    const float steeringInputRate = 1.95f;
     DirectX::SimpleMath::Vector3 steeringVec;
 
     float       angleToDestination;   
@@ -36,8 +36,14 @@ struct HoverData
     const float hoverRangeLower = 0.5f;
     const float hoverRangeMid = 1.0f;
     const float hoverRangeUpper = 3.0f;
-    const float forwardThrustMax = 500.0f;
     float forwardThrust;
+    const float forwardThrustMax = 500.0f;
+    float omniThrust;
+    const float omniThrustMax = 450.0f;
+    float omniThrustDirection = 0.0f;
+    const float omniThrustDirectionChangeRate = 1.5f;
+    
+
     DirectX::SimpleMath::Vector3    hoverLiftMax;
     DirectX::SimpleMath::Vector3    hoverLiftNeutralWithGrav;
     DirectX::SimpleMath::Vector3    hoverLiftCurrent;
