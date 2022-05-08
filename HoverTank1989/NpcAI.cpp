@@ -90,6 +90,7 @@ float NpcAI::GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, Direct
     //det =        x1 * y2    * zn    + x2    * yn    * z1    +   xn  * y1    * z2    - z1    * y2    * xn    - z2    * yn    * x1    - zn    * y1    * x2
     const float det = one.x * two.y * aUp.z + two.x * aUp.y * one.z + aUp.x * one.y * two.z - one.z * two.y * aUp.x - two.z * aUp.y * one.x - aUp.z * one.y * two.x;
     const float angle = atan2(det, dot);
+    
     return angle;
 }
 
@@ -117,7 +118,7 @@ float NpcAI::GetThrottleInput()
     {
         isFacingDest = true;
     }
-
+    
     if (isFacingDest == false)
     {
         return 0.0f;
@@ -164,9 +165,8 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
     m_currentWaypoint = Utility::GetWaypointFromPath(m_currentWayPath);
     m_currentDestination = m_currentWaypoint.waypointPos;
-    //m_currentDestination = Wander();
 
-    m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+    m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 }
 
 DirectX::SimpleMath::Vector3 NpcAI::Wander()

@@ -71,6 +71,10 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;   
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    forwardShape;
+    DirectX::SimpleMath::Matrix localForwardMatrix;
+    DirectX::SimpleMath::Matrix worldForwardMatrix;
 };
 
 struct VehicleHardPoints

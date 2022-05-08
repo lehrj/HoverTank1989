@@ -188,11 +188,13 @@ void NPCVehicle::CalculateSelfRightingTorque()
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     if (m_vehicleStruct00.vehicleData.isCollisionTrue == true)
     {
         color = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     }
     m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, color);
+    m_vehicleStruct00.npcModel.forwardShape->Draw(m_vehicleStruct00.npcModel.worldForwardMatrix, aView, aProj, forwardColor);
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
@@ -488,6 +490,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.playerPos = DirectX::SimpleMath::Vector3::Zero;
 }
 
+/*
 void NPCVehicle::InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCModel& aModel)
 {
     const DirectX::SimpleMath::Vector3 vehicleSize(14.0f, 7.0f, 9.5f);
@@ -495,6 +498,7 @@ void NPCVehicle::InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
     aModel.localModelMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.worldModelMatrix = aModel.localModelMatrix;
 }
+*/
 
 void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
     NPCModel& aModel, const DirectX::SimpleMath::Vector3 aDimensions)
@@ -502,6 +506,19 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.modelShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), aDimensions);
     aModel.localModelMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.worldModelMatrix = aModel.localModelMatrix;
+
+    DirectX::SimpleMath::Vector3 forwardShapeSize = aDimensions;
+    forwardShapeSize.x *= 0.1f;
+    forwardShapeSize.y *= 0.2f;
+    forwardShapeSize.z *= 1.05f;
+    aModel.forwardShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), forwardShapeSize);
+    DirectX::SimpleMath::Vector3 forwardShapeTranslation;
+    forwardShapeTranslation.x = (aDimensions.x * 0.5f) - (forwardShapeSize.x * 0.25f);
+    forwardShapeTranslation.y = aDimensions.y * 0.2f;
+    forwardShapeTranslation.z = 0.0f;
+    aModel.localForwardMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localForwardMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(forwardShapeTranslation);
+    aModel.worldForwardMatrix = aModel.localModelMatrix;
 }
 
 void NPCVehicle::InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
@@ -720,7 +737,7 @@ void NPCVehicle::UpdateAlignment()
 
 Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep)
 {
-    const float modVal = 0.01f;
+    
     const DirectX::SimpleMath::Vector3 centerMassPos = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
     const DirectX::SimpleMath::Vector3 rotorPos = m_vehicleStruct00.vehicleData.hardPoints.testArmPos;
     const DirectX::SimpleMath::Vector3 impactTorqueArm = rotorPos - centerMassPos;
@@ -729,11 +746,14 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     impactTorque.axis.Normalize();
     impactTorque = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
     impactTorque.magnitude *= 0.01f;
-
+    //impactTorque.magnitude = 0.0f;
+    //impactTorque.axis = DirectX::SimpleMath::Vector3::UnitY;
+    const float modVal = 0.1f;
     DirectX::SimpleMath::Vector3 gravityForce = m_vehicleStruct00.environment->GetGravityVec() * modVal;
     gravityForce = m_vehicleStruct00.environment->GetGravityVec();
     DirectX::SimpleMath::Vector3 gravityTorqueArm = rotorPos - centerMassPos;
     Utility::Torque gravTorque = Utility::GetTorqueForce(gravityTorqueArm, gravityForce);
+
     if (gravTorque.magnitude < 0.05f)
     {
         //gravTorque.axis = DirectX::SimpleMath::Vector3::UnitY;
@@ -783,8 +803,6 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
         int testBreak = 0;
         testBreak++;
     }
-
-
 
     Utility::Torque updatedTorque;
     updatedTorque.axis = torqueAxis;
@@ -914,6 +932,9 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
     m_vehicleStruct00.npcModel.worldModelMatrix = m_vehicleStruct00.npcModel.localModelMatrix;
     m_vehicleStruct00.npcModel.worldModelMatrix *= updateMat;
+
+    m_vehicleStruct00.npcModel.worldForwardMatrix = m_vehicleStruct00.npcModel.localForwardMatrix;
+    m_vehicleStruct00.npcModel.worldForwardMatrix *= updateMat;
 }
 
 void NPCVehicle::UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos)
