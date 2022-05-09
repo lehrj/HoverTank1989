@@ -147,7 +147,7 @@ public:
 
     void CalculateSelfRightingTorque();
 
-    void InitializeNPCVehicle2(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+    void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, 
         std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);

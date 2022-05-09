@@ -46,19 +46,19 @@ void NpcAI::CreateWayPath()
     */
 
     Utility::Waypoint wp1;
-    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 0.0f);
+    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, -100.0f);
     wp1 = Utility::CreateWaypoint(pos, radius);
 
     Utility::Waypoint wp2;
-    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 200.0f);
+    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 100.0f);
     wp2 = Utility::CreateWaypoint(pos, radius);
 
     Utility::Waypoint wp3;
-    pos = DirectX::SimpleMath::Vector3(50.0f, 3.0f, 200.0f);
+    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, 100.0f);
     wp3 = Utility::CreateWaypoint(pos, radius);
 
     Utility::Waypoint wp4;
-    pos = DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f);
+    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, -100.0f);
     wp4 = Utility::CreateWaypoint(pos, radius);
 
     const int id = m_npcOwner->GetID();
