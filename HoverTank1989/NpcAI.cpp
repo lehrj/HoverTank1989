@@ -3,22 +3,12 @@
 #include "NPCVehicle.h"
 #include "Vehicle.h"
 
-NpcAI::NpcAI()
-{
-
-}
 
 NpcAI::NpcAI(const NPCVehicle* aOwner)
 {
     m_npcOwner = aOwner;
-    m_iFlags = 0;
-    
 }
 
-NpcAI::~NpcAI()
-{
-
-}
 void NpcAI::CreateWayPath()
 {
     Utility::ClearWayPath(m_currentWayPath);
@@ -98,7 +88,8 @@ DirectX::SimpleMath::Vector3 NpcAI::GetVecToDestination()
 {
     DirectX::SimpleMath::Vector3 vecToDestination = m_currentDestination - m_npcOwner->GetPos();
     vecToDestination.Normalize();
-    return vecToDestination;
+    //return vecToDestination;
+    return m_desiredHeading;
 }
 
 float NpcAI::GetThrottleInput()
@@ -119,7 +110,11 @@ float NpcAI::GetThrottleInput()
         isFacingDest = true;
     }
     
-    if (isFacingDest == false)
+    if (m_behavior.none == true)
+    {
+        return 0.0f;
+    }
+    else if (isFacingDest == false)
     {
         return 0.0f;
     }
@@ -134,14 +129,30 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer
     m_debugData = aDebugPtr;
     m_environment = aEnvironment;
     m_playerVehicle = aPlayer;
+    InitializeBehavior();
     InitializeDestinationTargets();
     m_currentWaypoint.waypointPos = DirectX::SimpleMath::Vector3::Zero;
     m_currentWaypoint.waypointRadius = 1.0f;
+
+    m_desiredHeading = DirectX::SimpleMath::Vector3::Zero;
+    m_desiredVelocity = 0.0f;
+
     Utility::ClearWayPath(m_currentWayPath);
 
     CreateWayPath();
-
     m_currentDestination = DirectX::SimpleMath::Vector3::Zero;
+}
+
+void NpcAI::InitializeBehavior()
+{
+    m_behavior.arrive = false;
+    m_behavior.followWayPath = false;
+    m_behavior.none = false;
+    m_behavior.seek = false;
+    m_behavior.separation = false;
+    m_behavior.stop = true;
+    m_behavior.wallAvoidance = false;
+    m_behavior.wander = false;
 }
 
 void NpcAI::InitializeDestinationTargets()
@@ -165,8 +176,49 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
     m_currentWaypoint = Utility::GetWaypointFromPath(m_currentWayPath);
     m_currentDestination = m_currentWaypoint.waypointPos;
-
+    
+    UpdateDesiredHeading();
+    //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
     m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+}
+
+void NpcAI::UpdateDesiredHeading()
+{
+    DirectX::SimpleMath::Vector3 updateHeading = DirectX::SimpleMath::Vector3::Zero;
+    float updateVelocity = 0.0f;
+    if (m_behavior.followWayPath == true)
+    {
+        DirectX::SimpleMath::Vector3 headingToWaypoint = m_currentWaypoint.waypointPos - m_npcOwner->GetPos();
+        headingToWaypoint.Normalize();
+        headingToWaypoint *= m_behavior.wayPathWeight;
+        updateHeading += headingToWaypoint;
+    }
+    if (m_behavior.wander == true)
+    {
+        DirectX::SimpleMath::Vector3 headingToWander = m_destinationTargets.wanderTarget - m_npcOwner->GetPos();
+        headingToWander.Normalize();
+        headingToWander *= m_behavior.wanderWeight;
+        updateHeading += headingToWander;
+    }
+    if (m_behavior.stop == true)
+    {
+        DirectX::SimpleMath::Vector3 reverseHeading = m_npcOwner->GetVelocity() * -1.0f;
+        reverseHeading.y = 0.0f;
+        reverseHeading.Normalize();
+        reverseHeading *= m_behavior.stopWeight;
+        updateHeading += reverseHeading;
+    }
+    if (m_behavior.none == false)
+    {
+        updateHeading.Normalize();
+        m_desiredHeading = updateHeading;
+        m_desiredVelocity = updateVelocity;
+    }
+    else if (m_behavior.none == true)
+    {
+        m_desiredHeading = DirectX::SimpleMath::Vector3::Zero;
+        m_desiredVelocity = 0.0f;
+    }
 }
 
 DirectX::SimpleMath::Vector3 NpcAI::Wander()

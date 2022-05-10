@@ -86,8 +86,11 @@ struct VehicleHardPoints
     DirectX::SimpleMath::Vector3 weaponPos;
     DirectX::SimpleMath::Vector3 localWeaponPos;
 
-    DirectX::SimpleMath::Vector3 testArmPos;
-    DirectX::SimpleMath::Vector3 localTestArmPos;
+    DirectX::SimpleMath::Vector3 verticalStabilizerPos;
+    DirectX::SimpleMath::Vector3 localVerticalStabilizerPos;
+
+    DirectX::SimpleMath::Vector3 steeringTorqueArmPos;
+    DirectX::SimpleMath::Vector3 localSteeringTorqueArmPos;
 
     DirectX::SimpleMath::Vector3 basePos;
     DirectX::SimpleMath::Vector3 localBasePos;
@@ -158,7 +161,7 @@ public:
     DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
     DirectX::SimpleMath::Vector3 GetUp() const { return m_vehicleStruct00.vehicleData.up; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
-
+    DirectX::SimpleMath::Vector3 GetVelocity() const { return m_vehicleStruct00.vehicleData.q.velocity; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
     
     static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
