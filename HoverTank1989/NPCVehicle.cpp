@@ -185,6 +185,14 @@ void NPCVehicle::CalculateSelfRightingTorque()
     m_vehicleStruct00.vehicleData.q.bodyTorqueForce = gravTorque;
 }
 
+void NPCVehicle::CalculateTopSpeed()
+{
+    float terminalVelocity = sqrt((2.0f * m_vehicleStruct00.vehicleData.mass * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax) 
+        / (m_environment->GetAirDensity() * m_vehicleStruct00.vehicleData.frontalArea * m_vehicleStruct00.vehicleData.dragCoefficient));
+    float observedTopSpeed = 50.0f; // using observed top speed for the moment while propulsion system design is still in flux, in meters per second?
+    m_vehicleStruct00.vehicleData.topSpeedCalculated = observedTopSpeed;
+}
+
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -523,7 +531,7 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     m_npcController = aNpcController;
     m_vehicleStruct00.vehicleData.id = aID;
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
-    
+    CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.dimensions);
     m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData);
 }
@@ -816,6 +824,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     //UpdateControlInput();
+    m_debugData->DebugPushUILineDecimalNumber("Velocity = ", m_vehicleStruct00.vehicleData.q.velocity.Length(), "");
 
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
 

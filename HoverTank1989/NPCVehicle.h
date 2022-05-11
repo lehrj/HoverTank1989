@@ -107,6 +107,7 @@ struct VehicleData
     float                       frontalArea;
     float                       hitPoints;
     float                       mass;
+    float                       topSpeedCalculated;
     MotionNPC                   q;
     float                       terrainHightAtPos;
     DirectX::SimpleMath::Vector3 terrainNormal;
@@ -149,32 +150,31 @@ public:
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
 
     void CalculateSelfRightingTorque();
+    void DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
 
     void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, 
         std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);
 
-    float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
-    int GetID() const { return m_vehicleStruct00.vehicleData.id; };
+    const DirectX::BoundingBox& GetCollisionData() { return m_vehicleStruct00.vehicleData.collisionBox; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
-    DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
-    DirectX::SimpleMath::Vector3 GetUp() const { return m_vehicleStruct00.vehicleData.up; };
-    DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
-    DirectX::SimpleMath::Vector3 GetVelocity() const { return m_vehicleStruct00.vehicleData.q.velocity; };
+    float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
+    int GetID() const { return m_vehicleStruct00.vehicleData.id; }; 
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
-    
+    DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
+    DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
+    float GetTopSpeedCalculated() const { return m_vehicleStruct00.vehicleData.topSpeedCalculated; };
+    DirectX::SimpleMath::Vector3 GetUp() const { return m_vehicleStruct00.vehicleData.up; };
+    DirectX::SimpleMath::Vector3 GetVelocity() const { return m_vehicleStruct00.vehicleData.q.velocity; };
+    VehicleData GetVehicleData() { return m_vehicleStruct00.vehicleData; };
+
     static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
-
-    void DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
-
+      
     void UpdateNPC(const double aTimeDelta);
     
-    VehicleData GetVehicleData() {return m_vehicleStruct00.vehicleData; };
-    const DirectX::BoundingBox& GetCollisionData() { return m_vehicleStruct00.vehicleData.collisionBox; };
-
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
     void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
     
@@ -187,6 +187,7 @@ public:
     void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
 
 private:
+    void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
@@ -215,8 +216,7 @@ private:
     void UpdateControlInput();
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
-    void UpdateNPCModel(const double aTimeDelta);
-    
+    void UpdateNPCModel(const double aTimeDelta);   
 
     Environment const* m_environment;
     
@@ -225,8 +225,6 @@ private:
     std::unique_ptr<NpcAI> m_npcAI;
     std::shared_ptr<NPCController> m_npcController;
 
-    //VehicleData m_vehicleData;
     VehicleStruct m_vehicleStruct00;
-    //Vehicle const* m_player;
 };
 
