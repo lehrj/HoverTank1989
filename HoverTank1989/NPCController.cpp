@@ -120,6 +120,13 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                         m_npcVec[i]->CalculateImpactForce3(m_npcVec[j]->GetVehicleData());
                     }
                 }
+
+                // avoidance check
+                DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
+                if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
+                {
+                    m_npcVec[i]->PushAvoidanceTarget(testV2.q.position);
+                }
             }
         }
     }

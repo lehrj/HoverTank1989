@@ -157,7 +157,10 @@ public:
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, 
         std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);
 
+    DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
+    DirectX::BoundingBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
     const DirectX::BoundingBox& GetCollisionData() { return m_vehicleStruct00.vehicleData.collisionBox; };
+    DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
     int GetID() const { return m_vehicleStruct00.vehicleData.id; }; 
@@ -174,7 +177,7 @@ public:
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
       
     void UpdateNPC(const double aTimeDelta);
-    
+    void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos); };
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
     void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
     

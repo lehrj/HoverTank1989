@@ -11,6 +11,7 @@ public:
     NpcAI(const NPCVehicle* aOwner);
 
     float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);   
+    DirectX::BoundingBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
     float GetThrottleInput();   
     DirectX::SimpleMath::Vector3 GetVecToDestination();
@@ -18,7 +19,7 @@ public:
     void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr);
 
     void UpdateAI(const float aTimeStep);
-
+    void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos);
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
 
 private:
@@ -42,13 +43,6 @@ private:
         const float wallAvoidanceWeight = 1.0f;
     };
 
-    /*
-    struct BehaviorWeights
-    {
-
-    };
-    */
-
     struct DestinationTargets
     {
         DirectX::SimpleMath::Vector3 currentTarget;
@@ -61,15 +55,23 @@ private:
 
     Behavior m_behavior;
     
+    void AvoidPos();
+
     void CreateWayPath();
 
     void InitializeDestinationTargets();
     void InitializeBehavior();
+    void UpdateAvoidanceBox();
     void UpdateDesiredHeading();
 
     DirectX::SimpleMath::Vector3 Wander();
 
     DestinationTargets m_destinationTargets;
+
+    //a pointer to the owner of this instance
+    NPCVehicle const* m_npcOwner;
+    Vehicle const* m_playerVehicle;
+    Environment const* m_environment;
 
     Utility::Waypoint m_currentWaypoint;
     Utility::WayPath m_currentWayPath;
@@ -78,10 +80,11 @@ private:
     DirectX::SimpleMath::Vector3 m_desiredHeading;
     float m_desiredVelocity;
 
-    //a pointer to the owner of this instance
-    NPCVehicle const* m_npcOwner;
-    Vehicle const* m_playerVehicle;
-    Environment const* m_environment;
+    DirectX::BoundingBox        m_avoidanceBox;
+    const float                 m_avoidanceBoxLengthMin = 5.0f;
+    float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
+    DirectX::SimpleMath::Vector3 m_avoidanceTarget = DirectX::SimpleMath::Vector3::Zero;
+    bool                        m_isAvoidanceTrue = false;
 
     std::shared_ptr<DebugData> m_debugData;
 };
