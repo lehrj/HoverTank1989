@@ -12,6 +12,8 @@ public:
 
     float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);   
     DirectX::BoundingBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
+    DirectX::SimpleMath::Matrix GetAiAvoidanceBoxAlignment() const { return m_avoidanceAlignment; };
+    bool GetIsAvoidanceTrue() const { return m_isAvoidanceTrue; };
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
     float GetThrottleInput();   
     DirectX::SimpleMath::Vector3 GetVecToDestination();
@@ -80,8 +82,9 @@ private:
     DirectX::SimpleMath::Vector3 m_desiredHeading;
     float m_desiredVelocity;
 
+    DirectX::SimpleMath::Matrix m_avoidanceAlignment = DirectX::SimpleMath::Matrix::Identity;
     DirectX::BoundingBox        m_avoidanceBox;
-    const float                 m_avoidanceBoxLengthMin = 5.0f;
+    const float                 m_avoidanceBoxLengthMin = 25.0f;
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
     DirectX::SimpleMath::Vector3 m_avoidanceTarget = DirectX::SimpleMath::Vector3::Zero;
     bool                        m_isAvoidanceTrue = false;

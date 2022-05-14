@@ -14,7 +14,7 @@ struct NpcControlInput
 
     float       throttleInput;
     const float throttleInputDecayRate = 0.6f;
-    const float throttleInputMin = 0.0f;
+    const float throttleInputMin = -1.0f;
     const float throttleInputMax = 1.0f;
     const float throttleInputRate = 0.4f;
 
@@ -31,11 +31,19 @@ struct NpcControlInput
 
 struct HoverData
 {
+    /*
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
     const float hoverRangeLower = 0.5f;
     const float hoverRangeMid = 1.0f;
     const float hoverRangeUpper = 3.0f;
+    */
+    const float groundNormalForceRange = 5.0f;
+    const float hoverNeutralBoyantAlt = 0.52f;
+    const float hoverRangeLower = 1.5f;
+    const float hoverRangeMid = 3.0f;
+    const float hoverRangeUpper = 5.0f;
+
     float forwardThrust;
     const float forwardThrustMax = 500.0f;
     float omniThrust;
@@ -75,6 +83,8 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    forwardShape;
     DirectX::SimpleMath::Matrix localForwardMatrix;
     DirectX::SimpleMath::Matrix worldForwardMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
 };
 
 struct VehicleHardPoints
@@ -229,5 +239,7 @@ private:
     std::shared_ptr<NPCController> m_npcController;
 
     VehicleStruct m_vehicleStruct00;
+
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext1> m_context;
 };
 
