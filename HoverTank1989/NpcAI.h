@@ -84,7 +84,7 @@ private:
 
     DirectX::SimpleMath::Matrix m_avoidanceAlignment = DirectX::SimpleMath::Matrix::Identity;
     DirectX::BoundingBox        m_avoidanceBox;
-    const float                 m_avoidanceBoxLengthMin = 25.0f;
+    const float                 m_avoidanceBoxLengthMin = 10.0f;
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
     DirectX::SimpleMath::Vector3 m_avoidanceTarget = DirectX::SimpleMath::Vector3::Zero;
     bool                        m_isAvoidanceTrue = false;

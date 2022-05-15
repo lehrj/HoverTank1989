@@ -85,6 +85,7 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldForwardMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    collisionShape;
 };
 
 struct VehicleHardPoints
