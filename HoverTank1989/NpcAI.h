@@ -5,6 +5,23 @@
 class NPCVehicle;
 class Vehicle;
 
+struct AIOutput
+{
+    float       throttleOutput;
+    float       steeringOutput;
+    DirectX::SimpleMath::Vector3 steeringVec;
+    float       angleToDestination;
+};
+
+struct AIControls
+{
+    AIOutput aiOutput;
+    const float throttleOutputMin = -1.0f;
+    const float throttleOutputMax = 1.0f;
+    const float steeringOutputMax = 1.0f;
+    const float steeringOutputMin = -1.0f;
+};
+
 class NpcAI
 {
 public:
@@ -61,6 +78,7 @@ private:
 
     void CreateWayPath();
 
+    void InitializeControlOutput();
     void InitializeDestinationTargets();
     void InitializeBehavior();
     void UpdateAvoidanceBox();
@@ -86,8 +104,11 @@ private:
     DirectX::BoundingBox        m_avoidanceBox;
     const float                 m_avoidanceBoxLengthMin = 10.0f;
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
+    float                       m_avoidanceBoxWidth;
     DirectX::SimpleMath::Vector3 m_avoidanceTarget = DirectX::SimpleMath::Vector3::Zero;
     bool                        m_isAvoidanceTrue = false;
+
+    AIControls                  m_aiControls;
 
     std::shared_ptr<DebugData> m_debugData;
 };

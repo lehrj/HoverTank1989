@@ -33,9 +33,48 @@ void NpcAI::AvoidPos()
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(lateralVal));
     newDest = DirectX::SimpleMath::Vector3::Transform(newDest, rotMat);
     newDest += m_npcOwner->GetPos();
-    m_debugData->DebugPushTestLineBetweenPoints(m_currentDestination, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+    //m_debugData->DebugPushTestLineBetweenPoints(m_currentDestination, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
     m_currentDestination = newDest;
-    m_debugData->DebugPushTestLineBetweenPoints(m_currentDestination, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+    //m_debugData->DebugPushTestLineBetweenPoints(m_currentDestination, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+
+
+    //start testing
+    float xMod1 = (m_avoidanceBoxLength - localPos.x) / m_avoidanceBoxLength;
+    float xMod2 = (xMod1 * 2.0f) - 2.0f;
+    float zMod1 = (m_avoidanceBoxWidth - localPos.z) / m_avoidanceBoxWidth;
+    float zMod2 = (zMod1 * 2.0f) - 2.0f;
+    float zMod3 = m_avoidanceBoxWidth - localPos.z;
+    float zMod4 = localPos.z / m_avoidanceBoxWidth;
+    DirectX::SimpleMath::Vector3 testDest(xMod2, 0.0f, zMod2);
+    testDest.Normalize();
+    float testDistance = 20.0f;
+    testDest *= testDistance;
+    DirectX::SimpleMath::Matrix testAlignment = m_npcOwner->GetAlignment();
+    testDest = DirectX::SimpleMath::Vector3::Transform(testDest, testAlignment);
+    //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), testDest, 10.0f, 8.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    testDest += m_npcOwner->GetPos();
+    //m_debugData->DebugPushTestLineBetweenPoints(testDest, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+    m_currentDestination = testDest;
+
+    testDest = DirectX::SimpleMath::Vector3::UnitX;
+    testDest = m_npcOwner->GetForward();
+    testDest *= testDistance;
+    if (lateralVal > Utility::GetPi())
+    {
+        lateralVal = Utility::GetPi();
+    }
+    else if (lateralVal < -Utility::GetPi())
+    {
+        lateralVal = -Utility::GetPi();
+    }
+    m_debugData->DebugPushUILineDecimalNumber("lateralVal2 = ", lateralVal, "");
+    //DirectX::SimpleMath::Matrix rotMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(lateralVal));
+    DirectX::SimpleMath::Matrix rotMat2 = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_npcOwner->GetUp(), lateralVal);
+    testDest = DirectX::SimpleMath::Vector3::Transform(newDest, rotMat2);
+    //testDest = DirectX::SimpleMath::Vector3::Transform(testDest, testAlignment);
+    m_debugData->DebugPushTestLineBetweenPoints(testDest, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+    testDest += m_npcOwner->GetPos();
+    m_debugData->DebugPushTestLineBetweenPoints(testDest, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 }
 
 void NpcAI::CreateWayPath()
@@ -158,6 +197,7 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer
     m_debugData = aDebugPtr;
     m_environment = aEnvironment;
     m_playerVehicle = aPlayer;
+    InitializeControlOutput();
     InitializeBehavior();
     InitializeDestinationTargets();
     m_currentWaypoint.waypointPos = DirectX::SimpleMath::Vector3::Zero;
@@ -174,6 +214,14 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer
     m_avoidanceTarget = DirectX::SimpleMath::Vector3::Zero;
     m_isAvoidanceTrue = false;
     UpdateAvoidanceBox();
+}
+
+void NpcAI::InitializeControlOutput()
+{
+    m_aiControls.aiOutput.angleToDestination = 0.0f;
+    m_aiControls.aiOutput.steeringOutput = 0.0f;
+    m_aiControls.aiOutput.steeringVec = DirectX::SimpleMath::Vector3::Zero;
+    m_aiControls.aiOutput.throttleOutput = 0.0f;
 }
 
 void NpcAI::InitializeBehavior()
@@ -243,6 +291,7 @@ void NpcAI::UpdateAvoidanceBox()
 {
     const DirectX::SimpleMath::Vector3 vehicleDimensions = m_npcOwner->GetDimensions();
     const float avoidanceWidth = vehicleDimensions.z * 0.5f;
+    m_avoidanceBoxWidth = avoidanceWidth;
     const float avoidanceHeight = vehicleDimensions.y * 0.5f;
     float avoidanceLength = m_avoidanceBoxLengthMin + (m_npcOwner->GetVelocity().Length() / m_npcOwner->GetTopSpeedCalculated()) * m_avoidanceBoxLengthMin;
     //avoidanceLength = 30.0f;
