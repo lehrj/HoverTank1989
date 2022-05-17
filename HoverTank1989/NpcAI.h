@@ -75,6 +75,7 @@ private:
     Behavior m_behavior;
     
     void AvoidPos();
+    void AvoidPos2();
 
     void CreateWayPath();
 

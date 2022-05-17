@@ -9,13 +9,13 @@ NpcAI::NpcAI(const NPCVehicle* aOwner)
     m_npcOwner = aOwner;
 }
 
-void NpcAI::AvoidPos()
+void NpcAI::AvoidPos2()
 {
     DirectX::SimpleMath::Matrix alignment = m_npcOwner->GetAlignment();
     DirectX::SimpleMath::Vector3 localPos = m_avoidanceTarget - m_npcOwner->GetPos();
     const float distance = localPos.Length();
     DirectX::SimpleMath::Matrix inverse = alignment;
-    inverse.Invert();
+    inverse = inverse.Invert();
     localPos = DirectX::SimpleMath::Vector3::Transform(localPos, inverse);
 
     DirectX::SimpleMath::Vector3 vecToDest = m_npcOwner->GetPos() - m_currentDestination;
@@ -37,7 +37,7 @@ void NpcAI::AvoidPos()
     m_currentDestination = newDest;
     //m_debugData->DebugPushTestLineBetweenPoints(m_currentDestination, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 
-
+    
     //start testing
     float xMod1 = (m_avoidanceBoxLength - localPos.x) / m_avoidanceBoxLength;
     float xMod2 = (xMod1 * 2.0f) - 2.0f;
@@ -75,6 +75,62 @@ void NpcAI::AvoidPos()
     m_debugData->DebugPushTestLineBetweenPoints(testDest, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
     testDest += m_npcOwner->GetPos();
     m_debugData->DebugPushTestLineBetweenPoints(testDest, m_npcOwner->GetPos(), DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+    
+}
+
+void NpcAI::AvoidPos()
+{
+    DirectX::SimpleMath::Matrix alignment = m_npcOwner->GetAlignment();
+    DirectX::SimpleMath::Vector3 localPos = m_avoidanceTarget - m_npcOwner->GetPos();
+    const float distance = localPos.Length();
+    DirectX::SimpleMath::Matrix inverse = alignment;
+    inverse = inverse.Invert();
+    localPos = DirectX::SimpleMath::Vector3::Transform(localPos, inverse);
+
+    DirectX::SimpleMath::Vector3 vecToDest = m_npcOwner->GetPos() - m_currentDestination;
+    const float distToDest = vecToDest.Length();
+    vecToDest.Normalize();
+
+    DirectX::SimpleMath::Matrix toLocalCordMat = DirectX::SimpleMath::Matrix::Identity;
+    toLocalCordMat *= inverse;
+    toLocalCordMat *= DirectX::SimpleMath::Matrix::CreateTranslation(-m_npcOwner->GetPos());
+
+    DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_npcOwner->GetPos(), -m_npcOwner->GetRight(), m_npcOwner->GetUp());
+    DirectX::SimpleMath::Matrix localMat = updateMat;
+    localMat = localMat.Invert();
+    /*
+    DirectX::SimpleMath::Matrix localMat2 = DirectX::SimpleMath::Matrix::Identity / updateMat;
+
+    DirectX::SimpleMath::Vector3 testPos(50.0f, 10.0f, 35.0f);
+    DirectX::SimpleMath::Vector3 testUp = -DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 testRight = -DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Matrix updateMat2 = DirectX::SimpleMath::Matrix::CreateWorld(testPos, testRight, testUp);
+    DirectX::SimpleMath::Matrix updateMat3 = updateMat2;
+    updateMat3 = updateMat3.Invert();
+    DirectX::SimpleMath::Matrix updateMat4 = updateMat2 * updateMat3;
+    DirectX::SimpleMath::Matrix updateMat5 = DirectX::SimpleMath::Matrix::Identity;
+    */
+    DirectX::SimpleMath::Vector3 testLocal = m_npcOwner->GetPos();
+    DirectX::SimpleMath::Vector3 testLocal2 = DirectX::SimpleMath::Vector3::Transform(testLocal, localMat);
+
+    DirectX::SimpleMath::Vector3 obsticlePos = m_avoidanceTarget;
+    obsticlePos = DirectX::SimpleMath::Vector3::Transform(obsticlePos, localMat);
+
+    DirectX::SimpleMath::Vector3 avoidanceCenter = m_avoidanceBox.Center;
+    avoidanceCenter = DirectX::SimpleMath::Vector3::Transform(avoidanceCenter, localMat);
+
+    DirectX::SimpleMath::Vector3 avoidanceVec = avoidanceCenter - obsticlePos;
+    avoidanceVec.x *= -1.0f;
+    avoidanceVec.y = 0.0f;
+    avoidanceVec.Normalize();
+    avoidanceVec = DirectX::SimpleMath::Vector3::Transform(avoidanceVec, updateMat);
+
+    DirectX::SimpleMath::Vector3 testForward = m_npcOwner->GetForward();
+    testForward = DirectX::SimpleMath::Vector3::Transform(testForward, localMat);
+    testForward = DirectX::SimpleMath::Vector3::Transform(testForward, updateMat);
+    m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), testForward, 40.0f, 8.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    int testBreak = 0;
+    testBreak++;
 }
 
 void NpcAI::CreateWayPath()
