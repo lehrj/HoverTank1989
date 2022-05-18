@@ -98,18 +98,7 @@ void NpcAI::AvoidPos()
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_npcOwner->GetPos(), -m_npcOwner->GetRight(), m_npcOwner->GetUp());
     DirectX::SimpleMath::Matrix localMat = updateMat;
     localMat = localMat.Invert();
-    /*
-    DirectX::SimpleMath::Matrix localMat2 = DirectX::SimpleMath::Matrix::Identity / updateMat;
 
-    DirectX::SimpleMath::Vector3 testPos(50.0f, 10.0f, 35.0f);
-    DirectX::SimpleMath::Vector3 testUp = -DirectX::SimpleMath::Vector3::UnitY;
-    DirectX::SimpleMath::Vector3 testRight = -DirectX::SimpleMath::Vector3::UnitZ;
-    DirectX::SimpleMath::Matrix updateMat2 = DirectX::SimpleMath::Matrix::CreateWorld(testPos, testRight, testUp);
-    DirectX::SimpleMath::Matrix updateMat3 = updateMat2;
-    updateMat3 = updateMat3.Invert();
-    DirectX::SimpleMath::Matrix updateMat4 = updateMat2 * updateMat3;
-    DirectX::SimpleMath::Matrix updateMat5 = DirectX::SimpleMath::Matrix::Identity;
-    */
     DirectX::SimpleMath::Vector3 testLocal = m_npcOwner->GetPos();
     DirectX::SimpleMath::Vector3 testLocal2 = DirectX::SimpleMath::Vector3::Transform(testLocal, localMat);
 
@@ -119,16 +108,100 @@ void NpcAI::AvoidPos()
     DirectX::SimpleMath::Vector3 avoidanceCenter = m_avoidanceBox.Center;
     avoidanceCenter = DirectX::SimpleMath::Vector3::Transform(avoidanceCenter, localMat);
 
+    const float obstacleRadius = 5.0f; // temp place holder for testing, will need to pull radius from obstacle later
+    const float avoidanceBoxWidth = m_avoidanceBoxWidth * 2.0f;
+    float lateralVal;
+    // get lateral force val
+    if (obsticlePos.z <= 0.0f) //obstacle to the left 
+    {
+        float lateralAvoidPos = obsticlePos.z + obstacleRadius;
+        float testPosMod = lateralAvoidPos + (avoidanceBoxWidth * 0.5f);
+        float testLateralVal = testPosMod / avoidanceBoxWidth;
+        //float testLateralVal = testPosMod / (avoidanceBoxWidth * 0.5f);
+        lateralVal = testLateralVal;
+    }
+    else
+    {
+        float lateralAvoidPos = obsticlePos.z - obstacleRadius;
+        float testPosMod = lateralAvoidPos - (avoidanceBoxWidth * 0.5f);
+        float testLateralVal = testPosMod / avoidanceBoxWidth;
+        lateralVal = testLateralVal;
+    }
+    m_debugData->DebugPushUILineDecimalNumber("lateralVal = ", lateralVal, "");
+
+    const float avoidanceBoxLength = m_avoidanceBoxLength * 2.0f;
+    const float frontOffset = 7.0f;
+    const float testOffest = 14.0f - 10.0;
+    float obstacleX = obsticlePos.x - avoidanceCenter.x + frontOffset - testOffest;
+    float brakeVal;
+    if (obstacleX <= 0.0f)
+    {
+        /*
+        //float forwardAvoidPos = obsticlePos.x; // + obstacleRadius;
+        float forwardAvoidPos = obstacleX; // + obstacleRadius;
+        float testPosMod = forwardAvoidPos + (avoidanceBoxLength * 0.5f);
+        float testForwardVal = testPosMod / avoidanceBoxLength;
+        brakeVal = testForwardVal;
+        */
+        //float forwardAvoidPos = obsticlePos.x; // + obstacleRadius;
+        float forwardAvoidPos = obstacleX; // + obstacleRadius;
+        float testPosMod = forwardAvoidPos + (avoidanceBoxLength * 0.5f);
+        //float testForwardVal = testPosMod / avoidanceBoxLength;
+        float testForwardVal = testPosMod / (avoidanceBoxLength * 0.5f);
+        brakeVal = testForwardVal;
+    }
+    else
+    {
+        //float forwardAvoidPos = obsticlePos.x; // + obstacleRadius;
+        float forwardAvoidPos = obstacleX; // + obstacleRadius;
+        float testPosMod = forwardAvoidPos - (avoidanceBoxLength * 0.5f);
+        //float testForwardVal = testPosMod / avoidanceBoxLength;
+        float testForwardVal = testPosMod / (avoidanceBoxLength * 0.5f);
+        brakeVal = testForwardVal;
+    }
+
+    DirectX::SimpleMath::Vector3 testCenter = avoidanceCenter;
+    DirectX::SimpleMath::Vector3 testRear = avoidanceCenter;
+    testRear.x -= m_avoidanceBoxLength;
+    DirectX::SimpleMath::Vector3 testFront = avoidanceCenter;
+    testFront.x += m_avoidanceBoxLength;
+    int ljafioej = 0;
+    testCenter = DirectX::SimpleMath::Vector3::Transform(testCenter, updateMat);
+    testRear = DirectX::SimpleMath::Vector3::Transform(testRear, updateMat);
+    testFront = DirectX::SimpleMath::Vector3::Transform(testFront, updateMat);
+    m_debugData->DebugPushTestLine(testCenter, DirectX::SimpleMath::Vector3::UnitY, 40.0f, 0.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    m_debugData->DebugPushTestLine(testRear, DirectX::SimpleMath::Vector3::UnitY, 40.0f, 0.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    m_debugData->DebugPushTestLine(testFront, DirectX::SimpleMath::Vector3::UnitY, 40.0f, 0.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+
     DirectX::SimpleMath::Vector3 avoidanceVec = avoidanceCenter - obsticlePos;
-    avoidanceVec.x *= -1.0f;
+    DirectX::SimpleMath::Vector3 avoidanceVec2 = obsticlePos - avoidanceCenter;
+    //avoidanceVec.x *= -1.0f;
     avoidanceVec.y = 0.0f;
     avoidanceVec.Normalize();
-    avoidanceVec = DirectX::SimpleMath::Vector3::Transform(avoidanceVec, updateMat);
+    //avoidanceVec2.x *= -1.0f;
+    avoidanceVec2.y = 0.0f;
+    avoidanceVec2.Normalize();
 
-    DirectX::SimpleMath::Vector3 testForward = m_npcOwner->GetForward();
-    testForward = DirectX::SimpleMath::Vector3::Transform(testForward, localMat);
-    testForward = DirectX::SimpleMath::Vector3::Transform(testForward, updateMat);
-    m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), testForward, 40.0f, 8.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    DirectX::SimpleMath::Vector3 aaTestForward = m_npcOwner->GetForward();
+    //avoidanceVec = DirectX::SimpleMath::Vector3::Transform(avoidanceVec, updateMat);
+    //avoidanceVec2 = DirectX::SimpleMath::Vector3::Transform(avoidanceVec2, updateMat);
+    //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), avoidanceVec, 40.0f, 8.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), avoidanceVec2, 40.0f, 8.5f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    m_currentDestination = avoidanceVec;
+    //DirectX::SimpleMath::Vector3 testForward = m_npcOwner->GetForward();
+    //testForward = DirectX::SimpleMath::Vector3::Transform(testForward, localMat);
+    //testForward = DirectX::SimpleMath::Vector3::Transform(testForward, updateMat);
+    
+    DirectX::SimpleMath::Vector3 testAvoidanceVec(brakeVal, 0.0f, lateralVal);
+    testAvoidanceVec.Normalize();
+    testAvoidanceVec *= 20.0f;
+    //testAvoidanceVec = DirectX::SimpleMath::Vector3::Transform(testAvoidanceVec, updateMat);
+    testAvoidanceVec = DirectX::SimpleMath::Vector3::Transform(testAvoidanceVec, m_npcOwner->GetAlignment());
+    testAvoidanceVec += m_npcOwner->GetPos();
+    m_currentDestination = testAvoidanceVec;
+    m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), testAvoidanceVec, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+    //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), testAvoidanceVec, 40.0f, 8.5f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+
     int testBreak = 0;
     testBreak++;
 }
@@ -339,7 +412,7 @@ void NpcAI::UpdateAI(const float aTimeStep)
     
     UpdateDesiredHeading();
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
-    m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     m_isAvoidanceTrue = false;
 }
 
