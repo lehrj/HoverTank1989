@@ -7,10 +7,12 @@ class Vehicle;
 
 struct AIOutput
 {
-    float       throttleOutput;
-    float       steeringOutput;
-    DirectX::SimpleMath::Vector3 steeringVec;
     float       angleToDestination;
+    float       forwardThrust;   
+    DirectX::SimpleMath::Vector3 omniDirection;
+    float       omniThrust;
+    float       steeringAngle;
+    DirectX::SimpleMath::Vector3 steeringDirection;
 };
 
 struct AIControls
@@ -82,7 +84,13 @@ private:
     void InitializeControlOutput();
     void InitializeDestinationTargets();
     void InitializeBehavior();
+    
+    void SetForwardThrustOutput();
+    void SetOmniOutput();
+    void SetSteeringOutput();
+
     void UpdateAvoidanceBox();
+    void UpdateControlOutput();
     void UpdateDesiredHeading();
 
     DirectX::SimpleMath::Vector3 Wander();

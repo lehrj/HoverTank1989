@@ -348,9 +348,11 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer
 void NpcAI::InitializeControlOutput()
 {
     m_aiControls.aiOutput.angleToDestination = 0.0f;
-    m_aiControls.aiOutput.steeringOutput = 0.0f;
-    m_aiControls.aiOutput.steeringVec = DirectX::SimpleMath::Vector3::Zero;
-    m_aiControls.aiOutput.throttleOutput = 0.0f;
+    m_aiControls.aiOutput.steeringAngle = 0.0f;
+    m_aiControls.aiOutput.steeringDirection = DirectX::SimpleMath::Vector3::Zero;
+    m_aiControls.aiOutput.forwardThrust = 0.0f;
+    m_aiControls.aiOutput.omniThrust = 0.0f;
+    m_aiControls.aiOutput.omniDirection = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void NpcAI::InitializeBehavior()
@@ -394,6 +396,48 @@ void NpcAI::PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos)
     }
 }
 
+void NpcAI::SetForwardThrustOutput()
+{
+    DirectX::SimpleMath::Vector3 directionToDest = m_currentDestination - m_npcOwner->GetPos();
+    directionToDest.Normalize();
+    bool isFacingDest;
+    if (directionToDest.Cross(m_npcOwner->GetRight()).y >= 0.0f)
+    {
+        isFacingDest = false;
+    }
+    else
+    {
+        isFacingDest = true;
+    }
+    float forwardThrustVal;
+    if (m_behavior.none == true)
+    {
+        forwardThrustVal = 0.0f;
+    }
+    else if (isFacingDest == true)
+    {
+        forwardThrustVal = directionToDest.Dot(m_npcOwner->GetForward());
+        forwardThrustVal *= m_aiControls.throttleOutputMax;
+    }
+    else
+    {
+        forwardThrustVal = - directionToDest.Dot( - m_npcOwner->GetForward());
+        forwardThrustVal *= - m_aiControls.throttleOutputMin;
+    }
+    
+    m_aiControls.aiOutput.forwardThrust = forwardThrustVal;
+}
+
+void NpcAI::SetOmniOutput()
+{
+
+}
+
+void NpcAI::SetSteeringOutput()
+{
+
+}
+
 void NpcAI::UpdateAI(const float aTimeStep)
 {
     //m_isAvoidanceTrue = false;
@@ -411,6 +455,8 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
     
     UpdateDesiredHeading();
+    UpdateControlOutput();
+
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
     //m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     m_isAvoidanceTrue = false;
@@ -448,6 +494,13 @@ void NpcAI::UpdateAvoidanceBox()
     DirectX::SimpleMath::Vector3 testPos = m_avoidanceBox.Center;
     m_avoidanceAlignment = velocityAlignment;
     m_avoidanceAlignment *= DirectX::SimpleMath::Matrix::CreateTranslation(m_avoidanceBox.Center);
+}
+
+void NpcAI::UpdateControlOutput()
+{
+    SetForwardThrustOutput();
+    SetOmniOutput();
+    SetSteeringOutput();
 }
 
 void NpcAI::UpdateDesiredHeading()
