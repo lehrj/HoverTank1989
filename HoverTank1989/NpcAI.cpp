@@ -285,8 +285,8 @@ DirectX::SimpleMath::Vector3 NpcAI::GetVecToDestination()
 {
     DirectX::SimpleMath::Vector3 vecToDestination = m_currentDestination - m_npcOwner->GetPos();
     vecToDestination.Normalize();
-    //return vecToDestination;
-    return m_desiredHeading;
+    return vecToDestination;
+    //return m_desiredHeading;
 }
 
 float NpcAI::GetThrottleInput()
@@ -435,7 +435,43 @@ void NpcAI::SetOmniOutput()
 
 void NpcAI::SetSteeringOutput()
 {
-
+    DirectX::SimpleMath::Vector3 dest = m_currentDestination - m_npcOwner->GetPos();
+    dest.Normalize();
+    //const DirectX::SimpleMath::Vector3 one = m_npcOwner->GetForward();
+    //const DirectX::SimpleMath::Vector3 two = dest;
+    //const DirectX::SimpleMath::Vector3 up = m_npcOwner->GetUp();
+    const DirectX::SimpleMath::Vector3 one = DirectX::SimpleMath::Vector3::UnitX;
+    const DirectX::SimpleMath::Vector3 two = -DirectX::SimpleMath::Vector3::UnitX;
+    const DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitY;
+    const float dot = one.x * two.x + one.y * two.y + one.z * two.z;
+    //det =        x1 * y2    * zn    + x2    * yn    * z1    +   xn  * y1    * z2    - z1    * y2    * xn    - z2    * yn    * x1    - zn    * y1    * x2
+    //const float det = one.x * two.y * aUp.z + two.x * aUp.y * one.z + aUp.x * one.y * two.z - one.z * two.y * aUp.x - two.z * aUp.y * one.x - aUp.z * one.y * two.x;
+    const float det = one.x * two.y * up.z + two.x * up.y * one.z + up.x * one.y * two.z - one.z * two.y * up.x - two.z * up.y * one.x - up.z * one.y * two.x;
+    const float angle = atan2(det, dot);
+    float angleDegrees = Utility::ToDegrees(angle);
+    
+    float steeringAngle;
+    if (angle > m_npcOwner->GetMaxSteeringAngle())
+    {
+        steeringAngle = m_npcOwner->GetMaxSteeringAngle();
+    }
+    else if (angle < - m_npcOwner->GetMaxSteeringAngle())
+    {
+        steeringAngle = - m_npcOwner->GetMaxSteeringAngle();
+    }
+    else
+    {
+        steeringAngle = angle;
+    }
+    m_aiControls.aiOutput.steeringAngle = steeringAngle;
+    DirectX::SimpleMath::Vector3 vecToDestination = m_currentDestination - m_npcOwner->GetPos();
+    vecToDestination.Normalize();
+    m_aiControls.aiOutput.steeringDirection = vecToDestination;
+    m_aiControls.aiOutput.angleToDestination = angle;
+    /*
+    //return vecToDestination;
+    return m_desiredHeading;
+    */
 }
 
 void NpcAI::UpdateAI(const float aTimeStep)
