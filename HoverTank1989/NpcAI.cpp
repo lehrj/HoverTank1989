@@ -430,19 +430,35 @@ void NpcAI::SetForwardThrustOutput()
 
 void NpcAI::SetOmniOutput()
 {
+    DirectX::SimpleMath::Vector3 omniThrustDirection = m_npcOwner->GetForward();
+    omniThrustDirection = DirectX::SimpleMath::Vector3::Transform(omniThrustDirection, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_npcOwner->GetUp(), m_aiControls.aiOutput.angleToDestination));
+    omniThrustDirection.Normalize();
+    m_aiControls.aiOutput.omniDirection = omniThrustDirection;
 
+    // Temp throttle settings till AI is built out to control thrust based on distance to destination
+    const float distanceToDest = (m_npcOwner->GetPos() - m_currentDestination).Length();
+    m_debugData->DebugPushUILineDecimalNumber("distanceToDest ", distanceToDest, "");
+    const float slowDownRange = 50.0f;
+    if (distanceToDest > slowDownRange)
+    {
+        m_aiControls.aiOutput.omniThrust = 1.0f;
+    }
+    else
+    {
+        m_aiControls.aiOutput.omniThrust = distanceToDest / slowDownRange;
+    }
 }
 
 void NpcAI::SetSteeringOutput()
 {
     DirectX::SimpleMath::Vector3 dest = m_currentDestination - m_npcOwner->GetPos();
     dest.Normalize();
-    //const DirectX::SimpleMath::Vector3 one = m_npcOwner->GetForward();
-    //const DirectX::SimpleMath::Vector3 two = dest;
-    //const DirectX::SimpleMath::Vector3 up = m_npcOwner->GetUp();
-    const DirectX::SimpleMath::Vector3 one = DirectX::SimpleMath::Vector3::UnitX;
-    const DirectX::SimpleMath::Vector3 two = -DirectX::SimpleMath::Vector3::UnitX;
-    const DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitY;
+    const DirectX::SimpleMath::Vector3 one = m_npcOwner->GetForward();
+    const DirectX::SimpleMath::Vector3 two = dest;
+    const DirectX::SimpleMath::Vector3 up = m_npcOwner->GetUp();
+    //const DirectX::SimpleMath::Vector3 one = DirectX::SimpleMath::Vector3::UnitX;
+    //const DirectX::SimpleMath::Vector3 two = -DirectX::SimpleMath::Vector3::UnitX;
+    //const DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitY;
     const float dot = one.x * two.x + one.y * two.y + one.z * two.z;
     //det =        x1 * y2    * zn    + x2    * yn    * z1    +   xn  * y1    * z2    - z1    * y2    * xn    - z2    * yn    * x1    - zn    * y1    * x2
     //const float det = one.x * two.y * aUp.z + two.x * aUp.y * one.z + aUp.x * one.y * two.z - one.z * two.y * aUp.x - two.z * aUp.y * one.x - aUp.z * one.y * two.x;
@@ -494,7 +510,16 @@ void NpcAI::UpdateAI(const float aTimeStep)
     UpdateControlOutput();
 
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
-    //m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+
+    m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), -m_aiControls.aiOutput.omniDirection, 15.f, 5.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), m_aiControls.aiOutput.steeringDirection, 15.f, 7.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.angleToDestination", m_aiControls.aiOutput.angleToDestination, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.steeringAngle", m_aiControls.aiOutput.steeringAngle, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.forwardThrust", m_aiControls.aiOutput.forwardThrust, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.omniThrust", m_aiControls.aiOutput.omniThrust, "");
+
+
     m_isAvoidanceTrue = false;
 }
 

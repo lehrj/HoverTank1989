@@ -770,6 +770,52 @@ void NPCVehicle::UpdateControlInput()
     m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
 }
 
+void NPCVehicle::UpdateControlInputFromAi()
+{
+    AIOutput aiInput = m_npcAI->GetAiControlOutput();
+
+    m_vehicleStruct00.vehicleData.controlInput.steeringVec = m_npcAI->GetVecToDestination();
+    m_vehicleStruct00.vehicleData.controlInput.steeringVec = aiInput.steeringDirection;
+    m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
+    m_vehicleStruct00.vehicleData.controlInput.angleToDestination = aiInput.angleToDestination;
+
+    const float yawInput = m_vehicleStruct00.vehicleData.controlInput.angleToDestination;
+    const float updatedYaw = (yawInput * m_vehicleStruct00.vehicleData.controlInput.steeringInputRate) + m_vehicleStruct00.vehicleData.controlInput.steeringInput;
+    if (updatedYaw > m_vehicleStruct00.vehicleData.controlInput.steeringInputMax)
+    {
+        m_vehicleStruct00.vehicleData.controlInput.steeringInput = m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
+    }
+    else if (updatedYaw < m_vehicleStruct00.vehicleData.controlInput.steeringInputMin)
+    {
+        m_vehicleStruct00.vehicleData.controlInput.steeringInput = m_vehicleStruct00.vehicleData.controlInput.steeringInputMin;
+    }
+    else if (updatedYaw < m_vehicleStruct00.vehicleData.controlInput.inputDeadZone && updatedYaw > -m_vehicleStruct00.vehicleData.controlInput.inputDeadZone)
+    {
+        m_vehicleStruct00.vehicleData.controlInput.steeringInput = 0.0f;
+    }
+    else
+    {
+        m_vehicleStruct00.vehicleData.controlInput.steeringInput = updatedYaw;
+    }
+
+    // velocity
+    float absAngleToDest = abs(m_vehicleStruct00.vehicleData.controlInput.angleToDestination);
+    //float rawThrottleInput = m_npcAI->GetThrottleInput();
+    float rawThrottleInput = aiInput.forwardThrust;
+    float modThrottleInput = rawThrottleInput - absAngleToDest;
+    if (modThrottleInput < 0.0f)
+    {
+        m_vehicleStruct00.vehicleData.controlInput.throttleInput = 0.0f;
+    }
+    else
+    {
+        m_vehicleStruct00.vehicleData.controlInput.throttleInput = modThrottleInput;
+    }
+
+    //m_vehicleStruct00.vehicleData.controlInput.throttleInput = m_npcAI->GetThrottleInput();
+    m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
+}
+
 void NPCVehicle::UpdateForceTorqueVecs() // update when force and torque over time is implemented
 {
     m_vehicleStruct00.vehicleData.impactForceVec.clear();
@@ -791,7 +837,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.terrainNormal = m_vehicleStruct00.environment->GetTerrainNormal(m_vehicleStruct00.vehicleData.q.position);
 
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-    UpdateControlInput();
+    //UpdateControlInput();
+    UpdateControlInputFromAi();
 
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 

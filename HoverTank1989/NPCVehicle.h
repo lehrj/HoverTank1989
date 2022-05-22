@@ -229,6 +229,7 @@ private:
     void UpdateAlignment();
     Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
     void UpdateControlInput();
+    void UpdateControlInputFromAi();
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
     void UpdateNPCModel(const double aTimeDelta);   
