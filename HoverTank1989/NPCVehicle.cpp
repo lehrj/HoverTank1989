@@ -397,14 +397,16 @@ Utility::Torque NPCVehicle::GetImpactTorqueSum(const VehicleData& aVehicleData)
 
 DirectX::SimpleMath::Vector3 NPCVehicle::GetOmniDirectionalThrust(const VehicleData& aVehicleData)
 {
-    DirectX::SimpleMath::Vector3 thrustUpdate = aVehicleData.controlInput.steeringVec * (aVehicleData.hoverData.forwardThrust);
+    //DirectX::SimpleMath::Vector3 thrustUpdate = aVehicleData.controlInput.steeringVec * (aVehicleData.hoverData.forwardThrust);
 
     DirectX::SimpleMath::Vector3 thrustDir = aVehicleData.forward;
     thrustDir = DirectX::SimpleMath::Vector3::Transform(thrustDir, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aVehicleData.up, aVehicleData.controlInput.angleToDestination));
     thrustDir.Normalize();
     //m_debugData->DebugPushTestLine(aVehicleData.q.position, thrustDir, 15.0f, 20.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     thrustDir *= aVehicleData.hoverData.omniThrustMax;
-    return thrustDir;
+
+    DirectX::SimpleMath::Vector3 omniThrust = aVehicleData.hoverData.omniThrustVec;
+    return omniThrust;
 }
 
 DirectX::SimpleMath::Vector3 NPCVehicle::GetRepulsionForce(const VehicleData& aRepulsorVehicleData)
@@ -491,17 +493,20 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.hoverData.forwardThrust = 0.0f;
     aVehicleStruct.vehicleData.hoverData.omniThrust = 0.0f;
+    aVehicleStruct.vehicleData.hoverData.omniThrustVec = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.hoverData.hoverLiftNeutralWithGrav = -aEnvironment->GetGravityVec();
     aVehicleStruct.vehicleData.hoverData.hoverLiftMax = -aEnvironment->GetGravityVec() * 1.2f;
     aVehicleStruct.vehicleData.hoverData.hoverLiftCurrent = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.hoverData.turnRateCurrent = 0.0f;
     aVehicleStruct.vehicleData.hoverData.turnRateMax = 3.0f;
 
-    aVehicleStruct.vehicleData.controlInput.throttleInput = 0.0f;
+    aVehicleStruct.vehicleData.controlInput.angleToDestination = 0.0f;
+    aVehicleStruct.vehicleData.controlInput.omniDirection = DirectX::SimpleMath::Vector3::Zero;
+    aVehicleStruct.vehicleData.controlInput.omniThrust = 0.0f;
     aVehicleStruct.vehicleData.controlInput.stearingIsPressed = false;
     aVehicleStruct.vehicleData.controlInput.steeringInput = 0.0f;
     aVehicleStruct.vehicleData.controlInput.steeringVec = DirectX::SimpleMath::Vector3::Zero;
-    aVehicleStruct.vehicleData.controlInput.angleToDestination = 0.0f;
+    aVehicleStruct.vehicleData.controlInput.throttleInput = 0.0f;
 
     aVehicleStruct.vehicleData.playerPos = DirectX::SimpleMath::Vector3::Zero;
 }
@@ -575,8 +580,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
-    //velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
-    velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+    velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
+    //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
     velocityUpdate += damperForce;
@@ -597,7 +602,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     pendTorque.magnitude = 0.0f;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
-  
+    //bodyTorqueUpdate.axis = DirectX::SimpleMath::Vector3::Zero;
+    //bodyTorqueUpdate.magnitude = 0.0f;
     aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -774,13 +780,28 @@ void NPCVehicle::UpdateControlInputFromAi()
 {
     AIOutput aiInput = m_npcAI->GetAiControlOutput();
 
-    m_vehicleStruct00.vehicleData.controlInput.steeringVec = m_npcAI->GetVecToDestination();
+    //m_vehicleStruct00.vehicleData.controlInput.steeringVec = m_npcAI->GetVecToDestination();
     m_vehicleStruct00.vehicleData.controlInput.steeringVec = aiInput.steeringDirection;
-    m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
+    //m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
     m_vehicleStruct00.vehicleData.controlInput.angleToDestination = aiInput.angleToDestination;
 
+    //m_debugData->DebugPushUILineDecimalNumber("angleToDestination ", Utility::ToDegrees(m_vehicleStruct00.vehicleData.controlInput.angleToDestination), "");
+    //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.controlInput.steeringVec, 25.f, 10.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.forward, 45.f, 7.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     const float yawInput = m_vehicleStruct00.vehicleData.controlInput.angleToDestination;
-    const float updatedYaw = (yawInput * m_vehicleStruct00.vehicleData.controlInput.steeringInputRate) + m_vehicleStruct00.vehicleData.controlInput.steeringInput;
+    float updatedYaw;
+    if (abs(yawInput) < abs(m_vehicleStruct00.vehicleData.controlInput.steeringInput))
+    {
+        updatedYaw = yawInput * m_vehicleStruct00.vehicleData.controlInput.steeringInputRate;
+    }
+    else
+    {
+        updatedYaw = (yawInput * m_vehicleStruct00.vehicleData.controlInput.steeringInputRate) + m_vehicleStruct00.vehicleData.controlInput.steeringInput;
+    }
+    //const float updatedYaw = (yawInput) + m_vehicleStruct00.vehicleData.controlInput.steeringInput;
+    //const float updatedYaw = m_vehicleStruct00.vehicleData.controlInput.angleToDestination;
+
+
     if (updatedYaw > m_vehicleStruct00.vehicleData.controlInput.steeringInputMax)
     {
         m_vehicleStruct00.vehicleData.controlInput.steeringInput = m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
@@ -791,13 +812,17 @@ void NPCVehicle::UpdateControlInputFromAi()
     }
     else if (updatedYaw < m_vehicleStruct00.vehicleData.controlInput.inputDeadZone && updatedYaw > -m_vehicleStruct00.vehicleData.controlInput.inputDeadZone)
     {
-        m_vehicleStruct00.vehicleData.controlInput.steeringInput = 0.0f;
+        //m_vehicleStruct00.vehicleData.controlInput.steeringInput = 0.0f;
+        m_vehicleStruct00.vehicleData.controlInput.steeringInput = updatedYaw;
     }
     else
     {
         m_vehicleStruct00.vehicleData.controlInput.steeringInput = updatedYaw;
     }
-
+    //m_vehicleStruct00.vehicleData.controlInput.steeringInput = aiInput.angleToDestination;
+    m_debugData->DebugPushUILineDecimalNumber("steeringInput ", Utility::ToDegrees(m_vehicleStruct00.vehicleData.controlInput.steeringInput), "");
+    m_debugData->DebugPushUILineDecimalNumber("inputDeadZone ", m_vehicleStruct00.vehicleData.controlInput.inputDeadZone, "");
+    m_debugData->DebugPushUILineDecimalNumber("inputDeadZone degrees ", Utility::ToDegrees(m_vehicleStruct00.vehicleData.controlInput.inputDeadZone), "");
     // velocity
     float absAngleToDest = abs(m_vehicleStruct00.vehicleData.controlInput.angleToDestination);
     //float rawThrottleInput = m_npcAI->GetThrottleInput();
@@ -814,6 +839,11 @@ void NPCVehicle::UpdateControlInputFromAi()
 
     //m_vehicleStruct00.vehicleData.controlInput.throttleInput = m_npcAI->GetThrottleInput();
     m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
+
+    // omni trust
+    m_vehicleStruct00.vehicleData.controlInput.omniDirection = aiInput.omniDirection;
+    m_vehicleStruct00.vehicleData.controlInput.omniThrust = aiInput.omniThrust * m_vehicleStruct00.vehicleData.hoverData.omniThrustMax;
+    m_vehicleStruct00.vehicleData.hoverData.omniThrustVec = m_vehicleStruct00.vehicleData.controlInput.omniDirection * m_vehicleStruct00.vehicleData.controlInput.omniThrust;
 }
 
 void NPCVehicle::UpdateForceTorqueVecs() // update when force and torque over time is implemented

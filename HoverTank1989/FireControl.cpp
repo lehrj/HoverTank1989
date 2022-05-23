@@ -422,7 +422,4 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
             DeleteProjectileFromVec(i);
         }
     }
-
-    m_debugData->DebugPushUILineDecimalNumber(std::string("Projectile Count = "), static_cast<float>(m_projectileVec.size()), std::string(""));
-    m_debugData->DebugPushUILineDecimalNumber(std::string("delete Count = "), static_cast<float>(deleteCount), std::string(""));
 }

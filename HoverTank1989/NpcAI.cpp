@@ -437,7 +437,7 @@ void NpcAI::SetOmniOutput()
 
     // Temp throttle settings till AI is built out to control thrust based on distance to destination
     const float distanceToDest = (m_npcOwner->GetPos() - m_currentDestination).Length();
-    m_debugData->DebugPushUILineDecimalNumber("distanceToDest ", distanceToDest, "");
+    
     const float slowDownRange = 50.0f;
     if (distanceToDest > slowDownRange)
     {
@@ -484,6 +484,9 @@ void NpcAI::SetSteeringOutput()
     vecToDestination.Normalize();
     m_aiControls.aiOutput.steeringDirection = vecToDestination;
     m_aiControls.aiOutput.angleToDestination = angle;
+
+    //m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.angleToDestination ", m_aiControls.aiOutput.angleToDestination, "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.steeringAngle ", m_aiControls.aiOutput.steeringAngle, "");
     /*
     //return vecToDestination;
     return m_desiredHeading;
@@ -511,14 +514,14 @@ void NpcAI::UpdateAI(const float aTimeStep)
 
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
     m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-
+    /*
     m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), -m_aiControls.aiOutput.omniDirection, 15.f, 5.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), m_aiControls.aiOutput.steeringDirection, 15.f, 7.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.angleToDestination", m_aiControls.aiOutput.angleToDestination, "");
     m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.steeringAngle", m_aiControls.aiOutput.steeringAngle, "");
     m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.forwardThrust", m_aiControls.aiOutput.forwardThrust, "");
     m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.omniThrust", m_aiControls.aiOutput.omniThrust, "");
-
+    */
 
     m_isAvoidanceTrue = false;
 }

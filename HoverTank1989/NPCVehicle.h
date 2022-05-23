@@ -10,23 +10,25 @@ class NPCController;
 struct NpcControlInput
 {
     // input control data
-    const float inputDeadZone = 0.7;  // small deadzone to ignore nominal control input
+    float       angleToDestination;
+    const float inputDeadZone = 0.0018;  // small deadzone to ignore nominal control input
+
+    DirectX::SimpleMath::Vector3 omniDirection;
+    float                        omniThrust
+        ;
+    bool        stearingIsPressed;
+    float       steeringInput;
+    const float steeringDecayRate = 0.2f;
+    const float steeringInputMax = 3.0f;
+    const float steeringInputMin = -3.0f;
+    const float steeringInputRate = 5.0f;
+    DirectX::SimpleMath::Vector3 steeringVec;
 
     float       throttleInput;
     const float throttleInputDecayRate = 0.6f;
     const float throttleInputMin = -1.0f;
     const float throttleInputMax = 1.0f;
     const float throttleInputRate = 0.4f;
-
-    bool        stearingIsPressed;
-    float       steeringInput;
-    const float steeringDecayRate = 0.2f;
-    const float steeringInputMax = 3.0f;
-    const float steeringInputMin = -3.0f;
-    const float steeringInputRate = 1.95f;
-    DirectX::SimpleMath::Vector3 steeringVec;
-
-    float       angleToDestination;   
 };
 
 struct HoverData
@@ -50,7 +52,7 @@ struct HoverData
     const float omniThrustMax = 450.0f;
     float omniThrustDirection = 0.0f;
     const float omniThrustDirectionChangeRate = 1.5f;
-    
+    DirectX::SimpleMath::Vector3 omniThrustVec;
 
     DirectX::SimpleMath::Vector3    hoverLiftMax;
     DirectX::SimpleMath::Vector3    hoverLiftNeutralWithGrav;
