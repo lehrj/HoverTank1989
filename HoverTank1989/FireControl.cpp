@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "FireControl.h"
 
-FireControl::FireControl()
-{
-}
 
 void FireControl::CheckCollisions()
 {
@@ -16,22 +13,17 @@ void FireControl::CheckCollisions()
             m_projectileVec[i].liveTimeTick--;
             if (m_projectileVec[i].liveTimeTick <= 0)
             {
-                m_projectileVec[i].isCollisionTrue = true;
+                m_projectileVec[i].isDeleteTrue = true;
             }
         }
         else if (m_projectileVec[i].time > m_maxProjectileLifeTime)
         {
-            m_projectileVec[i].isCollisionTrue = true;
+            m_projectileVec[i].isDeleteTrue = true;
         }
         else if (m_environment->GetIsPosInPlay(m_projectileVec[i].q.position, 0.0f) == false)
         {
-            m_projectileVec[i].isCollisionTrue = true;
-        }   
-
-        if (m_projectileVec[i].time > m_maxProjectileLifeTime)
-        {
             m_projectileVec[i].isDeleteTrue = true;
-        }
+        }   
     }
 }
 
@@ -51,16 +43,7 @@ void FireControl::DeleteProjectileFromVec(const unsigned int aIndex)
 
 void FireControl::DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
-    //m_heliModel.mainRotorHaloShape->Draw(m_heliModel.mainRotorHaloMatrix, aView, aProj, m_heliModel.bodyColor);
-    //DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_heli.q.position, -m_heli.right, m_heli.up);
-    //m_heliModel.cannonBarrelMatrix = m_heliModel.scaleCannonBarrelMatrix;
-    //m_heliModel.cannonBarrelMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0f));
-    //m_heliModel.cannonBarrelMatrix *= m_heliModel.localCannonBarrelMatrix;
-    //m_heliModel.cannonBarrelMatrix *= updateMat;
     DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
-    //AmmoData projData = m_ballAmmo;
-    //ProjectileModel projAmmo = m_ballAmmo->ammoModel;
-    //projAmmo.projectileShape = m_ballAmmo.ammoModel.projectileShape;
 
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
@@ -84,18 +67,6 @@ void FireControl::DrawProjectile(const DirectX::SimpleMath::Matrix aView, const 
 
 void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
-    /*
-    ProjectileData firedProjectile;
-    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
-    firedProjectile.q.position = aLaunchPos;    
-    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
-    firedProjectile.collisionSphere.Center = aLaunchPos;
-    
-    firedProjectile.time = 0.0f;
-    m_projectileVec.push_back(firedProjectile);
-    */
-
-
     AmmoData firedAmmo;
     if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
     {
@@ -107,7 +78,8 @@ void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::
     }
 
     ProjectileData firedProjectile;
-    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
+    firedProjectile.ammoData = firedAmmo;
+    //firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
     firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
     firedProjectile.collisionSphere.Center = aLaunchPos;
@@ -128,14 +100,6 @@ void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::
 
 void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
-    /*
-    ProjectileData firedProjectile;
-    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
-    firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
-    firedProjectile.time = 0.0f;
-    m_projectileVec.push_back(firedProjectile);
-    */
     AmmoData firedAmmo;
     if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
     {
@@ -147,7 +111,8 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
     }
 
     ProjectileData firedProjectile;
-    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
+    firedProjectile.ammoData = firedAmmo;
+    //firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
     firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
     firedProjectile.collisionSphere.Center = aLaunchPos;
@@ -275,7 +240,8 @@ void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vect
     }
 
     ProjectileData firedProjectile;
-    firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
+    firedProjectile.ammoData = firedAmmo;
+    //firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
     firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
     firedProjectile.collisionSphere.Center = aLaunchPos;
@@ -288,15 +254,14 @@ void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vect
 void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
-    aAmmo.ammoData.airDensity = 1.25f;
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
-    aAmmo.ammoData.gravity = -9.8f;
-    aAmmo.ammoData.launchVelocity = 385.0f;
+    aAmmo.ammoData.launchVelocity = 35.0f;
     aAmmo.ammoData.length = 1.0f;
-    aAmmo.ammoData.mass = 50.2f;
-    aAmmo.ammoData.surfaceArea = 0.15f;
-    aAmmo.ammoData.radius = 4.15f;
+    aAmmo.ammoData.mass = 45.0f;
+    
+    aAmmo.ammoData.radius = 0.15f;
+    aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 5;
     aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
     
@@ -346,11 +311,22 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
 
-    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 gravForce = DirectX::SimpleMath::Vector3(0.0f, -9.8f, 0.0f);
-    velocityUpdate += gravForce;
-
     const float mass = aProjectile->collisionData.mass;
+  
+    //  Compute the total drag force.
+    float airDensity = m_environment->GetAirDensity();
+    float dragCoefficient = aProjectile->ammoData.dragCoefficient;
+    float frontSurfaceArea = aProjectile->ammoData.frontSurfaceArea;
+    float velocity = newQ.velocity.Length();
+    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
+    DirectX::SimpleMath::Vector3 velocityNorm = newQ.velocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (frontDragResistance);
+
+    DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec() * mass;
+    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate += airResistance;
+    velocityUpdate += gravForce;
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -359,7 +335,6 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
 void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta)
 {
     //  Define a convenience variables
-    //const float numEqns = static_cast<float>(aHeli->numEqns);
     const float numEqns = static_cast<float>(6);
     //  Retrieve the current values of the dependent and independent variables.
     ProjectileMotion q = aProjectile->q;
@@ -380,17 +355,9 @@ void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDe
     DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
 
-    if (aProjectile->isCollisionTrue == true)
-    {
-        velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-        posUpdate = DirectX::SimpleMath::Vector3::Zero;
-        q.velocity = DirectX::SimpleMath::Vector3::Zero;
-    }
-
     q.velocity += velocityUpdate;
     q.position += posUpdate;
     aProjectile->q.velocity = q.velocity;
-    //aProjectile->q.velocity = DirectX::SimpleMath::Vector3::Zero;
     aProjectile->q.position = q.position;
     aProjectile->collisionData.collisionSphere.Center = q.position;
     aProjectile->collisionData.velocity = q.velocity;
@@ -414,8 +381,7 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
     {
         RungeKutta4(&m_projectileVec[i], aTimeDelta);
     }
-
-    
+   
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {

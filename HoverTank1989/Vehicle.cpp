@@ -663,7 +663,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     UpdatePendulumMotion(pendTorque, velocityUpdate, static_cast<float>(aTimeDelta));
     velocityUpdate += airResistance;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
-
+    
     //  Assign right-hand side values.
     aDQ->airResistance = airResistance;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_heli.mass);

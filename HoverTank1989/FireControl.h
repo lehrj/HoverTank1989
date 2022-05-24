@@ -34,14 +34,12 @@ struct ProjectileModel
 struct AmmoData
 {
     AmmoType ammoType;
-    float   airDensity;
     float   baseDamage;
     float   dragCoefficient;
-    float   gravity;
     float   launchVelocity;
     float   length;
     float   mass;
-    float   surfaceArea;
+    float   frontSurfaceArea;
     float   radius;
     int tickDownCounter;  // value to tick down as collisions occure, to be used for penetration and ricochet 
 
@@ -56,7 +54,8 @@ struct AmmoStruct
 
 struct ProjectileData
 {
-    AmmoType projectileAmmoType;
+    //AmmoType projectileAmmoType;
+    AmmoData ammoData;
     //AmmoData& const ammo;
     ProjectileMotion q;
     DirectX::BoundingSphere collisionSphere;
@@ -71,8 +70,6 @@ struct ProjectileData
 class FireControl
 {
 public:
-    FireControl();
-
     void DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         const DirectX::SimpleMath::Vector3 aLaunchPos, 
@@ -82,7 +79,6 @@ public:
     void FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
-    //void SetNPCController(NPCController* aNPCController);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
     void UpdateProjectileVec(double aTimeDelta);
 private:
@@ -99,7 +95,6 @@ private:
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
 
     Environment const* m_environment;
-    //NPCController* m_npcController;
     std::shared_ptr<NPCController> m_npcController;
     std::shared_ptr<DebugData> m_debugData;
 
