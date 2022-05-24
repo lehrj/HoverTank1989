@@ -63,6 +63,7 @@ struct ProjectileData
     
     Utility::CollisionData  collisionData;
     bool isCollisionTrue;
+    bool isDeleteTrue;
     float time;
     int liveTimeTick;
 };

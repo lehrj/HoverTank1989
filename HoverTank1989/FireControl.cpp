@@ -12,6 +12,7 @@ void FireControl::CheckCollisions()
         bool isHitTrue = m_npcController->CheckProjectileCollisions(m_projectileVec[i].collisionData);
         if (isHitTrue == true)
         {
+            m_projectileVec[i].isCollisionTrue = true;
             m_projectileVec[i].liveTimeTick--;
             if (m_projectileVec[i].liveTimeTick <= 0)
             {
@@ -26,6 +27,11 @@ void FireControl::CheckCollisions()
         {
             m_projectileVec[i].isCollisionTrue = true;
         }   
+
+        if (m_projectileVec[i].time > m_maxProjectileLifeTime)
+        {
+            m_projectileVec[i].isDeleteTrue = true;
+        }
     }
 }
 
@@ -107,6 +113,7 @@ void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::
     firedProjectile.collisionSphere.Center = aLaunchPos;
     firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
     firedProjectile.isCollisionTrue = false;
+    firedProjectile.isDeleteTrue = false;
     firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
     // collision data
@@ -285,13 +292,14 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.gravity = -9.8f;
-    aAmmo.ammoData.launchVelocity = 85.0f;
+    aAmmo.ammoData.launchVelocity = 385.0f;
     aAmmo.ammoData.length = 1.0f;
-    aAmmo.ammoData.mass = 0.2f;
+    aAmmo.ammoData.mass = 50.2f;
     aAmmo.ammoData.surfaceArea = 0.15f;
-    aAmmo.ammoData.radius = 0.15f;
+    aAmmo.ammoData.radius = 4.15f;
     aAmmo.ammoData.tickDownCounter = 5;
     aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
+    
     aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
@@ -325,6 +333,7 @@ void FireControl::InitializeProjectileModelStruct(Microsoft::WRL::ComPtr<ID3D11D
    
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
@@ -371,6 +380,13 @@ void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDe
     DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
 
+    if (aProjectile->isCollisionTrue == true)
+    {
+        velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+        posUpdate = DirectX::SimpleMath::Vector3::Zero;
+        q.velocity = DirectX::SimpleMath::Vector3::Zero;
+    }
+
     q.velocity += velocityUpdate;
     q.position += posUpdate;
     aProjectile->q.velocity = q.velocity;
@@ -393,12 +409,13 @@ void FireControl::SetNPCController(std::shared_ptr<NPCController> aNPCController
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)
 {
+    CheckCollisions();
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
         RungeKutta4(&m_projectileVec[i], aTimeDelta);
     }
 
-    CheckCollisions();
+    
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
@@ -416,7 +433,8 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
             m_projectileVec[i].isCollisionTrue == true;
         }
         */
-        if (m_projectileVec[i].isCollisionTrue == true)
+        //if (m_projectileVec[i].isCollisionTrue == true)
+        if (m_projectileVec[i].isDeleteTrue == true)
         {
             deleteCount++;
             DeleteProjectileFromVec(i);

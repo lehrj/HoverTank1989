@@ -35,7 +35,9 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
             Utility::ImpactForce projectileForce;
             projectileForce.impactMass = aProjectile.mass;
             projectileForce.impactVelocity = aProjectile.velocity;
-            m_npcVec[i]->CalculateImpactForce(projectileForce, aProjectile.collisionSphere.Center);
+            //m_npcVec[i]->CalculateImpactForce(projectileForce, aProjectile.collisionSphere.Center);
+            m_npcVec[i]->CalculateImpactForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
+            isCollisionTrue = true;
         }
     }
     return isCollisionTrue;

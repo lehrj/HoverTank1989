@@ -127,7 +127,7 @@ void NpcAI::AvoidPos()
         float testLateralVal = testPosMod / avoidanceBoxWidth;
         lateralVal = testLateralVal;
     }
-    m_debugData->DebugPushUILineDecimalNumber("lateralVal = ", lateralVal, "");
+    //m_debugData->DebugPushUILineDecimalNumber("lateralVal = ", lateralVal, "");
 
     const float avoidanceBoxLength = m_avoidanceBoxLength * 2.0f;
     const float frontOffset = 7.0f;
