@@ -40,16 +40,23 @@ struct HoverData
     const float hoverRangeMid = 1.0f;
     const float hoverRangeUpper = 3.0f;
     */
+    /*
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
     const float hoverRangeLower = 1.5f;
     const float hoverRangeMid = 3.0f;
     const float hoverRangeUpper = 5.0f;
+    */
+    const float groundNormalForceRange = 0.2f;
+    const float hoverNeutralBoyantAlt = 0.1f;
+    const float hoverRangeLower = 0.0f;
+    const float hoverRangeMid = 0.1f;
+    const float hoverRangeUpper = 0.2f;
 
     float forwardThrust;
-    const float forwardThrustMax = 500.0f;
+    const float forwardThrustMax = 700.0f;
     float omniThrust;
-    const float omniThrustMax = 450.0f;
+    const float omniThrustMax = 650.0f;
     float omniThrustDirection = 0.0f;
     const float omniThrustDirectionChangeRate = 1.5f;
     DirectX::SimpleMath::Vector3 omniThrustVec;

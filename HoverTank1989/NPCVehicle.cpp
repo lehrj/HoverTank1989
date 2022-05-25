@@ -239,7 +239,7 @@ void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce a
     repulsionForceToVec.impactMass = aVehicleHit.mass;
     PushImpactForce(repulsionForceToVec);
     */
-    //PushImpactForce(impactForceToVec);
+    PushImpactForce(impactForceToVec);
 
     PushImpactTorque(impactTorque);
 }
@@ -324,8 +324,9 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
     const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
     if (aVehicleData.altitude < lowerCurveBound)
     {
-        //gravForce = DirectX::SimpleMath::Vector3::Zero;
-        gravForce *= -2.0f;
+        float metersBelowLowerBound = aVehicleData.altitude - lowerCurveBound;
+        float reboundMod = 0.1f;
+        gravForce *= metersBelowLowerBound * reboundMod;
     }
     else if (aVehicleData.altitude > upperCurveBound)
     {
@@ -335,7 +336,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
     {
         const float currentCurvePos = (aVehicleData.altitude / upperCurveBound);
         gravForce = gravForce * currentCurvePos;
-
     }
 
     //return gravForce * aVehicleData.mass;
@@ -347,7 +347,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetDamperForce(const VehicleData& aVehi
     const float lowerCurveBound = aVehicleData.hoverData.hoverRangeLower;
     const float midCurveBound = aVehicleData.hoverData.hoverNeutralBoyantAlt;
     const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
-    const float damperConstant = 9.1f;
+    const float damperConstant = 19.1f;
     DirectX::SimpleMath::Vector3 currentVelocity = aVehicleData.q.velocity;
     DirectX::SimpleMath::Vector3 damperForce = DirectX::SimpleMath::Vector3::Zero;
     if (aVehicleData.altitude > midCurveBound && aVehicleData.altitude < upperCurveBound)
@@ -525,7 +525,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.frontalArea = aVehicleStruct.vehicleData.dimensions.z * aVehicleStruct.vehicleData.dimensions.y;
     aVehicleStruct.vehicleData.hitPoints = 100.0f;
 
-    aVehicleStruct.vehicleData.mass = 1000.0f;
+    aVehicleStruct.vehicleData.mass = 700.0f;
     aVehicleStruct.vehicleData.npcType = NPCType::NPCTYPE_NPC00;
     aVehicleStruct.vehicleData.terrainHightAtPos = 0.0f;
     aVehicleStruct.vehicleData.altitude = 0.0f;
@@ -633,13 +633,15 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
    
     //  Compute the total drag force
     const float v = newQ.velocity.Length();
-    const float airDensity = 1.225f; // ToDo rework to pull data from environment
+    //const float airDensity = 1.225f; // ToDo rework to pull data from environment
+    const float airDensity = m_environment->GetAirDensity(); // ToDo rework to pull data from environment
     const float dragCoefficient = aVehicle->dragCoefficient;
     const float frontSurfaceArea = aVehicle->frontalArea;
     const float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
     float mass = 10.0f;
-    //mass = aVehicle->mass;
-    DirectX::SimpleMath::Vector3 velocityNorm = aVehicle->q.velocity;
+    mass = aVehicle->mass;
+    //DirectX::SimpleMath::Vector3 velocityNorm = aVehicle->q.velocity;
+    DirectX::SimpleMath::Vector3 velocityNorm = newQ.velocity;
     velocityNorm.Normalize();
 
     //DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (static_cast<float>(aTimeDelta) * (-frontDragResistance / mass));
@@ -655,15 +657,15 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
-    velocityUpdate += damperForce;
+    velocityUpdate += damperForce * mass;
     //DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec() * aVehicle->mass;
     DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec();
-    velocityUpdate += gravForce;
+    //velocityUpdate += gravForce;
     DirectX::SimpleMath::Vector3 antiGravForce = GetAntiGravGravityForce(m_vehicleStruct00.vehicleData);
-    //gravForce = DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f);
-    velocityUpdate += antiGravForce;
+
+    velocityUpdate += antiGravForce * mass;
     DirectX::SimpleMath::Vector3 hoverForce = GetHoverLift(m_vehicleStruct00.vehicleData);
-    velocityUpdate += hoverForce;
+    //velocityUpdate += hoverForce;
 
     velocityUpdate += GetImpactForceSum(m_vehicleStruct00.vehicleData);
   
@@ -673,9 +675,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     pendTorque.magnitude = 0.0f;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
-    //bodyTorqueUpdate.axis = DirectX::SimpleMath::Vector3::Zero;
-    //bodyTorqueUpdate.magnitude = 0.0f;
-    //aDQ->bodyTorqueForce = bodyTorqueUpdate;
+
+    aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
 }
@@ -720,11 +721,9 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
         testBreak++;
     }
 
-    
     aVehicle->q.velocity = q.velocity;
     aVehicle->q.position = q.position;
     aVehicle->q.bodyTorqueForce = q.bodyTorqueForce;
-    
 }
 
 void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
@@ -770,7 +769,8 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
 {
     Utility::Torque impactTorque = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
     impactTorque.axis.Normalize();
-    impactTorque.magnitude *= 0.0002f;    
+    //impactTorque.magnitude *= 0.0002f;    
+    impactTorque.magnitude *= 0.0002f;
 
     const DirectX::SimpleMath::Vector3 centerMassPos = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
     const DirectX::SimpleMath::Vector3 rotorPos = m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos;

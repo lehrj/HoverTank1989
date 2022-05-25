@@ -115,10 +115,21 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
     //firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
     firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+
+    firedProjectile.isCollisionTrue = false;
+    firedProjectile.isDeleteTrue = false;
+    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+    firedProjectile.time = 0.0f;
+
+    // collision data
+    firedProjectile.collisionData.collisionSphere = firedProjectile.collisionSphere;
+    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+    firedProjectile.collisionData.mass = firedAmmo.mass;
+    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+
     firedProjectile.collisionSphere.Center = aLaunchPos;
     firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
-    firedProjectile.isCollisionTrue = false;
-    firedProjectile.time = 0.0f;
+    
     m_projectileVec.push_back(firedProjectile);
 
     DirectX::SimpleMath::Vector3 up = aLaunchDirectionForward;
@@ -256,7 +267,7 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
-    aAmmo.ammoData.launchVelocity = 35.0f;
+    aAmmo.ammoData.launchVelocity = 135.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
     
