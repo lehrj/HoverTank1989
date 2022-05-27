@@ -54,7 +54,7 @@ struct HoverData
     const float hoverRangeUpper = 0.2f;
 
     float forwardThrust;
-    const float forwardThrustMax = 700.0f;
+    const float forwardThrustMax = 100000.0f;
     float omniThrust;
     const float omniThrustMax = 650.0f;
     float omniThrustDirection = 0.0f;
@@ -92,6 +92,10 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    forwardShape;
     DirectX::SimpleMath::Matrix localForwardMatrix;
     DirectX::SimpleMath::Matrix worldForwardMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    rearShape;
+    DirectX::SimpleMath::Matrix localRearMatrix;
+    DirectX::SimpleMath::Matrix worldRearMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    collisionShape;

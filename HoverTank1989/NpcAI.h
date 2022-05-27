@@ -78,6 +78,8 @@ private:
 
     Behavior m_behavior;
     
+    void AdjustHeadingForVelocity();
+    void AdjustHeadingForVelocity2();
     void AvoidPos();
     void AvoidPos2();
 
@@ -94,6 +96,7 @@ private:
     void UpdateAvoidanceBox();
     void UpdateControlOutput();
     void UpdateDesiredHeading();
+    void UpdateDestinationSmoothing();
 
     DirectX::SimpleMath::Vector3 Wander();
 
@@ -107,6 +110,10 @@ private:
     Utility::Waypoint m_currentWaypoint;
     Utility::WayPath m_currentWayPath;
     DirectX::SimpleMath::Vector3 m_currentDestination;
+
+    std::vector<DirectX::SimpleMath::Vector3> m_destinationSmoothing;
+    const int m_destinationSmoothingSize = 10;
+
 
     DirectX::SimpleMath::Vector3 m_desiredHeading;
     float m_desiredVelocity;

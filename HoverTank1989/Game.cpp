@@ -129,13 +129,13 @@ void Game::Initialize(HWND window, int width, int height)
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
     
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), m_npcController);    
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 10.0f, 0.0f), m_npcController);
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), m_npcController);
 
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f)));
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(65.0f, 3.0f, -2.0f), m_npcController);
+    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(65.0f, 3.0f, -2.0f), m_npcController);
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(44.01f, -10.0f, -2.0f), m_npcController);
 
-    /*
+    
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f), m_npcController);
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
@@ -150,7 +150,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f), m_npcController);
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f), m_npcController);
-    */
+    
     //m_testVehicleHover->InitializeVehicleHover(context, heading, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f), m_environment, m_debugData);
 
     // testing new terrain map
@@ -1152,6 +1152,24 @@ void Game::Render()
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
+        
+        // draw test shapes start
+        DirectX::SimpleMath::Vector3 pos1(300.0f, 0.1f, -100.0f);
+        DirectX::SimpleMath::Matrix posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+        m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+
+        pos1 = DirectX::SimpleMath::Vector3(300.0f, 0.1f, 100.0f);
+        posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+        m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+
+        pos1 = DirectX::SimpleMath::Vector3(75.0f, 0.1f, 100.0f);
+        posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+        m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+
+        pos1 = DirectX::SimpleMath::Vector3(75.0f, 0.1f, -100.0f);
+        posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+        m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+        // draw test shapes end
     }
 
     m_batch->End();
@@ -1181,7 +1199,7 @@ void Game::Render()
     m_effect3->Apply(context);
     m_batch3->Begin();
 
-    DrawDebugLinesVector();
+    //DrawDebugLinesVector();
 
     m_batch3->End();
 
@@ -1340,10 +1358,6 @@ void Game::CreateDeviceDependentResources()
     //m_effect2->EnableDefaultLighting();
     //m_effect2->SetLightDiffuseColor(0, Colors::Gray);
 
-
-
-
-
     m_effect3 = std::make_unique<BasicEffect>(device);
     m_effect3->SetVertexColorEnabled(true);
 
@@ -1369,8 +1383,6 @@ void Game::CreateDeviceDependentResources()
     m_titleFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/titleFont.spritefont");
     m_bitwiseFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/bitwise24.spritefont");
     m_spriteBatch = std::make_unique<SpriteBatch>(context);
-
-
 
 
     m_effect4 = std::make_unique<BasicEffect>(device);
@@ -1399,17 +1411,7 @@ void Game::CreateDeviceDependentResources()
 
     m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret);
 
-    /*
-    size_t animsOffset;
-    m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo",
-        *m_fxFactory,
-        ModelLoader_CounterClockwise | ModelLoader_IncludeBones,
-        &animsOffset);
-
-    const size_t nbones = m_modelTank01->bones.size();
-    m_drawBones = ModelBone::MakeArray(nbones);
-    m_animBones = ModelBone::MakeArray(nbones);
-    */
+    m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -1561,11 +1563,10 @@ void Game::OnDeviceLost()
 
     m_backgroundTex.Reset();
 
-
-
-
     m_effect4.reset();
     m_batch4.reset();
+
+    m_testShape.reset();
 }
 
 void Game::OnDeviceRestored()
