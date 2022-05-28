@@ -19,6 +19,7 @@ public:
 
     struct CollisionData
     {
+        float                        collisionModifier = 1.0f;
         DirectX::BoundingSphere      collisionSphere;
         DirectX::SimpleMath::Vector3 velocity;
         float                        mass;
@@ -27,6 +28,7 @@ public:
 
     struct ImpactForce
     {
+        float impactModifier = 1.0f;
         DirectX::SimpleMath::Vector3 impactVelocity;
         float                        impactMass;
     };

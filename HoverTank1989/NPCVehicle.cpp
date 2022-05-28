@@ -241,9 +241,9 @@ void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce a
     repulsionForceToVec.impactMass = aVehicleHit.mass;
     PushImpactForce(repulsionForceToVec);
     */
-
+    impactForceToVec.impactVelocity *= aImpactForce.impactModifier;
     PushImpactForce(impactForceToVec);
-
+    impactTorque.magnitude *= aImpactForce.impactModifier;
     PushImpactTorque(impactTorque);
 }
 

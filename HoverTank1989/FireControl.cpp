@@ -89,6 +89,7 @@ void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::
     firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
     // collision data
+    firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
     firedProjectile.collisionData.collisionSphere = firedProjectile.collisionSphere;
     firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
     firedProjectile.collisionData.mass = firedAmmo.mass;
@@ -267,6 +268,7 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
+    aAmmo.ammoData.impactModifier = 2.0f;
     aAmmo.ammoData.launchVelocity = 135.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
