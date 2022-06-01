@@ -182,9 +182,6 @@
     <None Include="Art\Fonts\myfile.spritefont" />
     <None Include="Art\Fonts\titleFont.spritefont" />
     <None Include="Art\Audio\AudioBank.xwb" />
-    <None Include="Art\Models\Cup\cup._obj" />
-    <None Include="Art\Models\Cup\cup.cmo" />
-    <None Include="Art\Models\Cup\cup.mtl" />
     <None Include="HoverTank01.3ds" />
     <None Include="HoverTank01.cmo" />
     <None Include="HoverTank01.fbx">

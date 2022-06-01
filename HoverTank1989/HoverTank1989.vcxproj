@@ -273,9 +273,6 @@
     <None Include="Art\Fonts\bitwise24.spritefont" />
     <None Include="Art\Fonts\myfile.spritefont" />
     <None Include="Art\Fonts\titleFont.spritefont" />
-    <None Include="Art\Models\Cup\cup.cmo" />
-    <None Include="Art\Models\Cup\cup.mtl" />
-    <None Include="Art\Models\Cup\cup._obj" />
     <None Include="HoverTank01.3ds" />
     <None Include="HoverTank01.cmo" />
     <None Include="HoverTank01.fbx" />
