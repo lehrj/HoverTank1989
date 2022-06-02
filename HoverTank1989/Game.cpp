@@ -864,7 +864,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.T)
     {
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_MANUAL);
+        m_npcController->DebugToggleAI();
     }
     if (m_kbStateTracker.pressed.Y)
     {

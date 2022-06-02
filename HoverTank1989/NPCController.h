@@ -11,6 +11,7 @@ class NPCController
 public:
     NPCController();
     ~NPCController();
+    void DebugToggleAI();
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment);
     void UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta);

@@ -43,6 +43,14 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
     return isCollisionTrue;
 }
 
+void NPCController::DebugToggleAI()
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        m_npcVec[i]->DebugToggleAI();
+    }
+}
+
 void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)

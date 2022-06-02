@@ -266,6 +266,11 @@ void NPCVehicle::CalculateTopSpeed()
     m_vehicleStruct00.vehicleData.topSpeedCalculated = observedTopSpeed;
 }
 
+void NPCVehicle::DebugToggleAI()
+{
+    m_npcAI->DebugToggle();
+}
+
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);

@@ -325,6 +325,18 @@ void NpcAI::CreateWayPath()
     m_currentWayPath.targetNode = 0;
 }
 
+void NpcAI::DebugToggle()
+{
+    if (m_debugToggle == true)
+    {
+        m_debugToggle = false;
+    }
+    else
+    {
+        m_debugToggle = true;
+    }
+}
+
 float NpcAI::GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest)
 {
     DirectX::SimpleMath::Vector3 dest = m_currentDestination - m_npcOwner->GetPos();
@@ -573,7 +585,7 @@ void NpcAI::UpdateAI(const float aTimeStep)
     {
         AvoidPos();
     }
-    
+
     UpdateDesiredHeading();
     AdjustHeadingForVelocity();
     UpdateControlOutput();
