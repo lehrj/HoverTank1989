@@ -583,7 +583,10 @@ void NpcAI::UpdateAI(const float aTimeStep)
     m_currentDestination = m_currentWaypoint.waypointPos;
     if (m_isAvoidanceTrue == true)
     {
-        AvoidPos();
+        if (m_debugToggle == false)
+        {
+            AvoidPos();
+        }
     }
 
     UpdateDesiredHeading();

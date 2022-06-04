@@ -114,7 +114,6 @@ void NPCVehicle::CalculateImpactForce2(const Utility::ImpactForce aImpactForce, 
 void NPCVehicle::CalculateImpactForce3(const VehicleData& aVehicleHit)
 {
     float mass1 = aVehicleHit.mass;
-    //mass1 = 1.05f;
     float mass2 = m_vehicleStruct00.vehicleData.mass;
     float e = 0.9f;
 
@@ -450,9 +449,9 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetImpactForceSum(const VehicleData& aV
         //m_vehicleStruct00.vehicleData.impactForce.impactMass = aImpactForce.impactMass;
         //m_debugData->DebugPushTestLinePositionIndicator(aImpactPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 
-        impactForce += force;
+        //impactForce += force;
 
-        //impactForce += aVehicleData.impactForceVec[i].impactVelocity;
+        impactForce += aVehicleData.impactForceVec[i].impactVelocity;
     }
     
     return impactForce;
@@ -694,8 +693,9 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     DirectX::SimpleMath::Vector3 hoverForce = GetHoverLift(m_vehicleStruct00.vehicleData);
     //velocityUpdate += hoverForce;
 
-    velocityUpdate += GetImpactForceSum(m_vehicleStruct00.vehicleData);
-  
+    //velocityUpdate += GetImpactForceSum(m_vehicleStruct00.vehicleData);
+    velocityUpdate += m_vehicleStruct00.vehicleData.impactForceSum;
+
     velocityUpdate += airResistance;
 
     Utility::Torque pendTorque;
@@ -720,6 +720,9 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     MotionNPC dq3;
     MotionNPC dq4;
 
+    m_vehicleStruct00.vehicleData.impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
+    m_debugData->DebugPushUILineDecimalNumber("impactForceSum = ", m_vehicleStruct00.vehicleData.impactForceSum.Length(), "");
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.impactForceSum, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
     // of delta-q values for each of the four steps.
@@ -974,7 +977,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignment();
-
     UpdateNPCModel(aTimeDelta);
     UpdateHardPoints();
 

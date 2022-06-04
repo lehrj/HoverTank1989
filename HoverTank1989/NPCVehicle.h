@@ -148,6 +148,7 @@ struct VehicleData
 
     Utility::ImpactForce        impactForce;
     std::vector<Utility::ImpactForce> impactForceVec;
+    DirectX::SimpleMath::Vector3 impactForceSum = DirectX::SimpleMath::Vector3::Zero;
     Utility::Torque             impactTorque;
     std::vector<Utility::Torque> impactTorqueVec;
     DirectX::SimpleMath::Vector3 testForce;
