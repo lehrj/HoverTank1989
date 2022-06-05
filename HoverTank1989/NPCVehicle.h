@@ -219,6 +219,8 @@ public:
 
     void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
 
+    void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
+
 private:
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);

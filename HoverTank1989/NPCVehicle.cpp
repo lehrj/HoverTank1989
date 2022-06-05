@@ -237,13 +237,14 @@ void NPCVehicle::CalculateImpactForce4(const VehicleData& aVehicleHit)
     Utility::ImpactForce repulsionForceToVec;
     repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
     repulsionForceToVec.impactMass = aVehicleHit.mass;
-
+    
     repulsionForceToVec.impactVelocity *= 300.0f;
-    //PushImpactForce(repulsionForceToVec);
+    repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
+    PushImpactForce(repulsionForceToVec);
 
     //PushImpactForce(impactForceToVec);
 
-    //PushImpactTorque(impactTorque);
+    PushImpactTorque(impactTorque);
 }
 
 void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
@@ -750,8 +751,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
-    //velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
-    velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+    velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
+    //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
     velocityUpdate += damperForce * mass;
@@ -774,7 +775,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     pendTorque.magnitude = 0.0f;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
 
-    //aDQ->bodyTorqueForce = bodyTorqueUpdate;
+    aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
 }
@@ -871,7 +872,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     Utility::Torque impactTorque = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
     impactTorque.axis.Normalize();
     //impactTorque.magnitude *= 0.0002f;    
-    impactTorque.magnitude *= 0.0002f;
+    impactTorque.magnitude *= 0.00002f;
 
     const DirectX::SimpleMath::Vector3 centerMassPos = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
     const DirectX::SimpleMath::Vector3 rotorPos = m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos;

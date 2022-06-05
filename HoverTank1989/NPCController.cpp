@@ -105,8 +105,48 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
     {
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
-
+    CheckNpcCollisions();
     // collisions, 
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        for (unsigned int j = 0; j < m_npcVec.size(); ++j)
+        {
+            VehicleData testV1 = m_npcVec[i]->GetVehicleData();
+            if (i != j)
+            {
+                VehicleData testV2 = m_npcVec[j]->GetVehicleData();
+                const float distance = (testV1.q.position - testV2.q.position).Length();
+                const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
+                // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
+                /*
+                if (distance < maxCollisionRange && distance > -1.0f)
+                {
+                    if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
+                    {
+                        m_npcVec[i]->SetCollisionVal(true);
+                        Utility::ImpactForce projectileForce;
+                        projectileForce.impactMass = testV2.mass;
+                        projectileForce.impactVelocity = testV2.q.velocity;
+                        //m_npcVec[i]->CalculateImpactForce2(projectileForce, testV1.collisionBox.Center);
+                        m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
+                    }
+                }
+                */
+                // avoidance check
+                DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
+                if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
+                {
+                    m_npcVec[i]->PushAvoidanceTarget(testV2.q.position);
+                }
+            }
+        }
+    }
+}
+
+void NPCController::CheckNpcCollisions()
+{
+    std::vector<std::pair<int, int>> collisionsRecorded;
+    
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         for (unsigned int j = 0; j < m_npcVec.size(); ++j)
@@ -122,20 +162,42 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 {
                     if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
                     {
-                        m_npcVec[i]->SetCollisionVal(true);
-                        Utility::ImpactForce projectileForce;
-                        projectileForce.impactMass = testV2.mass;
-                        projectileForce.impactVelocity = testV2.q.velocity;
-                        //m_npcVec[i]->CalculateImpactForce2(projectileForce, testV1.collisionBox.Center);
-                        m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
-                    }
-                }
+                        bool hasCollisionBeenRecordedYet = false;
+                        for (int k = 0; i < collisionsRecorded.size(); ++k)
+                        {
+                            if (((collisionsRecorded[k].first == testV1.id) && (collisionsRecorded[k].second == testV2.id)) ||
+                                ((collisionsRecorded[k].first == testV2.id) && (collisionsRecorded[k].second == testV1.id)))
+                            {
+                                hasCollisionBeenRecordedYet = true;
+                            }
+                        }
+                        if (hasCollisionBeenRecordedYet == false)
+                        {
+                            float mass1 = testV1.mass; // aVehicleHit.mass;
+                            float mass2 = testV2.mass; // m_vehicleStruct00.vehicleData.mass;
+                            float e = 0.9f;
 
-                // avoidance check
-                DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
-                if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
-                {
-                    m_npcVec[i]->PushAvoidanceTarget(testV2.q.position);
+                            float tmp = 1.0f / (mass1 + mass2);
+                            DirectX::SimpleMath::Vector3 vx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
+                            DirectX::SimpleMath::Vector3 vx2 = testV2.q.velocity; // m_vehicleStruct00.vehicleData.q.velocity;
+                            DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
+                                (1.0 + e) * mass2 * vx2 * tmp;
+
+                            DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
+                                (mass2 - e * mass1) * vx2 * tmp;
+
+                            float newVX1Length = newVx1.Length();
+                            float newVX2Length = newVx2.Length();
+                            m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                            m_npcVec[j]->TestCollisionVelocityUpdate(newVx1);
+
+                            m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
+                            m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
+                        }
+
+                        //m_npcVec[i]->SetCollisionVal(true);
+                        //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
+                    }
                 }
             }
         }

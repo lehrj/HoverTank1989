@@ -1,8 +1,6 @@
 #pragma once
-//#include "pch.h"
 #include "NPCVehicle.h"
-//#include "FireControl.h"
-//#include "Vehicle.h"
+
 
 class Vehicle;
 
@@ -35,6 +33,8 @@ public:
 
 private:
     unsigned int GetUniqueID();
+
+    void CheckNpcCollisions();
 
     Environment const* m_environment;
     Vehicle const* m_player;
