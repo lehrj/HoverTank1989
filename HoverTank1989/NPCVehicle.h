@@ -56,7 +56,7 @@ struct HoverData
     float forwardThrust;
     const float forwardThrustMax = 100000.0f;
     float omniThrust;
-    const float omniThrustMax = 650.0f;
+    const float omniThrustMax = 65000.0f;
     float omniThrustDirection = 0.0f;
     const float omniThrustDirectionChangeRate = 1.5f;
     DirectX::SimpleMath::Vector3 omniThrustVec;
@@ -173,6 +173,7 @@ public:
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
+    void CalculateImpactForce4(const VehicleData& aVehicleHit);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
 
     void CalculateSelfRightingTorque();

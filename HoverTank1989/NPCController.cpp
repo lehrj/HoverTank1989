@@ -127,7 +127,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                         projectileForce.impactMass = testV2.mass;
                         projectileForce.impactVelocity = testV2.q.velocity;
                         //m_npcVec[i]->CalculateImpactForce2(projectileForce, testV1.collisionBox.Center);
-                        m_npcVec[i]->CalculateImpactForce3(m_npcVec[j]->GetVehicleData());
+                        m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
                     }
                 }
 

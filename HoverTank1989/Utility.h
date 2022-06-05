@@ -31,6 +31,7 @@ public:
         float impactModifier = 1.0f;
         DirectX::SimpleMath::Vector3 impactVelocity;
         float                        impactMass;
+        DirectX::SimpleMath::Vector3 kineticEnergy = DirectX::SimpleMath::Vector3::Zero;
     };
 
     struct Waypoint

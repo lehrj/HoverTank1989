@@ -310,16 +310,16 @@ void NpcAI::CreateWayPath()
     if (id % 2)
     {
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
-        Utility::PushWaypointToPath(m_currentWayPath, wp2);
+        //Utility::PushWaypointToPath(m_currentWayPath, wp2);
         Utility::PushWaypointToPath(m_currentWayPath, wp3);
-        Utility::PushWaypointToPath(m_currentWayPath, wp4);
+        //Utility::PushWaypointToPath(m_currentWayPath, wp4);
     }
     else
     {
         Utility::PushWaypointToPath(m_currentWayPath, wp4);
-        Utility::PushWaypointToPath(m_currentWayPath, wp3);
+        //Utility::PushWaypointToPath(m_currentWayPath, wp3);
         Utility::PushWaypointToPath(m_currentWayPath, wp2);
-        Utility::PushWaypointToPath(m_currentWayPath, wp1);
+        //Utility::PushWaypointToPath(m_currentWayPath, wp1);
     }
 
     m_currentWayPath.targetNode = 0;

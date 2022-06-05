@@ -168,11 +168,82 @@ void NPCVehicle::CalculateImpactForce3(const VehicleData& aVehicleHit)
     repulsionForceToVec.impactMass = aVehicleHit.mass;
 
     repulsionForceToVec.impactVelocity *= 300.0f;
-    PushImpactForce(repulsionForceToVec);
+    //PushImpactForce(repulsionForceToVec);
 
     PushImpactForce(impactForceToVec);
 
-    PushImpactTorque(impactTorque);
+    //PushImpactTorque(impactTorque);
+}
+
+void NPCVehicle::CalculateImpactForce4(const VehicleData& aVehicleHit)
+{
+    float mass1 = aVehicleHit.mass;
+    float mass2 = m_vehicleStruct00.vehicleData.mass;
+    float e = 0.9f;
+
+    float tmp = 1.0f / (mass1 + mass2);
+    DirectX::SimpleMath::Vector3 vx1 = aVehicleHit.q.velocity;
+    DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
+    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
+        (1.0 + e) * mass2 * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
+        (mass2 - e * mass1) * vx2 * tmp;
+
+    float newVX1Length = newVx1.Length();
+    float newVX2Length = newVx2.Length();
+    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
+    m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
+    m_vehicleStruct00.vehicleData.impactForce.impactMass = aVehicleHit.mass;
+
+    m_vehicleStruct00.vehicleData.q.velocity = newVx2;
+    Utility::ImpactForce impactForceToVec;
+    impactForceToVec.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
+    impactForceToVec.impactVelocity *= 21.0f;
+    impactForceToVec.impactMass = aVehicleHit.mass;
+
+    // test calc kinetic energy
+    DirectX::SimpleMath::Vector3 kE = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity * aVehicleHit.q.velocity;
+    float keLength = kE.Length();
+    float kEVal = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity.Length() * aVehicleHit.q.velocity.Length();
+    float newtonForce = kEVal * 10.0f;
+    float testTwMass = newtonForce / m_vehicleStruct00.vehicleData.mass;
+
+    impactForceToVec.kineticEnergy = kE * 0.1f;
+    // end kinetic energy test
+
+    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = testV;
+    DirectX::SimpleMath::Vector3 impactForce = aVehicleHit.q.velocity * aVehicleHit.mass;
+    //impactForce.Normalize();
+    //impactForce *= 0.01f;
+    DirectX::SimpleMath::Vector3 torqueArm = aVehicleHit.q.position - m_vehicleStruct00.vehicleData.collisionBox.Center;
+    Utility::Torque impactTorque = Utility::GetTorqueForce(torqueArm, impactForce);
+
+    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis += impactTorque.axis * impactTorque.magnitude;
+    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude += impactTorque.magnitude;
+    // new variable for combined torque, test
+    m_vehicleStruct00.vehicleData.impactTorque.axis += impactTorque.axis * impactTorque.magnitude;
+    m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
+
+    //impactForceToVec.impactVelocity = aImpactForce.impactVelocity;
+    //impactForceToVec.impactMass = aImpactForce.impactMass;
+
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, impactForce, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    DirectX::SimpleMath::Vector3 testImpactVelocityNorm = impactForceToVec.impactVelocity;
+    testImpactVelocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 testKENorm = kE;
+    testKENorm.Normalize();
+
+    Utility::ImpactForce repulsionForceToVec;
+    repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
+    repulsionForceToVec.impactMass = aVehicleHit.mass;
+
+    repulsionForceToVec.impactVelocity *= 300.0f;
+    //PushImpactForce(repulsionForceToVec);
+
+    //PushImpactForce(impactForceToVec);
+
+    //PushImpactTorque(impactTorque);
 }
 
 void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
@@ -450,8 +521,8 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetImpactForceSum(const VehicleData& aV
         //m_debugData->DebugPushTestLinePositionIndicator(aImpactPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 
         //impactForce += force;
-
-        impactForce += aVehicleData.impactForceVec[i].impactVelocity;
+        //impactForce += aVehicleData.impactForceVec[i].impactVelocity;
+        impactForce += aVehicleData.impactForceVec[i].kineticEnergy;
     }
     
     return impactForce;
@@ -679,8 +750,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
-    velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
-    //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+    //velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
+    velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
     velocityUpdate += damperForce * mass;
@@ -703,7 +774,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     pendTorque.magnitude = 0.0f;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
 
-    aDQ->bodyTorqueForce = bodyTorqueUpdate;
+    //aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
 }
