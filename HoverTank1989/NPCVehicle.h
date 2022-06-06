@@ -40,18 +40,21 @@ struct HoverData
     const float hoverRangeMid = 1.0f;
     const float hoverRangeUpper = 3.0f;
     */
-    /*
+    
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
     const float hoverRangeLower = 1.5f;
     const float hoverRangeMid = 3.0f;
     const float hoverRangeUpper = 5.0f;
-    */
+    
+    /*
     const float groundNormalForceRange = 0.2f;
     const float hoverNeutralBoyantAlt = 0.1f;
     const float hoverRangeLower = 0.0f;
     const float hoverRangeMid = 0.1f;
     const float hoverRangeUpper = 0.2f;
+    */
+
 
     float forwardThrust;
     const float forwardThrustMax = 100000.0f;
@@ -245,6 +248,7 @@ private:
 
     void RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ);
     void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
+    void TerrainImpactHandling();
 
     void UpdateAlignment();
     Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);

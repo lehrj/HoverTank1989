@@ -97,7 +97,7 @@ public:
 
     static float RandFloat()
     {
-        return ((rand()) / (RAND_MAX + 1.0));
+        return ((rand()) / (RAND_MAX + 1.0f));
     }
 
     static float RandomClamped()

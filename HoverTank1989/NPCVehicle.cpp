@@ -638,7 +638,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.hardPoints.localSteeringTorqueArmPos = DirectX::SimpleMath::Vector3(aVehicleStruct.vehicleData.dimensions.x * 0.5f, 0.0f, 0.0f);
     aVehicleStruct.vehicleData.hardPoints.steeringTorqueArmPos = aVehicleStruct.vehicleData.hardPoints.localSteeringTorqueArmPos;
 
-    aVehicleStruct.vehicleData.hardPoints.localBasePos = DirectX::SimpleMath::Vector3(0.0f, -aVehicleStruct.vehicleData.dimensions.y * 1.0f, 0.0f);
+    aVehicleStruct.vehicleData.hardPoints.localBasePos = DirectX::SimpleMath::Vector3(0.0f, -aVehicleStruct.vehicleData.dimensions.y * 0.5f, 0.0f);
     aVehicleStruct.vehicleData.hardPoints.basePos = aVehicleStruct.vehicleData.hardPoints.localBasePos;
 
     aVehicleStruct.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
@@ -792,9 +792,8 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     MotionNPC dq3;
     MotionNPC dq4;
 
-    m_vehicleStruct00.vehicleData.impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
-    m_debugData->DebugPushUILineDecimalNumber("impactForceSum = ", m_vehicleStruct00.vehicleData.impactForceSum.Length(), "");
-    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.impactForceSum, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    aVehicle->impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
+
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
     // of delta-q values for each of the four steps.
@@ -836,6 +835,17 @@ void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
 void NPCVehicle::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 {
     m_debugData = aDebugPtr;
+}
+
+void NPCVehicle::TerrainImpactHandling()
+{
+    DirectX::SimpleMath::Vector3 v = m_vehicleStruct00.vehicleData.q.velocity;
+    DirectX::SimpleMath::Vector3 n = m_vehicleStruct00.vehicleData.terrainNormal;
+    const float b = 0.9f;
+
+    DirectX::SimpleMath::Vector3 postImpactVelocity = b * (-2.0f * (v.Dot(n)) * n + v);
+
+    m_vehicleStruct00.vehicleData.q.velocity = postImpactVelocity;
 }
 
 void NPCVehicle::UpdateAlignment()
@@ -1035,13 +1045,16 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 preThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
     float preThrustLength = preThrust.Length();
 
-
     m_vehicleStruct00.vehicleData.terrainHightAtPos = m_vehicleStruct00.environment->GetTerrainHeightAtPos(m_vehicleStruct00.vehicleData.q.position);
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.hardPoints.basePos.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
     m_vehicleStruct00.vehicleData.terrainNormal = m_vehicleStruct00.environment->GetTerrainNormal(m_vehicleStruct00.vehicleData.q.position);
 
+    if (m_vehicleStruct00.vehicleData.altitude <= 0.0f && m_vehicleStruct00.vehicleData.q.velocity.y < 0.0f)
+    {
+        TerrainImpactHandling();
+    }
+
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-    //UpdateControlInput();
     UpdateControlInputFromAi();
 
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
@@ -1051,24 +1064,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     UpdateAlignment();
     UpdateNPCModel(aTimeDelta);
     UpdateHardPoints();
-
-    if (m_vehicleStruct00.vehicleData.isCollisionTrue == true)
-    {
-        const int id = m_vehicleStruct00.vehicleData.id;
-        DirectX::SimpleMath::Vector3 impact = GetImpactForceSum(m_vehicleStruct00.vehicleData);
-        DirectX::SimpleMath::Vector3 impactNorm = impact;
-        impactNorm.Normalize();
-        const float impactLength = impact.Length();
-        const float preVelocityLength = preVelocity.Length();
-        DirectX::SimpleMath::Vector3 postVelocity = m_vehicleStruct00.vehicleData.q.velocity;
-        const float postVelocityLength = postVelocity.Length();
-
-        DirectX::SimpleMath::Vector3 postThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
-        float postThrustLength = postThrust.Length();
-
-        int xxx = 0;
-        xxx++;
-    }
 
     m_vehicleStruct00.vehicleData.isCollisionTrue = false;
 
