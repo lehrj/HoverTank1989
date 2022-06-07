@@ -268,5 +268,9 @@ private:
     VehicleStruct m_vehicleStruct00;
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext1> m_context;
+
+public:
+    DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
+
 };
 

@@ -163,7 +163,7 @@ void NPCController::CheckNpcCollisions()
                     if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
                     {
                         bool hasCollisionBeenRecordedYet = false;
-                        for (int k = 0; i < collisionsRecorded.size(); ++k)
+                        for (int k = 0; k < collisionsRecorded.size(); ++k)
                         {
                             if (((collisionsRecorded[k].first == testV1.id) && (collisionsRecorded[k].second == testV2.id)) ||
                                 ((collisionsRecorded[k].first == testV2.id) && (collisionsRecorded[k].second == testV1.id)))
@@ -171,6 +171,9 @@ void NPCController::CheckNpcCollisions()
                                 hasCollisionBeenRecordedYet = true;
                             }
                         }
+
+                        collisionsRecorded.push_back(std::pair<int, int>(testV1.id, testV2.id));
+
                         if (hasCollisionBeenRecordedYet == false)
                         {
                             float mass1 = testV1.mass; // aVehicleHit.mass;
@@ -180,16 +183,17 @@ void NPCController::CheckNpcCollisions()
                             float tmp = 1.0f / (mass1 + mass2);
                             DirectX::SimpleMath::Vector3 vx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
                             DirectX::SimpleMath::Vector3 vx2 = testV2.q.velocity; // m_vehicleStruct00.vehicleData.q.velocity;
-                            DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-                                (1.0 + e) * mass2 * vx2 * tmp;
-
-                            DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
-                                (mass2 - e * mass1) * vx2 * tmp;
+                            DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp + (1.0 + e) * mass2 * vx2 * tmp;
+                            DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp + (mass2 - e * mass1) * vx2 * tmp;
 
                             float newVX1Length = newVx1.Length();
                             float newVX2Length = newVx2.Length();
+
                             m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                            m_npcVec[j]->TestCollisionVelocityUpdate(newVx1);
+                            m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+
+                            m_npcVec[i]->m_prevImpact = newVx1;
+                            m_npcVec[j]->m_prevImpact = newVx2;
 
                             m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
                             m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());

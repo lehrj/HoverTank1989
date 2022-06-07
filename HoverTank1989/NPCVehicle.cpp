@@ -566,8 +566,8 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetRepulsionForce(const VehicleData& aR
     DirectX::SimpleMath::Vector3 repulsionForceNorm = m_vehicleStruct00.vehicleData.q.position - aRepulsorVehicleData.q.position;
     const float distance = repulsionForceNorm.Length();
     repulsionForceNorm.Normalize();
-    //float ratio = (3.0f + (distance / (m_vehicleStruct00.vehicleData.maxCollisionDetectionRange + aRepulsorVehicleData.maxCollisionDetectionRange)));
-    float ratio = (1.0f + (distance / (m_vehicleStruct00.vehicleData.maxCollisionDetectionRange)));
+    float ratio = (1.0f + (distance / (m_vehicleStruct00.vehicleData.maxCollisionDetectionRange + aRepulsorVehicleData.maxCollisionDetectionRange)));
+    //float ratio = (1.0f + (distance / (m_vehicleStruct00.vehicleData.maxCollisionDetectionRange)));
     repulsionForce = repulsionForceNorm * (ratio * repulsionForceMax);
 
     return repulsionForce;
@@ -1084,6 +1084,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     //m_debugData->DebugPushUILineDecimalNumber("Velocity = ", m_vehicleStruct00.vehicleData.q.velocity.Length(), "");
 
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_prevImpact, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
 
     UpdateForceTorqueVecs();
 }
