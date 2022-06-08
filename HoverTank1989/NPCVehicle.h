@@ -100,6 +100,11 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localRearMatrix;
     DirectX::SimpleMath::Matrix worldRearMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    steeringShape;
+    DirectX::SimpleMath::Matrix localSteeringMatrix;
+    DirectX::SimpleMath::Matrix translationSteeringMatrix;
+    DirectX::SimpleMath::Matrix worldSteeringMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    collisionShape;
 };

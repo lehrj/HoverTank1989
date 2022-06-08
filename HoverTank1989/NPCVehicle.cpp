@@ -347,6 +347,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);   
     DirectX::SimpleMath::Vector4 rearColor = forwardColor;
+    DirectX::SimpleMath::Vector4 steeringColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     if (m_vehicleStruct00.vehicleData.isCollisionTrue == true)
     {
         color = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -354,14 +355,16 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, color);
     m_vehicleStruct00.npcModel.forwardShape->Draw(m_vehicleStruct00.npcModel.worldForwardMatrix, aView, aProj, forwardColor);
     m_vehicleStruct00.npcModel.rearShape->Draw(m_vehicleStruct00.npcModel.worldRearMatrix, aView, aProj, rearColor);
-    DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
-    DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
-    testSize *= 2.0f;
+    m_vehicleStruct00.npcModel.steeringShape->Draw(m_vehicleStruct00.npcModel.worldSteeringMatrix, aView, aProj, steeringColor);
+
     DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     if (m_npcAI->GetIsAvoidanceTrue() == true)
     {
         testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
     }
+    DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
+    DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
+    testSize *= 2.0f;
     m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
 
@@ -679,7 +682,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.rearShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rearShapeSize);
     DirectX::SimpleMath::Vector3 rearShapeTranslation;
     rearShapeTranslation.x = -(aDimensions.x * 0.5f) + (rearShapeSize.x * 0.45f);
-    rearShapeTranslation.y = aDimensions.y * 0.5f;
+    rearShapeTranslation.y = aDimensions.y * 0.51f;
     rearShapeTranslation.z = 0.0f;
     aModel.localRearMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localRearMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-15.0f));
@@ -693,18 +696,31 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     forwardShapeSize.z *= 1.05f;
     aModel.forwardShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), forwardShapeSize.y, forwardShapeSize.x, 3);
     DirectX::SimpleMath::Vector3 forwardShapeTranslation;
-    forwardShapeTranslation.x = (aDimensions.x * 0.5f) - (forwardShapeSize.x * 0.24f);
+    forwardShapeTranslation.x = (aDimensions.x * 0.5f) - (forwardShapeSize.x * 0.34f);
     forwardShapeTranslation.y = 0.0f;
     forwardShapeTranslation.z = 0.0f;
     aModel.localForwardMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localForwardMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-30.0f));
-    aModel.localForwardMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.5f, 1.0f, 1.0f));
+    aModel.localForwardMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.7f, 1.0f, 1.0f));
     aModel.localForwardMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(forwardShapeTranslation);
     aModel.localForwardMatrix *= centerMassTranslation;
     aModel.worldForwardMatrix = aModel.localModelMatrix;
 
-    aModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
+    DirectX::SimpleMath::Vector3 steeringShapeSize = forwardShapeSize;
+    steeringShapeSize.x *= 0.85f;
+    steeringShapeSize.y *= 1.05f;
+    steeringShapeSize.z *= 1.05f;
+    aModel.steeringShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), steeringShapeSize.y, steeringShapeSize.x, 3);
+    DirectX::SimpleMath::Vector3 steeringShapeTranslation = forwardShapeTranslation;
+    steeringShapeTranslation.x *= 1.1f;
+    aModel.localSteeringMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localSteeringMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-30.0f));
+    aModel.localSteeringMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.45f, 1.0f, 0.25f));    
+    aModel.translationSteeringMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(steeringShapeTranslation);
+    aModel.translationSteeringMatrix *= centerMassTranslation;
+    aModel.worldSteeringMatrix = aModel.localSteeringMatrix;
 
+    aModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
 }
 
 void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
@@ -1100,6 +1116,12 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     m_vehicleStruct00.npcModel.worldRearMatrix = m_vehicleStruct00.npcModel.localRearMatrix;
     m_vehicleStruct00.npcModel.worldRearMatrix *= updateMat;
+
+    DirectX::SimpleMath::Matrix steeringRotation = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.vehicleData.controlInput.steeringInput);
+    m_vehicleStruct00.npcModel.worldSteeringMatrix = m_vehicleStruct00.npcModel.localSteeringMatrix;
+    m_vehicleStruct00.npcModel.worldSteeringMatrix *= steeringRotation;
+    m_vehicleStruct00.npcModel.worldSteeringMatrix *= m_vehicleStruct00.npcModel.translationSteeringMatrix;
+    m_vehicleStruct00.npcModel.worldSteeringMatrix *= updateMat;
 }
 
 void NPCVehicle::UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos)

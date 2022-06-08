@@ -591,9 +591,10 @@ void NpcAI::UpdateAI(const float aTimeStep)
 
     UpdateDesiredHeading();
     AdjustHeadingForVelocity();
+    
     UpdateControlOutput();
-
     UpdateDestinationSmoothing();
+    
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
     m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     /*
