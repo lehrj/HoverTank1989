@@ -354,8 +354,19 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     }
     m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, color);
     m_vehicleStruct00.npcModel.forwardShape->Draw(m_vehicleStruct00.npcModel.worldForwardMatrix, aView, aProj, forwardColor);
+
+    m_vehicleStruct00.npcModel.omniBaseShape->Draw(m_vehicleStruct00.npcModel.worldOmniBaseMatrix, aView, aProj, DirectX::Colors::Black);
+    m_vehicleStruct00.npcModel.omniDialShape->Draw(m_vehicleStruct00.npcModel.worldOmniDialMatrix, aView, aProj, DirectX::Colors::Red);
+
     m_vehicleStruct00.npcModel.rearShape->Draw(m_vehicleStruct00.npcModel.worldRearMatrix, aView, aProj, rearColor);
     m_vehicleStruct00.npcModel.steeringShape->Draw(m_vehicleStruct00.npcModel.worldSteeringMatrix, aView, aProj, steeringColor);
+
+    DirectX::XMVECTORF32 throttleColor = DirectX::Colors::Green;
+    if (m_vehicleStruct00.vehicleData.controlInput.throttleInput < 0.0f)
+    {
+        throttleColor = DirectX::Colors::Red;
+    }
+    m_vehicleStruct00.npcModel.throttleShape->Draw(m_vehicleStruct00.npcModel.worldThrottleMatrix, aView, aProj, throttleColor);
 
     DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     if (m_npcAI->GetIsAvoidanceTrue() == true)
@@ -675,6 +686,28 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localModelMatrix *= centerMassTranslation;
     aModel.worldModelMatrix = aModel.localModelMatrix;
 
+    const float omniBaseDiameter = aDimensions.x * 0.35f;
+    const float omniBaseHeight = aDimensions.y * 1.05f;
+    aModel.omniBaseShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), omniBaseHeight, omniBaseDiameter);
+    DirectX::SimpleMath::Vector3 omniBaseTranslation;
+    omniBaseTranslation.x = -omniBaseDiameter * 0.34f;
+    omniBaseTranslation.y = 0.0f;
+    omniBaseTranslation.z = 0.0f;
+    aModel.localOmniBaseMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localOmniBaseMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(omniBaseTranslation);
+    aModel.localOmniBaseMatrix *= centerMassTranslation;
+    aModel.worldForwardMatrix = aModel.localOmniBaseMatrix;
+    
+    const float omniDialDiameter = omniBaseDiameter * 0.3f;
+    aModel.omniDialShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), omniDialDiameter);
+    DirectX::SimpleMath::Vector3 omniDialTranslation = omniBaseTranslation;
+    omniDialTranslation.y = aDimensions.y * 0.5f;
+    aModel.localOmniDialMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localOmniDialMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(omniDialTranslation);
+    aModel.localOmniDialMatrix *= centerMassTranslation;
+    aModel.worldOmniDialMatrix = aModel.localOmniDialMatrix;
+    aModel.omniDialRadius = (omniBaseDiameter * 0.5f) - (omniDialDiameter * 0.5f);
+
     DirectX::SimpleMath::Vector3 rearShapeSize = aDimensions;
     rearShapeSize.x *= 0.2f;
     rearShapeSize.y *= 0.1f;
@@ -689,6 +722,19 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localRearMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rearShapeTranslation);
     aModel.localRearMatrix *= centerMassTranslation;
     aModel.worldRearMatrix = aModel.localRearMatrix;
+
+    DirectX::SimpleMath::Vector3 throttleShapeSize = rearShapeSize;
+    throttleShapeSize.x *= 1.05f;
+    throttleShapeSize.y *= 1.05f;
+    throttleShapeSize.z *= 1.05f;
+    aModel.throttleShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), throttleShapeSize);
+    DirectX::SimpleMath::Vector3 throttleShapeTranslation;
+    throttleShapeTranslation = rearShapeTranslation;
+    aModel.localThrottleMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localThrottleMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-15.0f));
+    aModel.localThrottleMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(throttleShapeTranslation);
+    aModel.localThrottleMatrix *= centerMassTranslation;
+    aModel.worldThrottleMatrix = aModel.localThrottleMatrix;
 
     DirectX::SimpleMath::Vector3 forwardShapeSize = aDimensions;
     forwardShapeSize.x *= 0.85f;
@@ -1114,8 +1160,22 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldForwardMatrix = m_vehicleStruct00.npcModel.localForwardMatrix;
     m_vehicleStruct00.npcModel.worldForwardMatrix *= updateMat;
 
+    m_vehicleStruct00.npcModel.worldOmniBaseMatrix = m_vehicleStruct00.npcModel.localOmniBaseMatrix;
+    m_vehicleStruct00.npcModel.worldOmniBaseMatrix *= updateMat;
+
+    DirectX::SimpleMath::Vector3 omniDialTranslation = m_vehicleStruct00.vehicleData.controlInput.omniDirection;
+    omniDialTranslation.Normalize();
+    omniDialTranslation *= m_vehicleStruct00.npcModel.omniDialRadius;
+    m_vehicleStruct00.npcModel.worldOmniDialMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(omniDialTranslation);
+    m_vehicleStruct00.npcModel.worldOmniDialMatrix *= m_vehicleStruct00.npcModel.localOmniDialMatrix;
+    m_vehicleStruct00.npcModel.worldOmniDialMatrix *= updateMat;
+
     m_vehicleStruct00.npcModel.worldRearMatrix = m_vehicleStruct00.npcModel.localRearMatrix;
     m_vehicleStruct00.npcModel.worldRearMatrix *= updateMat;
+
+    m_vehicleStruct00.npcModel.worldThrottleMatrix = m_vehicleStruct00.npcModel.localThrottleMatrix;
+    m_vehicleStruct00.npcModel.worldThrottleMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, abs(m_vehicleStruct00.vehicleData.controlInput.throttleInput)));
+    m_vehicleStruct00.npcModel.worldThrottleMatrix *= updateMat;
 
     DirectX::SimpleMath::Matrix steeringRotation = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.vehicleData.controlInput.steeringInput);
     m_vehicleStruct00.npcModel.worldSteeringMatrix = m_vehicleStruct00.npcModel.localSteeringMatrix;

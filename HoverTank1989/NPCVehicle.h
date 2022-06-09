@@ -96,6 +96,15 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localForwardMatrix;
     DirectX::SimpleMath::Matrix worldForwardMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    omniBaseShape;
+    DirectX::SimpleMath::Matrix localOmniBaseMatrix;
+    DirectX::SimpleMath::Matrix worldOmniBaseMatrix;
+    float omniDialRadius;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    omniDialShape;
+    DirectX::SimpleMath::Matrix localOmniDialMatrix;
+    DirectX::SimpleMath::Matrix worldOmniDialMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    rearShape;
     DirectX::SimpleMath::Matrix localRearMatrix;
     DirectX::SimpleMath::Matrix worldRearMatrix;
@@ -104,6 +113,10 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localSteeringMatrix;
     DirectX::SimpleMath::Matrix translationSteeringMatrix;
     DirectX::SimpleMath::Matrix worldSteeringMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    throttleShape;
+    DirectX::SimpleMath::Matrix localThrottleMatrix;
+    DirectX::SimpleMath::Matrix worldThrottleMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    collisionShape;
