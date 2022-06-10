@@ -814,7 +814,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
     velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
-    //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+    velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
     velocityUpdate += damperForce * mass;
@@ -1082,6 +1082,12 @@ void NPCVehicle::UpdateControlInputFromAi()
         m_vehicleStruct00.vehicleData.controlInput.throttleInput = modThrottleInput;
     }
 
+    m_vehicleStruct00.vehicleData.controlInput.throttleInput = aiInput.forwardThrust;
+    if (aiInput.forwardThrust < 0.0f)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
     //m_vehicleStruct00.vehicleData.controlInput.throttleInput = m_npcAI->GetThrottleInput();
     //m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
     m_vehicleStruct00.vehicleData.hoverData.forwardThrust = aiInput.forwardThrust * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
@@ -1163,7 +1169,9 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldOmniBaseMatrix = m_vehicleStruct00.npcModel.localOmniBaseMatrix;
     m_vehicleStruct00.npcModel.worldOmniBaseMatrix *= updateMat;
 
+    
     DirectX::SimpleMath::Vector3 omniDialTranslation = m_vehicleStruct00.vehicleData.controlInput.omniDirection;
+    //DirectX::SimpleMath::Vector3 omniDialTranslation = m_vehicleStruct00.vehicleData.controlInput.steeringVec;
     omniDialTranslation.Normalize();
     omniDialTranslation *= m_vehicleStruct00.npcModel.omniDialRadius;
     m_vehicleStruct00.npcModel.worldOmniDialMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(omniDialTranslation);
@@ -1175,6 +1183,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     m_vehicleStruct00.npcModel.worldThrottleMatrix = m_vehicleStruct00.npcModel.localThrottleMatrix;
     m_vehicleStruct00.npcModel.worldThrottleMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, abs(m_vehicleStruct00.vehicleData.controlInput.throttleInput)));
+    
     m_vehicleStruct00.npcModel.worldThrottleMatrix *= updateMat;
 
     DirectX::SimpleMath::Matrix steeringRotation = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.vehicleData.controlInput.steeringInput);

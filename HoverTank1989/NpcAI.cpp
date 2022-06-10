@@ -591,9 +591,8 @@ void NpcAI::UpdateAI(const float aTimeStep)
 
     UpdateDesiredHeading();
     AdjustHeadingForVelocity();
-    
-    UpdateControlOutput();
     UpdateDestinationSmoothing();
+    UpdateControlOutput();  
     
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
     m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
@@ -665,7 +664,7 @@ void NpcAI::UpdateDestinationSmoothing()
     m_destinationSmoothing[0] = m_currentDestination;
     for (int i = 1; i < m_destinationSmoothingSize - 1; ++i)
     {
-        m_destinationSmoothing[i] = prevSmoothingVec[i + 1];
+        m_destinationSmoothing[i] = prevSmoothingVec[i - 1];
     }
 
     DirectX::SimpleMath::Vector3 smoothedDest = DirectX::SimpleMath::Vector3::Zero;
