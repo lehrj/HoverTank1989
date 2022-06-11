@@ -57,9 +57,9 @@ struct HoverData
 
 
     float forwardThrust;
-    const float forwardThrustMax = 10000.0f;
+    const float forwardThrustMax = 100000.0f;
     float omniThrust;
-    const float omniThrustMax = 6500.0f;
+    const float omniThrustMax = 65000.0f;
     float omniThrustDirection = 0.0f;
     const float omniThrustDirectionChangeRate = 1.5f;
     DirectX::SimpleMath::Vector3 omniThrustVec;

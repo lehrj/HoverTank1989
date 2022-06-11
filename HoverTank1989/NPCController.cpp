@@ -66,6 +66,19 @@ unsigned int NPCController::GetUniqueID()
     return idVal;
 }
 
+std::vector<DirectX::SimpleMath::Vector3> NPCController::GetVecOfNpcPos(const int aSelfID)
+{
+    std::vector<DirectX::SimpleMath::Vector3> posVec;
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() != aSelfID)
+        {
+            posVec.push_back(m_npcVec[i]->GetPos());
+        }
+    }
+    return posVec;
+}
+
 void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment)
 {
     m_nextUniqueID = 0;

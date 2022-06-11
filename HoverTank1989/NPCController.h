@@ -30,6 +30,7 @@ public:
     void UpdateNPCs(const double aTimeDelta);
 
     std::vector<NPCVehicle*>& GetVec() { return m_npcVec; };
+    std::vector<DirectX::SimpleMath::Vector3> GetVecOfNpcPos(const int aSelfID);
 
 private:
     unsigned int GetUniqueID();

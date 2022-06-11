@@ -2,6 +2,7 @@
 #include "Environment.h"
 #include "DebugData.h"
 
+class NPCController;
 class NPCVehicle;
 class Vehicle;
 
@@ -39,7 +40,7 @@ public:
     float GetThrottleInput();   
     DirectX::SimpleMath::Vector3 GetVecToDestination();
 
-    void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr);
+    void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController);
 
     void UpdateAI(const float aTimeStep);
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos);
@@ -68,9 +69,14 @@ private:
 
     struct DestinationTargets
     {
+        DirectX::SimpleMath::Vector3 separationTarget;
         DirectX::SimpleMath::Vector3 currentTarget;
         DirectX::SimpleMath::Vector3 seekTarget;
         DirectX::SimpleMath::Vector3 wanderTarget;
+
+        bool isSeparationTargetInRadius = false;
+        float separationMagnitude;
+        float separationRadius;
         float wanderDistance;
         float wanderJitter;
         float wanderRadius;
@@ -97,6 +103,7 @@ private:
     void UpdateControlOutput();
     void UpdateDesiredHeading();
     void UpdateDestinationSmoothing();
+    void UpdateSeparation();
 
     DirectX::SimpleMath::Vector3 Wander();
 
@@ -106,6 +113,7 @@ private:
     NPCVehicle const* m_npcOwner;
     Vehicle const* m_playerVehicle;
     Environment const* m_environment;
+    std::shared_ptr<NPCController> m_npcController;
 
     Utility::Waypoint m_currentWaypoint;
     Utility::WayPath m_currentWayPath;
