@@ -24,9 +24,11 @@ void NpcAI::AdjustHeadingForVelocity()
     float velocityNormDotHeadingNorm = headingNorm.Dot(velocityNorm);
     //float lookAheadTime = distanceToDest / m_npcOwner->GetTopSpeedCalculated();
     float lookAheadTime = distanceToDest / 100.0f;
+    //float lookAheadTime = distanceToDest / (velocity.Length() + 50.0f);
     //m_debugData->DebugPushUILineDecimalNumber("lookAheadTime =  ", lookAheadTime, "");
-    DirectX::SimpleMath::Vector3 adjustedDest = m_currentDestination;;
-    adjustedDest -= velocityNorm * (1.0f + lookAheadTime) * (1.0f + (1.0f - velocityNormDotHeadingNorm)) * 25.0f;
+    DirectX::SimpleMath::Vector3 adjustedDest = m_currentDestination;
+    const float adjustmentMagnitude = 20.0f;
+    adjustedDest -= velocityNorm * (1.0f + lookAheadTime) * (1.0f + (1.0f - velocityNormDotHeadingNorm)) * adjustmentMagnitude;
     m_currentDestination = adjustedDest;
     /*
     m_debugData->DebugPushUILineDecimalNumber("delta =  ", (dest - adjustedDest).Length(), "");
@@ -36,7 +38,6 @@ void NpcAI::AdjustHeadingForVelocity()
     m_debugData->DebugPushTestLine(pos, vecToDest, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(dest, DirectX::SimpleMath::Vector3::UnitY, 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     */
-    int stopBreak = 0;
 }
 
 void NpcAI::AdjustHeadingForVelocity2()
@@ -601,6 +602,7 @@ void NpcAI::UpdateAI(const float aTimeStep)
 
     UpdateDesiredHeading();
     AdjustHeadingForVelocity();
+    
     UpdateSeparation();
     if (m_destinationTargets.isSeparationTargetInRadius == true)
     {
@@ -608,7 +610,7 @@ void NpcAI::UpdateAI(const float aTimeStep)
         m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_destinationTargets.separationTarget, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
         m_currentDestination = m_destinationTargets.separationTarget;
     }
-
+    
     UpdateDestinationSmoothing();
     UpdateControlOutput();  
     m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
@@ -686,7 +688,8 @@ void NpcAI::UpdateDestinationSmoothing()
         m_destinationSmoothing[i] = prevSmoothingVec[i - 1];
     }
 
-    DirectX::SimpleMath::Vector3 smoothedDest = DirectX::SimpleMath::Vector3::Zero;
+    //DirectX::SimpleMath::Vector3 smoothedDest = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 smoothedDest = m_currentDestination;
     for (int i = 0; i < m_destinationSmoothingSize; ++i)
     {
         smoothedDest += m_destinationSmoothing[i];
@@ -764,14 +767,21 @@ void NpcAI::UpdateSeparation()
             vecToTarg.Normalize();
             
             float ratio = distance / m_destinationTargets.separationRadius;
+            float ratio2 = ratio;
             ratio = 1.0f - ratio;
             testPos += vecToTarg * ratio;
+
+            int placeholder = 0;
+            placeholder++;
         }
         testPos /= inDistanceVec.size();
         testPos *= -1.0f;
         testPos *= m_destinationTargets.separationMagnitude;
         testPos += m_npcOwner->GetPos();
         m_destinationTargets.separationTarget = testPos;
+
+        int placeholder = 0;
+        placeholder++;
     }
 }
 
