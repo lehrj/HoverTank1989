@@ -34,6 +34,49 @@ public:
         DirectX::SimpleMath::Vector3 kineticEnergy = DirectX::SimpleMath::Vector3::Zero;
     };
 
+    struct ImpulseForce
+    {
+        float currentTime = 0.0f;
+        float totalTime = 0.0f;
+        DirectX::SimpleMath::Vector3 directionNorm = DirectX::SimpleMath::Vector3::Zero;
+        float currentMagnitude = 0.0f;
+        float maxMagnitude = 0.0f;
+        bool isActive = false;
+    };
+
+    static void UpdateImpulseForceBellCurve(ImpulseForce& aImpulseForce, const float aTimeDelta)
+    {
+        aImpulseForce.currentTime += aTimeDelta;
+        if (aImpulseForce.currentTime < aImpulseForce.totalTime && aImpulseForce.currentTime >= 0.0f)
+        {
+            aImpulseForce.isActive = true;
+        }
+        else
+        {
+            aImpulseForce.isActive = false;
+            aImpulseForce.currentMagnitude = 0.0f;
+        }
+        if (aImpulseForce.isActive == true)
+        {
+            //const float maxForceTime = aTimeDelta * 0.3f;
+            const float maxForceTime = aImpulseForce.totalTime * 0.5f;
+            float ratio;
+  
+            if (aImpulseForce.currentTime <= maxForceTime)
+            {
+                ratio = aImpulseForce.currentTime / maxForceTime;
+            }
+            else
+            {
+                ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime - maxForceTime);
+                ratio = 1.0f - ratio;
+                //ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime);
+            }
+            float testMag = ratio * aImpulseForce.maxMagnitude;
+            aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
+        }
+    }
+
     struct Waypoint
     {
         DirectX::SimpleMath::Vector3 waypointPos;

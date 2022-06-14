@@ -55,25 +55,6 @@ struct ControlInput
     const float turretYawMin = Utility::ToRadians(-110.0f);
 };
 
-/*
-struct LandingGear
-{
-    const float angleAtDown = Utility::ToRadians(-110.0f);
-    const float angleAtUp = Utility::ToRadians(15.0f);  
-    float angleCurrent = angleAtUp;
-    const float angleDelta = Utility::ToRadians(30.0f);
-
-    enum class LandingGearState
-    {
-        LANDINGGEARSTATE_ASCENDING,
-        LANDINGGEARSTATE_DESCENDING,
-        LANDINGGEARSTATE_DOWN,
-        LANDINGGEARSTATE_UP,
-    };
-    LandingGearState currentState = LandingGearState::LANDINGGEARSTATE_DOWN;
-};
-*/
-
 struct Motion
 {
     DirectX::SimpleMath::Vector3 airResistance;
@@ -167,6 +148,9 @@ struct HeliData
     DirectX::SimpleMath::Vector3 localWeaponPos;
     DirectX::SimpleMath::Vector3 weaponDirection;
     DirectX::SimpleMath::Vector3 localWeaponDirection;
+
+    DirectX::SimpleMath::Vector3 weaponTorqueArmPos;
+    DirectX::SimpleMath::Vector3 localWeaponTorqueArmPos;
 
     //
     int     numEqns;
@@ -331,5 +315,10 @@ private:
     DirectX::SimpleMath::Vector3 m_testPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testPos2 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testPos3 = DirectX::SimpleMath::Vector3::Zero;
+
+    bool m_isFiredTest = false;
+    DirectX::SimpleMath::Vector3 m_fireForceTest = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::ImpulseForce m_testImpulseForce;
 };
 
