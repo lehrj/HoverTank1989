@@ -814,7 +814,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
     velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
-    velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+    //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
     velocityUpdate += damperForce * mass;

@@ -274,24 +274,6 @@ void NpcAI::CreateWayPath()
     DirectX::SimpleMath::Vector3 pos;
     Utility::Waypoint wp;
 
-    /*
-    pos = DirectX::SimpleMath::Vector3(200.0f, 3.0f, 0.0f);
-    wp = Utility::CreateWaypoint(pos, radius);
-    Utility::PushWaypointToPath(m_currentWayPath, wp);
-
-    pos = DirectX::SimpleMath::Vector3(200.0f, 3.0f, 100.0f);
-    wp = Utility::CreateWaypoint(pos, radius);
-    Utility::PushWaypointToPath(m_currentWayPath, wp);
-
-    pos = DirectX::SimpleMath::Vector3(50.0f, 3.0f, 100.0f);
-    wp = Utility::CreateWaypoint(pos, radius);
-    Utility::PushWaypointToPath(m_currentWayPath, wp);
-
-    pos = DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f);
-    wp = Utility::CreateWaypoint(pos, radius);
-    Utility::PushWaypointToPath(m_currentWayPath, wp);
-    */
-
     Utility::Waypoint wp1;
     pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, -100.0f);
     wp1 = Utility::CreateWaypoint(pos, radius);
@@ -307,6 +289,22 @@ void NpcAI::CreateWayPath()
     Utility::Waypoint wp4;
     pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, -100.0f);
     wp4 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::Waypoint wp5;
+    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, -300.0f);
+    wp5 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::Waypoint wp6;
+    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, -300.0f);
+    wp6 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::Waypoint wp7;
+    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 300.0f);
+    wp7 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::Waypoint wp8;
+    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, 300.0f);
+    wp8 = Utility::CreateWaypoint(pos, radius);
 
     const int id = m_npcOwner->GetID();
     /*
@@ -325,10 +323,23 @@ void NpcAI::CreateWayPath()
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
     }
     */
+    /*
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
     Utility::PushWaypointToPath(m_currentWayPath, wp2);
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
+    */
+
+    Utility::PushWaypointToPath(m_currentWayPath, wp1);
+    Utility::PushWaypointToPath(m_currentWayPath, wp3);
+    
+    Utility::PushWaypointToPath(m_currentWayPath, wp8);
+    Utility::PushWaypointToPath(m_currentWayPath, wp7);
+    Utility::PushWaypointToPath(m_currentWayPath, wp2);
+    Utility::PushWaypointToPath(m_currentWayPath, wp4);
+    Utility::PushWaypointToPath(m_currentWayPath, wp5);
+    Utility::PushWaypointToPath(m_currentWayPath, wp6);
+    
     m_currentWayPath.targetNode = 0;
 }
 

@@ -58,7 +58,6 @@ public:
         }
         if (aImpulseForce.isActive == true)
         {
-            //const float maxForceTime = aTimeDelta * 0.3f;
             const float maxForceTime = aImpulseForce.totalTime * 0.5f;
             float ratio;
   
@@ -70,9 +69,7 @@ public:
             {
                 ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime - maxForceTime);
                 ratio = 1.0f - ratio;
-                //ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime);
             }
-            float testMag = ratio * aImpulseForce.maxMagnitude;
             aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
         }
     }

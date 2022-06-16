@@ -222,8 +222,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.mass = 1700.0f;
     m_heli.massTest = 2000.0f;
     m_heli.area = 14.67;
-    m_heli.airDensity = 1.2f; // ToDo : pull air density from environment data
-    m_heli.dragCoefficient = 0.31f;
+    m_heli.airDensity = m_environment->GetAirDensity();
+    m_heli.dragCoefficient = 1.05f;
 
     m_heli.airResistance = 0.0f;
     m_heli.totalResistance = m_heli.airResistance;
@@ -633,7 +633,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     rotorForce = rotorForce * m_heli.mass;
 
     //  Compute the total drag force.
-    float airDensity = aHeli->airDensity;
+    float airDensity = m_environment->GetAirDensity();
     float dragCoefficient = aHeli->dragCoefficient;
     float frontSurfaceArea = aHeli->area;
     float velocity = newQ.velocity.Length();
@@ -644,11 +644,6 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
-    if (m_isFiredTest == true)
-    {
-        //velocityUpdate += m_fireForceTest;
-
-    }
     if (m_testImpulseForce.isActive == true)
     {
         velocityUpdate += m_testImpulseForce.directionNorm * m_testImpulseForce.currentMagnitude;
@@ -1503,9 +1498,9 @@ void Vehicle::TestFire()
     m_fireForceTest *= fireForceMag;
 
     m_testImpulseForce.currentTime = 0.0f;
-    m_testImpulseForce.totalTime = 0.3f;
+    m_testImpulseForce.totalTime = 0.1f;
     m_testImpulseForce.currentMagnitude = 0.0f;
-    m_testImpulseForce.maxMagnitude = 100000.0f;
+    m_testImpulseForce.maxMagnitude = 50000.0f;
     m_testImpulseForce.directionNorm = -launchDir;
     m_testImpulseForce.directionNorm.Normalize();
     m_testImpulseForce.isActive = true;
