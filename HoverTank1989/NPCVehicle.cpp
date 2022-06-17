@@ -275,6 +275,8 @@ void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce a
     impactForceToVec.impactVelocity *= 21.0f;
     //impactForceToVec.impactMass = aVehicleHit.mass;
     impactForceToVec.impactMass = aImpactForce.impactMass;
+    impactForceToVec.impactModifier = aImpactForce.impactModifier;
+    impactForceToVec.kineticEnergy = 0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity;
 
     // test calc kinetic energy
     /*
@@ -291,30 +293,19 @@ void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce a
     DirectX::SimpleMath::Vector3 impactForce = aImpactForce.impactVelocity * aImpactForce.impactMass;
     //impactForce.Normalize();
     //impactForce *= 0.01f;
-    //DirectX::SimpleMath::Vector3 torqueArm = aVehicleHit.q.position - m_vehicleStruct00.vehicleData.collisionBox.Center;
-    DirectX::SimpleMath::Vector3 torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.collisionBox.Center;
+
+    DirectX::SimpleMath::Vector3 torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
     Utility::Torque impactTorque = Utility::GetTorqueForce(torqueArm, impactForce);
 
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis += impactTorque.axis * impactTorque.magnitude;
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude += impactTorque.magnitude;
-    // new variable for combined torque, test
     m_vehicleStruct00.vehicleData.impactTorque.axis += impactTorque.axis * impactTorque.magnitude;
     m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
 
-    //impactForceToVec.impactVelocity = aImpactForce.impactVelocity;
-    //impactForceToVec.impactMass = aImpactForce.impactMass;
-
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, impactForce, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
-    /*
-    Utility::ImpactForce repulsionForceToVec;
-    repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
-    repulsionForceToVec.impactMass = aVehicleHit.mass;
-    PushImpactForce(repulsionForceToVec);
-    */
     impactForceToVec.impactVelocity *= aImpactForce.impactModifier;
     PushImpactForce(impactForceToVec);
-    impactTorque.magnitude *= aImpactForce.impactModifier;
+    
+    impactTorque.magnitude *= aImpactForce.impactModifier + 1000.0f;
     PushImpactTorque(impactTorque);
 }
 
@@ -639,6 +630,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.impactTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.impactTorque.magnitude = 0.0f;
     aVehicleStruct.vehicleData.impactTorqueVec.clear();
+    aVehicleStruct.vehicleData.impulseForceVec.clear();
 
     aVehicleStruct.vehicleData.hardPoints.localCenterOfMassPos = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.hardPoints.centerOfMassPos = aVehicleStruct.vehicleData.hardPoints.localCenterOfMassPos;
@@ -654,8 +646,6 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.hardPoints.localBasePos = DirectX::SimpleMath::Vector3(0.0f, -aVehicleStruct.vehicleData.dimensions.y * 0.5f, 0.0f);
     aVehicleStruct.vehicleData.hardPoints.basePos = aVehicleStruct.vehicleData.hardPoints.localBasePos;
-
-    aVehicleStruct.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
 
     aVehicleStruct.vehicleData.hoverData.forwardThrust = 0.0f;
     aVehicleStruct.vehicleData.hoverData.omniThrust = 0.0f;
@@ -813,7 +803,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
-    velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
+    //velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
     //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
@@ -1106,6 +1096,41 @@ void NPCVehicle::UpdateForceTorqueVecs() // update when force and torque over ti
     m_vehicleStruct00.vehicleData.impactTorque.axis = DirectX::SimpleMath::Vector3::UnitY;
 }
 
+void NPCVehicle::UpdateHardPoints()
+{
+    DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
+    DirectX::SimpleMath::Matrix updateDirectionMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
+
+    m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localCenterOfMassPos, updateMat);
+    m_vehicleStruct00.vehicleData.hardPoints.weaponDirection = DirectX::SimpleMath::Vector3::TransformNormal(m_vehicleStruct00.vehicleData.hardPoints.localWeaponDirection, updateDirectionMat);
+    m_vehicleStruct00.vehicleData.hardPoints.weaponPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localWeaponPos, updateMat);
+
+    m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localVerticalStabilizerPos, updateMat);
+    m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localSteeringTorqueArmPos, updateMat);
+    m_vehicleStruct00.vehicleData.hardPoints.basePos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localBasePos, updateMat);
+}
+
+void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
+{
+    DirectX::SimpleMath::Vector3 impulseSum = DirectX::SimpleMath::Vector3::Zero;
+    for (int i = 0; i < m_vehicleStruct00.vehicleData.impulseForceVec.size(); ++i)
+    {
+        Utility::UpdateImpulseForceBellCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)
+        {
+            impulseSum += m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm;
+        }
+    }
+    m_vehicleStruct00.vehicleData.impulseForceVec.erase(
+        std::remove_if(
+            m_vehicleStruct00.vehicleData.impulseForceVec.begin(),
+            m_vehicleStruct00.vehicleData.impulseForceVec.end(),
+            [](Utility::ImpulseForce const& p) {return p.isActive == false; }
+        ),
+        m_vehicleStruct00.vehicleData.impulseForceVec.end()
+    );
+}
+
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
 {
     DirectX::SimpleMath::Vector3 preVelocity = m_vehicleStruct00.vehicleData.q.velocity;
@@ -1144,8 +1169,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.impactTorque.magnitude = 0.0f;
 
     //CalculateSelfRightingTorque();
-
-    m_vehicleStruct00.vehicleData.testForce = DirectX::SimpleMath::Vector3::Zero;
 
     //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     //UpdateControlInput();
@@ -1198,21 +1221,4 @@ void NPCVehicle::UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos)
     m_vehicleStruct00.vehicleData.playerPos = aPlayerPos;
 }
 
-void NPCVehicle::UpdateHardPoints()
-{
-    DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
-    DirectX::SimpleMath::Matrix updateDirectionMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
 
-    m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localCenterOfMassPos, updateMat);
-    m_vehicleStruct00.vehicleData.hardPoints.weaponDirection = DirectX::SimpleMath::Vector3::TransformNormal(m_vehicleStruct00.vehicleData.hardPoints.localWeaponDirection, updateDirectionMat);
-    m_vehicleStruct00.vehicleData.hardPoints.weaponPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localWeaponPos, updateMat);
-
-    m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localVerticalStabilizerPos, updateMat);
-    m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localSteeringTorqueArmPos, updateMat);
-    m_vehicleStruct00.vehicleData.hardPoints.basePos = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localBasePos, updateMat);
-}
-
-void NPCVehicle::UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal)
-{
-    m_vehicleStruct00.vehicleData.testForce += m_vehicleStruct00.vehicleData.forward * aVal * 10.0f;
-}

@@ -131,7 +131,7 @@ void Game::Initialize(HWND window, int width, int height)
     
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), m_npcController);    
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), m_npcController);
-    
+    /*
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(65.0f, 3.0f, -2.0f), m_npcController);
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(44.01f, -10.0f, -2.0f), m_npcController);
@@ -159,7 +159,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, 10.0f), m_npcController);
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(110.0f, 3.0f, -10.0f), m_npcController);
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(120.0f, 3.0f, -10.0f), m_npcController);
-
+    */
     // testing new terrain map
     m_terrainVector.clear();
 }

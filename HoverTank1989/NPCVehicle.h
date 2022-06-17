@@ -32,30 +32,13 @@ struct NpcControlInput
 };
 
 struct HoverData
-{
-    /*
-    const float groundNormalForceRange = 5.0f;
-    const float hoverNeutralBoyantAlt = 0.52f;
-    const float hoverRangeLower = 0.5f;
-    const float hoverRangeMid = 1.0f;
-    const float hoverRangeUpper = 3.0f;
-    */
-    
+{   
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
     const float hoverRangeLower = 1.5f;
     const float hoverRangeMid = 3.0f;
     const float hoverRangeUpper = 5.0f;
     
-    /*
-    const float groundNormalForceRange = 0.2f;
-    const float hoverNeutralBoyantAlt = 0.1f;
-    const float hoverRangeLower = 0.0f;
-    const float hoverRangeMid = 0.1f;
-    const float hoverRangeUpper = 0.2f;
-    */
-
-
     float forwardThrust;
     const float forwardThrustMax = 100000.0f;
     float omniThrust;
@@ -170,9 +153,11 @@ struct VehicleData
     Utility::ImpactForce        impactForce;
     std::vector<Utility::ImpactForce> impactForceVec;
     DirectX::SimpleMath::Vector3 impactForceSum = DirectX::SimpleMath::Vector3::Zero;
-    Utility::Torque             impactTorque;
+    Utility::Torque              impactTorque;
     std::vector<Utility::Torque> impactTorqueVec;
-    DirectX::SimpleMath::Vector3 testForce;
+    std::vector<Utility::ImpulseForce> impulseForceVec;
+
+
     HoverData                    hoverData;
     NpcControlInput              controlInput;
     DirectX::SimpleMath::Vector3 playerPos;
@@ -231,14 +216,13 @@ public:
     void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos); };
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
     void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
-    
+    void PushImpulseForce(Utility::ImpulseForce aImpulse) { m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); };
+
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
 
     void SetCollisionVal(const bool aIsCollisionTrue);
     
     void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
-
-    void UpdateTestForce(const DirectX::SimpleMath::Vector3 aForce, const float aVal);
 
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
 
@@ -274,6 +258,7 @@ private:
     void UpdateControlInputFromAi();
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
+    void UpdateImpulseForces(const float aTimeDelta);
     void UpdateNPCModel(const double aTimeDelta);   
 
     Environment const* m_environment;

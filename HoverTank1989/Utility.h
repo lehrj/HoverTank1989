@@ -36,12 +36,13 @@ public:
 
     struct ImpulseForce
     {
-        float currentTime = 0.0f;
-        float totalTime = 0.0f;
-        DirectX::SimpleMath::Vector3 directionNorm = DirectX::SimpleMath::Vector3::Zero;
         float currentMagnitude = 0.0f;
-        float maxMagnitude = 0.0f;
+        float currentTime = 0.0f;
+        DirectX::SimpleMath::Vector3 directionNorm = DirectX::SimpleMath::Vector3::Zero;
         bool isActive = false;
+        float maxMagnitude = 0.0f;
+        DirectX::SimpleMath::Vector3 torqueArm = DirectX::SimpleMath::Vector3::Zero;
+        float totalTime = 0.0f;
     };
 
     static void UpdateImpulseForceBellCurve(ImpulseForce& aImpulseForce, const float aTimeDelta)
