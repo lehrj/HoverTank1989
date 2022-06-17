@@ -275,7 +275,7 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
-    aAmmo.ammoData.tickDownCounter = 5;
+    aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
     
     aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;

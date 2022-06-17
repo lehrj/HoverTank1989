@@ -157,6 +157,8 @@ struct VehicleData
     std::vector<Utility::Torque> impactTorqueVec;
     std::vector<Utility::ImpulseForce> impulseForceVec;
 
+    DirectX::SimpleMath::Vector3 testProjectileImpulse;
+    Utility::Torque       testProjectileTorque;
 
     HoverData                    hoverData;
     NpcControlInput              controlInput;
@@ -182,6 +184,7 @@ public:
     void CalculateImpactForce4(const VehicleData& aVehicleHit);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
 
+    void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateSelfRightingTorque();
 
     void DebugToggleAI();

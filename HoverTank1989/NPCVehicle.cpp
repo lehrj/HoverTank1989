@@ -309,6 +309,74 @@ void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce a
     PushImpactTorque(impactTorque);
 }
 
+void NPCVehicle::CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
+{
+    float mass1 = aImpactForce.impactMass;
+    float mass2 = m_vehicleStruct00.vehicleData.mass;
+    float e = 0.9f;
+
+    float tmp = 1.0f / (mass1 + mass2);
+    DirectX::SimpleMath::Vector3 vx1 = aImpactForce.impactVelocity;
+    DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
+    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
+        (1.0 + e) * mass2 * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
+        (mass2 - e * mass1) * vx2 * tmp;
+
+    float newVX1Length = newVx1.Length();
+    float newVX2Length = newVx2.Length();
+
+    Utility::ImpactForce impactForceToVec;
+    impactForceToVec.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
+    impactForceToVec.impactVelocity *= 21.0f;
+    impactForceToVec.impactMass = aImpactForce.impactMass;
+    impactForceToVec.impactModifier = aImpactForce.impactModifier;
+    impactForceToVec.kineticEnergy = 0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity;
+
+    Utility::ImpulseForce impulseToVec;
+    impulseToVec.currentMagnitude = 0.0f;
+    impulseToVec.currentTime = 0.0f;
+    impulseToVec.directionNorm = aImpactForce.impactVelocity;
+    impulseToVec.directionNorm.Normalize();
+    impulseToVec.isActive = true;
+    impulseToVec.maxMagnitude = (0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity).Length();
+    impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    impulseToVec.totalTime = 0.1f;
+    PushImpulseForce(impulseToVec);
+
+    // test calc kinetic energy
+    /*
+    DirectX::SimpleMath::Vector3 kE = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity * aVehicleHit.q.velocity;
+    float keLength = kE.Length();
+    float kEVal = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity.Length() * aVehicleHit.q.velocity.Length();
+    float newtonForce = kEVal * 10.0f;
+    float testTwMass = newtonForce / m_vehicleStruct00.vehicleData.mass;
+    */
+    // end kinetic energy test
+
+    /*
+    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = testV;
+    //::SimpleMath::Vector3 impactForce = aVehicleHit.q.velocity * aVehicleHit.mass;
+    DirectX::SimpleMath::Vector3 impactForce = aImpactForce.impactVelocity * aImpactForce.impactMass;
+    //impactForce.Normalize();
+    //impactForce *= 0.01f;
+
+    DirectX::SimpleMath::Vector3 torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    Utility::Torque impactTorque = Utility::GetTorqueForce(torqueArm, impactForce);
+
+    m_vehicleStruct00.vehicleData.impactTorque.axis += impactTorque.axis * impactTorque.magnitude;
+    m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
+
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, impactForce, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    impactForceToVec.impactVelocity *= aImpactForce.impactModifier;
+    PushImpactForce(impactForceToVec);
+
+    impactTorque.magnitude *= aImpactForce.impactModifier + 1000.0f;
+    PushImpactTorque(impactTorque);
+    */
+}
+
 void NPCVehicle::CalculateSelfRightingTorque()
 {
     //DirectX::SimpleMath::Vector3 gravityTorqueArm = centerMassPos - rotorPos;
@@ -844,8 +912,8 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     MotionNPC dq3;
     MotionNPC dq4;
 
-    aVehicle->impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
-
+    //aVehicle->impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
+    aVehicle->impactForceSum = m_vehicleStruct00.vehicleData.testProjectileImpulse;
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
     // of delta-q values for each of the four steps.
@@ -958,6 +1026,11 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     }
     turnTestTorque.magnitude = m_vehicleStruct00.vehicleData.controlInput.steeringInput;
     turnTestTorque = tailTorque;
+    //DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (turnTestTorque.axis * turnTestTorque.magnitude);
+    //float torqueMag = impactTorque.magnitude + gravTorque.magnitude + turnTestTorque.magnitude;
+    impactTorque.axis = m_vehicleStruct00.vehicleData.testProjectileTorque.axis;
+    impactTorque.magnitude = m_vehicleStruct00.vehicleData.testProjectileTorque.magnitude;
+    impactTorque.magnitude *= 0.002f;
     DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (turnTestTorque.axis * turnTestTorque.magnitude);
     float torqueMag = impactTorque.magnitude + gravTorque.magnitude + turnTestTorque.magnitude;
 
@@ -1112,15 +1185,27 @@ void NPCVehicle::UpdateHardPoints()
 
 void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
 {
-    DirectX::SimpleMath::Vector3 impulseSum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 forceSum = DirectX::SimpleMath::Vector3::Zero;
+    Utility::Torque torqueSum;
+    torqueSum.axis = DirectX::SimpleMath::Vector3::Zero;
+    torqueSum.magnitude = 0.0f;
     for (int i = 0; i < m_vehicleStruct00.vehicleData.impulseForceVec.size(); ++i)
     {
         Utility::UpdateImpulseForceBellCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)
         {
-            impulseSum += m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm;
+            m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude *= aTimeDelta;
+            forceSum += m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm;
+
+            Utility::Torque torqueImpulse = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueArm,
+                (m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm));
+            torqueSum.axis += torqueImpulse.axis * torqueImpulse.magnitude;
+            torqueSum.magnitude += torqueImpulse.magnitude;
         }
     }
+    m_vehicleStruct00.vehicleData.testProjectileImpulse = forceSum;
+    m_vehicleStruct00.vehicleData.testProjectileTorque = torqueSum;
+
     m_vehicleStruct00.vehicleData.impulseForceVec.erase(
         std::remove_if(
             m_vehicleStruct00.vehicleData.impulseForceVec.begin(),
@@ -1149,7 +1234,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
-
+    UpdateImpulseForces(static_cast<float>(aTimeDelta));
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
