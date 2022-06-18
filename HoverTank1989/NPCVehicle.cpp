@@ -347,7 +347,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit)
     repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
     repulsionForceToVec.impactMass = aVehicleHit.mass;
 
-    repulsionForceToVec.impactVelocity *= 300.0f;
+    repulsionForceToVec.impactVelocity *= 200.0f;
     repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
     PushImpactForce(repulsionForceToVec);
 
@@ -443,6 +443,14 @@ void NPCVehicle::CalculateTopSpeed()
 void NPCVehicle::DebugToggleAI()
 {
     m_npcAI->DebugToggle();
+    if (m_isGoToggleTrue == true)
+    {
+        m_isGoToggleTrue = false;
+    }
+    else
+    {
+        m_isGoToggleTrue = true;
+    }
 }
 
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
@@ -1289,7 +1297,10 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
     UpdateImpulseForces(static_cast<float>(aTimeDelta));
-    RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    if (m_isGoToggleTrue == true)
+    {
+        RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    }
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 

@@ -394,4 +394,5 @@ private:
     float m_testTimer2 = 0.0f;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
 };

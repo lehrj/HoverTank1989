@@ -23,16 +23,19 @@ void NpcAI::AdjustHeadingForVelocity()
     headingNorm.Normalize();
     float velocityNormDotHeadingNorm = headingNorm.Dot(velocityNorm);
     //float lookAheadTime = distanceToDest / m_npcOwner->GetTopSpeedCalculated();
-    float lookAheadTime = distanceToDest / 100.0f;
-    //float lookAheadTime = distanceToDest / (velocity.Length() + 50.0f);
+    //float lookAheadTime = distanceToDest / 100.0f;
+    float lookAheadTime = distanceToDest / (velocity.Length() + 50.0f);
     //m_debugData->DebugPushUILineDecimalNumber("lookAheadTime =  ", lookAheadTime, "");
     DirectX::SimpleMath::Vector3 adjustedDest = m_currentDestination;
-    const float adjustmentMagnitude = 20.0f;
+    const float adjustmentMagnitude = 15.0f;
     adjustedDest -= velocityNorm * (1.0f + lookAheadTime) * (1.0f + (1.0f - velocityNormDotHeadingNorm)) * adjustmentMagnitude;
     m_currentDestination = adjustedDest;
-    /*
-    m_debugData->DebugPushUILineDecimalNumber("delta =  ", (dest - adjustedDest).Length(), "");
+    
+    //m_debugData->DebugPushUILineDecimalNumber("delta =  ", (dest - adjustedDest).Length(), "");
     m_debugData->DebugPushTestLine(adjustedDest, DirectX::SimpleMath::Vector3::UnitY, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), adjustedDest, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    /*
     m_debugData->DebugPushUILineDecimalNumber("velocity =  ", velocity.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("velocityNormDotHeadingNorm ", velocityNormDotHeadingNorm, "");
     m_debugData->DebugPushTestLine(pos, vecToDest, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -270,7 +273,7 @@ void NpcAI::CreateWayPath()
 {
     Utility::ClearWayPath(m_currentWayPath);
     m_currentWayPath.isPathLooped = true;
-    const float radius = 40.0f;
+    const float radius = 50.0f;
     DirectX::SimpleMath::Vector3 pos;
     Utility::Waypoint wp;
 
@@ -307,7 +310,7 @@ void NpcAI::CreateWayPath()
     wp8 = Utility::CreateWaypoint(pos, radius);
 
     const int id = m_npcOwner->GetID();
-    
+    /*
     if (id % 2)
     {
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
@@ -322,7 +325,7 @@ void NpcAI::CreateWayPath()
         Utility::PushWaypointToPath(m_currentWayPath, wp2);
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
     }
-    
+    */
     
     /*
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
@@ -331,8 +334,8 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     */
 
-    /*
-    Utility::PushWaypointToPath(m_currentWayPath, wp1);
+    
+    
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
     Utility::PushWaypointToPath(m_currentWayPath, wp7);
@@ -340,7 +343,8 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     Utility::PushWaypointToPath(m_currentWayPath, wp5);
     Utility::PushWaypointToPath(m_currentWayPath, wp6);
-    */
+    Utility::PushWaypointToPath(m_currentWayPath, wp1);
+    
 
     /*
     if (m_npcOwner->GetID() % 2)
@@ -637,7 +641,7 @@ void NpcAI::UpdateAI(const float aTimeStep)
         }
     }
 
-    UpdateDesiredHeading();
+    //UpdateDesiredHeading();
     AdjustHeadingForVelocity();
     
     UpdateSeparation();
@@ -650,8 +654,9 @@ void NpcAI::UpdateAI(const float aTimeStep)
     
     UpdateDestinationSmoothing();
     UpdateControlOutput();  
-    m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
     //m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     /*
