@@ -1445,7 +1445,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     }
 
     UpdateTerrainNorm();
-    //Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
+    Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
     UpdateRotorData(m_heli, aTimeDelta);
 

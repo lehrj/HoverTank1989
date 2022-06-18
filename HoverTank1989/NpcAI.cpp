@@ -307,7 +307,7 @@ void NpcAI::CreateWayPath()
     wp8 = Utility::CreateWaypoint(pos, radius);
 
     const int id = m_npcOwner->GetID();
-    /*
+    
     if (id % 2)
     {
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
@@ -322,7 +322,8 @@ void NpcAI::CreateWayPath()
         Utility::PushWaypointToPath(m_currentWayPath, wp2);
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
     }
-    */
+    
+    
     /*
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
     Utility::PushWaypointToPath(m_currentWayPath, wp2);
@@ -330,16 +331,41 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     */
 
+    /*
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
-    
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
     Utility::PushWaypointToPath(m_currentWayPath, wp7);
     Utility::PushWaypointToPath(m_currentWayPath, wp2);
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     Utility::PushWaypointToPath(m_currentWayPath, wp5);
     Utility::PushWaypointToPath(m_currentWayPath, wp6);
-    
+    */
+
+    /*
+    if (m_npcOwner->GetID() % 2)
+    {
+        Utility::PushWaypointToPath(m_currentWayPath, wp1);
+        Utility::PushWaypointToPath(m_currentWayPath, wp3);
+        Utility::PushWaypointToPath(m_currentWayPath, wp8);
+        Utility::PushWaypointToPath(m_currentWayPath, wp7);
+        Utility::PushWaypointToPath(m_currentWayPath, wp2);
+        Utility::PushWaypointToPath(m_currentWayPath, wp4);
+        Utility::PushWaypointToPath(m_currentWayPath, wp5);
+        Utility::PushWaypointToPath(m_currentWayPath, wp6);
+    }
+    else
+    {
+        Utility::PushWaypointToPath(m_currentWayPath, wp6);
+        Utility::PushWaypointToPath(m_currentWayPath, wp5);
+        Utility::PushWaypointToPath(m_currentWayPath, wp4);
+        Utility::PushWaypointToPath(m_currentWayPath, wp2);
+        Utility::PushWaypointToPath(m_currentWayPath, wp7);
+        Utility::PushWaypointToPath(m_currentWayPath, wp8);
+        Utility::PushWaypointToPath(m_currentWayPath, wp3);
+        Utility::PushWaypointToPath(m_currentWayPath, wp1);
+    }
+    */
     m_currentWayPath.targetNode = 0;
 }
 

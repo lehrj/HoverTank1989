@@ -182,6 +182,7 @@ public:
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
     void CalculateImpactForce4(const VehicleData& aVehicleHit);
+    void CalculateImpulseForce(const VehicleData& aVehicleHit);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
 
     void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
@@ -274,6 +275,8 @@ private:
     VehicleStruct m_vehicleStruct00;
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext1> m_context;
+
+    double m_testTimer = 0.0f;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

@@ -203,14 +203,32 @@ void NPCController::CheckNpcCollisions()
                             float newVX1Length = newVx1.Length();
                             float newVX2Length = newVx2.Length();
 
-                            m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                            m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                            //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                            //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
 
                             m_npcVec[i]->m_prevImpact = newVx1;
                             m_npcVec[j]->m_prevImpact = newVx2;
 
-                            m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
-                            m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
+                            //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
+                            //m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
+                            m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
+                            m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
+
+
+                            DirectX::SimpleMath::Vector3 testVec = newVx1.Cross(newVx2);
+                            float testDot = vx1.Dot(vx2);
+                            if (testDot < 0.0f)
+                            {
+                                m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                                m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                            }
+                            else
+                            {
+                                int testBreak = 0;
+                                testBreak++;
+                            }
+                            //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                            //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
                         }
 
                         //m_npcVec[i]->SetCollisionVal(true);

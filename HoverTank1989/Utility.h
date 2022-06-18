@@ -47,31 +47,41 @@ public:
 
     static void UpdateImpulseForceBellCurve(ImpulseForce& aImpulseForce, const float aTimeDelta)
     {
-        aImpulseForce.currentTime += aTimeDelta;
-        if (aImpulseForce.currentTime < aImpulseForce.totalTime && aImpulseForce.currentTime >= 0.0f)
+        // check if tick time is less than total time and set to max magnatiude if so
+        // so force occurs if impact time is very low
+        if (aImpulseForce.currentTime == 0.0f && aTimeDelta > aImpulseForce.totalTime)
         {
-            aImpulseForce.isActive = true;
+            aImpulseForce.isActive = false;
+            aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
         }
         else
         {
-            aImpulseForce.isActive = false;
-            aImpulseForce.currentMagnitude = 0.0f;
-        }
-        if (aImpulseForce.isActive == true)
-        {
-            const float maxForceTime = aImpulseForce.totalTime * 0.5f;
-            float ratio;
-  
-            if (aImpulseForce.currentTime <= maxForceTime)
+            aImpulseForce.currentTime += aTimeDelta;
+            if (aImpulseForce.currentTime < aImpulseForce.totalTime && aImpulseForce.currentTime >= 0.0f)
             {
-                ratio = aImpulseForce.currentTime / maxForceTime;
+                aImpulseForce.isActive = true;
             }
             else
             {
-                ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime - maxForceTime);
-                ratio = 1.0f - ratio;
+                aImpulseForce.isActive = false;
+                aImpulseForce.currentMagnitude = 0.0f;
             }
-            aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
+            if (aImpulseForce.isActive == true)
+            {
+                const float maxForceTime = aImpulseForce.totalTime * 0.5f;
+                float ratio;
+
+                if (aImpulseForce.currentTime <= maxForceTime)
+                {
+                    ratio = aImpulseForce.currentTime / maxForceTime;
+                }
+                else
+                {
+                    ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime - maxForceTime);
+                    ratio = 1.0f - ratio;
+                }
+                aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
+            }
         }
     }
 
