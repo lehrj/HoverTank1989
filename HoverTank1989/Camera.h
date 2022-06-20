@@ -117,6 +117,8 @@ private:
     void InitializeViewMatrix(); //Pavel
 
     void UpdateChaseCamera();
+    void UpdateChaseCamera2();
+    void UpdateChaseCamera3();
     void UpdateChaseCameraTest01();
     void UpdateChaseCameraTest02();
     void UpdateChaseCameraTest03();

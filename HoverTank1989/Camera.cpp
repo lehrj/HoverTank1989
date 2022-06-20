@@ -739,12 +739,38 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 	ComputeSpringMatrix();
 }
 
+
 void Camera::UpdateChaseCamera()
 {
 	SetUpPos(m_followCamUp);
 	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
 	SetTargetPos(targetPos);
-	DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetVehicleOrientation());
+	DirectX::SimpleMath::Vector3 newCamPosition = m_followCamPos;
+	newCamPosition = DirectX::SimpleMath::Vector3::Transform(newCamPosition, m_vehicleFocus->GetVehicleOrientation());
+	newCamPosition += m_vehicleFocus->GetPos();
+	SetPos(newCamPosition);
+}
+
+void Camera::UpdateChaseCamera3()
+{
+	SetUpPos(m_followCamUp);
+	//DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
+	DirectX::SimpleMath::Vector3 targetPitch = DirectX::SimpleMath::Vector3((m_vehicleFocus->GetWeaponPitch() * 20.0f) + 10.0f, 0.0f, 0.0f);
+	DirectX::SimpleMath::Matrix pitchOrientation = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw());
+	//pitchOrientation *= m_vehicleFocus->GetVehicleOrientation();
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, pitchOrientation);
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, m_vehicleFocus->GetVehicleOrientation());
+	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
+	targetPos += targetPitch;
+	SetTargetPos(targetPos);
+
+	const float accel = m_vehicleFocus->GetAccel() * 0.001f;
+	//DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetTurretYaw(), 0.0f, accel);
+	DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetTurretYaw(), 0.0f, 0.0f);
+	//DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetTurretYaw(), 0.0f, m_vehicleFocus->GetWeaponPitch());
+	orientationQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetVehicleOrientation());
+
+	//DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetVehicleOrientation());
 	//m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
 	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
 	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
@@ -759,6 +785,75 @@ void Camera::UpdateChaseCamera()
 	accelCamPos += m_vehicleFocus->GetPos();
 	//DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::SmoothStep(preCamPosition, accelCamPos, 0.1);
 	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::SmoothStep(preCamPosition, accelCamPos, 0.1);
+	SetPos(newCamPosition);
+}
+
+
+void Camera::UpdateChaseCamera2()
+{
+	SetUpPos(m_followCamUp);
+	DirectX::SimpleMath::Vector3 targetPitch = DirectX::SimpleMath::Vector3((m_vehicleFocus->GetWeaponPitch() * 20.0f) + 10.0f, 0.0f, 0.0f);
+	DirectX::SimpleMath::Matrix pitchOrientation = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw());
+	//pitchOrientation *= m_vehicleFocus->GetVehicleOrientation();
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, pitchOrientation);
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, m_vehicleFocus->GetVehicleOrientation());
+	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
+	targetPos += targetPitch;
+	SetTargetPos(targetPos);
+	const float accel = m_vehicleFocus->GetAccel() * 0.001f;
+
+	//m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Lerp(m_chaseCamQuat, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetRotation(), 0.0, accel), m_chaseCamLerpFactor);
+	//m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Lerp(m_chaseCamQuat, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetTurretYaw(), 0.0, accel), m_chaseCamLerpFactor);
+	//DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetTurretYaw(), 0.0f, accel);
+	DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetTurretYaw(), 0.0f, accel);
+	//DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_vehicleFocus->GetTurretYaw(), 0.0f, m_vehicleFocus->GetWeaponPitch());
+	orientationQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetVehicleOrientation());
+	//m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Lerp(m_chaseCamQuat, orientationQuat, m_chaseCamLerpFactor);
+
+	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
+
+	//DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetVehicleOrientation());
+	//m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
+	//m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
+
+	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
+
+	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
+	//accelCamPos.x += accel;
+
+	DirectX::SimpleMath::Vector3 accelVec = m_vehicleFocus->GetAccelVec() * 0.01f;
+	accelCamPos += accelVec;
+
+	DirectX::SimpleMath::Vector3 testAccelPos = DirectX::SimpleMath::Vector3::SmoothStep(accelCamPos, m_followCamPos, 0.0001);
+
+	// Testing new jump camera position
+	float terrainHeight = m_environment->GetTerrainHeightAtPos(testAccelPos);
+	DirectX::SimpleMath::Vector3 jumpCamPos;
+	if (testAccelPos.y > terrainHeight)
+	{
+		jumpCamPos = testAccelPos;
+		jumpCamPos.y = terrainHeight + 0.0f;
+		jumpCamPos = DirectX::SimpleMath::Vector3::Transform(jumpCamPos, m_chaseCamQuat);
+		jumpCamPos += m_vehicleFocus->GetPos();
+	}
+	else
+	{
+		jumpCamPos = testAccelPos;
+		jumpCamPos = DirectX::SimpleMath::Vector3::Transform(jumpCamPos, m_chaseCamQuat);
+		jumpCamPos += m_vehicleFocus->GetPos();
+	}
+
+	////////////////////////////////////////
+	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::Lerp(preCamPosition, jumpCamPos, 0.1);
+	const float camHeightOffset = 6.5;
+	newCamPosition.y = targetPos.y + camHeightOffset;
+	const float groundOffset = 1.5;
+	float terrainHeight2 = m_environment->GetTerrainHeightAtPos(newCamPosition);
+	if (newCamPosition.y < terrainHeight2 + groundOffset)
+	{
+		newCamPosition.y = terrainHeight2 + groundOffset;
+	}
+
 	SetPos(newCamPosition);
 }
 
