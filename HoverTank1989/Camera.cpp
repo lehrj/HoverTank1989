@@ -739,16 +739,55 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 	ComputeSpringMatrix();
 }
 
-
 void Camera::UpdateChaseCamera()
 {
 	SetUpPos(m_followCamUp);
+	DirectX::SimpleMath::Vector3 targetPitch = DirectX::SimpleMath::Vector3(10.0f, 0.0f, 0.0f);
+	//targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, DirectX::SimpleMath::Matrix::CreateRotationZ(m_vehicleFocus->GetWeaponPitch()));
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, m_vehicleFocus->GetVehicleOrientation());
 	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
+	targetPos += targetPitch;
 	SetTargetPos(targetPos);
+
+	// this is causing to much camera shake with weapon recoil
+	DirectX::SimpleMath::Vector3 weaponPos = m_vehicleFocus->GetWeaponPos();
+	const float targetDistanceMod = 30.0f;
+    DirectX::SimpleMath::Vector3 weaponDir = m_vehicleFocus->GetWeaponDirection() * targetDistanceMod;
+	targetPos = weaponDir;
+	targetPos += weaponPos;
+	//SetTargetPos(targetPos);
+	//m_debugData->DebugPushTestLinePositionIndicator(targetPos, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_debugData->DebugPushTestLine(m_vehicleFocus->GetWeaponPos(), m_vehicleFocus->GetWeaponDirection(), 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetWeaponPos(), 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetWeaponDirection(), 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	const float pitchSensitivity = 0.5f;
+	DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(
+		DirectX::SimpleMath::Matrix::CreateRotationZ(pitchSensitivity * m_vehicleFocus->GetWeaponPitch()));
+	orientationQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
+	orientationQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetVehicleOrientation());
+
+	m_chaseCamQuat = orientationQuat;
+	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
+	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
+	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
+	DirectX::SimpleMath::Vector3 accelVec = m_vehicleFocus->GetAccelVec() * 0.01f;
+	accelCamPos += accelVec;
+	accelCamPos = DirectX::SimpleMath::Vector3::Lerp(accelCamPos, m_followCamPos, 0.0001);
+	accelCamPos = DirectX::SimpleMath::Vector3::Transform(accelCamPos, m_chaseCamQuat);
+	accelCamPos += m_vehicleFocus->GetPos();
+	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::SmoothStep(preCamPosition, accelCamPos, 0.15);
+	SetPos(newCamPosition);
+
+	/*
 	DirectX::SimpleMath::Vector3 newCamPosition = m_followCamPos;
+	const float pitchSensitivity = 0.5f;
+	newCamPosition = DirectX::SimpleMath::Vector3::Transform(newCamPosition, DirectX::SimpleMath::Matrix::CreateRotationZ(pitchSensitivity * m_vehicleFocus->GetWeaponPitch()));
+	newCamPosition = DirectX::SimpleMath::Vector3::Transform(newCamPosition, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
 	newCamPosition = DirectX::SimpleMath::Vector3::Transform(newCamPosition, m_vehicleFocus->GetVehicleOrientation());
 	newCamPosition += m_vehicleFocus->GetPos();
 	SetPos(newCamPosition);
+	*/
 }
 
 void Camera::UpdateChaseCamera3()

@@ -73,6 +73,8 @@ public:
     void SetCameraState(const CameraState aCameraState);
     void SetDestinationPos(const DirectX::SimpleMath::Vector3 aDestPos);
 
+    void SetDebugData(std::shared_ptr<DebugData> aDebugPtr) { m_debugData = aDebugPtr; };
+
     void SetFollowCamDirection(const DirectX::SimpleMath::Vector3 aDirection);
     void SetFollowCamPos(const DirectX::SimpleMath::Vector3 aPos);
     void SetFollowCamTarget(const DirectX::SimpleMath::Vector3 aTarg);   
@@ -198,6 +200,7 @@ private:
 
     Environment const* m_environment;
     Vehicle const* m_vehicleFocus;
+    std::shared_ptr<DebugData>      m_debugData;
 
     DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Identity;

@@ -224,6 +224,11 @@ public:
   
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
     float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
+    DirectX::SimpleMath::Vector3 GetWeaponDirection() const { return m_heli.weaponDirection; };
+    DirectX::SimpleMath::Vector3 GetWeaponLocalDirection() const { return m_heli.localWeaponDirection; };
+    DirectX::SimpleMath::Vector3 GetWeaponLocalPos() const { return m_heli.localWeaponPos; };
+    DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_heli.weaponPos; };
+    
 
     //void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController);
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController);
