@@ -7,7 +7,6 @@ DebugData::DebugData()
     DebugClearUI();
 }
 
-
 void DebugData::DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::SimpleMath::Vector4 aColor)
 {
     DirectX::SimpleMath::Vector3 scaledLineBase = aLineBase;

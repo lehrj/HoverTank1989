@@ -192,7 +192,7 @@ void NPCController::CheckNpcCollisions()
                         {
                             float mass1 = testV1.mass; // aVehicleHit.mass;
                             float mass2 = testV2.mass; // m_vehicleStruct00.vehicleData.mass;
-                            float e = 0.9f;
+                            float e = 0.4f;
 
                             float tmp = 1.0f / (mass1 + mass2);
                             DirectX::SimpleMath::Vector3 vx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
@@ -216,8 +216,11 @@ void NPCController::CheckNpcCollisions()
 
 
                             DirectX::SimpleMath::Vector3 testVec = newVx1.Cross(newVx2);
+                            float testDot2 = vx1.Dot(vx2);
+                            vx1.Normalize();
+                            vx2.Normalize();
                             float testDot = vx1.Dot(vx2);
-                            if (testDot < 0.0f)
+                            if (testDot < 0.5f)
                             {
                                 m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
                                 m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);

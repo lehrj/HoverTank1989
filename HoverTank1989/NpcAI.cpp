@@ -32,8 +32,8 @@ void NpcAI::AdjustHeadingForVelocity()
     m_currentDestination = adjustedDest;
     
     //m_debugData->DebugPushUILineDecimalNumber("delta =  ", (dest - adjustedDest).Length(), "");
-    m_debugData->DebugPushTestLine(adjustedDest, DirectX::SimpleMath::Vector3::UnitY, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), adjustedDest, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLine(adjustedDest, DirectX::SimpleMath::Vector3::UnitY, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), adjustedDest, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
     /*
     m_debugData->DebugPushUILineDecimalNumber("velocity =  ", velocity.Length(), "");
@@ -142,6 +142,13 @@ void NpcAI::AvoidPos2()
 
 void NpcAI::AvoidPos()
 {
+    DirectX::SimpleMath::Vector3 avoidTarget = m_avoidanceTarget;
+    avoidTarget.y += 4.5f;
+    DirectX::SimpleMath::Vector3 owner = m_npcOwner->GetPos();
+    owner.y += 4.5f;
+    //m_debugData->DebugPushTestLine(avoidTarget, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLineBetweenPoints(owner, avoidTarget, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
     DirectX::SimpleMath::Matrix alignment = m_npcOwner->GetAlignment();
     DirectX::SimpleMath::Vector3 localPos = m_avoidanceTarget - m_npcOwner->GetPos();
     const float distance = localPos.Length();
@@ -265,6 +272,18 @@ void NpcAI::AvoidPos()
     //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), testAvoidanceVec, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
     //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), testAvoidanceVec, 40.0f, 8.5f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
 
+    DirectX::SimpleMath::Vector3 vecToTarget = m_npcOwner->GetPos() - m_avoidanceTarget;
+    //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), vecToTarget, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    testAvoidanceVec = vecToTarget;
+    float distanceRatio = vecToTarget.Length();
+    distanceRatio /= m_avoidanceBoxLength;
+    float testRatio = abs((avoidanceBoxLength + frontOffset) - vecToTarget.Length()) + 1.0f;
+    //testAvoidanceVec *= 10.0f;
+    testAvoidanceVec *= testRatio;
+    testAvoidanceVec += m_npcOwner->GetPos();
+    m_currentDestination = testAvoidanceVec;
+    m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     int testBreak = 0;
     testBreak++;
 }
@@ -273,7 +292,7 @@ void NpcAI::CreateWayPath()
 {
     Utility::ClearWayPath(m_currentWayPath);
     m_currentWayPath.isPathLooped = true;
-    const float radius = 50.0f;
+    const float radius = 75.0f;
     DirectX::SimpleMath::Vector3 pos;
     Utility::Waypoint wp;
 
@@ -500,7 +519,7 @@ void NpcAI::InitializeDestinationTargets()
     m_destinationTargets.currentTarget = DirectX::SimpleMath::Vector3::Zero;
     m_destinationTargets.seekTarget = DirectX::SimpleMath::Vector3::Zero;
     m_destinationTargets.wanderTarget = DirectX::SimpleMath::Vector3::Zero;
-    m_destinationTargets.separationMagnitude = 35.0f;
+    m_destinationTargets.separationMagnitude = 15.0f;
     m_destinationTargets.separationRadius = 25.0f;
     m_destinationTargets.wanderDistance = 100.0f;
     m_destinationTargets.wanderJitter = 0.001f;
@@ -615,7 +634,12 @@ void NpcAI::SetSteeringOutput()
     m_aiControls.aiOutput.angleToDestination = angle;
 
     //m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.angleToDestination ", m_aiControls.aiOutput.angleToDestination, "");
-    //m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.steeringAngle ", m_aiControls.aiOutput.steeringAngle, "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.steeringAngle ", Utility::ToDegrees(m_aiControls.aiOutput.steeringAngle), "");
+
+    DirectX::SimpleMath::Vector3 steeringLine = DirectX::SimpleMath::Vector3::UnitX;
+    steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, DirectX::SimpleMath::Matrix::CreateRotationY(m_aiControls.aiOutput.steeringAngle));
+    steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, m_npcOwner->GetAlignment());
+    m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), steeringLine, 75.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     /*
     //return vecToDestination;
     return m_desiredHeading;
@@ -633,6 +657,8 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
     m_currentWaypoint = Utility::GetWaypointFromPath(m_currentWayPath);
     m_currentDestination = m_currentWaypoint.waypointPos;
+
+    AdjustHeadingForVelocity();
     if (m_isAvoidanceTrue == true)
     {
         if (m_debugToggle == false)
@@ -640,21 +666,31 @@ void NpcAI::UpdateAI(const float aTimeStep)
             AvoidPos();
         }
     }
-
     //UpdateDesiredHeading();
-    AdjustHeadingForVelocity();
     
     UpdateSeparation();
     if (m_destinationTargets.isSeparationTargetInRadius == true)
     {
         DirectX::SimpleMath::Vector3 playerPos = m_npcOwner->GetPos();
-        m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_destinationTargets.separationTarget, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+        //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_destinationTargets.separationTarget, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
         m_currentDestination = m_destinationTargets.separationTarget;
     }
+
+    //m_currentDestination = m_playerVehicle->GetPos();
     
-    UpdateDestinationSmoothing();
+    //UpdateDestinationSmoothing();
     UpdateControlOutput();  
-    //m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+
+    DirectX::SimpleMath::Vector3 testDest = m_currentDestination;
+    testDest.y += 4.5f;
+
+    DirectX::SimpleMath::Vector3 testPos = m_npcOwner->GetPos();
+    testPos.y += 4.5f;
+
+    m_debugData->DebugPushTestLine(testDest, -DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLineBetweenPoints(testPos, testDest, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    
+    //m_debugData->DebugPushTestLine(m_currentDestination, -DirectX::SimpleMath::Vector3::UnitY, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     
     //m_currentDestination = (m_npcOwner->GetVelocity() * 1.0f) - m_npcOwner->GetPos();
@@ -674,7 +710,8 @@ void NpcAI::UpdateAI(const float aTimeStep)
 void NpcAI::UpdateAvoidanceBox()
 {
     const DirectX::SimpleMath::Vector3 vehicleDimensions = m_npcOwner->GetDimensions();
-    const float avoidanceWidth = vehicleDimensions.z * 0.5f;
+    const float avoidanceWidthMod = 0.95f;
+    const float avoidanceWidth = vehicleDimensions.z * avoidanceWidthMod;
     m_avoidanceBoxWidth = avoidanceWidth;
     const float avoidanceHeight = vehicleDimensions.y * 0.5f;
     float avoidanceLength = m_avoidanceBoxLengthMin + (m_npcOwner->GetVelocity().Length() / m_npcOwner->GetTopSpeedCalculated()) * m_avoidanceBoxLengthMin;
@@ -698,7 +735,7 @@ void NpcAI::UpdateAvoidanceBox()
     velocityUp = velocityForward.Cross(-velocityRight);
 
     DirectX::SimpleMath::Matrix velocityAlignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -velocityRight, velocityUp);
-
+    //velocityAlignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_npcOwner->GetRight(), m_npcOwner->GetUp());
     //m_avoidanceBox.Center = DirectX::SimpleMath::Vector3::Transform(m_avoidanceBox.Center, m_npcOwner->GetAlignment());
     m_avoidanceBox.Center = DirectX::SimpleMath::Vector3::Transform(m_avoidanceBox.Center, velocityAlignment);
     m_avoidanceBox.Center = m_avoidanceBox.Center + m_npcOwner->GetPos();
@@ -812,18 +849,12 @@ void NpcAI::UpdateSeparation()
             float ratio2 = ratio;
             ratio = 1.0f - ratio;
             testPos += vecToTarg * ratio;
-
-            int placeholder = 0;
-            placeholder++;
         }
         testPos /= inDistanceVec.size();
         testPos *= -1.0f;
         testPos *= m_destinationTargets.separationMagnitude;
         testPos += m_npcOwner->GetPos();
         m_destinationTargets.separationTarget = testPos;
-
-        int placeholder = 0;
-        placeholder++;
     }
 }
 

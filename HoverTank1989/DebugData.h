@@ -25,7 +25,6 @@ public:
 
 private:
 
-
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector4>> m_debugLinesVec;
     std::vector<std::pair<std::string, float>> m_debugUI;
     std::vector<std::string> m_debugUIVector;

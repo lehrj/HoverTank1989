@@ -347,7 +347,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit)
     repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
     repulsionForceToVec.impactMass = aVehicleHit.mass;
 
-    repulsionForceToVec.impactVelocity *= 200.0f;
+    repulsionForceToVec.impactVelocity *= 150.0f;
     repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
     PushImpactForce(repulsionForceToVec);
 
@@ -870,8 +870,10 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     DirectX::SimpleMath::Vector3 steeringShapeTranslation = forwardShapeTranslation;
     steeringShapeTranslation.x *= 1.1f;
     aModel.localSteeringMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localSteeringMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
     aModel.localSteeringMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-30.0f));
     aModel.localSteeringMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.45f, 1.0f, 0.25f));    
+    //aModel.localSteeringMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.45f, 1.5f, 0.25f));
     aModel.translationSteeringMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(steeringShapeTranslation);
     aModel.translationSteeringMatrix *= centerMassTranslation;
     aModel.worldSteeringMatrix = aModel.localSteeringMatrix;
@@ -1188,6 +1190,9 @@ void NPCVehicle::UpdateControlInputFromAi()
     {
         m_vehicleStruct00.vehicleData.controlInput.steeringInput = updatedYaw;
     }
+
+    //m_vehicleStruct00.vehicleData.controlInput.steeringInput = aiInput.steeringAngle;
+
     //m_vehicleStruct00.vehicleData.controlInput.steeringInput = aiInput.angleToDestination;
     //m_debugData->DebugPushUILineDecimalNumber("steeringInput ", Utility::ToDegrees(m_vehicleStruct00.vehicleData.controlInput.steeringInput), "");
     //m_debugData->DebugPushUILineDecimalNumber("inputDeadZone ", m_vehicleStruct00.vehicleData.controlInput.inputDeadZone, "");
@@ -1214,8 +1219,15 @@ void NPCVehicle::UpdateControlInputFromAi()
     }
     //m_vehicleStruct00.vehicleData.controlInput.throttleInput = m_npcAI->GetThrottleInput();
     //m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
-    m_vehicleStruct00.vehicleData.hoverData.forwardThrust = aiInput.forwardThrust * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
-
+    if (aiInput.forwardThrust < 0.0f)
+    {
+        m_vehicleStruct00.vehicleData.hoverData.forwardThrust = aiInput.forwardThrust * m_vehicleStruct00.vehicleData.hoverData.reverseThrustMax;
+    }
+    else
+    {
+        m_vehicleStruct00.vehicleData.hoverData.forwardThrust = aiInput.forwardThrust * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
+    }
+    
     // omni trust
     m_vehicleStruct00.vehicleData.controlInput.omniDirection = aiInput.omniDirection;
     m_vehicleStruct00.vehicleData.controlInput.omniThrust = aiInput.omniThrust * m_vehicleStruct00.vehicleData.hoverData.omniThrustMax;
@@ -1362,8 +1374,19 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Matrix steeringRotation = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.vehicleData.controlInput.steeringInput);
     m_vehicleStruct00.npcModel.worldSteeringMatrix = m_vehicleStruct00.npcModel.localSteeringMatrix;
     m_vehicleStruct00.npcModel.worldSteeringMatrix *= steeringRotation;
+    //m_vehicleStruct00.npcModel.worldSteeringMatrix *= m_vehicleStruct00.npcModel.localSteeringMatrix;
     m_vehicleStruct00.npcModel.worldSteeringMatrix *= m_vehicleStruct00.npcModel.translationSteeringMatrix;
     m_vehicleStruct00.npcModel.worldSteeringMatrix *= updateMat;
+
+    //DirectX::SimpleMath::Matrix steeringRotation2 = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(-m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.controlInput.steeringInput);
+    DirectX::SimpleMath::Matrix steeringRotation2 = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(-m_vehicleStruct00.vehicleData.up, -m_vehicleStruct00.vehicleData.controlInput.angleToDestination); 
+    //DirectX::SimpleMath::Matrix steeringRotation2 = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleStruct00.vehicleData.up, Utility::ToRadians(180.0f));
+    //DirectX::SimpleMath::Vector3 steeringLine = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 steeringLine = m_vehicleStruct00.vehicleData.forward;
+    //steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, DirectX::SimpleMath::Matrix::CreateRotationY(-m_vehicleStruct00.vehicleData.controlInput.steeringInput));
+    steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, steeringRotation2);
+    //steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, m_vehicleStruct00.vehicleData.alignment);
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, steeringLine, 75.0f, 15.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void NPCVehicle::UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos)
