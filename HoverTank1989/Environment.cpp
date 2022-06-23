@@ -607,6 +607,46 @@ std::vector<DirectX::VertexPositionNormalColor> Environment::GetTerrainPositionN
     */
 }
 
+bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3& aNorm, float& aHeight) const
+{
+    bool foundHeight = false;
+    unsigned int i = 0;
+
+    for (i; i < m_heightMapGamePlayData.terrainModel.size(); ++i)
+    {
+        DirectX::XMFLOAT3 vertex1 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex2 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex3 = m_heightMapGamePlayData.terrainModel[i].position;
+
+        DirectX::SimpleMath::Vector3 pos = aPos;
+
+        foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
+        if (foundHeight)
+        {
+            aHeight = aPos.y;
+            DirectX::SimpleMath::Vector3 p3 = m_heightMapGamePlayData.terrainModel[i - 2].position;
+            DirectX::SimpleMath::Vector3 p2 = m_heightMapGamePlayData.terrainModel[i - 1].position;
+            DirectX::SimpleMath::Vector3 p1 = m_heightMapGamePlayData.terrainModel[i].position;
+
+            DirectX::SimpleMath::Vector3 U = p2 - p1;
+            DirectX::SimpleMath::Vector3 V = p3 - p1;
+            DirectX::SimpleMath::Vector3 testNormal;
+            testNormal.x = (U.y * V.z) - (U.z * V.y);
+            testNormal.y = (U.z * V.x) - (U.x * V.z);
+            testNormal.z = (U.x * V.y) - (U.y * V.x);
+            testNormal.Normalize();
+            aNorm = testNormal;
+            //return testNormal;
+            i = m_heightMapGamePlayData.terrainModel.size();
+        }
+    }
+
+    //return -DirectX::SimpleMath::Vector3::UnitX;
+    return foundHeight;
+}
+
 // While this could be done once per environment update, future updates could have moment to moment wind changes
 float Environment::GetWindDirection() const
 { 

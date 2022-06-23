@@ -19,8 +19,8 @@ struct NpcControlInput
     bool        stearingIsPressed;
     float       steeringInput;
     const float steeringDecayRate = 0.2f;
-    const float steeringInputMax = 3.0f;
-    const float steeringInputMin = -3.0f;
+    const float steeringInputMax = 16.0f;
+    const float steeringInputMin = -16.0f;
     const float steeringInputRate = 5.0f;
     DirectX::SimpleMath::Vector3 steeringVec;
 

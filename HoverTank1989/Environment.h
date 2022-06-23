@@ -155,6 +155,8 @@ public:
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
     std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex(EnvironmentType aEnvironType);
 
+    bool GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3& aNorm, float& aHeight) const;
+
     float GetWindDirection() const;
     DirectX::SimpleMath::Vector3 GetWindVector() const { return m_currentEnviron.wind; };
     float GetWindX() const { return m_currentEnviron.wind.x; };

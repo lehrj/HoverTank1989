@@ -130,6 +130,7 @@ void Game::Initialize(HWND window, int width, int height)
     const float rotation = 60.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
     heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(69.0f)));
+    /*
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f), m_npcController);   
     
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), m_npcController);
@@ -161,15 +162,15 @@ void Game::Initialize(HWND window, int width, int height)
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, 10.0f), m_npcController);
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(110.0f, 3.0f, -10.0f), m_npcController);
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(120.0f, 3.0f, -10.0f), m_npcController);
+    */
     
-    /*
     DirectX::SimpleMath::Vector3 pos(10.0f, 3.0f, -50.0f);
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 60; ++i)
     {
         m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
         pos.z += 40.0f;
     }
-
+    /*
     pos = DirectX::SimpleMath::Vector3(20.0f, 3.0f, -45.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
 
@@ -1325,7 +1326,7 @@ void Game::Render()
     m_effect3->Apply(context);
     m_batch3->Begin();
 
-    DrawDebugLinesVector();
+    //DrawDebugLinesVector();
 
     m_batch3->End();
 
