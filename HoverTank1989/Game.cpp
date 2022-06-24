@@ -165,51 +165,16 @@ void Game::Initialize(HWND window, int width, int height)
     */
     
     DirectX::SimpleMath::Vector3 pos(10.0f, 3.0f, -50.0f);
-    for (int i = 0; i < 60; ++i)
+    for (int i = 0; i < 40; ++i)
     {
         m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
         pos.z += 40.0f;
     }
-    /*
-    pos = DirectX::SimpleMath::Vector3(20.0f, 3.0f, -45.0f);
-    heading = -DirectX::SimpleMath::Vector3::UnitX;
+    
+    //pos = DirectX::SimpleMath::Vector3(20.0f, 3.0f, -45.0f);
+    //heading = -DirectX::SimpleMath::Vector3::UnitX;
 
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 9.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 30.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 20.0f;
-    pos.x += 4.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 40.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 20.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 20.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 20.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 20.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 20.0f;
-    pos.x += 0.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z += 20.0f;
-    pos.x += 0.0f;
-    for (int i = 0; i < 5; ++i)
-    {
-        //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-        //pos.z += 40.0f;
-    }
-    */
+
     // testing new terrain map
     m_terrainVector.clear();
 }
