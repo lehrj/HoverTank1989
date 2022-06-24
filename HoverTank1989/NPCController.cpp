@@ -150,7 +150,9 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
                 if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
                 {
-                    m_npcVec[i]->PushAvoidanceTarget(testV2.q.position);
+                    //m_npcVec[i]->PushAvoidanceTarget(testV2.q.position);
+                    m_npcVec[i]->PushAvoidanceTarget2(testV2.q.position, m_npcVec[j]);
+                    //m_npcVec[j]->PushAvoidanceTarget(testV1.q.position);
                 }
             }
         }

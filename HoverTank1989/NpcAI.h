@@ -44,6 +44,7 @@ public:
 
     void UpdateAI(const float aTimeStep);
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos);
+    void PushAiAvoidanceTarget2(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
 
 private:
@@ -88,6 +89,7 @@ private:
     void AdjustHeadingForVelocity2();
     void AvoidPos();
     void AvoidPos2();
+    void AvoidPos3();
 
     void CreateWayPath();
 
@@ -132,6 +134,7 @@ private:
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
     float                       m_avoidanceBoxWidth;
     DirectX::SimpleMath::Vector3 m_avoidanceTarget = DirectX::SimpleMath::Vector3::Zero;
+    NPCVehicle const*           m_avoidanceTarget2 = nullptr;
     bool                        m_isAvoidanceTrue = false;
 
     AIControls                  m_aiControls;
