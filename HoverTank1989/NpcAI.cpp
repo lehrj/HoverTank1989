@@ -296,75 +296,65 @@ void NpcAI::CreateWayPath()
     DirectX::SimpleMath::Vector3 pos;
     Utility::Waypoint wp;
 
+    const float low = -10.0f;
+    const float high = 10.0f;
+    float xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    float zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     Utility::Waypoint wp1;
-    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, -100.0f);
+    pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, -100.0f + zOffset);
     wp1 = Utility::CreateWaypoint(pos, radius);
+    xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
     Utility::Waypoint wp2;
-    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 100.0f);
+    pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, 100.0f + zOffset);
     wp2 = Utility::CreateWaypoint(pos, radius);
+    xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
     Utility::Waypoint wp3;
-    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, 100.0f);
+    pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, 100.0f + zOffset);
     wp3 = Utility::CreateWaypoint(pos, radius);
+    xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
     Utility::Waypoint wp4;
-    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, -100.0f);
+    pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, -100.0f + zOffset);
     wp4 = Utility::CreateWaypoint(pos, radius);
+    xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
     Utility::Waypoint wp5;
-    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, -300.0f);
+    pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, -300.0f + zOffset);
     wp5 = Utility::CreateWaypoint(pos, radius);
+    xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
     Utility::Waypoint wp6;
-    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, -300.0f);
+    pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, -300.0f + zOffset);
     wp6 = Utility::CreateWaypoint(pos, radius);
+    xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
     Utility::Waypoint wp7;
-    pos = DirectX::SimpleMath::Vector3(300.0f, 3.0f, 300.0f);
+    pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, 300.0f + zOffset);
     wp7 = Utility::CreateWaypoint(pos, radius);
+    xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
     Utility::Waypoint wp8;
-    pos = DirectX::SimpleMath::Vector3(75.0f, 3.0f, 300.0f);
+    pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, 300.0f + zOffset);
     wp8 = Utility::CreateWaypoint(pos, radius);
 
-    const int id = m_npcOwner->GetID();
-    /*
-    if (id % 2)
-    {
-        Utility::PushWaypointToPath(m_currentWayPath, wp1);
-        Utility::PushWaypointToPath(m_currentWayPath, wp2);
-        Utility::PushWaypointToPath(m_currentWayPath, wp3);
-        Utility::PushWaypointToPath(m_currentWayPath, wp4);
-    }
-    else
-    {
-        Utility::PushWaypointToPath(m_currentWayPath, wp4);
-        Utility::PushWaypointToPath(m_currentWayPath, wp3);
-        Utility::PushWaypointToPath(m_currentWayPath, wp2);
-        Utility::PushWaypointToPath(m_currentWayPath, wp1);
-    }
-    */
-    
-    /*
-    Utility::PushWaypointToPath(m_currentWayPath, wp1);
-    Utility::PushWaypointToPath(m_currentWayPath, wp2);
-    Utility::PushWaypointToPath(m_currentWayPath, wp3);
-    Utility::PushWaypointToPath(m_currentWayPath, wp4);
-    */
 
-    
-    
-    Utility::PushWaypointToPath(m_currentWayPath, wp3);
-    Utility::PushWaypointToPath(m_currentWayPath, wp8);
-    Utility::PushWaypointToPath(m_currentWayPath, wp7);
     Utility::PushWaypointToPath(m_currentWayPath, wp2);
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     Utility::PushWaypointToPath(m_currentWayPath, wp5);
     Utility::PushWaypointToPath(m_currentWayPath, wp6);
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
-    
-
+    Utility::PushWaypointToPath(m_currentWayPath, wp3);
+    Utility::PushWaypointToPath(m_currentWayPath, wp8);
+    Utility::PushWaypointToPath(m_currentWayPath, wp7);
     /*
     if (m_npcOwner->GetID() % 2)
     {

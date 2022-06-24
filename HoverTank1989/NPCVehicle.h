@@ -19,9 +19,9 @@ struct NpcControlInput
     bool        stearingIsPressed;
     float       steeringInput;
     const float steeringDecayRate = 0.2f;
-    const float steeringInputMax = 16.0f;
-    const float steeringInputMin = -16.0f;
-    const float steeringInputRate = 5.0f;
+    const float steeringInputMax = 6.0f;
+    const float steeringInputMin = -6.0f;
+    const float steeringInputRate = 4.0f;
     DirectX::SimpleMath::Vector3 steeringVec;
 
     float       throttleInput;
@@ -278,7 +278,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11DeviceContext1> m_context;
 
     double m_testTimer = 0.0f;
-    bool m_isGoToggleTrue = true;
+    bool m_isGoToggleTrue = false;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

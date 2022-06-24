@@ -125,56 +125,21 @@ void Game::Initialize(HWND window, int width, int height)
     auto context = m_deviceResources->GetD3DDeviceContext();
     m_vehicle->InitializeVehicle(context, m_npcController);
     m_vehicle->SetDebugData(m_debugData);
-    //m_vehicle->InitializeVehicle(context);
 
-    const float rotation = 60.0f;
-    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(69.0f)));
-    /*
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f), m_npcController);   
-    
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 0.0f), m_npcController);
-    
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(65.0f, 3.0f, -2.0f), m_npcController);
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(44.01f, -10.0f, -2.0f), m_npcController);
-  
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f), m_npcController);
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, -10.0f), m_npcController);
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(30.0f, 3.0f, 60.0f), m_npcController);
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(rotation)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, 35.0f), m_npcController);
-    
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f), m_npcController);
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f), m_npcController);
-    heading = DirectX::SimpleMath::Vector3::TransformNormal(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f)));
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, -10.0f), m_npcController);
-
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(75.0f, 3.0f, -10.0f), m_npcController);
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(50.0f, 3.0f, 10.0f), m_npcController);
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(60.0f, 3.0f, -10.0f), m_npcController);
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(80.0f, 3.0f, 10.0f), m_npcController);
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(90.0f, 3.0f, -10.0f), m_npcController);
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(100.0f, 3.0f, 10.0f), m_npcController);
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(110.0f, 3.0f, -10.0f), m_npcController);
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, DirectX::SimpleMath::Vector3(120.0f, 3.0f, -10.0f), m_npcController);
-    */
-    
-    DirectX::SimpleMath::Vector3 pos(10.0f, 3.0f, -50.0f);
-    for (int i = 0; i < 40; ++i)
+    const float xOrgVal = 270.0f;
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, 100.0f);
+    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
+    for (int i = 0; i < 7; ++i)
     {
-        m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-        pos.z += 40.0f;
+        for (int j = 0; j < 5; ++j)
+        {
+            m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+            pos.x += 25.0f;
+        }
+        pos.x = xOrgVal;
+        pos.z += 50.0f;
     }
     
-    //pos = DirectX::SimpleMath::Vector3(20.0f, 3.0f, -45.0f);
-    //heading = -DirectX::SimpleMath::Vector3::UnitX;
-
-
     // testing new terrain map
     m_terrainVector.clear();
 }
