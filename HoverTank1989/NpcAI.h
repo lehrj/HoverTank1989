@@ -122,7 +122,7 @@ private:
     DirectX::SimpleMath::Vector3 m_currentDestination;
 
     std::vector<DirectX::SimpleMath::Vector3> m_destinationSmoothing;
-    const int m_destinationSmoothingSize = 2;
+    const int m_destinationSmoothingSize = 10;
 
 
     DirectX::SimpleMath::Vector3 m_desiredHeading;

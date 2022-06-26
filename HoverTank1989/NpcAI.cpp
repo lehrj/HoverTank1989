@@ -888,6 +888,13 @@ void NpcAI::UpdateAI(const float aTimeStep)
     m_debugData->DebugPushUILineDecimalNumber("m_aiControls.aiOutput.omniThrust", m_aiControls.aiOutput.omniThrust, "");
     */
 
+    for (int i = 0; i < m_currentWayPath.nodeCount; ++i)
+    {
+        m_debugData->DebugPushTestLine(m_currentWayPath.wayPath[i].waypointPos, DirectX::SimpleMath::Vector3::UnitY, 15.f, 7.0f, DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+        
+    }
+
+
     m_isAvoidanceTrue = false;
 }
 

@@ -28,7 +28,8 @@ struct NpcControlInput
     const float throttleInputDecayRate = 0.6f;
     const float throttleInputMin = -1.0f;
     const float throttleInputMax = 1.0f;
-    const float throttleInputRate = 0.4f;
+    //const float throttleInputRate = 0.4f;
+    const float throttleInputRate = 0.1f;
 };
 
 struct HoverData
@@ -41,7 +42,7 @@ struct HoverData
     
     float forwardThrust;
     const float forwardThrustMax = 100000.0f;
-    const float reverseThrustMax = forwardThrustMax * 0.4f;
+    const float reverseThrustMax = forwardThrustMax * 0.9f;
     float omniThrust;
     const float omniThrustMax = 65000.0f;
     float omniThrustDirection = 0.0f;
@@ -72,6 +73,21 @@ enum class NPCType
 
 struct NPCModel
 {
+    std::unique_ptr<DirectX::GeometricPrimitive>    afterBurnShape;
+    DirectX::SimpleMath::Matrix localAfterBurnLeftMatrix;
+    DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix;
+    DirectX::SimpleMath::Matrix localAfterBurnRightMatrix;
+    DirectX::SimpleMath::Matrix worldAfterBurnRightMatrix;
+
+    float afterBurnLeftFlicker;
+    float afterBurnRightFlicker;
+    float afterBurnFlickerRate;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    jetHousingShape;
+    DirectX::SimpleMath::Matrix localJetHousingLeftMatrix;
+    DirectX::SimpleMath::Matrix worldJetHousingLeftMatrix;
+    DirectX::SimpleMath::Matrix localJetHousingRightMatrix;
+    DirectX::SimpleMath::Matrix worldJetHousingRightMatrix;
     std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;   
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
@@ -79,6 +95,10 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    forwardShape;
     DirectX::SimpleMath::Matrix localForwardMatrix;
     DirectX::SimpleMath::Matrix worldForwardMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    noseConeShape;
+    DirectX::SimpleMath::Matrix localNoseConeMatrix;
+    DirectX::SimpleMath::Matrix worldNoseConeMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    omniBaseShape;
     DirectX::SimpleMath::Matrix localOmniBaseMatrix;
@@ -92,6 +112,10 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    rearShape;
     DirectX::SimpleMath::Matrix localRearMatrix;
     DirectX::SimpleMath::Matrix worldRearMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    skirtShape;
+    DirectX::SimpleMath::Matrix localSkirtMatrix;
+    DirectX::SimpleMath::Matrix worldSkirtMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    steeringShape;
     DirectX::SimpleMath::Matrix localSteeringMatrix;
@@ -262,6 +286,7 @@ private:
     Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
     void UpdateControlInput();
     void UpdateControlInputFromAi();
+    void UpdateControlInputFromAi2();
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
     void UpdateImpulseForces(const float aTimeDelta);

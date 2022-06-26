@@ -126,16 +126,20 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->InitializeVehicle(context, m_npcController);
     m_vehicle->SetDebugData(m_debugData);
 
-    const float xOrgVal = 270.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, 100.0f);
+    //const float xOrgVal = 270.0f;
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, 100.0f);
+    const float xOrgVal = 20.0f;
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, -100.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
+    heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f)));
     for (int i = 0; i < 7; ++i)
     {
-        for (int j = 0; j < 5; ++j)
+        for (int j = 0; j < 3; ++j)
         {
             m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
             pos.x += 25.0f;
         }
+        heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-7.0f)));
         pos.x = xOrgVal;
         pos.z += 50.0f;
     }
