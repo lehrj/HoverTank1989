@@ -34,14 +34,23 @@ struct NpcControlInput
 
 struct HoverData
 {   
+    
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
     const float hoverRangeLower = 1.5f;
     const float hoverRangeMid = 3.0f;
     const float hoverRangeUpper = 5.0f;
     
+    /*
+    const float groundNormalForceRange = 5.0f;
+    const float hoverNeutralBoyantAlt = 2.52f;
+    const float hoverRangeLower = 3.5f;
+    const float hoverRangeMid = 5.0f;
+    const float hoverRangeUpper = 8.0f;
+    */
     float forwardThrust;
-    const float forwardThrustMax = 100000.0f;
+    //const float forwardThrustMax = 100000.0f;
+    const float forwardThrustMax = 50000.0f;
     const float reverseThrustMax = forwardThrustMax * 0.9f;
     float omniThrust;
     const float omniThrustMax = 65000.0f;
@@ -79,6 +88,11 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localAfterBurnRightMatrix;
     DirectX::SimpleMath::Matrix worldAfterBurnRightMatrix;
 
+    DirectX::SimpleMath::Matrix localForwardBurnLeftMatrix;
+    DirectX::SimpleMath::Matrix worldForwardBurnLeftMatrix;
+    DirectX::SimpleMath::Matrix localForwardBurnRightMatrix;
+    DirectX::SimpleMath::Matrix worldForwardBurnRightMatrix;
+
     float afterBurnLeftFlicker;
     float afterBurnRightFlicker;
     float afterBurnFlickerRate;
@@ -88,6 +102,12 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldJetHousingLeftMatrix;
     DirectX::SimpleMath::Matrix localJetHousingRightMatrix;
     DirectX::SimpleMath::Matrix worldJetHousingRightMatrix;
+
+    DirectX::SimpleMath::Matrix localJetHousingShellLeftMatrix;
+    DirectX::SimpleMath::Matrix worldJetHousingShellLeftMatrix;
+    DirectX::SimpleMath::Matrix localJetHousingShellRightMatrix;
+    DirectX::SimpleMath::Matrix worldJetHousingShellRightMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;   
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
@@ -116,6 +136,7 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    skirtShape;
     DirectX::SimpleMath::Matrix localSkirtMatrix;
     DirectX::SimpleMath::Matrix worldSkirtMatrix;
+    float skirtRotation = 0.0f;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    steeringShape;
     DirectX::SimpleMath::Matrix localSteeringMatrix;
@@ -125,6 +146,26 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    throttleShape;
     DirectX::SimpleMath::Matrix localThrottleMatrix;
     DirectX::SimpleMath::Matrix worldThrottleMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    ventShape;
+    DirectX::SimpleMath::Matrix localVentMatrix1;
+    DirectX::SimpleMath::Matrix worldVentMatrix1;
+    DirectX::SimpleMath::Matrix localVentMatrix2;
+    DirectX::SimpleMath::Matrix worldVentMatrix2;
+    DirectX::SimpleMath::Matrix localVentMatrix3;
+    DirectX::SimpleMath::Matrix worldVentMatrix3;
+    DirectX::SimpleMath::Matrix localVentMatrix4;
+    DirectX::SimpleMath::Matrix worldVentMatrix4;
+    DirectX::SimpleMath::Matrix localVentMatrix5;
+    DirectX::SimpleMath::Matrix worldVentMatrix5;
+    DirectX::SimpleMath::Matrix localVentMatrix6;
+    DirectX::SimpleMath::Matrix worldVentMatrix6;
+    DirectX::SimpleMath::Matrix localVentMatrix7;
+    DirectX::SimpleMath::Matrix worldVentMatrix7;
+    DirectX::SimpleMath::Matrix localVentMatrix8;
+    DirectX::SimpleMath::Matrix worldVentMatrix8;
+    DirectX::SimpleMath::Matrix localVentMatrix9;
+    DirectX::SimpleMath::Matrix worldVentMatrix9;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    collisionShape;
