@@ -486,6 +486,8 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeLeftMatrix, aView, aProj, skirtColor);
     m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeRightMatrix, aView, aProj, skirtColor);
+    m_vehicleStruct00.npcModel.grillShape->Draw(m_vehicleStruct00.npcModel.worldGrillLeftMatrix, aView, aProj, ventColor);
+    m_vehicleStruct00.npcModel.grillShape->Draw(m_vehicleStruct00.npcModel.worldGrillRightMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.forwardShape->Draw(m_vehicleStruct00.npcModel.worldForwardMatrix, aView, aProj, forwardColor);
     m_vehicleStruct00.npcModel.noseConeShape->Draw(m_vehicleStruct00.npcModel.worldNoseConeMatrix, aView, aProj, color);
     m_vehicleStruct00.npcModel.frontAirDamShape->Draw(m_vehicleStruct00.npcModel.worldFrontAirDamMatrix, aView, aProj, skirtColor);
@@ -766,8 +768,9 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     rearBodySize.x *= 0.3f;
     rearBodySize.y *= 0.95f;
     rearBodySize.z *= 1.02f;
-    const float rearBodyOffset = 2.0f;
+    float rearBodyOffset = 2.0f;
     rearBodySize.x -= rearBodyOffset;
+    //rearBodyOffset = 4.0f;
     DirectX::SimpleMath::Vector3 rearBodyTranslation = DirectX::SimpleMath::Vector3(-rearBodyOffset * 0.5f, 0.0f, 0.0f);
     rearBodyTranslation.x += -3.0f;
     rearBodyTranslation.y += 0.3f;
@@ -960,18 +963,43 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localNoseConeMatrix *= centerMassTranslation;
     aModel.worldNoseConeMatrix = aModel.localNoseConeMatrix;
 
+    DirectX::SimpleMath::Matrix testEyeMat = DirectX::SimpleMath::Matrix::Identity;
     // eye left
     DirectX::SimpleMath::Vector3 eyeSize;
-    eyeSize.x = 2.5f;
+    eyeSize.x = 2.f;
     eyeSize.y = 1.0f;
-    eyeSize.z = 1.0f;
+    eyeSize.z = 0.3f;
     DirectX::SimpleMath::Vector3 eyeLeftTranslation = noseConeTranslation;
     eyeLeftTranslation.x = aDimensions.x * 0.5f;
-    eyeLeftTranslation.x += -1.2f;
-    eyeLeftTranslation.y = aDimensions.y * 0.14f;
-    eyeLeftTranslation.z = -aDimensions.z * 0.25f;
+    eyeLeftTranslation.x += -1.055f;
+    eyeLeftTranslation.y = aDimensions.y * 0.17f + 0.0;
+    eyeLeftTranslation.z = -aDimensions.z * 0.32f;
+    DirectX::SimpleMath::Vector3 eyeRightTranslation2 = eyeLeftTranslation;
+    DirectX::SimpleMath::Vector3 eyeLeftTranslation2 = eyeLeftTranslation;
+    eyeLeftTranslation2.x = 0.0f;
+    eyeLeftTranslation2.y = 0.0f;
+    eyeLeftTranslation.z = 0.0f;
     aModel.eyeShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), eyeSize);
-    //aModel.eyeShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), eyeSize.z, eyeSize.x, 3);
+    aModel.eyeShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), eyeSize.z, eyeSize.x, 3);
+    aModel.localEyeLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-20.0f));
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 3.0f);
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(27.0f));
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(28.5f));
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
+    const float eyeInflection = 33.0f;
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0));
+    const float eyeRotation = 62.0f;
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0));
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeLeftTranslation);
+    aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeLeftTranslation2);
+    aModel.localEyeLeftMatrix *= centerMassTranslation;
+    aModel.worldEyeLeftMatrix = aModel.localEyeLeftMatrix;
+
+    /*
     aModel.localEyeLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(24.0f));
     aModel.localEyeLeftMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
@@ -984,8 +1012,43 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localEyeLeftMatrix *= centerMassTranslation;
     aModel.worldEyeLeftMatrix = aModel.localEyeLeftMatrix;
 
+    */
     // eye right
     DirectX::SimpleMath::Vector3 eyeRightTranslation = eyeLeftTranslation;
+    //eyeRightTranslation.x = aDimensions.x * 0.47f;
+    //eyeRightTranslation.y = aDimensions.y * 0.1f;
+    eyeRightTranslation.z *= -1.0f;
+    //DirectX::SimpleMath::Vector3 eyeRightTranslation2 = eyeRightTranslation;
+    eyeRightTranslation2.z *= -1.0f;
+    aModel.localEyeRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-20.0f));
+
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 3.0f);
+
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(27.0f));
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f));
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-28.5f));
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
+    //const float eyeInflection = 33.0f;
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0));
+    //const float eyeRotation = 62.0f;
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0));
+    //aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeRightTranslation);
+    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeRightTranslation2);
+    //aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0));
+    //aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeRightTranslation2);
+    aModel.localEyeRightMatrix *= centerMassTranslation;
+    aModel.worldEyeRightMatrix = aModel.localEyeRightMatrix;
+
+
+
+    /*
+        DirectX::SimpleMath::Vector3 eyeRightTranslation = eyeLeftTranslation;
     //eyeRightTranslation.x = aDimensions.x * 0.47f;
     //eyeRightTranslation.y = aDimensions.y * 0.1f;
     eyeRightTranslation.z *= -1.0f;
@@ -998,6 +1061,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeRightTranslation);
     aModel.localEyeRightMatrix *= centerMassTranslation;
     aModel.worldEyeRightMatrix = aModel.localEyeRightMatrix;
+    */
 
     // front air dam
     DirectX::SimpleMath::Vector3 frontAirDamSize(aDimensions);
@@ -1020,6 +1084,37 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localFrontAirDamMatrix *= centerMassTranslation;
     aModel.worldFrontAirDamMatrix = aModel.localFrontAirDamMatrix;
 
+    // grill left
+    DirectX::SimpleMath::Vector3 grillSize(aDimensions);
+    grillSize.x = 1.0f;
+    grillSize.y = 3.2f;
+    grillSize.z = 2.0f;
+    //aModel.grillShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), grillSize);
+    aModel.grillShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), grillSize.z, grillSize.y, 3);
+    DirectX::SimpleMath::Vector3 grillLeftTranslation;
+    grillLeftTranslation.x = aDimensions.x * 0.5f;
+    grillLeftTranslation.y = -aDimensions.y * 0.2f;
+    grillLeftTranslation.z = -3.5f;
+
+    aModel.localGrillLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localGrillLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-30.0f));
+    aModel.localGrillLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-30.0f));
+    aModel.localGrillLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(grillLeftTranslation);
+    aModel.localGrillLeftMatrix *= centerMassTranslation;
+    aModel.worldGrillLeftMatrix = aModel.localGrillLeftMatrix;
+
+    // grill right
+    DirectX::SimpleMath::Vector3 grillRightTranslation = grillLeftTranslation;
+    //grillRightTranslation.x = aDimensions.x * 0.37f;
+    //grillRightTranslation.y = -aDimensions.y * 0.4f;
+    grillRightTranslation.z *= -1.0f;
+
+    aModel.localGrillRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localGrillRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-30.0f));
+    aModel.localGrillRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-30.0f));
+    aModel.localGrillRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(grillRightTranslation);
+    aModel.localGrillRightMatrix *= centerMassTranslation;
+    aModel.worldGrillRightMatrix = aModel.localGrillRightMatrix;
 
     const float omniBaseDiameter = aDimensions.x * 0.32f;
     const float omniBaseHeight = aDimensions.y * 1.05f;
@@ -1088,7 +1183,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 
     DirectX::SimpleMath::Vector3 wingLocalTranslation = wingArmLocalTranslation;
     //wingLocalTranslation.x += -(wingSize.x * 1.0f) * 0.02564895;
-    wingLocalTranslation.x += -0.36 * 1.0f;
+    wingLocalTranslation.x += -0.26 * 1.0f;
     wingLocalTranslation.y += wingSize.y * 1.0f;
     wingLocalTranslation.z += 0.0f;
 
@@ -1105,7 +1200,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     // wing fin left
     DirectX::SimpleMath::Vector3 wingFinSize(2.0f, 2.0f, 1.0f);
     wingFinSize.x *= 1.0f;
-    wingFinSize.y *= 1.0f;
+    wingFinSize.y *= 0.95f;
     wingFinSize.z *= 0.5f;
     aModel.wingFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingFinSize);
     DirectX::SimpleMath::Vector3 wingFinLeftTranslation = wingTranslation;
@@ -1226,7 +1321,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.ventShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), ventSize);
 
     const float ventOffsetY = 0.7f;
-    const DirectX::SimpleMath::Vector3 ventOffSet(0.0f, -0.5f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 ventOffSet(0.0f, -0.5f, 0.0f);
+    const DirectX::SimpleMath::Vector3 ventOffSet(0.0f, -0.33f, 0.0f);
     DirectX::SimpleMath::Vector3 ventScale(1.0f, 1.0f, 1.0f);
     //DirectX::SimpleMath::Vector3 ventScaleOffSet(0.0f, 0.0f, -0.1f);
     DirectX::SimpleMath::Vector3 ventScaleOffSet(0.0f, 0.0f, 0.0f);
@@ -1991,6 +2087,11 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     m_vehicleStruct00.npcModel.worldEyeRightMatrix = m_vehicleStruct00.npcModel.localEyeRightMatrix;
     m_vehicleStruct00.npcModel.worldEyeRightMatrix *= updateMat;
+
+    m_vehicleStruct00.npcModel.worldGrillLeftMatrix = m_vehicleStruct00.npcModel.localGrillLeftMatrix;
+    m_vehicleStruct00.npcModel.worldGrillLeftMatrix *= updateMat;
+    m_vehicleStruct00.npcModel.worldGrillRightMatrix = m_vehicleStruct00.npcModel.localGrillRightMatrix;
+    m_vehicleStruct00.npcModel.worldGrillRightMatrix *= updateMat;
 
     m_vehicleStruct00.npcModel.worldRearDeckMatrix = m_vehicleStruct00.npcModel.localRearDeckMatrix;
     m_vehicleStruct00.npcModel.worldRearDeckMatrix *= updateMat;

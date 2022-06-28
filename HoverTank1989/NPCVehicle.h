@@ -130,6 +130,12 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localEyeRightMatrix;
     DirectX::SimpleMath::Matrix worldEyeRightMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    grillShape;
+    DirectX::SimpleMath::Matrix localGrillLeftMatrix;
+    DirectX::SimpleMath::Matrix worldGrillLeftMatrix;
+    DirectX::SimpleMath::Matrix localGrillRightMatrix;
+    DirectX::SimpleMath::Matrix worldGrillRightMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    frontAirDamShape;
     DirectX::SimpleMath::Matrix localFrontAirDamMatrix;
     DirectX::SimpleMath::Matrix worldFrontAirDamMatrix;
