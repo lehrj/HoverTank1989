@@ -1135,7 +1135,7 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout.Get());
 
     DirectX::SimpleMath::Matrix modelWorldBarrel01 = DirectX::SimpleMath::Matrix::Identity;
-    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    //m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
     
     m_batch->Begin();
 

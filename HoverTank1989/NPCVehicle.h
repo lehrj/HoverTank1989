@@ -112,9 +112,27 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    rearBodyShape;
+    DirectX::SimpleMath::Matrix localRearBodyMatrix;
+    DirectX::SimpleMath::Matrix worldRearBodyMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    rearDeckShape;
+    DirectX::SimpleMath::Matrix localRearDeckMatrix;
+    DirectX::SimpleMath::Matrix worldRearDeckMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    forwardShape;
     DirectX::SimpleMath::Matrix localForwardMatrix;
     DirectX::SimpleMath::Matrix worldForwardMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    eyeShape;
+    DirectX::SimpleMath::Matrix localEyeLeftMatrix;
+    DirectX::SimpleMath::Matrix worldEyeLeftMatrix;
+    DirectX::SimpleMath::Matrix localEyeRightMatrix;
+    DirectX::SimpleMath::Matrix worldEyeRightMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    frontAirDamShape;
+    DirectX::SimpleMath::Matrix localFrontAirDamMatrix;
+    DirectX::SimpleMath::Matrix worldFrontAirDamMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    noseConeShape;
     DirectX::SimpleMath::Matrix localNoseConeMatrix;
@@ -132,6 +150,24 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    rearShape;
     DirectX::SimpleMath::Matrix localRearMatrix;
     DirectX::SimpleMath::Matrix worldRearMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    wingArmShape;
+    DirectX::SimpleMath::Matrix localWingArmTranslationMatrix;
+    DirectX::SimpleMath::Matrix localWingArmMatrix;
+    DirectX::SimpleMath::Matrix worldWingArmMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    wingShape;
+    DirectX::SimpleMath::Matrix localWingTranslationMatrix;
+    DirectX::SimpleMath::Matrix localWingMatrix;
+    DirectX::SimpleMath::Matrix worldWingMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    wingFinShape;
+    DirectX::SimpleMath::Matrix localWingFinLeftTranslationMatrix;
+    DirectX::SimpleMath::Matrix localWingFinLeftMatrix;
+    DirectX::SimpleMath::Matrix worldWingFinLeftMatrix;
+    DirectX::SimpleMath::Matrix localWingFinRightTranslationMatrix;
+    DirectX::SimpleMath::Matrix localWingFinRightMatrix;
+    DirectX::SimpleMath::Matrix worldWingFinRightMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    skirtShape;
     DirectX::SimpleMath::Matrix localSkirtMatrix;
