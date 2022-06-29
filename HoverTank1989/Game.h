@@ -388,7 +388,8 @@ private:
     const DirectX::XMFLOAT4 m_defaultGameTerrainColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 1.0f);
 
     const float m_startTerrainMaxY = 0.347000033f;
-    const float m_gameTerrainMaxY = 2471.24097f;
+    //const float m_gameTerrainMaxY = 2471.24097f;
+    const float m_gameTerrainMaxY = 600.24097f;
 
     float m_testTimer1 = 0.0f;
     float m_testTimer2 = 0.0f;

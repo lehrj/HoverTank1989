@@ -442,7 +442,8 @@ void NPCVehicle::CalculateTopSpeed()
 
 void NPCVehicle::DebugToggleAI()
 {
-    //m_npcAI->DebugToggle();
+    m_npcAI->DebugToggle();
+    /*
     if (m_isGoToggleTrue == true)
     {
         m_isGoToggleTrue = false;
@@ -451,6 +452,7 @@ void NPCVehicle::DebugToggleAI()
     {
         m_isGoToggleTrue = true;
     }
+    */
 }
 
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
@@ -522,6 +524,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix8, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix9, aView, aProj, ventColor);
 
+    /*
     DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     if (m_npcAI->GetIsAvoidanceTrue() == true)
     {
@@ -530,9 +533,9 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 2.0f;
-    m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
+    //m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
-
+    */
     /*
     DirectX::SimpleMath::Vector4 testColor2 = DirectX::SimpleMath::Vector4(0.5f, 1.0f, 0.5f, 1.0f);
     DirectX::SimpleMath::Vector3 testSize2 = m_vehicleStruct00.vehicleData.collisionBox.Extents;
@@ -770,7 +773,10 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     rearBodySize.z *= 1.02f;
     float rearBodyOffset = 2.0f;
     rearBodySize.x -= rearBodyOffset;
-    //rearBodyOffset = 4.0f;
+
+
+
+    rearBodyOffset = 4.0f;
     DirectX::SimpleMath::Vector3 rearBodyTranslation = DirectX::SimpleMath::Vector3(-rearBodyOffset * 0.5f, 0.0f, 0.0f);
     rearBodyTranslation.x += -3.0f;
     rearBodyTranslation.y += 0.3f;
@@ -809,6 +815,124 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rearDeckTranslation);
     aModel.localRearDeckMatrix *= centerMassTranslation;
     aModel.worldRearDeckMatrix = aModel.localRearDeckMatrix;
+
+    // wing arm
+    DirectX::SimpleMath::Vector3 wingArmSize(2.0f, 1.0f, 1.0f);
+    wingArmSize.x *= 1.0f;
+    wingArmSize.y *= 1.0f;
+    wingArmSize.z *= 1.0f;
+    aModel.wingArmShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingArmSize);
+    DirectX::SimpleMath::Vector3 wingArmTranslation = rearDeckTranslation;
+    wingArmTranslation.x += 1.6f;
+    wingArmTranslation.x -= 0.61f; /// testbadjust val
+    wingArmTranslation.y += rearDeckSize * 0.6f;
+    wingArmTranslation.z = 0.0f;
+
+    DirectX::SimpleMath::Vector3 wingArmLocalTranslation;
+    wingArmLocalTranslation.x = -wingArmSize.x * 0.85f;
+    //wingArmLocalTranslation.x -= 0.61f; /// testbadjust val
+    wingArmLocalTranslation.y = 0.0f;
+    wingArmLocalTranslation.z = 0.0f;
+
+    aModel.localWingArmMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
+    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
+    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
+    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmLocalTranslation);
+    //aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
+    aModel.localWingArmTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
+    aModel.localWingArmMatrix *= centerMassTranslation;
+    aModel.worldWingArmMatrix = aModel.localWingArmMatrix;
+
+    DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f)));
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f));
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f)));
+
+
+    // wing
+    DirectX::SimpleMath::Vector3 wingSize(2.0f, 1.0f, 1.0f);
+    wingSize.x *= 1.0f;
+    wingSize.y *= 0.5f;
+    wingSize.z *= aDimensions.z;
+    aModel.wingShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingSize);
+    DirectX::SimpleMath::Vector3 wingTranslation = wingArmTranslation;
+    //wingTranslation.x += -0.36 * wingSize.x;
+    //wingTranslation.y += wingSize.y * 0.5f;
+    wingTranslation.z += 0.0f;
+
+    DirectX::SimpleMath::Vector3 wingLocalTranslation = wingArmLocalTranslation;
+    //wingLocalTranslation.x += -(wingSize.x * 1.0f) * 0.02564895;
+    wingLocalTranslation.x += -0.26 * 1.0f;
+    wingLocalTranslation.y += wingSize.y * 1.5f;
+    wingLocalTranslation.z += 0.0f;
+
+    aModel.localWingMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
+    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
+    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
+    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingLocalTranslation);
+    //aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
+    aModel.localWingTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingTranslation);
+    aModel.localWingMatrix *= centerMassTranslation;
+    aModel.worldWingMatrix = aModel.localWingMatrix;
+
+    // wing fin left
+    DirectX::SimpleMath::Vector3 wingFinSize(2.0f, 2.0f, 1.0f);
+    wingFinSize.x *= 1.0f;
+    wingFinSize.y *= 0.95f;
+    wingFinSize.z *= 0.5f;
+    //wingFinSize.y = wingSize.y;
+    const float wingFinOffSetX = rearBodySize.x - wingFinSize.x;
+    wingFinSize.x += wingFinOffSetX;
+
+    aModel.wingFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingFinSize);
+    DirectX::SimpleMath::Vector3 wingFinLeftTranslation = wingTranslation;
+    wingFinLeftTranslation.x += 0.0f;
+    //wingFinLeftTranslation.x -= wingFinOffSetX;
+    wingFinLeftTranslation.y += 0.0f;
+    wingFinLeftTranslation.z += 0.0f;
+    wingFinLeftTranslation.z += (-wingSize.z * 0.5f) + (-wingFinSize.z * 0.5f);
+
+    DirectX::SimpleMath::Vector3 wingFinLeftLocalTranslation = wingLocalTranslation;
+    //wingFinLeftLocalTranslation.x += -0.36 * 1.0f;
+    wingFinLeftLocalTranslation.x += 0.0f;
+    wingFinLeftLocalTranslation.x -= wingFinOffSetX;
+    //wingFinLeftLocalTranslation.y += wingSize.y * 1.0f;
+    wingFinLeftLocalTranslation.y += 0.0f;
+    //wingFinLeftLocalTranslation.z += (-wingSize.z * 0.5f) + (-wingFinSize.z * 0.5f);
+
+    aModel.localWingFinLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
+    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
+    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
+    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingFinLeftLocalTranslation);
+    aModel.localWingFinLeftTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingFinLeftTranslation);
+    aModel.localWingFinLeftMatrix *= centerMassTranslation;
+    aModel.worldWingFinLeftMatrix = aModel.localWingFinLeftMatrix;
+
+    // wing fin right
+    DirectX::SimpleMath::Vector3 wingFinRightTranslation = wingTranslation;
+    wingFinRightTranslation.x += 0.0f;
+    wingFinRightTranslation.y += 0.0f;
+    wingFinRightTranslation.z += 0.0f;
+
+    DirectX::SimpleMath::Vector3 wingFinRightLocalTranslation = wingLocalTranslation;
+    //wingFinRightLocalTranslation.x += -0.36 * 1.0f;
+    wingFinRightLocalTranslation.x += 0.0f;
+    wingFinRightLocalTranslation.x -= wingFinOffSetX;
+    //wingFinRightLocalTranslation.y += wingSize.y * 1.0f;
+    wingFinRightLocalTranslation.y += 0.0f;
+    wingFinRightLocalTranslation.z += (wingSize.z * 0.5f) + (wingFinSize.z * 0.5f);
+
+    aModel.localWingFinRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
+    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
+    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
+    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingFinRightLocalTranslation);
+    aModel.localWingFinRightTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingFinRightTranslation);
+    aModel.localWingFinRightMatrix *= centerMassTranslation;
+    aModel.worldWingFinRightMatrix = aModel.localWingFinRightMatrix;
 
     // Jet housing left
     const float jetHousingDiameter = aDimensions.y * 0.3f;
@@ -1120,7 +1244,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     const float omniBaseHeight = aDimensions.y * 1.05f;
     aModel.omniBaseShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), omniBaseHeight, omniBaseDiameter);
     DirectX::SimpleMath::Vector3 omniBaseTranslation;
-    omniBaseTranslation.x = -omniBaseDiameter * 0.18f;
+    omniBaseTranslation.x = -omniBaseDiameter * 0.21f;
     omniBaseTranslation.y = 0.0f;
     omniBaseTranslation.z = 0.0f;
     aModel.localOmniBaseMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -1138,113 +1262,6 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.worldOmniDialMatrix = aModel.localOmniDialMatrix;
     aModel.omniDialRadius = (omniBaseDiameter * 0.5f) - (omniDialDiameter * 0.5f);
 
-    // wing arm
-    DirectX::SimpleMath::Vector3 wingArmSize(2.0f, 1.0f, 1.0f);
-    wingArmSize.x *= 1.0f;
-    wingArmSize.y *= 1.0f;
-    wingArmSize.z *= 1.0f;
-    aModel.wingArmShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingArmSize);
-    DirectX::SimpleMath::Vector3 wingArmTranslation = rearDeckTranslation;
-    wingArmTranslation.x += 1.6f;
-    wingArmTranslation.y += rearDeckSize * 0.6f;
-    wingArmTranslation.z = 0.0f;
-
-    DirectX::SimpleMath::Vector3 wingArmLocalTranslation;
-    wingArmLocalTranslation.x = - wingArmSize.x * 0.85f;
-    wingArmLocalTranslation.y = 0.0f;
-    wingArmLocalTranslation.z = 0.0f;
-
-    aModel.localWingArmMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
-    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
-    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
-    aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmLocalTranslation);
-    //aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
-    aModel.localWingArmTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
-    aModel.localWingArmMatrix *= centerMassTranslation;
-    aModel.worldWingArmMatrix = aModel.localWingArmMatrix;
-
-    DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f)));
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f));
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f)));
-
-
-    // wing
-    DirectX::SimpleMath::Vector3 wingSize(2.0f, 1.0f, 1.0f);
-    wingSize.x *= 1.0f;
-    wingSize.y *= 0.5f;
-    wingSize.z *= aDimensions.z;
-    aModel.wingShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingSize);
-    DirectX::SimpleMath::Vector3 wingTranslation = wingArmTranslation;
-    //wingTranslation.x += -0.36 * wingSize.x;
-    wingTranslation.y += wingSize.y * 0.5f;
-    wingTranslation.z += 0.0f;
-
-    DirectX::SimpleMath::Vector3 wingLocalTranslation = wingArmLocalTranslation;
-    //wingLocalTranslation.x += -(wingSize.x * 1.0f) * 0.02564895;
-    wingLocalTranslation.x += -0.26 * 1.0f;
-    wingLocalTranslation.y += wingSize.y * 1.0f;
-    wingLocalTranslation.z += 0.0f;
-
-    aModel.localWingMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
-    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
-    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
-    aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingLocalTranslation);
-    //aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
-    aModel.localWingTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingTranslation);
-    aModel.localWingMatrix *= centerMassTranslation;
-    aModel.worldWingMatrix = aModel.localWingMatrix;
-
-    // wing fin left
-    DirectX::SimpleMath::Vector3 wingFinSize(2.0f, 2.0f, 1.0f);
-    wingFinSize.x *= 1.0f;
-    wingFinSize.y *= 0.95f;
-    wingFinSize.z *= 0.5f;
-    aModel.wingFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingFinSize);
-    DirectX::SimpleMath::Vector3 wingFinLeftTranslation = wingTranslation;
-    wingFinLeftTranslation.x += 0.0f;
-    wingFinLeftTranslation.y += 0.0f;
-    wingFinLeftTranslation.z += 0.0f;
-
-    DirectX::SimpleMath::Vector3 wingFinLeftLocalTranslation = wingLocalTranslation;
-    //wingFinLeftLocalTranslation.x += -0.36 * 1.0f;
-    wingFinLeftLocalTranslation.x += 0.0f;
-    //wingFinLeftLocalTranslation.y += wingSize.y * 1.0f;
-    wingFinLeftLocalTranslation.y += 0.0f;
-    wingFinLeftLocalTranslation.z += (-wingSize.z * 0.5f) + (-wingFinSize.z * 0.5f);
-
-    aModel.localWingFinLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
-    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
-    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
-    aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingFinLeftLocalTranslation);
-    aModel.localWingFinLeftTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingFinLeftTranslation);
-    aModel.localWingFinLeftMatrix *= centerMassTranslation;
-    aModel.worldWingFinLeftMatrix = aModel.localWingFinLeftMatrix;
-
-    // wing fin right
-    DirectX::SimpleMath::Vector3 wingFinRightTranslation = wingTranslation;
-    wingFinRightTranslation.x += 0.0f;
-    wingFinRightTranslation.y += 0.0f;
-    wingFinRightTranslation.z += 0.0f;
-
-    DirectX::SimpleMath::Vector3 wingFinRightLocalTranslation = wingLocalTranslation;
-    //wingFinRightLocalTranslation.x += -0.36 * 1.0f;
-    wingFinRightLocalTranslation.x += 0.0f;
-    //wingFinRightLocalTranslation.y += wingSize.y * 1.0f;
-    wingFinRightLocalTranslation.y += 0.0f;
-    wingFinRightLocalTranslation.z += (wingSize.z * 0.5f) + (wingFinSize.z * 0.5f);
-
-    aModel.localWingFinRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
-    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
-    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
-    aModel.localWingFinRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingFinRightLocalTranslation);
-    aModel.localWingFinRightTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingFinRightTranslation);
-    aModel.localWingFinRightMatrix *= centerMassTranslation;
-    aModel.worldWingFinRightMatrix = aModel.localWingFinRightMatrix;
 
     // old wing
     DirectX::SimpleMath::Vector3 rearShapeSize = aDimensions;
@@ -1419,10 +1436,14 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.q.bodyTorqueForce.magnitude = 0.0f;
 
     aVehicleStruct.vehicleData.dragCoefficient = 0.2f;
-    aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
+
+    DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
+    aVehicleStruct.vehicleData.dimensions = dimensions;
     //aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(44.0f, 27.0f, 30.0f);
     // to do update when transisioned from sphere to box
-    aVehicleStruct.vehicleData.collisionBox.Extents = aVehicleStruct.vehicleData.dimensions * 0.5f;
+    dimensions *= 1.12f;
+    aVehicleStruct.vehicleData.collisionBox.Extents = dimensions * 0.5f;
+    //aVehicleStruct.vehicleData.collisionBox.Extents = aVehicleStruct.vehicleData.dimensions * 0.5f;
 
     aVehicleStruct.vehicleData.collisionBox.Center = DirectX::SimpleMath::Vector3::Zero;
 
@@ -1543,7 +1564,15 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
-    velocityUpdate += damperForce * mass;
+    if (m_isGoToggleTrue == true)
+    {   
+        velocityUpdate += damperForce * mass;
+    }
+    else
+    {
+        velocityUpdate += (damperForce * 0.01f) * mass;
+    }
+
     //DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec() * aVehicle->mass;
     DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec();
     //velocityUpdate += gravForce;
@@ -2034,14 +2063,26 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         TerrainImpactHandling();
     }
 
+
+    
+    
+
+    if (m_isGoToggleTrue == true)
+    {
+        //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+        //UpdateControlInputFromAi();
+    }
+
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
     UpdateImpulseForces(static_cast<float>(aTimeDelta));
+    /*
     if (m_isGoToggleTrue == true)
     {
         RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
     }
-
+    */
+    RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignment();
@@ -2066,7 +2107,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_prevImpact, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
-
+ 
     UpdateForceTorqueVecs();
 }
 

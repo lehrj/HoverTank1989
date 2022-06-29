@@ -126,24 +126,30 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->InitializeVehicle(context, m_npcController);
     m_vehicle->SetDebugData(m_debugData);
 
-    //const float xOrgVal = 270.0f;
-    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, 100.0f);
-    const float xOrgVal = 20.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, -100.0f);
+    const float xOrgVal = 270.0f;
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 13.0, 100.0f);
+    //const float xOrgVal = 20.0f;
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, 0.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
-    heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f)));
-    for (int i = 0; i < 7; ++i)
+    //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f)));
+    const float low = 0.0f;
+    const float high = 10.0f;
+    const float zPosOffSet = 45.0f;
+    for (int i = 0; i < 10; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int j = 0; j < 2; ++j)
         {
+            float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+            pos.y = yOffSet;
             m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
             pos.x += 25.0f;
         }
-        heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-7.0f)));
+        //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-7.0f)));
         pos.x = xOrgVal;
-        pos.z += 50.0f;
+        pos.z += zPosOffSet;
     }
-    
+
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     // testing new terrain map
     m_terrainVector.clear();
 }
@@ -294,7 +300,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         aTerrain.terrainVertexArrayBase[i].normal.x = flipNormal.x;
         aTerrain.terrainVertexArrayBase[i].normal.y = flipNormal.y;
         aTerrain.terrainVertexArrayBase[i].normal.z = flipNormal.z;
-
+        
         //testColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
         if (i % 2 == 0)
         {
@@ -1550,7 +1556,7 @@ void Game::DrawSky()
 
 void Game::DrawTerrainNew(Terrain& aTerrain)
 {
-    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
+    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
 }
 

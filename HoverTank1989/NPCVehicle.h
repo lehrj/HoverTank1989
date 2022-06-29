@@ -34,13 +34,18 @@ struct NpcControlInput
 
 struct HoverData
 {   
-    
+    /*
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
     const float hoverRangeLower = 1.5f;
     const float hoverRangeMid = 3.0f;
     const float hoverRangeUpper = 5.0f;
-    
+    */
+    const float groundNormalForceRange = 5.0f;
+    const float hoverNeutralBoyantAlt = 0.52f;
+    const float hoverRangeLower = 1.5f;
+    const float hoverRangeMid = 3.0f;
+    const float hoverRangeUpper = 5.0f;
     /*
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 2.52f;
@@ -48,6 +53,23 @@ struct HoverData
     const float hoverRangeMid = 5.0f;
     const float hoverRangeUpper = 8.0f;
     */
+
+    /*
+    const float groundNormalForceRange = 5.0f;
+    const float hoverNeutralBoyantAlt = 0.52f;
+    const float hoverRangeLower = 0.5f;
+    const float hoverRangeMid = 1.0f;
+    const float hoverRangeUpper = 3.0f;
+    */
+
+    /*
+    const float groundNormalForceRange = 5.0f;
+    const float hoverNeutralBoyantAlt = 0.52f;
+    const float hoverRangeLower = 0.5f;
+    const float hoverRangeMid = 1.0f;
+    const float hoverRangeUpper = 3.0f;
+    */
+
     float forwardThrust;
     //const float forwardThrustMax = 100000.0f;
     const float forwardThrustMax = 50000.0f;
