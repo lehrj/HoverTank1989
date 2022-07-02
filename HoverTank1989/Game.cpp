@@ -135,9 +135,9 @@ void Game::Initialize(HWND window, int width, int height)
     const float low = 0.0f;
     const float high = 10.0f;
     const float zPosOffSet = 45.0f;
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 6; ++i)
     {
-        for (int j = 0; j < 2; ++j)
+        for (int j = 0; j < 4; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
@@ -1045,11 +1045,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            ++m_testDisplayCount;
-            if (m_testDisplayCount > m_testDisplayCountMax)
-            {
-                m_testDisplayCount = 0;
-            }
+            m_camera->PrepareTrailerStart();
+        }
+    }
+    if (m_kbStateTracker.pressed.M)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_camera->StartTrailerCamera(aTimer);
         }
     }
     if (m_kbStateTracker.pressed.P)
@@ -1141,7 +1144,7 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout.Get());
 
     DirectX::SimpleMath::Matrix modelWorldBarrel01 = DirectX::SimpleMath::Matrix::Identity;
-    //m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
     
     m_batch->Begin();
 

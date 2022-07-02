@@ -524,7 +524,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix8, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix9, aView, aProj, ventColor);
 
-    /*
+    
     DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     if (m_npcAI->GetIsAvoidanceTrue() == true)
     {
@@ -533,9 +533,9 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 2.0f;
-    //m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
-    //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
-    */
+    m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
+    m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
+    
     /*
     DirectX::SimpleMath::Vector4 testColor2 = DirectX::SimpleMath::Vector4(0.5f, 1.0f, 0.5f, 1.0f);
     DirectX::SimpleMath::Vector3 testSize2 = m_vehicleStruct00.vehicleData.collisionBox.Extents;
@@ -2151,6 +2151,9 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
 
     float turnRatio = abs(m_vehicleStruct00.vehicleData.controlInput.steeringInput) / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
+    //turnRatio = 0.5f;
+    //const float afterBurnLengthSum = 400.0f + (m_vehicleStruct00.npcModel.afterBurnLeftFlicker * 10.0f) - (m_vehicleStruct00.npcModel.afterBurnRightFlicker * 10.0f);
+    //const float afterBurnLengthSum = 400.0f + (abs(cos(m_testTimer * 1000.0f)) * 100.0f);
     const float afterBurnLengthSum = 400.0f;
     float afterBurnLengthModLeft;
     float afterBurnLengthModRight;
@@ -2174,6 +2177,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     float testThrottle = cos(m_testTimer);
     //testThrottle = -1.0f;
     testThrottle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
+    //testThrottle = 1.0f;
     // jet afterburn exhaust  
     //float afterBurnLength = m_vehicleStruct00.vehicleData.controlInput.throttleInput * 80.0f;
     //float afterBurnLength = testThrottle * 180.0f;

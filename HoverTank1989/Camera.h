@@ -61,6 +61,7 @@ public:
     bool IsCameraAtDestination();
     void OnResize(uint32_t aWidth, uint32_t aHeight);
 
+    void PrepareTrailerStart();
     void Reset();
     void ResetCameraTransition(DX::StepTimer const& aTimer);
     void ResetIsCameraAtDestination() { m_isCameraAtDestination = false; };
@@ -89,6 +90,7 @@ public:
     void SetCameraStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetSpinCameraStart();
     void SetSpinCameraStartGamePlayStart(const float aTime);
+    void SetSpinCameraTrailerStart(const float aTime);
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
@@ -96,9 +98,11 @@ public:
     void SetVehicleFocus(const Vehicle* aVehicle);
     void SpinClockwise(float aRotation);
     void SpinCounterClockwise(float aRotation);
+
+    void StartTrailerCamera(DX::StepTimer const& aTimer);
+
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
 
-    
     void UpdateCamera(DX::StepTimer const& aTimer);
     void UpdateFirstPersonCamera();
     void UpdatePitchYaw(const float aPitch, const float aYaw);
@@ -153,7 +157,7 @@ private:
     DirectX::SimpleMath::Matrix     m_projectionMatrix;
     DirectX::SimpleMath::Matrix     m_orthogonalMatrix;
 
-    const float                     m_posTravelSpeed = 500.6f;
+    const float                     m_posTravelSpeed = 50.6f;
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
@@ -241,5 +245,10 @@ private:
     float                        m_spinCamTotalTime;
     float                        m_spinCamTotalRotation;
     float                        m_spinCamCurrentRotation;
+
+    DirectX::SimpleMath::Vector3 m_trailerCamEndPos;
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos;
+    DirectX::SimpleMath::Vector3 m_trailerCamStartPos;
+    DirectX::SimpleMath::Vector3 m_trailerTargetStartPos;
 };
 

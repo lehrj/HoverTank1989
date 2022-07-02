@@ -23,10 +23,10 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homePitch = -0.053f;
 	m_homeYaw = 0.0f;
 
-	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
+	//m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
 	//m_cameraState = CameraState::CAMERASTATE_TESTCAMERA01;
-	//m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
-	//m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
+	m_cameraState = CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN;
+
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
@@ -124,6 +124,21 @@ bool Camera::IsCameraAtDestination()
 			return false;
 		}
 	}
+}
+
+void Camera::PrepareTrailerStart()
+{
+	DirectX::SimpleMath::Vector3 cameraPosition(150.0, 10.0, 200.0f);
+	DirectX::SimpleMath::Vector3 target = cameraPosition; 
+	target += DirectX::SimpleMath::Vector3(0.0, 0.0, 1.0f);
+	DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitZ;
+	m_position = cameraPosition;
+	m_target = target;
+	m_up = up;
+	m_trailerCamEndPos = DirectX::SimpleMath::Vector3(0.0, 10.0, 0.0f);
+	const float spinTime = 10.0f;
+	SetSpinCameraTrailerStart(spinTime);
+	//m_cameraState = CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN;
 }
 
 void Camera::OnResize(uint32_t aWidth, uint32_t aHeight)
@@ -368,7 +383,6 @@ void Camera::SpinClockwise(float aRotation)
 	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(-aRotation));
 	m_followCamPos = viewLine + m_followCamTarget;
 	SetPos(viewLine + m_followCamTarget);
-
 }
 
 void Camera::SpinCounterClockwise(float aRotation)
@@ -378,6 +392,11 @@ void Camera::SpinCounterClockwise(float aRotation)
 	viewLine = DirectX::SimpleMath::Vector3::Transform(viewLine, DirectX::SimpleMath::Matrix::CreateRotationY(aRotation));
 	m_followCamPos = viewLine + m_followCamTarget;
 	SetPos(viewLine + m_followCamTarget);
+}
+
+void Camera::StartTrailerCamera(DX::StepTimer const& aTimer)
+{
+	m_cameraState = CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN;
 }
 
 void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
@@ -642,7 +661,7 @@ void Camera::SetSpinCameraStartGamePlayStart(const float aTime)
 	m_spinCamAxis = m_spinCamEndPos - m_spinCamStartPos;
 	m_spinCamAxis.Normalize();
 	m_spinCamAxis = m_spinCamAxis.Cross(DirectX::SimpleMath::Vector3::UnitZ);
-	m_spinCamTotalRotation = Utility::ToRadians(180.0f);
+	m_spinCamTotalRotation = Utility::ToRadians(-180.0f);
 	m_spinCamCurrentRotation = 0.0f;
 	m_spinCamTotalTime = aTime;
 	/*
@@ -653,6 +672,29 @@ void Camera::SetSpinCameraStartGamePlayStart(const float aTime)
 	m_followCamPos = DirectX::SimpleMath::Vector3::Transform(m_followCamPos, quatRot);
 	m_spinCamOffset = m_followCamPos - m_followCamTarget;
 	*/
+}
+
+void Camera::SetSpinCameraTrailerStart(const float aTime)
+{
+	m_spinStartTarget = m_target;
+	m_spinCamStartPos = m_position;
+	m_spinCamEndPos = m_followCamPos;
+	m_spinCamEndPos.y += 3.0f;
+	m_spinCamEndPos = DirectX::SimpleMath::Vector3(-16.9999580, 6.51245356, -0.0163976531);
+	m_spinCamEndPos = DirectX::SimpleMath::Vector3(-17.0, 7.044, 0.0);
+	m_spinCamEndPos = DirectX::SimpleMath::Vector3(-16.999981, 6.779059, 0.0);
+	m_spinCamEndPos = m_trailerCamEndPos;
+
+	m_spinCamAxisPos = m_spinCamEndPos + m_spinCamStartPos;
+
+	m_spinCamAxisPos *= 0.5f;
+
+	m_spinCamAxis = m_spinCamEndPos - m_spinCamStartPos;
+	m_spinCamAxis.Normalize();
+	m_spinCamAxis = m_spinCamAxis.Cross(DirectX::SimpleMath::Vector3::UnitZ);
+	m_spinCamTotalRotation = Utility::ToRadians(-180.0f);
+	m_spinCamCurrentRotation = 0.0f;
+	m_spinCamTotalTime = aTime;
 }
 
 void Camera::UpdateTransitionCamera(DX::StepTimer const& aTimer)
