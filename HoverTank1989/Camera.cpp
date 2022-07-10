@@ -146,7 +146,16 @@ void Camera::PrepareTrailerStart()
 
 void Camera::StartTrailerCamera(DX::StepTimer const& aTimer)
 {
-	m_cameraState = CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN;
+	m_cameraState = CameraState::CAMERASTATE_TRAILERCAMERA;
+}
+
+void Camera::UpdateTrailerCamera(DX::StepTimer const& aTimer)
+{
+	m_trailerTimer += aTimer.GetElapsedSeconds();
+	if (m_trailerTimer > 5.0)
+	{
+		m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
+	}
 }
 
 void Camera::OnResize(uint32_t aWidth, uint32_t aHeight)
@@ -513,6 +522,11 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	{
 		UpdateSpinCameraGamePlayStart(aTimer);
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_followCamPos, m_followCamTarget, m_up);
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_TRAILERCAMERA)
+	{
+		UpdateTrailerCamera(aTimer);
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 	else
 	{

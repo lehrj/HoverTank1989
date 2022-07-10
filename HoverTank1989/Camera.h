@@ -22,6 +22,7 @@ enum class CameraState
     CAMERASTATE_INTRO,
     CAMERASTATE_STARTSCREEN,
     CAMERASTATE_GAMEPLAYSTARTSPIN,
+    CAMERASTATE_TRAILERCAMERA,
 };
 
 // spring camera target
@@ -134,6 +135,7 @@ private:
     void UpdateOrthoganalMatrix();
     void UpdateSpinCamera(DX::StepTimer const& aTimer);
     void UpdateSpinCameraGamePlayStart(DX::StepTimer const& aTimer);
+    void UpdateTrailerCamera(DX::StepTimer const& aTimer);
     void UpdateViewMatrix();
 
     DirectX::SimpleMath::Vector3    m_destinationPosition;
@@ -250,5 +252,7 @@ private:
     DirectX::SimpleMath::Vector3 m_trailerTargetEndPos;
     DirectX::SimpleMath::Vector3 m_trailerCamStartPos;
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos;
+    double                       m_trailerTimer = 0.0f;
+    int                          m_trailerStep = 0;
 };
 
