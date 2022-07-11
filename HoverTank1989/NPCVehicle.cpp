@@ -752,13 +752,14 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 
     DirectX::SimpleMath::Vector3 mainBodySize = aDimensions;
     mainBodySize.x -= zFightOffset * 2.0f;
-    mainBodySize.y -= zFightOffset * 2.0f;
+    mainBodySize.y -= (zFightOffset * 10.0f) * 2.0f;
     mainBodySize.z *= 0.925f;
 
     const float mainBodyOffset = 2.0f;
     mainBodySize.x -= mainBodyOffset;
     const float mainBodyCutOff = 3.0f;
     mainBodySize.x -= mainBodyCutOff;
+
     DirectX::SimpleMath::Vector3 mainBodyTranslation(-(mainBodyOffset * 0.5f) + (mainBodyCutOff * 0.5f), 0.0f, 0.0f);
     aModel.modelShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), mainBodySize);
     aModel.localModelMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -770,12 +771,9 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     DirectX::SimpleMath::Vector3 rearBodySize = aDimensions;
     rearBodySize.x *= 0.3f;
     rearBodySize.y *= 0.95f;
-    rearBodySize.z *= 1.02f;
+    rearBodySize.z *= 1.03f;
     float rearBodyOffset = 2.0f;
     rearBodySize.x -= rearBodyOffset;
-
-
-
     rearBodyOffset = 4.0f;
     DirectX::SimpleMath::Vector3 rearBodyTranslation = DirectX::SimpleMath::Vector3(-rearBodyOffset * 0.5f, 0.0f, 0.0f);
     rearBodyTranslation.x += -3.0f;
