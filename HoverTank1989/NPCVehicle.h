@@ -133,6 +133,8 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;   
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
+    DirectX::SimpleMath::Matrix localInteriorShadowRightMatrix;
+    DirectX::SimpleMath::Matrix worldInteriorShadowRightMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    rearBodyShape;
     DirectX::SimpleMath::Matrix localRearBodyMatrix;

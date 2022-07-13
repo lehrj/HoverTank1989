@@ -148,7 +148,9 @@ void Game::Initialize(HWND window, int width, int height)
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
-
+    pos = DirectX::SimpleMath::Vector3(50.0f, 13.0, 0.0f);
+    heading = -DirectX::SimpleMath::Vector3::UnitX;
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     // testing new terrain map
     m_terrainVector.clear();

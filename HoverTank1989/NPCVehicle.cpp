@@ -475,14 +475,16 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     {
         color = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     }
+    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, mainBodyColor);
+    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix, aView, aProj, mainBodyColor);
+
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix, aView, aProj, jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellLeftMatrix, aView, aProj, jetHousingShellColor);
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix, aView, aProj, afterBurnColor);
     //m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldForwardBurnLeftMatrix, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix, aView, aProj, jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix, aView, aProj, jetHousingShellColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix, aView, aProj, afterBurnColor);
-    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, mainBodyColor);
+    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix, aView, aProj, afterBurnColor);   
     m_vehicleStruct00.npcModel.rearBodyShape->Draw(m_vehicleStruct00.npcModel.worldRearBodyMatrix, aView, aProj, jetHousingShellColor);
     m_vehicleStruct00.npcModel.rearDeckShape->Draw(m_vehicleStruct00.npcModel.worldRearDeckMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtMatrix, aView, aProj, ventColor);
@@ -753,19 +755,43 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     DirectX::SimpleMath::Vector3 mainBodySize = aDimensions;
     mainBodySize.x -= zFightOffset * 2.0f;
     mainBodySize.y -= (zFightOffset * 10.0f) * 2.0f;
-    mainBodySize.z *= 0.925f;
+    //mainBodySize.z *= 0.925f;
+    mainBodySize.z *= 0.45f;
 
     const float mainBodyOffset = 2.0f;
     mainBodySize.x -= mainBodyOffset;
     const float mainBodyCutOff = 3.0f;
-    mainBodySize.x -= mainBodyCutOff;
-
-    DirectX::SimpleMath::Vector3 mainBodyTranslation(-(mainBodyOffset * 0.5f) + (mainBodyCutOff * 0.5f), 0.0f, 0.0f);
+    mainBodySize.x -= mainBodyCutOff;  
     aModel.modelShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), mainBodySize);
+    const float ventShadowAngle = Utility::ToRadians(-5.0f);
+    DirectX::SimpleMath::Vector3 mainBodyTranslation(-(mainBodyOffset * 0.5f) + (mainBodyCutOff * 0.5f), 0.0f, 0.0f);
+    mainBodyTranslation.z = -mainBodySize.z * 0.5f;
+
+    float noseLength = mainBodySize.z;
+    DirectX::SimpleMath::Vector3 shadowTranslation = mainBodyTranslation;
+    //shadowTranslation.x = -noseLength * cos(ventShadowAngle);
+    float cosShadow = cos(ventShadowAngle);
+    //shadowTranslation.x += -noseLength * cos(ventShadowAngle);
+    shadowTranslation.x += noseLength - (noseLength * cos(ventShadowAngle));
+    //shadowTranslation.y = 0.0f;
+    noseLength = mainBodySize.z;
+    //shadowTranslation.z = noseLength - (noseLength * cos(ventShadowAngle));
+    //shadowTranslation.z = noseLength - (noseLength * cos(ventShadowAngle));
+    //shadowTranslation = mainBodyTranslation;
+    shadowTranslation.x += -0.2f;
+
     aModel.localModelMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localModelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(mainBodyTranslation);
+    aModel.localModelMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(ventShadowAngle);
+    aModel.localModelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(shadowTranslation);
     aModel.localModelMatrix *= centerMassTranslation;
     aModel.worldModelMatrix = aModel.localModelMatrix;
+
+    aModel.localInteriorShadowRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localInteriorShadowRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(-ventShadowAngle);
+    shadowTranslation.z *= -1.0f;;
+    aModel.localInteriorShadowRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(shadowTranslation);
+    aModel.localInteriorShadowRightMatrix *= centerMassTranslation;
+    aModel.worldInteriorShadowRightMatrix = aModel.localInteriorShadowRightMatrix;
 
     // rear body
     DirectX::SimpleMath::Vector3 rearBodySize = aDimensions;
@@ -2080,7 +2106,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
     }
     */
-    RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    //RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignment();
@@ -2112,8 +2139,11 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 {
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
+    
     m_vehicleStruct00.npcModel.worldModelMatrix = m_vehicleStruct00.npcModel.localModelMatrix;
     m_vehicleStruct00.npcModel.worldModelMatrix *= updateMat;
+    m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix = m_vehicleStruct00.npcModel.localInteriorShadowRightMatrix;
+    m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix *= updateMat;
 
     m_vehicleStruct00.npcModel.worldRearBodyMatrix = m_vehicleStruct00.npcModel.localRearBodyMatrix;
     m_vehicleStruct00.npcModel.worldRearBodyMatrix *= updateMat;
