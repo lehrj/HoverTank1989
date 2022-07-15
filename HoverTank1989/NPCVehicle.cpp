@@ -475,8 +475,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     {
         color = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     }
-    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, mainBodyColor);
-    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix, aView, aProj, mainBodyColor);
+
 
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix, aView, aProj, jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellLeftMatrix, aView, aProj, jetHousingShellColor);
@@ -516,9 +515,18 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 
     //m_vehicleStruct00.npcModel.throttleShape->Draw(m_vehicleStruct00.npcModel.worldThrottleMatrix, aView, aProj, rearColor);
 
+    float testVal1 = (cos(m_testTimer) + 1.0f) / 2.0f;
+    DirectX::SimpleMath::Vector4 testColor01 = DirectX::SimpleMath::Vector4(testVal1, testVal1, testVal1, 1.0f);
+
+    float testVal2 = (sin(m_testTimer) + 1.0f) / 2.0f;
+    DirectX::SimpleMath::Vector4 testColor02 = DirectX::SimpleMath::Vector4(testVal2, testVal2, testVal2, 1.0f);
+
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix1, aView, aProj, ventColor);
+    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, testColor02);
+    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix, aView, aProj, testColor02);
+    ventColor = testColor01;
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix2, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix3, aView, aProj, testColorRed);
+    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix3, aView, aProj, testColor01);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix4, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix5, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix6, aView, aProj, ventColor);
@@ -763,23 +771,14 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     const float mainBodyCutOff = 3.0f;
     mainBodySize.x -= mainBodyCutOff;  
     aModel.modelShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), mainBodySize);
-    const float ventShadowAngle = Utility::ToRadians(-5.0f);
+    const float ventShadowAngle = Utility::ToRadians(-3.5f);
     DirectX::SimpleMath::Vector3 mainBodyTranslation(-(mainBodyOffset * 0.5f) + (mainBodyCutOff * 0.5f), 0.0f, 0.0f);
     mainBodyTranslation.z = -mainBodySize.z * 0.5f;
 
-    float noseLength = mainBodySize.z;
     DirectX::SimpleMath::Vector3 shadowTranslation = mainBodyTranslation;
-    //shadowTranslation.x = -noseLength * cos(ventShadowAngle);
-    float cosShadow = cos(ventShadowAngle);
-    //shadowTranslation.x += -noseLength * cos(ventShadowAngle);
-    shadowTranslation.x += noseLength - (noseLength * cos(ventShadowAngle));
-    //shadowTranslation.y = 0.0f;
-    noseLength = mainBodySize.z;
-    //shadowTranslation.z = noseLength - (noseLength * cos(ventShadowAngle));
-    //shadowTranslation.z = noseLength - (noseLength * cos(ventShadowAngle));
-    //shadowTranslation = mainBodyTranslation;
+    shadowTranslation.x += mainBodySize.z - (mainBodySize.z * cos(ventShadowAngle));
     shadowTranslation.x += -0.2f;
-
+    shadowTranslation.z += -0.205f;
     aModel.localModelMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localModelMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(ventShadowAngle);
     aModel.localModelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(shadowTranslation);
