@@ -518,7 +518,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     float testVal1 = (cos(m_testTimer) + 1.0f) / 2.0f;
     DirectX::SimpleMath::Vector4 testColor01 = DirectX::SimpleMath::Vector4(testVal1, testVal1, testVal1, 1.0f);
 
-    float testVal2 = (sin(m_testTimer) + 1.0f) / 2.0f;
+    float testVal2 = (sin(-m_testTimer) + 1.0f) / 2.0f;
     DirectX::SimpleMath::Vector4 testColor02 = DirectX::SimpleMath::Vector4(testVal2, testVal2, testVal2, 1.0f);
 
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix1, aView, aProj, ventColor);
@@ -2087,8 +2087,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     }
 
 
-    
-    
 
     if (m_isGoToggleTrue == true)
     {
@@ -2105,7 +2103,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
     }
     */
-    //RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
@@ -2184,7 +2182,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     const float afterBurnLengthSum = 400.0f;
     float afterBurnLengthModLeft;
     float afterBurnLengthModRight;
-    if (m_vehicleStruct00.vehicleData.controlInput.steeringInput > 0.0f)
+    if (m_vehicleStruct00.vehicleData.controlInput.steeringInput >= 0.0f)
     {
         afterBurnLengthModLeft = turnRatio;
         afterBurnLengthModRight = 1.0f - turnRatio;
