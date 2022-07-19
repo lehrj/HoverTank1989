@@ -2086,23 +2086,9 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         TerrainImpactHandling();
     }
 
-
-
-    if (m_isGoToggleTrue == true)
-    {
-        //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-        //UpdateControlInputFromAi();
-    }
-
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
     UpdateImpulseForces(static_cast<float>(aTimeDelta));
-    /*
-    if (m_isGoToggleTrue == true)
-    {
-        RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
-    }
-    */
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
@@ -2121,15 +2107,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.impactTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     m_vehicleStruct00.vehicleData.impactTorque.magnitude = 0.0f;
 
-    //CalculateSelfRightingTorque();
-
-    //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-    //UpdateControlInput();
-    //m_debugData->DebugPushUILineDecimalNumber("Velocity = ", m_vehicleStruct00.vehicleData.q.velocity.Length(), "");
-
-    //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
-    //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_prevImpact, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, .0f));
- 
     UpdateForceTorqueVecs();
 }
 
@@ -2182,7 +2159,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     const float afterBurnLengthSum = 400.0f;
     float afterBurnLengthModLeft;
     float afterBurnLengthModRight;
-    if (m_vehicleStruct00.vehicleData.controlInput.steeringInput >= 0.0f)
+    if (m_vehicleStruct00.vehicleData.controlInput.steeringInput > 0.0f)
     {
         afterBurnLengthModLeft = turnRatio;
         afterBurnLengthModRight = 1.0f - turnRatio;
