@@ -155,6 +155,9 @@ void Camera::UpdateTrailerCamera(DX::StepTimer const& aTimer)
 	DirectX::SimpleMath::Vector3 endTargPos1 = endCamPos1;
 	endTargPos1.z += 1.0f;
 
+	DirectX::SimpleMath::Vector3 currentCamPos = m_position;
+	DirectX::SimpleMath::Vector3 currentTarget = m_target;
+
 	m_trailerTimer += aTimer.GetElapsedSeconds();
 	if (m_trailerTimer > 5.0)
 	{
