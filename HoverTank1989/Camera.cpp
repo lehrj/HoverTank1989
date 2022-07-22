@@ -151,6 +151,10 @@ void Camera::StartTrailerCamera(DX::StepTimer const& aTimer)
 
 void Camera::UpdateTrailerCamera(DX::StepTimer const& aTimer)
 {
+	DirectX::SimpleMath::Vector3 startCamPos1 = DirectX::SimpleMath::Vector3(450.0, 10.0, 650.0f);
+	DirectX::SimpleMath::Vector3 startTargPos1 = startCamPos1;
+	startTargPos1.z += 1.0f;
+
 	DirectX::SimpleMath::Vector3 endCamPos1 = DirectX::SimpleMath::Vector3(450.0, 10.0, 650.0f);
 	DirectX::SimpleMath::Vector3 endTargPos1 = endCamPos1;
 	endTargPos1.z += 1.0f;
