@@ -151,19 +151,58 @@ void Camera::StartTrailerCamera(DX::StepTimer const& aTimer)
 
 void Camera::UpdateTrailerCamera(DX::StepTimer const& aTimer)
 {
+	m_trailerTimer += aTimer.GetElapsedSeconds();
+
+	const float transitionTime = 9.0f;
+
 	DirectX::SimpleMath::Vector3 startCamPos1 = DirectX::SimpleMath::Vector3(450.0, 10.0, 650.0f);
 	DirectX::SimpleMath::Vector3 startTargPos1 = startCamPos1;
 	startTargPos1.z += 1.0f;
 
-	DirectX::SimpleMath::Vector3 endCamPos1 = DirectX::SimpleMath::Vector3(450.0, 10.0, 650.0f);
+	DirectX::SimpleMath::Vector3 endCamPos1 = DirectX::SimpleMath::Vector3(450.0, 10.0, 450.0f);
 	DirectX::SimpleMath::Vector3 endTargPos1 = endCamPos1;
 	endTargPos1.z += 1.0f;
+	endTargPos1.x += 1.0f;
 
 	DirectX::SimpleMath::Vector3 currentCamPos = m_position;
 	DirectX::SimpleMath::Vector3 currentTarget = m_target;
 
-	m_trailerTimer += aTimer.GetElapsedSeconds();
-	if (m_trailerTimer > 5.0)
+	const float camPosDistance = DirectX::SimpleMath::Vector3::Distance(startCamPos1, endCamPos1);
+	const float targPosDistance = DirectX::SimpleMath::Vector3::Distance(startTargPos1, endTargPos1);
+	
+	DirectX::SimpleMath::Vector3 cameraDirection = endCamPos1 - startCamPos1;
+	cameraDirection.Normalize();
+	DirectX::SimpleMath::Vector3 targetDirection = endTargPos1 - startTargPos1;
+	targetDirection.Normalize();
+
+	double elapsedTime = double(aTimer.GetElapsedSeconds());
+	float cameraSpeed = m_cameraTransitionSpeed;
+	cameraSpeed = camPosDistance / transitionTime;
+
+	m_position += cameraDirection * cameraSpeed * static_cast<float>(elapsedTime);
+
+	float targetSpeed;
+	if (abs(camPosDistance > 0.0)) // prevent divide by zero if camera position doesn't change
+	{
+		targetSpeed = cameraSpeed * (targPosDistance / camPosDistance);
+	}
+	else
+	{
+		targetSpeed = cameraSpeed;
+	}
+
+	if (targPosDistance > 0.0f)
+	{
+		m_target += targetDirection * targetSpeed * static_cast<float>(elapsedTime);
+	}
+
+	float testVal = 0.0f;
+	const float camPosDistance2 = DirectX::SimpleMath::Vector3::Distance(m_position, endCamPos1);
+	m_debugData->DebugPushUILineDecimalNumber("camPosDistance2 = ", camPosDistance2, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_trailerTimer = ", m_trailerTimer, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
+	//if (m_trailerTimer > 5.0)
+	if (camPosDistance2 < 5.0)
 	{
 		m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
 	}
@@ -746,7 +785,7 @@ void Camera::UpdateTransitionCamera(DX::StepTimer const& aTimer)
 	float cameraSpeed = m_cameraTransitionSpeed;
 
 	float targetSpeed;
-	if (abs(cameraDistance > 0.0)) // prevent divide by zero if camera position doesn't change
+	if (abs(cameraDistance > 0.0f)) // prevent divide by zero if camera position doesn't change
 	{
 		targetSpeed = cameraSpeed * (targetDistance / cameraDistance);
 	}
