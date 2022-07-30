@@ -23,6 +23,8 @@ enum class CameraState
     CAMERASTATE_STARTSCREEN,
     CAMERASTATE_GAMEPLAYSTARTSPIN,
     CAMERASTATE_TRAILERCAMERA,
+    CAMERASTATE_TRAILERCAMERA2,
+    CAMERASTATE_STATIC,
 };
 
 // spring camera target
@@ -136,6 +138,7 @@ private:
     void UpdateSpinCamera(DX::StepTimer const& aTimer);
     void UpdateSpinCameraGamePlayStart(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera(DX::StepTimer const& aTimer);
+    void UpdateTrailerCamera2(DX::StepTimer const& aTimer);
     void UpdateViewMatrix();
 
     DirectX::SimpleMath::Vector3    m_destinationPosition;
@@ -248,10 +251,52 @@ private:
     float                        m_spinCamTotalRotation;
     float                        m_spinCamCurrentRotation;
 
-    DirectX::SimpleMath::Vector3 m_trailerCamEndPos;
-    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos;
-    DirectX::SimpleMath::Vector3 m_trailerCamStartPos;
-    DirectX::SimpleMath::Vector3 m_trailerTargetStartPos;
+
+    
+    DirectX::SimpleMath::Vector3 m_trailerCamStartPos = DirectX::SimpleMath::Vector3(450.0, 10.0, 650.0f);
+    DirectX::SimpleMath::Vector3 m_trailerCamEndPos = DirectX::SimpleMath::Vector3(450.0, 10.0, 50.0f);
+    const float m_camStartZ = m_trailerCamStartPos.z + 1.0f;
+    const float m_targStartx = m_trailerCamStartPos.x - 1.0f;
+    //DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(m_trailerCamStartPos.x + 1.0f, m_trailerCamStartPos.y, m_camStartZ);
+    //DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(m_trailerCamStartPos.x + 1.0f, m_trailerCamStartPos.y, m_trailerCamStartPos.z + 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(m_targStartx, 10.0, 650.0f);
+    //const float m_targEndZ = m_camStartZ + 0.0f;
+    //const float m_targEndZ = m_trailerCamStartPos.z + 0.0f;
+    const float m_targEndZ = m_trailerCamEndPos.z + 0.0f;
+    const float m_targEndX = m_trailerCamEndPos.x - 1.0f;
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(m_targEndX, m_trailerCamEndPos.y, m_targEndZ);
+
+    DirectX::SimpleMath::Vector3 m_trailerCamStartPos2 = m_trailerCamEndPos;
+    const float m_camEndX2 = m_trailerCamEndPos.x + 0.0f;
+    const float m_camEndY2 = m_trailerCamEndPos.y + 0.0f;
+    const float m_camEndZ2 = m_trailerCamEndPos.z + 0.0f;
+    DirectX::SimpleMath::Vector3 m_trailerCamEndPos2 = DirectX::SimpleMath::Vector3(m_camEndX2, m_camEndY2, m_camEndZ2);
+
+    DirectX::SimpleMath::Vector3 m_trailerTargetStartPos2 = m_trailerTargetEndPos;
+    //const float m_targEndX2 = m_trailerTargetEndPos.x - 0.0f;
+    //const float m_targEndY2 = m_trailerTargetEndPos.y + 30.0f;
+    //const float m_targEndZ2 = m_trailerTargetEndPos.z + 20.0f;
+
+    const float m_targEndX2 = m_trailerTargetEndPos.x - 0.0f;
+    const float m_targEndY2 = m_trailerTargetEndPos.y + 1.0f;
+    const float m_targEndZ2 = m_trailerTargetEndPos.z + 0.0f;
+
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(m_targEndX2, m_targEndY2, m_targEndZ2);
+    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = m_trailerTargetStartPos2;
+
+    const float m_trailerTimeDuration = 2.0f;
+    const float m_trailerTimerDelay2 = 1.0f;
+    const float m_trailerTimeDuration2 = 2.0f;
+
+
+    DirectX::SimpleMath::Vector3 m_testCamPos1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_testCamPos2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_testCamPos3 = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 m_testCamTarg1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_testCamTarg2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_testCamTarg3 = DirectX::SimpleMath::Vector3::Zero;
+
     double                       m_trailerTimer = 0.0f;
     int                          m_trailerStep = 0;
 };

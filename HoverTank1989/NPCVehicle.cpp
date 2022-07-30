@@ -520,11 +520,13 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 
     float testVal2 = (sin(-m_testTimer) + 1.0f) / 2.0f;
     DirectX::SimpleMath::Vector4 testColor02 = DirectX::SimpleMath::Vector4(testVal2, testVal2, testVal2, 1.0f);
+    testColor02 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+    testColor01 = testColorRed;
 
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix1, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, testColor02);
     m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix, aView, aProj, testColor02);
-    ventColor = testColor01;
+    //ventColor = testColor01;
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix2, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix3, aView, aProj, testColor01);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix4, aView, aProj, ventColor);
