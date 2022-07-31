@@ -25,6 +25,7 @@ enum class CameraState
     CAMERASTATE_TRAILERCAMERA,
     CAMERASTATE_TRAILERCAMERA2,
     CAMERASTATE_STATIC,
+    CAMERASTATE_FOLLOWNPC,
 };
 
 // spring camera target
@@ -98,6 +99,7 @@ public:
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
     
+    void SetNpcController(std::shared_ptr<NPCController> aNpcController);
     void SetVehicleFocus(const Vehicle* aVehicle);
     void SpinClockwise(float aRotation);
     void SpinCounterClockwise(float aRotation);
@@ -125,6 +127,7 @@ private:
     void InitializeProjectionMatrix(); //Pavel
     void InitializeViewMatrix(); //Pavel
 
+    void UpdateChaseCameraNPC();
     void UpdateChaseCamera();
     void UpdateChaseCamera2();
     void UpdateChaseCamera3();
@@ -210,6 +213,8 @@ private:
     Environment const* m_environment;
     Vehicle const* m_vehicleFocus;
     std::shared_ptr<DebugData>      m_debugData;
+    std::shared_ptr<NPCController> m_npcController;
+
 
     DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Identity;
@@ -288,6 +293,7 @@ private:
     const float m_trailerTimerDelay2 = 1.0f;
     const float m_trailerTimeDuration2 = 2.0f;
 
+    int m_npcFocusID = 0;
 
     DirectX::SimpleMath::Vector3 m_testCamPos1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testCamPos2 = DirectX::SimpleMath::Vector3::Zero;

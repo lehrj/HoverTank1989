@@ -32,6 +32,9 @@ public:
     std::vector<NPCVehicle*>& GetVec() { return m_npcVec; };
     std::vector<DirectX::SimpleMath::Vector3> GetVecOfNpcPos(const int aSelfID);
 
+    DirectX::SimpleMath::Vector3 GetNpcPos(const int aId) { return m_npcVec[aId]->GetPos(); };
+    DirectX::SimpleMath::Matrix GetNpcAlignment(const int aId) { return m_npcVec[aId]->GetAlignment(); };
+
 private:
     unsigned int GetUniqueID();
 

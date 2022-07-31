@@ -38,7 +38,7 @@ Game::Game() noexcept(false)
     m_camera->SetVehicleFocus(m_vehicle);
     m_camera->SetCameraEnvironment(m_environment);
     m_camera->SetDebugData(m_debugData);
-
+    
     //m_npcController = new NPCController();
     m_npcController = std::make_shared<NPCController>();
 
@@ -46,7 +46,7 @@ Game::Game() noexcept(false)
     m_npcController->SetDebugData(m_debugData);
     m_npcController->SetPlayer(m_vehicle);
     //m_vehicle->SetDebugData(m_debugData);
-
+    m_camera->SetNpcController(m_npcController);
     m_modelController = std::make_shared<ModelController>();
     m_modelController->SetDebugData(m_debugData);
     m_vehicle->SetModelController(m_modelController);
