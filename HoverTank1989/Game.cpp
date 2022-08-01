@@ -151,7 +151,6 @@ void Game::Initialize(HWND window, int width, int height)
     pos = DirectX::SimpleMath::Vector3(50.0f, 13.0, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     // testing new terrain map
     m_terrainVector.clear();
 }
@@ -1099,6 +1098,21 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->TestFire2();
         }
     }
+    if (m_kbStateTracker.pressed.OemOpenBrackets)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_camera->CycleNpcFocus(false);
+        }
+    }
+    if (m_kbStateTracker.pressed.OemCloseBrackets)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_camera->CycleNpcFocus(true);
+        }
+    }
+
     auto mouse = m_mouse->GetState();
 
     if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)

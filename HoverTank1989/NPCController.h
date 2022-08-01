@@ -24,16 +24,16 @@ public:
         NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, 
         const DirectX::SimpleMath::Vector3 aPosition, std::shared_ptr<NPCController> aNpcController);
 
-
     bool CheckProjectileCollisions(Utility::CollisionData& aProjectile);
 
     void UpdateNPCs(const double aTimeDelta);
 
     std::vector<NPCVehicle*>& GetVec() { return m_npcVec; };
     std::vector<DirectX::SimpleMath::Vector3> GetVecOfNpcPos(const int aSelfID);
-
-    DirectX::SimpleMath::Vector3 GetNpcPos(const int aId) { return m_npcVec[aId]->GetPos(); };
+   
     DirectX::SimpleMath::Matrix GetNpcAlignment(const int aId) { return m_npcVec[aId]->GetAlignment(); };
+    int GetNpcCount() { return m_npcVec.size(); };
+    DirectX::SimpleMath::Vector3 GetNpcPos(const int aId) { return m_npcVec[aId]->GetPos(); };
 
 private:
     unsigned int GetUniqueID();

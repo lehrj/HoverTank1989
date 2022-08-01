@@ -52,6 +52,34 @@ Camera::~Camera()
 	delete m_vehicleFocus;
 }
 
+void Camera::CycleNpcFocus(const bool isCycleIncrease)
+{
+	const int npcCount = m_npcController->GetNpcCount();
+
+	if (isCycleIncrease == true)
+	{
+		if (m_npcFocusID >= npcCount - 1)
+		{
+			m_npcFocusID = 0;
+		}
+		else
+		{
+			m_npcFocusID++;
+		}
+	}
+	else
+	{
+		if (m_npcFocusID <= 0)
+		{
+			m_npcFocusID = npcCount - 1;
+		}
+		else
+		{
+			m_npcFocusID--;
+		}
+	}
+}
+
 DirectX::SimpleMath::Vector3 Camera::GetPreSwingCamPos(DirectX::SimpleMath::Vector3 aPosition, float aDirection)
 {
 	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::Transform(m_preSwingCamPosOffset,

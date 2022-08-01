@@ -44,6 +44,8 @@ public:
     Camera(int aWidth, int aHeight);
     ~Camera();
 
+    void CycleNpcFocus(const bool isCycleIncrease);
+
     CameraState GetCameraState() const { return m_cameraState; };
     float GetAimTurnRate() const { return m_aimTurnRate; };
 
