@@ -2154,7 +2154,10 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix *= updateMat;
 
 
+    //m_vehicleStruct00.vehicleData.controlInput.steeringInput = cos(m_testTimer);
     float turnRatio = abs(m_vehicleStruct00.vehicleData.controlInput.steeringInput) / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
+    //turnRatio = cos(m_testTimer);
+    
     //turnRatio = 0.5f;
     //const float afterBurnLengthSum = 400.0f + (m_vehicleStruct00.npcModel.afterBurnLeftFlicker * 10.0f) - (m_vehicleStruct00.npcModel.afterBurnRightFlicker * 10.0f);
     //const float afterBurnLengthSum = 400.0f + (abs(cos(m_testTimer * 1000.0f)) * 100.0f);
@@ -2179,8 +2182,9 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     //m_testTimer += aTimeDelta;
     float testThrottle = cos(m_testTimer);
-    //testThrottle = -1.0f;
+    
     testThrottle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
+     
     //testThrottle = 1.0f;
     // jet afterburn exhaust  
     //float afterBurnLength = m_vehicleStruct00.vehicleData.controlInput.throttleInput * 80.0f;
@@ -2248,7 +2252,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     }
     else
     {
-        //m_vehicleStruct00.npcModel.worldForwardBurnLeftMatrix *= afterBurnScale;
+        m_vehicleStruct00.npcModel.worldForwardBurnLeftMatrix *= afterBurnScale;
     }
     //m_vehicleStruct00.npcModel.worldForwardBurnLeftMatrix *= afterBurnTranslation;
     m_vehicleStruct00.npcModel.worldForwardBurnLeftMatrix *= m_vehicleStruct00.npcModel.localForwardBurnLeftMatrix;

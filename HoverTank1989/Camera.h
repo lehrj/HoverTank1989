@@ -203,6 +203,7 @@ private:
 
     DirectX::SimpleMath::Vector3 m_followCamDirection = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-17.0, 3.5f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_followNpcCamPos = DirectX::SimpleMath::Vector3(-27.0, 19.5f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
@@ -258,8 +259,8 @@ private:
 
 
     
-    DirectX::SimpleMath::Vector3 m_trailerCamStartPos = DirectX::SimpleMath::Vector3(450.0, 10.0, 650.0f);
-    DirectX::SimpleMath::Vector3 m_trailerCamEndPos = DirectX::SimpleMath::Vector3(450.0, 10.0, 50.0f);
+    DirectX::SimpleMath::Vector3 m_trailerCamStartPos = DirectX::SimpleMath::Vector3(430.0, 10.0, 650.0f);
+    DirectX::SimpleMath::Vector3 m_trailerCamEndPos = DirectX::SimpleMath::Vector3(430.0, 10.0, 30.0f);
     const float m_camStartZ = m_trailerCamStartPos.z + 1.0f;
     const float m_targStartx = m_trailerCamStartPos.x - 1.0f;
     //DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(m_trailerCamStartPos.x + 1.0f, m_trailerCamStartPos.y, m_camStartZ);
@@ -267,15 +268,16 @@ private:
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(m_targStartx, 10.0, 650.0f);
     //const float m_targEndZ = m_camStartZ + 0.0f;
     //const float m_targEndZ = m_trailerCamStartPos.z + 0.0f;
-    const float m_targEndZ = m_trailerCamEndPos.z + 0.0f;
+    const float m_targEndZ = m_trailerCamEndPos.z + 9.0f;
     const float m_targEndX = m_trailerCamEndPos.x - 1.0f;
     DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(m_targEndX, m_trailerCamEndPos.y, m_targEndZ);
 
     DirectX::SimpleMath::Vector3 m_trailerCamStartPos2 = m_trailerCamEndPos;
     const float m_camEndX2 = m_trailerCamEndPos.x + 0.0f;
-    const float m_camEndY2 = m_trailerCamEndPos.y + 0.0f;
+    const float m_camEndY2 = m_trailerCamEndPos.y + 40.0f;
     const float m_camEndZ2 = m_trailerCamEndPos.z + 0.0f;
-    DirectX::SimpleMath::Vector3 m_trailerCamEndPos2 = DirectX::SimpleMath::Vector3(m_camEndX2, m_camEndY2, m_camEndZ2);
+    //DirectX::SimpleMath::Vector3 m_trailerCamEndPos2 = DirectX::SimpleMath::Vector3(m_camEndX2, m_camEndY2, m_camEndZ2);
+    DirectX::SimpleMath::Vector3 m_trailerCamEndPos2 = DirectX::SimpleMath::Vector3(562.0f, 444.0, 0.0f);
 
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos2 = m_trailerTargetEndPos;
     //const float m_targEndX2 = m_trailerTargetEndPos.x - 0.0f;
@@ -286,7 +288,9 @@ private:
     const float m_targEndY2 = m_trailerTargetEndPos.y + 1.0f;
     const float m_targEndZ2 = m_trailerTargetEndPos.z + 0.0f;
 
-    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(m_targEndX2, m_targEndY2, m_targEndZ2);
+    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(m_targEndX2, m_targEndY2, m_targEndZ2);
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(560.0f, 441.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(m_trailerCamEndPos2.x - 1.0f, m_trailerCamEndPos2.y, m_trailerCamEndPos2.z);
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = m_trailerTargetStartPos2;
 
     const float m_trailerTimeDuration = 2.0f;

@@ -202,14 +202,14 @@ void Camera::UpdateTrailerCamera(DX::StepTimer const& aTimer)
 
 	m_position += cameraDirection * cameraSpeed * static_cast<float>(elapsedTime);
 
-	float targetSpeed;
+	float targetSpeed = targPosDistance / transitionTime;
 	if (abs(camPosDistance > 0.0)) // prevent divide by zero if camera position doesn't change
 	{
-		targetSpeed = cameraSpeed * (targPosDistance / camPosDistance);
+		//targetSpeed = cameraSpeed * (targPosDistance / camPosDistance);
 	}
 	else
 	{
-		targetSpeed = cameraSpeed;
+		//targetSpeed = cameraSpeed;
 	}
 
 	if (targPosDistance > 0.0f)
@@ -245,24 +245,11 @@ void Camera::UpdateTrailerCamera2(DX::StepTimer const& aTimer)
 
 	const float transitionTime = m_trailerTimeDuration2;
 
-	/*
-	DirectX::SimpleMath::Vector3 startCamPos1 = DirectX::SimpleMath::Vector3(450.0, 10.0, 650.0f);
-	DirectX::SimpleMath::Vector3 startTargPos1 = startCamPos1;
-	startTargPos1.z += 1.0f;
-	*/
 	DirectX::SimpleMath::Vector3 startCamPos1 = m_trailerCamStartPos2;
 	DirectX::SimpleMath::Vector3 startTargPos1 = m_trailerTargetStartPos2;
 
 	DirectX::SimpleMath::Vector3 endCamPos1 = m_trailerCamEndPos2;
 	DirectX::SimpleMath::Vector3 endTargPos1 = m_trailerTargetEndPos2;
-
-	/*
-	DirectX::SimpleMath::Vector3 endCamPos1 = DirectX::SimpleMath::Vector3(450.0, 10.0, 50.0f);
-	DirectX::SimpleMath::Vector3 endTargPos1 = endCamPos1;
-	endTargPos1.z += 10.0f;
-	endTargPos1.x += -1.0f;
-	endTargPos1.y += 0.0f;
-	*/
 
 	DirectX::SimpleMath::Vector3 currentCamPos = m_position;
 	DirectX::SimpleMath::Vector3 currentTarget = m_target;
@@ -293,7 +280,7 @@ void Camera::UpdateTrailerCamera2(DX::StepTimer const& aTimer)
 	    if (abs(targPosDistance > 0.0)) // prevent divide by zero if camera position doesn't change
 		{
 			//targetSpeed = cameraSpeed * (targPosDistance / camPosDistance);
-			targetSpeed = targetSpeed * (targPosDistance / transitionTime);
+			//targetSpeed = targetSpeed * (targPosDistance / transitionTime);
 		}
 		else
 		{
@@ -728,6 +715,9 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	m_debugData->DebugPushUILineDecimalNumber("m_target.x = ", m_target.x, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_target.y = ", m_target.y, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_target.z = ", m_target.z, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.x = ", m_position.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.y = ", m_position.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
 }
 
 void Camera::UpdateFirstPersonCamera()
@@ -1022,10 +1012,10 @@ void Camera::UpdateChaseCameraNPC()
 	m_chaseCamQuat = orientationQuat;
 	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
 	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
-	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
+	DirectX::SimpleMath::Vector3 accelCamPos = m_followNpcCamPos;
 	DirectX::SimpleMath::Vector3 accelVec = m_vehicleFocus->GetAccelVec() * 0.01f;
 	accelCamPos += accelVec;
-	accelCamPos = DirectX::SimpleMath::Vector3::Lerp(accelCamPos, m_followCamPos, 0.0001);
+	accelCamPos = DirectX::SimpleMath::Vector3::Lerp(accelCamPos, m_followNpcCamPos, 0.0001);
 	accelCamPos = DirectX::SimpleMath::Vector3::Transform(accelCamPos, m_chaseCamQuat);
 	//accelCamPos += m_vehicleFocus->GetPos();
 	accelCamPos += m_npcController->GetNpcPos(m_npcFocusID);
