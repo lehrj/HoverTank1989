@@ -109,14 +109,30 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix;
     DirectX::SimpleMath::Matrix localAfterBurnRightMatrix;
     DirectX::SimpleMath::Matrix worldAfterBurnRightMatrix;
+    float afterBurnLengthLeft = 0.0f;
+    float afterBurnLengthLeftPrev = 0.0f;
+    float afterBurnLengthLeftPrev2 = 0.0f;
+    float afterBurnLengthLeftPrev3 = 0.0f;
+    float afterBurnLengthRight = 0.0f;
+    float afterBurnLengthRightPrev = 0.0f;
+    float afterBurnLengthRightPrev2 = 0.0f;
+    float afterBurnLengthRightPrev3 = 0.0f;
+    
+    float maxDelta = 0.0f;
+
+    DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix worldAfterBurnRightMatrix2 = DirectX::SimpleMath::Matrix::Identity;
 
     DirectX::SimpleMath::Matrix localForwardBurnLeftMatrix;
     DirectX::SimpleMath::Matrix worldForwardBurnLeftMatrix;
     DirectX::SimpleMath::Matrix localForwardBurnRightMatrix;
     DirectX::SimpleMath::Matrix worldForwardBurnRightMatrix;
 
+
     float afterBurnLeftFlicker;
+    float afterBurnLeftFlicker2 = 0.0f;
     float afterBurnRightFlicker;
+    float afterBurnRightFlicker2 = 0.0f;
     float afterBurnFlickerRate;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    jetHousingShape;
@@ -327,6 +343,8 @@ public:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, 
         std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);
+
+    float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
 
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
     DirectX::BoundingBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };

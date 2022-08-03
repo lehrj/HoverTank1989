@@ -114,6 +114,20 @@ void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlay
 
 void NPCController::UpdateNPCs(const double aTimeDelta)
 {
+    float avgDelta = 0.0f;
+    float maxDelta = 0.0f;
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        avgDelta += m_npcVec[i]->GetDelta();
+        if (m_npcVec[i]->GetDelta() > maxDelta)
+        {
+            maxDelta = m_npcVec[i]->GetDelta();
+        }
+    }
+    avgDelta = avgDelta / m_npcVec.size();
+    m_debugData->DebugPushUILineDecimalNumber("Avg Delta = ", avgDelta, "");
+    m_debugData->DebugPushUILineDecimalNumber("Max Delta = ", maxDelta, "");
+
     m_testTimer += static_cast<float>(aTimeDelta);
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {

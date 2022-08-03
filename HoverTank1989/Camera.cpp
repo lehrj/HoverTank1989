@@ -739,6 +739,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	//UpdateViewMatrix();
 	m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 
+	/*
 	m_debugData->DebugPushUILineDecimalNumber("m_trailerTimer = ", m_trailerTimer, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_target.x = ", m_target.x, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_target.y = ", m_target.y, "");
@@ -746,6 +747,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	m_debugData->DebugPushUILineDecimalNumber("m_position.x = ", m_position.x, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.y = ", m_position.y, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
+	*/
 }
 
 void Camera::UpdateFirstPersonCamera()
