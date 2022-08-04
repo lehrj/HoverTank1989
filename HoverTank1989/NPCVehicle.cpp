@@ -2188,7 +2188,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
             afterBurnLengthModRight = 0.5f;
         }
 
-
         //m_testTimer += aTimeDelta;
         float testThrottle = cos(m_testTimer);
 
@@ -2220,7 +2219,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
             //afterBurnLength = 0.0f;
             afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY, 0.0f);
         }
-
 
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker += (afterBurnLengthModLeft * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
@@ -2300,16 +2298,11 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     }
     else
     {
-
-        //
-        //
-        //
         const float throttle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
         const float steering = m_vehicleStruct00.vehicleData.controlInput.steeringInput / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
 
         float leftBurnLengthMod = throttle - steering;
         float rightBurnLengthMod = throttle + steering;
-        //leftBurnLengthMod = rightBurnLengthMod;
 
         float turnRatio = abs(m_vehicleStruct00.vehicleData.controlInput.steeringInput) / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
         const float afterBurnLengthSum = 300.0f;
@@ -2378,7 +2371,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         {
             m_vehicleStruct00.npcModel.maxDelta = abs(delta);
         }
-        //m_debugData->DebugPushUILineDecimalNumber("Delta = ", m_vehicleStruct00.npcModel.maxDelta, "");
 
         afterBurnLengthModLeft = leftBurnLengthMod;
         afterBurnLengthModRight = rightBurnLengthMod;
@@ -2407,7 +2399,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker2);
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 + Utility::ToRadians(60.0f));
 
-        //if (testThrottle <= 0.0f)
         if (afterBurnLengthModLeft <= 0.0f)
         {
             afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;
@@ -2425,9 +2416,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= updateMat;
 
         // right burner 
-        
-
-        //afterBurnLength = testThrottle * (afterBurnLengthModRight * afterBurnLengthSum);
         afterBurnLength = (afterBurnLengthModRight * afterBurnLengthSum);
         afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
         afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(afterBurnLength), 1.0f);
@@ -2442,7 +2430,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         m_vehicleStruct00.npcModel.afterBurnRightFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnRightFlicker2);
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnRightFlicker2 + Utility::ToRadians(60.0f));
 
-        //if (testThrottle <= 0.0f)
         if (afterBurnLengthModRight <= 0.0f)
         {
             afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;

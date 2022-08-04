@@ -24,6 +24,7 @@ enum class CameraState
     CAMERASTATE_GAMEPLAYSTARTSPIN,
     CAMERASTATE_TRAILERCAMERA,
     CAMERASTATE_TRAILERCAMERA2,
+    CAMERASTATE_TRAILERCAMERA3,
     CAMERASTATE_STATIC,
     CAMERASTATE_FOLLOWNPC,
 };
@@ -144,6 +145,7 @@ private:
     void UpdateSpinCameraGamePlayStart(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera2(DX::StepTimer const& aTimer);
+    void UpdateTrailerCamera3(DX::StepTimer const& aTimer);
     void UpdateViewMatrix();
 
     DirectX::SimpleMath::Vector3    m_destinationPosition;
