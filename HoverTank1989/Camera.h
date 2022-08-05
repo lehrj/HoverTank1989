@@ -207,7 +207,8 @@ private:
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
 
     DirectX::SimpleMath::Vector3 m_followCamDirection = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-17.0, 3.5f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-17.0, 3.5f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-27.0, 13.5f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followNpcCamPos = DirectX::SimpleMath::Vector3(-44.0, 25.5f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;

@@ -90,6 +90,7 @@ private:
     void AvoidPos();
     void AvoidPos2();
     void AvoidPos3();
+    void AvoidPos4();
 
     void CreateWayPath();
 
