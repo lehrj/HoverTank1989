@@ -873,7 +873,6 @@ void NpcAI::UpdateAvoidanceBox()
     const float avoidanceWidthMod = 1.0f;
     const float avoidanceWidthMin = vehicleDimensions.z * avoidanceWidthMod;
 
-
     const float avoidanceWidth = avoidanceWidthMin + (m_npcOwner->GetVelocity().Length() / m_npcOwner->GetTopSpeedCalculated()) * avoidanceWidthMin;;
     m_avoidanceBoxWidth = avoidanceWidth;
     const float avoidanceHeight = vehicleDimensions.y * 0.5f;
@@ -886,13 +885,17 @@ void NpcAI::UpdateAvoidanceBox()
 
     DirectX::SimpleMath::Vector3 velocityForward = m_npcOwner->GetVelocity();
     DirectX::SimpleMath::Vector3 vehicleForward = m_npcOwner->GetForward();
-    //velocityForward = m_npcOwner->GetForward();
+    DirectX::SimpleMath::Vector3  destination = m_currentDestination - m_npcOwner->GetPos();
+    destination.Normalize();
     vehicleForward.Normalize();
     velocityForward.Normalize();
 
-    velocityForward += vehicleForward;
-    velocityForward.Normalize();
-
+    DirectX::SimpleMath::Vector3 testAlign = DirectX::SimpleMath::Vector3::Zero;
+     
+    testAlign += velocityForward + vehicleForward + destination;
+    testAlign.Normalize();
+    velocityForward = testAlign;
+   
     DirectX::SimpleMath::Vector3 velocityUp = m_npcOwner->GetUp();
     DirectX::SimpleMath::Vector3 velocityRight = velocityForward.Cross(velocityUp);
     velocityUp = velocityForward.Cross(-velocityRight);

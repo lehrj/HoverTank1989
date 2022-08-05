@@ -431,6 +431,8 @@ private:
     double m_testTimer = 0.0f;
     bool m_isGoToggleTrue = false;
 
+    float m_testMaxVelocity = 0.0f;
+
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
 
