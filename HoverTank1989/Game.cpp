@@ -1112,20 +1112,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->CycleNpcFocus(true);
         }
     }
-    if (m_kbStateTracker.pressed.B)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
-        }
-    }
-    if (m_kbStateTracker.pressed.V)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_camera->ReturnToOverwatchPosition();
-        }
-    }
 
     auto mouse = m_mouse->GetState();
 

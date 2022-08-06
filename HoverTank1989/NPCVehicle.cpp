@@ -546,9 +546,9 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     }
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
-    testSize *= 1.0f;
+    testSize *= 2.0f;
     m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
-    m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
+    //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
     
     /*
     DirectX::SimpleMath::Vector4 testColor2 = DirectX::SimpleMath::Vector4(0.5f, 1.0f, 0.5f, 1.0f);
@@ -2112,14 +2112,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.impactTorque.magnitude = 0.0f;
 
     UpdateForceTorqueVecs();
-
-
-    float currentVelocity = m_vehicleStruct00.vehicleData.q.velocity.Length();
-    if (currentVelocity > m_testMaxVelocity)
-    {
-        m_testMaxVelocity = currentVelocity;
-    }
-    //m_debugData->DebugPushUILineDecimalNumber("Top Speed = ", m_testMaxVelocity, "");
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
