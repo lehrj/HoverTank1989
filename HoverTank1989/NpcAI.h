@@ -91,6 +91,8 @@ private:
     void AvoidPos2();
     void AvoidPos3();
     void AvoidPos4();
+    void AvoidPos5();
+    void AvoidPos6();
 
     void CreateWayPath();
 
@@ -142,5 +144,9 @@ private:
 
     std::shared_ptr<DebugData> m_debugData;
     bool m_debugToggle = false;
+
+
+    DirectX::SimpleMath::Vector3 m_currentDestinationTest0 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_currentDestinationTest5 = DirectX::SimpleMath::Vector3::Zero;
 };
 
