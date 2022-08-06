@@ -1285,7 +1285,7 @@ void Game::Render()
     m_effect3->Apply(context);
     m_batch3->Begin();
 
-    DrawDebugLinesVector();
+    //DrawDebugLinesVector();
 
     m_batch3->End();
 
