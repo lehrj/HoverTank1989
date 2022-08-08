@@ -38,7 +38,7 @@ Game::Game() noexcept(false)
     m_camera->SetVehicleFocus(m_vehicle);
     m_camera->SetCameraEnvironment(m_environment);
     m_camera->SetDebugData(m_debugData);
-    
+
     //m_npcController = new NPCController();
     m_npcController = std::make_shared<NPCController>();
 
@@ -102,7 +102,7 @@ void Game::Initialize(HWND window, int width, int height)
     {
         isInitSuccessTrue = false;
     }
-    
+
     m_terrainStartScreen.environType = EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN;
     result = InitializeTerrainArrayStartScreen(m_terrainStartScreen);
     if (!result)
@@ -301,7 +301,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         aTerrain.terrainVertexArrayBase[i].normal.x = flipNormal.x;
         aTerrain.terrainVertexArrayBase[i].normal.y = flipNormal.y;
         aTerrain.terrainVertexArrayBase[i].normal.z = flipNormal.z;
-        
+
         //testColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
         if (i % 2 == 0)
         {
@@ -525,7 +525,7 @@ Game::~Game()
     //delete m_npcController;
     delete m_vehicle;
 
-    
+
     delete[] m_terrainGamePlay.terrainVertexArray;
     m_terrainGamePlay.terrainVertexArray = 0;
     delete[] m_terrainGamePlay.terrainVertexArrayBase;
@@ -542,9 +542,9 @@ Game::~Game()
 void Game::Tick()
 {
     m_timer.Tick([&]()
-    {
-        Update(m_timer);
-    });
+        {
+            Update(m_timer);
+        });
 
     Render();
 }
@@ -737,7 +737,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            
+
         }
     }
     if (kb.Right)
@@ -1010,7 +1010,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            
+
             m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
@@ -1112,6 +1112,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->CycleNpcFocus(true);
         }
     }
+    if (m_kbStateTracker.pressed.B)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
+        }
+    }
+    if (m_kbStateTracker.pressed.V)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_camera->ReturnToOverwatchPosition();
+        }
+    }
 
     auto mouse = m_mouse->GetState();
 
@@ -1161,7 +1175,7 @@ void Game::Render()
 
     DirectX::SimpleMath::Matrix modelWorldBarrel01 = DirectX::SimpleMath::Matrix::Identity;
     m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
-    
+
     m_batch->Begin();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1169,7 +1183,7 @@ void Game::Render()
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
-        
+
         // draw test shapes start
         const float yOffset = 0.5f;
         const float rodOffset = 0.05f;
@@ -1202,7 +1216,7 @@ void Game::Render()
         pos1 = DirectX::SimpleMath::Vector3(300.0f, yOffset, 300.0f);
         posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
         m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
-        
+
         // inside bottom right
         pos1 = DirectX::SimpleMath::Vector3(75.0f, yOffset, 100.0f);
         posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
@@ -1249,7 +1263,7 @@ void Game::Render()
         pos2 = DirectX::SimpleMath::Vector3(187.0f, yOffset - rodOffset, 0.0f);
         const float angle = 50.0f;
         posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(angle));
-        posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);    
+        posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
         m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
         // cross 2
         posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-angle));
@@ -1277,7 +1291,7 @@ void Game::Render()
     m_batch2->Begin();
 
     DrawTerrainNew(m_terrainGamePlay);
-    
+
     m_batch2->End();
     // m_batch2 end
 
@@ -1397,7 +1411,7 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
-   
+
     // test textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/TestOP.png", nullptr, m_textureTest.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/TestOP.png", nullptr, m_normalMapTest.ReleaseAndGetAddressOf()));
@@ -1538,7 +1552,7 @@ void Game::DrawDebugDataUI()
         m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
         textLinePos.y += 30;
     }
-    
+
     // Draw Timer
     std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;

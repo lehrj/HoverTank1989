@@ -9,7 +9,7 @@ class Vehicle;
 struct AIOutput
 {
     float       angleToDestination;
-    float       forwardThrust;   
+    float       forwardThrust;
     DirectX::SimpleMath::Vector3 omniDirection;
     float       omniThrust;
     float       steeringAngle;
@@ -30,21 +30,21 @@ class NpcAI
 public:
     NpcAI(const NPCVehicle* aOwner);
     void DebugToggle();
-    float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);   
+    float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);
     DirectX::BoundingBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
     DirectX::SimpleMath::Matrix GetAiAvoidanceBoxAlignment() const { return m_avoidanceAlignment; };
     AIOutput GetAiControlOutput() const { return m_aiControls.aiOutput; };
-    
+
     bool GetIsAvoidanceTrue() const { return m_isAvoidanceTrue; };
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
-    float GetThrottleInput();   
+    float GetThrottleInput();
     DirectX::SimpleMath::Vector3 GetVecToDestination();
 
     void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController);
 
     void UpdateAI(const float aTimeStep);
-    void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos);
-    void PushAiAvoidanceTarget2(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
+
+    void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
 
 private:
@@ -84,7 +84,7 @@ private:
     };
 
     Behavior m_behavior;
-    
+
     void AdjustHeadingForVelocity();
     void AdjustHeadingForVelocity2();
     void AvoidPos();
@@ -96,7 +96,7 @@ private:
     void InitializeControlOutput();
     void InitializeDestinationTargets();
     void InitializeBehavior();
-    
+
     void SetForwardThrustOutput();
     void SetOmniOutput();
     void SetSteeringOutput();
@@ -133,8 +133,8 @@ private:
     const float                 m_avoidanceBoxLengthMin = 10.0f;
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
     float                       m_avoidanceBoxWidth;
-    DirectX::SimpleMath::Vector3 m_avoidanceTarget = DirectX::SimpleMath::Vector3::Zero;
-    NPCVehicle const*           m_avoidanceTarget2 = nullptr;
+    DirectX::SimpleMath::Vector3 m_avoidanceTargetPos = DirectX::SimpleMath::Vector3::Zero;
+    NPCVehicle const*           m_avoidanceTargetNpc = nullptr;
     bool                        m_isAvoidanceTrue = false;
 
     AIControls                  m_aiControls;

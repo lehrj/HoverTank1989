@@ -33,7 +33,7 @@ struct NpcControlInput
 };
 
 struct HoverData
-{   
+{
     /*
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
@@ -117,7 +117,7 @@ struct NPCModel
     float afterBurnLengthRightPrev = 0.0f;
     float afterBurnLengthRightPrev2 = 0.0f;
     float afterBurnLengthRightPrev3 = 0.0f;
-    
+
     float maxDelta = 0.0f;
 
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
@@ -146,7 +146,7 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localJetHousingShellRightMatrix;
     DirectX::SimpleMath::Matrix worldJetHousingShellRightMatrix;
 
-    std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;   
+    std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
     DirectX::SimpleMath::Matrix localInteriorShadowRightMatrix;
@@ -274,7 +274,7 @@ struct VehicleHardPoints
 };
 
 struct VehicleData
-{   
+{
     unsigned int                id;
     float                       altitude;
     DirectX::SimpleMath::Vector3 dimensions;
@@ -318,7 +318,7 @@ struct VehicleStruct
     VehicleData                 vehicleData;
     Environment                 const* environment;
     NPCModel                    npcModel;
-    
+
 };
 
 class NPCVehicle
@@ -341,7 +341,7 @@ public:
 
     void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
-        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, 
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
         std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);
 
     float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
@@ -352,7 +352,7 @@ public:
     DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
-    int GetID() const { return m_vehicleStruct00.vehicleData.id; }; 
+    int GetID() const { return m_vehicleStruct00.vehicleData.id; };
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
@@ -365,10 +365,10 @@ public:
     static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
-      
+
     void UpdateNPC(const double aTimeDelta);
-    void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos); };
-    void PushAvoidanceTarget2(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle) { m_npcAI->PushAiAvoidanceTarget2(aAvoidancePos, aVehicle); };
+
+    void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos, aVehicle); };
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
     void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
     void PushImpulseForce(Utility::ImpulseForce aImpulse) { m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); };
@@ -376,7 +376,7 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
 
     void SetCollisionVal(const bool aIsCollisionTrue);
-    
+
     void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
 
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
@@ -398,7 +398,7 @@ private:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition,
         const NPCType aNPCType, Environment const* aEnvironment);
-    static void InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
+    static void InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         NPCModel& aModel);
     static void InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         NPCModel& aModel, const DirectX::SimpleMath::Vector3 aDimensions);
@@ -415,10 +415,10 @@ private:
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
     void UpdateImpulseForces(const float aTimeDelta);
-    void UpdateNPCModel(const double aTimeDelta);   
+    void UpdateNPCModel(const double aTimeDelta);
 
     Environment const* m_environment;
-    
+
     std::shared_ptr<DebugData> m_debugData;
 
     std::unique_ptr<NpcAI> m_npcAI;
@@ -430,6 +430,8 @@ private:
 
     double m_testTimer = 0.0f;
     bool m_isGoToggleTrue = false;
+
+    float m_testMaxVelocity = 0.0f;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

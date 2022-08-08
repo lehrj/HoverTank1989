@@ -28,7 +28,7 @@ void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, c
     m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
 
     m_debugData->DebugPushTestLinePositionIndicator(aImpactPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-    
+
     // test calc kinetic energy
     DirectX::SimpleMath::Vector3 kE = 0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity;
     float keLength = kE.Length();
@@ -237,7 +237,7 @@ void NPCVehicle::CalculateImpactForce4(const VehicleData& aVehicleHit)
     Utility::ImpactForce repulsionForceToVec;
     repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
     repulsionForceToVec.impactMass = aVehicleHit.mass;
-    
+
     repulsionForceToVec.impactVelocity *= 300.0f;
     repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
     //PushImpactForce(repulsionForceToVec);
@@ -304,7 +304,7 @@ void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce a
 
     impactForceToVec.impactVelocity *= aImpactForce.impactModifier;
     PushImpactForce(impactForceToVec);
-    
+
     impactTorque.magnitude *= aImpactForce.impactModifier + 1000.0f;
     PushImpactTorque(impactTorque);
 }
@@ -425,7 +425,7 @@ void NPCVehicle::CalculateSelfRightingTorque()
 {
     //DirectX::SimpleMath::Vector3 gravityTorqueArm = centerMassPos - rotorPos;
     DirectX::SimpleMath::Vector3 gravityTorqueArm = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos - m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos;
-    
+
     const float modVal = 0.0001f;
     DirectX::SimpleMath::Vector3 gravityForce = (DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f)) * modVal;
     Utility::Torque gravTorque = Utility::GetTorqueForce(gravityTorqueArm, gravityForce);
@@ -434,7 +434,7 @@ void NPCVehicle::CalculateSelfRightingTorque()
 
 void NPCVehicle::CalculateTopSpeed()
 {
-    float terminalVelocity = sqrt((2.0f * m_vehicleStruct00.vehicleData.mass * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax) 
+    float terminalVelocity = sqrt((2.0f * m_vehicleStruct00.vehicleData.mass * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax)
         / (m_environment->GetAirDensity() * m_vehicleStruct00.vehicleData.frontalArea * m_vehicleStruct00.vehicleData.dragCoefficient));
     float observedTopSpeed = 50.0f; // using observed top speed for the moment while propulsion system design is still in flux, in meters per second?
     m_vehicleStruct00.vehicleData.topSpeedCalculated = observedTopSpeed;
@@ -459,7 +459,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 {
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     DirectX::SimpleMath::Vector4 mainBodyColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-    DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);   
+    DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 rearColor = DirectX::SimpleMath::Vector4(0.3f, 0.3f, 0.3f, 1.0f);
     DirectX::SimpleMath::Vector4 skirtColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     DirectX::SimpleMath::Vector4 steeringColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -485,7 +485,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     //m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldForwardBurnLeftMatrix, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix, aView, aProj, jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix, aView, aProj, jetHousingShellColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix, aView, aProj, afterBurnColor);   
+    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.rearBodyShape->Draw(m_vehicleStruct00.npcModel.worldRearBodyMatrix, aView, aProj, jetHousingShellColor);
     m_vehicleStruct00.npcModel.rearDeckShape->Draw(m_vehicleStruct00.npcModel.worldRearDeckMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtMatrix, aView, aProj, ventColor);
@@ -538,7 +538,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix8, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix9, aView, aProj, ventColor);
 
-    
+
     DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     if (m_npcAI->GetIsAvoidanceTrue() == true)
     {
@@ -546,17 +546,9 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     }
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
-    testSize *= 2.0f;
+    testSize *= 1.0f;
     m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
-    //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
-    
-    /*
-    DirectX::SimpleMath::Vector4 testColor2 = DirectX::SimpleMath::Vector4(0.5f, 1.0f, 0.5f, 1.0f);
-    DirectX::SimpleMath::Vector3 testSize2 = m_vehicleStruct00.vehicleData.collisionBox.Extents;
-    testSize2 *= 2.0f;
-    m_vehicleStruct00.npcModel.collisionShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize2);
-    m_vehicleStruct00.npcModel.collisionShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, testColor2);
-    */
+   // m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
@@ -710,7 +702,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetImpactForceSum(const VehicleData& aV
         //impactForce += aVehicleData.impactForceVec[i].impactVelocity;
         impactForce += aVehicleData.impactForceVec[i].kineticEnergy;
     }
-    
+
     return impactForce;
 }
 
@@ -773,7 +765,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     const float mainBodyOffset = 2.0f;
     mainBodySize.x -= mainBodyOffset;
     const float mainBodyCutOff = 3.0f;
-    mainBodySize.x -= mainBodyCutOff;  
+    mainBodySize.x -= mainBodyCutOff;
     aModel.modelShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), mainBodySize);
     const float ventShadowAngle = Utility::ToRadians(-3.5f);
     DirectX::SimpleMath::Vector3 mainBodyTranslation(-(mainBodyOffset * 0.5f) + (mainBodyCutOff * 0.5f), 0.0f, 0.0f);
@@ -828,7 +820,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     rearDeckTranslation.y += (rearDeckSize * rearDeckScale.y) * 0.5f;
     rearDeckTranslation.z += 0.0f;
     //const float rearDeckSize = (aDimensions.z * 0.5f) * sqrt(2.0f);
-    
+
     aModel.rearDeckShape = DirectX::GeometricPrimitive::CreateOctahedron(aContext.Get(), rearDeckSize);
     aModel.localRearDeckMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f));
@@ -1172,7 +1164,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     //DirectX::SimpleMath::Vector3 eyeRightTranslation2 = eyeRightTranslation;
     eyeRightTranslation2.z *= -1.0f;
     aModel.localEyeRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    
+
     aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
 
     aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-20.0f));
@@ -1497,7 +1489,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.up = DirectX::SimpleMath::Vector3::UnitY;
     aVehicleStruct.vehicleData.right = aVehicleStruct.vehicleData.forward.Cross(aVehicleStruct.vehicleData.up);
     aVehicleStruct.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicleStruct.vehicleData.right, aVehicleStruct.vehicleData.up);
-    
+
     // zero out impact force
     aVehicleStruct.vehicleData.impactForce.impactVelocity = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.impactForce.impactMass = 0.0f;
@@ -1511,7 +1503,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.hardPoints.localCenterOfMassPos = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.hardPoints.centerOfMassPos = aVehicleStruct.vehicleData.hardPoints.localCenterOfMassPos;
     aVehicleStruct.vehicleData.hardPoints.localWeaponDirection = DirectX::SimpleMath::Vector3::UnitX;
-    aVehicleStruct.vehicleData.hardPoints.weaponDirection = aVehicleStruct.vehicleData.hardPoints.localWeaponDirection;    
+    aVehicleStruct.vehicleData.hardPoints.weaponDirection = aVehicleStruct.vehicleData.hardPoints.localWeaponDirection;
     aVehicleStruct.vehicleData.hardPoints.localWeaponPos = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.hardPoints.weaponPos = aVehicleStruct.vehicleData.hardPoints.localWeaponPos;
 
@@ -1544,7 +1536,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 }
 
 void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
-    const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment, 
+    const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
     std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID)
 {
     m_context = aContext;
@@ -1564,7 +1556,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     MotionNPC newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-   
+
     //  Compute the total drag force
     const float v = newQ.velocity.Length();
     //const float airDensity = 1.225f; // ToDo rework to pull data from environment
@@ -1582,9 +1574,9 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (static_cast<float>(aTimeDelta) * (-frontDragResistance));
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, airResistance, 15.f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, .0f));
-    
+
     float airRLength = airResistance.Length();
-    
+
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
     velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
@@ -1592,7 +1584,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
     if (m_isGoToggleTrue == true)
-    {   
+    {
         velocityUpdate += damperForce * mass;
     }
     else
@@ -1719,7 +1711,7 @@ void NPCVehicle::UpdateAlignment()
     const float t = 0.5f;
     DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(torqueMat);
     DirectX::SimpleMath::Matrix postAlignment = DirectX::SimpleMath::Matrix::Transform(preAlignment, rotQuat);
-    
+
     m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Lerp(preAlignment, postAlignment, t);
 
     m_vehicleStruct00.vehicleData.up = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_vehicleStruct00.vehicleData.alignment);
@@ -1746,7 +1738,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     DirectX::SimpleMath::Vector3 tailRotorTorqueArm = m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos - centerMassPos;
     DirectX::SimpleMath::Vector3 tailForce = -m_vehicleStruct00.vehicleData.right * (m_vehicleStruct00.vehicleData.controlInput.steeringInput) * 1.0f;
     Utility::Torque tailTorque = Utility::GetTorqueForce(tailRotorTorqueArm, tailForce);
-    
+
     Utility::Torque turnTestTorque;
     if (m_vehicleStruct00.vehicleData.controlInput.steeringInput < 0.0f)
     {
@@ -1812,7 +1804,7 @@ void NPCVehicle::UpdateControlInput()
     {
         m_vehicleStruct00.vehicleData.controlInput.throttleInput = modThrottleInput;
     }
-    
+
     //m_vehicleStruct00.vehicleData.controlInput.throttleInput = m_npcAI->GetThrottleInput();
     m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
 }
@@ -1820,7 +1812,7 @@ void NPCVehicle::UpdateControlInput()
 void NPCVehicle::UpdateControlInputFromAi()
 {
     AIOutput aiInput = m_npcAI->GetAiControlOutput();
-   
+
     //m_vehicleStruct00.vehicleData.controlInput.steeringVec = m_npcAI->GetVecToDestination();
     m_vehicleStruct00.vehicleData.controlInput.steeringVec = aiInput.steeringDirection;
     //m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
@@ -1895,7 +1887,7 @@ void NPCVehicle::UpdateControlInputFromAi()
         }
         else
         {
-            updateThrottle = - m_vehicleStruct00.vehicleData.controlInput.throttleInputRate;
+            updateThrottle = -m_vehicleStruct00.vehicleData.controlInput.throttleInputRate;
         }
     }
     else
@@ -2011,7 +2003,7 @@ void NPCVehicle::UpdateControlInputFromAi2()
     {
         m_vehicleStruct00.vehicleData.hoverData.forwardThrust = aiInput.forwardThrust * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
     }
-    
+
     // omni trust
     m_vehicleStruct00.vehicleData.controlInput.omniDirection = aiInput.omniDirection;
     m_vehicleStruct00.vehicleData.controlInput.omniThrust = aiInput.omniThrust * m_vehicleStruct00.vehicleData.hoverData.omniThrustMax;
@@ -2112,12 +2104,20 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.impactTorque.magnitude = 0.0f;
 
     UpdateForceTorqueVecs();
+
+
+    float currentVelocity = m_vehicleStruct00.vehicleData.q.velocity.Length();
+    if (currentVelocity > m_testMaxVelocity)
+    {
+        m_testMaxVelocity = currentVelocity;
+    }
+    //m_debugData->DebugPushUILineDecimalNumber("Top Speed = ", m_testMaxVelocity, "");
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 {
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
-    
+
     m_vehicleStruct00.npcModel.worldModelMatrix = m_vehicleStruct00.npcModel.localModelMatrix;
     m_vehicleStruct00.npcModel.worldModelMatrix *= updateMat;
     m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix = m_vehicleStruct00.npcModel.localInteriorShadowRightMatrix;
@@ -2464,7 +2464,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     //
     //
     //
-    
+
     const float speed = m_vehicleStruct00.vehicleData.q.velocity.Length();
     const float rotMod = 0.001f;
     bool isVelocityBackwards;
@@ -2494,7 +2494,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     m_vehicleStruct00.npcModel.worldOmniBaseMatrix = m_vehicleStruct00.npcModel.localOmniBaseMatrix;
     m_vehicleStruct00.npcModel.worldOmniBaseMatrix *= updateMat;
-  
+
     DirectX::SimpleMath::Vector3 omniDialTranslation = m_vehicleStruct00.vehicleData.controlInput.omniDirection;
     //DirectX::SimpleMath::Vector3 omniDialTranslation = m_vehicleStruct00.vehicleData.controlInput.steeringVec;
     omniDialTranslation.Normalize();
@@ -2507,9 +2507,9 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldRearMatrix = DirectX::SimpleMath::Matrix::Identity;
     m_vehicleStruct00.npcModel.worldRearMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(-1.4f, 0.0f, 0.0f);
     if (m_vehicleStruct00.vehicleData.controlInput.throttleInput < 0.0f)
-    //if (cos(m_testTimer) < 0.0f)
+        //if (cos(m_testTimer) < 0.0f)
     {
-        
+
         //m_vehicleStruct00.npcModel.worldRearMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_vehicleStruct00.vehicleData.controlInput.throttleInput);
         //m_vehicleStruct00.npcModel.worldRearMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(cos(m_testTimer));
     }
@@ -2532,7 +2532,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
 
     DirectX::SimpleMath::Matrix wingRotation = DirectX::SimpleMath::Matrix::CreateRotationZ(wingRotationAngle);
-    
+
     m_vehicleStruct00.npcModel.worldWingArmMatrix = m_vehicleStruct00.npcModel.localWingArmMatrix;
     m_vehicleStruct00.npcModel.worldWingArmMatrix *= wingRotation;
     m_vehicleStruct00.npcModel.worldWingArmMatrix *= m_vehicleStruct00.npcModel.localWingArmTranslationMatrix;
@@ -2555,7 +2555,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     //m_vehicleStruct00.npcModel.worldThrottleMatrix = m_vehicleStruct00.npcModel.localThrottleMatrix;
     //m_vehicleStruct00.npcModel.worldThrottleMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, abs(m_vehicleStruct00.vehicleData.controlInput.throttleInput)));
-    m_vehicleStruct00.npcModel.worldThrottleMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 0.8f)); 
+    m_vehicleStruct00.npcModel.worldThrottleMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 0.8f));
     m_vehicleStruct00.npcModel.worldThrottleMatrix *= updateMat;
 
     //DirectX::SimpleMath::Matrix steeringRotation = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.vehicleData.controlInput.steeringInput);
