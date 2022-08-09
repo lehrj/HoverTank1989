@@ -453,9 +453,27 @@ void NpcAI::AvoidPos()
     distanceRatio /= m_avoidanceBoxLength;
     float testRatio = abs((avoidanceBoxLength + frontOffset) - vecToTarget.Length()) + 1.0f;
     //testAvoidanceVec *= 10.0f;
-    testAvoidanceVec *= testRatio;
-    testAvoidanceVec += m_npcOwner->GetPos();
-    m_currentDestination = testAvoidanceVec;
+    
+    if (m_isAvoidanceTrue == true && m_isAvoidanceTrueTest1 == true)
+    {
+        DirectX::SimpleMath::Vector3 testSelfVelocity = m_npcOwner->GetVelocity();
+        testSelfVelocity.Normalize();
+        testSelfVelocity *= -1.0f;
+        DirectX::SimpleMath::Vector3 directionToTarget = m_npcOwner->GetVelocity() - m_avoidanceTargetNpc->GetPos();
+        directionToTarget.Normalize();
+        DirectX::SimpleMath::Vector3 directionToTarget2 = m_avoidanceTargetNpc->GetVelocity() - m_npcOwner->GetPos();
+        directionToTarget2.Normalize();
+        DirectX::SimpleMath::Vector3 avoidVec = testSelfVelocity + directionToTarget;
+        avoidVec *= 130.0f;
+        avoidVec += m_npcOwner->GetPos();
+        m_currentDestination = avoidVec;
+        //testAvoidanceVec *= testRatio;
+    }
+    else
+    {
+        testAvoidanceVec += m_npcOwner->GetPos();
+        m_currentDestination = testAvoidanceVec;
+    }
     m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     int testBreak = 0;
@@ -694,6 +712,104 @@ void NpcAI::InitializeDestinationTargets()
 
 void NpcAI::PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle)
 {
+    bool isPushTarget = true;
+    DirectX::SimpleMath::Vector3 selfWorldPos = m_npcOwner->GetPos();
+    DirectX::SimpleMath::Vector3 selfWorldVelocity = m_npcOwner->GetVelocity();
+    //DirectX::SimpleMath::Vector3 selfWorldVelocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 targetWorldPos = aVehicle->GetPos();
+    DirectX::SimpleMath::Vector3 targetWorldVelocity = aVehicle->GetVelocity();
+    //DirectX::SimpleMath::Vector3 targetWorldVelocity = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 1.0f);
+    
+    //DirectX::SimpleMath::Matrix localizeMat = m_avoidanceAlignment;
+    //DirectX::SimpleMath::Matrix localizeMat = m_npcOwner->GetAlignment();
+    //DirectX::SimpleMath::Matrix localizeMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_npcOwner->GetRight(), m_npcOwner->GetUp());
+    //DirectX::SimpleMath::Matrix localizeMat = DirectX::SimpleMath::Matrix::CreateWorld(m_npcOwner->GetPos(), -m_npcOwner->GetRight(), m_npcOwner->GetUp());
+    DirectX::SimpleMath::Matrix localizeMat = DirectX::SimpleMath::Matrix::CreateWorld(m_avoidanceBoxBase, -m_avoidanceBoxRight, m_avoidaneBoxUp);
+    localizeMat = localizeMat.Invert();
+
+    //DirectX::SimpleMath::Matrix localizeDirMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_npcOwner->GetRight(), m_npcOwner->GetUp());
+    DirectX::SimpleMath::Matrix localizeDirMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_avoidanceBoxRight, m_avoidaneBoxUp);
+    localizeDirMat = localizeDirMat.Invert();
+
+    DirectX::SimpleMath::Vector3 selfLocalPos = DirectX::SimpleMath::Vector3::Transform(selfWorldPos, localizeMat);
+    DirectX::SimpleMath::Vector3 selfLocalVelocity = DirectX::SimpleMath::Vector3::Transform(selfWorldVelocity, localizeDirMat);
+    DirectX::SimpleMath::Vector3 targetLocalPos = DirectX::SimpleMath::Vector3::Transform(targetWorldPos, localizeMat);
+    DirectX::SimpleMath::Vector3 targetLocalVelocity = DirectX::SimpleMath::Vector3::Transform(targetWorldVelocity, localizeDirMat);
+
+    float testDot1 = selfWorldVelocity.Dot(targetWorldVelocity);
+    float testDot2 = targetWorldVelocity.Dot(selfWorldVelocity);
+    float testDot3 = selfLocalVelocity.Dot(targetLocalVelocity);
+    float testDot4 = targetLocalVelocity.Dot(selfLocalVelocity);
+
+    DirectX::SimpleMath::Vector3 testSelfLocalVelocityNorm = selfLocalVelocity;
+    testSelfLocalVelocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 testTargetLocalVelocityNorm = targetLocalVelocity;
+    testTargetLocalVelocityNorm.Normalize();
+    float testDot5 = testSelfLocalVelocityNorm.Dot(testTargetLocalVelocityNorm);
+    float testDot6 = testTargetLocalVelocityNorm.Dot(testSelfLocalVelocityNorm);
+
+    float testAngle = Utility::ToDegrees(Utility::GetAngleBetweenVectors(testTargetLocalVelocityNorm, testSelfLocalVelocityNorm));
+
+    DirectX::SimpleMath::Vector3 approchVelocity = selfLocalVelocity - targetLocalVelocity;
+
+    if (targetLocalVelocity.x >= selfLocalVelocity.x)
+    {
+        m_isAvoidanceTrueTest2 = true;
+        isPushTarget = false;
+    }
+    if (testDot5 < 0.0f && targetLocalVelocity.x <= selfLocalVelocity.x)
+    {
+        m_isAvoidanceTrueTest1 = true;
+        isPushTarget = true;
+    }
+    //if (testDot5 > -0.4f && testDot5 < 0.4f)
+    if (testDot5 < 0.0f)
+    {
+
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (approchVelocity.x < 0.1f && isPushTarget == true)
+    {
+    
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (approchVelocity.x > -0.1f && isPushTarget == false)
+    {
+        //isPushTarget = true;
+        int testBreak = 0;
+        testBreak++;
+    }
+
+
+
+    if (isPushTarget == true)
+    {
+        if (m_isAvoidanceTrue == false)
+        {
+            m_isAvoidanceTrue = true;
+            m_avoidanceTargetPos = aAvoidancePos;
+            m_avoidanceTargetNpc = aVehicle;
+        }
+        else
+        {
+            const float distanceToPriorTarget = (m_npcOwner->GetPos() - m_avoidanceTargetPos).Length();
+            const float distanceToNewTarget = (m_npcOwner->GetPos() - aAvoidancePos).Length();
+            if (distanceToNewTarget < distanceToPriorTarget)
+            {
+                m_avoidanceTargetPos = aAvoidancePos;
+                m_avoidanceTargetNpc = aVehicle;
+            }
+        }
+    }
+
+}
+
+void NpcAI::PushAiAvoidanceTarget2(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle)
+{
     DirectX::SimpleMath::Vector3 selfPos = m_npcOwner->GetPos();
     DirectX::SimpleMath::Vector3 selfVelocity = m_npcOwner->GetVelocity();
     //selfVelocity = -DirectX::SimpleMath::Vector3::UnitZ;
@@ -836,7 +952,7 @@ void NpcAI::SetSteeringOutput()
     DirectX::SimpleMath::Vector3 steeringLine = DirectX::SimpleMath::Vector3::UnitX;
     steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, DirectX::SimpleMath::Matrix::CreateRotationY(m_aiControls.aiOutput.steeringAngle));
     steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, m_npcOwner->GetAlignment());
-    m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), steeringLine, 75.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), steeringLine, 75.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     /*
     //return vecToDestination;
     return m_desiredHeading;
@@ -876,6 +992,8 @@ void NpcAI::UpdateAI(const float aTimeStep)
 
     m_destinationTargets.isSeparationTargetInRadius = false;
     m_isAvoidanceTrue = false;
+    m_isAvoidanceTrueTest1 = false;
+    m_isAvoidanceTrueTest2 = false;
 }
 
 void NpcAI::UpdateAvoidanceBox()
@@ -893,6 +1011,7 @@ void NpcAI::UpdateAvoidanceBox()
     m_avoidanceBox.Extents = DirectX::SimpleMath::Vector3(avoidanceLength, avoidanceHeight, avoidanceWidth);
     m_avoidanceBox.Center = DirectX::SimpleMath::Vector3(vehicleDimensions.x + avoidanceLength, 0.0f, 0.0f);
     m_avoidanceBox.Center = DirectX::SimpleMath::Vector3((vehicleDimensions.x * 0.5f) + (avoidanceLength * 1.0f), -avoidanceHeight * 0.0f, 0.0f);
+    m_avoidanceBox.Center = DirectX::SimpleMath::Vector3((vehicleDimensions.x * 0.5f) + (avoidanceLength * 0.5f), -avoidanceHeight * 0.0f, 0.0f);
 
     DirectX::SimpleMath::Vector3 velocityForward = m_npcOwner->GetVelocity();
     DirectX::SimpleMath::Vector3 vehicleForward = m_npcOwner->GetForward();
@@ -907,9 +1026,16 @@ void NpcAI::UpdateAvoidanceBox()
     testAlign.Normalize();
     velocityForward = testAlign;
 
+    velocityForward = m_npcOwner->GetVelocity();
+
     DirectX::SimpleMath::Vector3 velocityUp = m_npcOwner->GetUp();
     DirectX::SimpleMath::Vector3 velocityRight = velocityForward.Cross(velocityUp);
     velocityUp = velocityForward.Cross(-velocityRight);
+
+    m_avoidanceBoxRight = velocityRight;
+    m_avoidanceBoxRight.Normalize();
+    m_avoidaneBoxUp = velocityUp;
+    m_avoidaneBoxUp.Normalize();
 
     DirectX::SimpleMath::Matrix velocityAlignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -velocityRight, velocityUp);
     //velocityAlignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_npcOwner->GetRight(), m_npcOwner->GetUp());
@@ -920,9 +1046,33 @@ void NpcAI::UpdateAvoidanceBox()
     //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_avoidanceBox.Center, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f));
     //m_debugData->DebugPushTestLinePositionIndicator(m_avoidanceBox.Center, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 
+
+    m_avoidanceBoxBase = DirectX::SimpleMath::Vector3((vehicleDimensions.x * 0.5f) + (avoidanceLength * 0.5f), 0.0f, 0.0f);
+    m_avoidanceBoxBase = DirectX::SimpleMath::Vector3::Transform(m_avoidanceBoxBase, velocityAlignment);
+    m_avoidanceBoxBase = m_avoidanceBoxBase + m_npcOwner->GetPos();
+
     DirectX::SimpleMath::Vector3 testPos = m_avoidanceBox.Center;
     m_avoidanceAlignment = velocityAlignment;
     m_avoidanceAlignment *= DirectX::SimpleMath::Matrix::CreateTranslation(m_avoidanceBox.Center);
+
+
+    /*
+    m_avoidanceBoxRight = m_npcOwner->GetRight();
+    m_avoidaneBoxUp = m_npcOwner->GetUp();
+
+    DirectX::SimpleMath::Matrix testAlignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_npcOwner->GetRight(), m_npcOwner->GetUp());
+
+    m_avoidanceBoxBase = DirectX::SimpleMath::Vector3((vehicleDimensions.x * 0.5f) + (avoidanceLength * 0.5f), 0.0f, 0.0f);
+    m_avoidanceBoxBase = DirectX::SimpleMath::Vector3::Transform(m_avoidanceBoxBase, testAlignment);
+    m_avoidanceBoxBase = m_avoidanceBoxBase + m_npcOwner->GetPos();
+    m_debugData->DebugPushTestLine(m_avoidanceBoxBase, DirectX::SimpleMath::Vector3::UnitY, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    m_avoidanceBox.Center = DirectX::SimpleMath::Vector3((vehicleDimensions.x * 0.5f) + (avoidanceLength * 1.0f), -avoidanceHeight * 0.0f, 0.0f);
+    m_avoidanceBox.Center = DirectX::SimpleMath::Vector3::Transform(m_avoidanceBox.Center, testAlignment);
+    m_avoidanceBox.Center = m_avoidanceBox.Center + m_npcOwner->GetPos();
+    m_avoidanceAlignment = testAlignment;
+    m_avoidanceAlignment *= DirectX::SimpleMath::Matrix::CreateTranslation(m_avoidanceBox.Center);
+    */
 }
 
 void NpcAI::UpdateControlOutput()

@@ -36,6 +36,9 @@ public:
     AIOutput GetAiControlOutput() const { return m_aiControls.aiOutput; };
 
     bool GetIsAvoidanceTrue() const { return m_isAvoidanceTrue; };
+    bool GetIsAvoidanceTrue1() const { return m_isAvoidanceTrueTest1; };
+    bool GetIsAvoidanceTrue2() const { return m_isAvoidanceTrueTest2; };
+
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
     float GetThrottleInput();
     DirectX::SimpleMath::Vector3 GetVecToDestination();
@@ -45,6 +48,8 @@ public:
     void UpdateAI(const float aTimeStep);
 
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
+    void PushAiAvoidanceTarget2(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
+
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
 
 private:
@@ -130,12 +135,18 @@ private:
 
     DirectX::SimpleMath::Matrix m_avoidanceAlignment = DirectX::SimpleMath::Matrix::Identity;
     DirectX::BoundingBox        m_avoidanceBox;
-    const float                 m_avoidanceBoxLengthMin = 10.0f;
+    DirectX::SimpleMath::Vector3 m_avoidanceBoxBase = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_avoidanceBoxRight = - DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3 m_avoidaneBoxUp = DirectX::SimpleMath::Vector3::UnitY;
+
+    const float                 m_avoidanceBoxLengthMin = 15.0f;
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
     float                       m_avoidanceBoxWidth;
     DirectX::SimpleMath::Vector3 m_avoidanceTargetPos = DirectX::SimpleMath::Vector3::Zero;
     NPCVehicle const*           m_avoidanceTargetNpc = nullptr;
     bool                        m_isAvoidanceTrue = false;
+    bool                        m_isAvoidanceTrueTest1 = false;
+    bool                        m_isAvoidanceTrueTest2 = false;
 
     AIControls                  m_aiControls;
 

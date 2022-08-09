@@ -148,9 +148,14 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 */
                 // avoidance check
                 DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
+                DirectX::BoundingBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
                 if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
                 {
                     m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);
+                }
+                else if (avoidanceBox.Intersects(avoidanceBox2) == true || avoidanceBox.Contains(avoidanceBox2) == true)
+                {
+                    //m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);
                 }
             }
         }

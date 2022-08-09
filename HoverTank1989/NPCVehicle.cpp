@@ -459,7 +459,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 {
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     DirectX::SimpleMath::Vector4 mainBodyColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-    DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);     ////
     DirectX::SimpleMath::Vector4 rearColor = DirectX::SimpleMath::Vector4(0.3f, 0.3f, 0.3f, 1.0f);
     DirectX::SimpleMath::Vector4 skirtColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     DirectX::SimpleMath::Vector4 steeringColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -467,6 +467,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::SimpleMath::Vector4 jetHousingShellColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     DirectX::SimpleMath::Vector4 afterBurnColor = DirectX::SimpleMath::Vector4(1.000000000f, 0.270588249f, 0.000000000f, 1.40000000f);
     DirectX::SimpleMath::Vector4 ventColor = DirectX::SimpleMath::Vector4(0.3f, 0.3f, 0.3f, 1.0f);
+    DirectX::SimpleMath::Vector4 ventColorAlt = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     ventColor = color;
     DirectX::SimpleMath::Vector4 testColorRed = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 testColorBlue = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
@@ -475,6 +476,19 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     {
         color = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     }
+
+    DirectX::SimpleMath::Vector4 eyeColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
+    //eyeColor = forwardColor;
+    //forwardColor = eyeColor;
+    //skirtColor = forwardColor;
+    //jetHousingShellColor = skirtColor;
+    eyeColor = m_vehicleStruct00.npcModel.color1;
+    forwardColor = m_vehicleStruct00.npcModel.color1;
+    skirtColor = m_vehicleStruct00.npcModel.color2;
+    jetHousingShellColor = m_vehicleStruct00.npcModel.color2;
+    ventColor = m_vehicleStruct00.npcModel.color3;
+    color = m_vehicleStruct00.npcModel.color3;
+    ventColorAlt = m_vehicleStruct00.npcModel.color2;
 
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2, aView, aProj, afterBurnColor);
@@ -489,14 +503,14 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.rearBodyShape->Draw(m_vehicleStruct00.npcModel.worldRearBodyMatrix, aView, aProj, jetHousingShellColor);
     m_vehicleStruct00.npcModel.rearDeckShape->Draw(m_vehicleStruct00.npcModel.worldRearDeckMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtMatrix, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeLeftMatrix, aView, aProj, skirtColor);
-    m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeRightMatrix, aView, aProj, skirtColor);
+    m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeLeftMatrix, aView, aProj, eyeColor);
+    m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeRightMatrix, aView, aProj, eyeColor);
     m_vehicleStruct00.npcModel.grillShape->Draw(m_vehicleStruct00.npcModel.worldGrillLeftMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.grillShape->Draw(m_vehicleStruct00.npcModel.worldGrillRightMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.forwardShape->Draw(m_vehicleStruct00.npcModel.worldForwardMatrix, aView, aProj, forwardColor);
     m_vehicleStruct00.npcModel.noseConeShape->Draw(m_vehicleStruct00.npcModel.worldNoseConeMatrix, aView, aProj, color);
     m_vehicleStruct00.npcModel.frontAirDamShape->Draw(m_vehicleStruct00.npcModel.worldFrontAirDamMatrix, aView, aProj, skirtColor);
-    m_vehicleStruct00.npcModel.omniBaseShape->Draw(m_vehicleStruct00.npcModel.worldOmniBaseMatrix, aView, aProj, DirectX::Colors::Black);
+    m_vehicleStruct00.npcModel.omniBaseShape->Draw(m_vehicleStruct00.npcModel.worldOmniBaseMatrix, aView, aProj, forwardColor);
     m_vehicleStruct00.npcModel.omniDialShape->Draw(m_vehicleStruct00.npcModel.worldOmniDialMatrix, aView, aProj, steeringColor);
 
     //m_vehicleStruct00.npcModel.rearShape->Draw(m_vehicleStruct00.npcModel.worldRearMatrix, aView, aProj, color);
@@ -530,7 +544,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix, aView, aProj, testColor02);
     //ventColor = testColor01;
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix2, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix3, aView, aProj, testColor01);
+    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix3, aView, aProj, ventColorAlt);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix4, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix5, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix6, aView, aProj, ventColor);
@@ -539,16 +553,28 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix9, aView, aProj, ventColor);
 
 
-    DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     if (m_npcAI->GetIsAvoidanceTrue() == true)
     {
-        testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+        //testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+        testColor.x -= 1.0f;
     }
+    if (m_npcAI->GetIsAvoidanceTrue1() == true)
+    {
+        //testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+        testColor.y -= 1.0f;
+    }
+    if (m_npcAI->GetIsAvoidanceTrue2() == true)
+    {
+        //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        testColor.z -= 1.0f;
+    }
+    //testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 1.0f;
     m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
-   // m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
+    m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
@@ -753,6 +779,41 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetRepulsionForce(const VehicleData& aR
 void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
     NPCModel& aModel, const DirectX::SimpleMath::Vector3 aDimensions)
 {
+    const float low = 0.0f;
+    const float high = 1.0f;
+    float xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    float x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    float y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    float z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    aModel.color1 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
+    /*
+    x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    aModel.color2 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
+    */
+    x = 1.0f - x;
+    y = 1.0f - y;
+    z = 1.0f - z;
+    aModel.color2 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
+    /*
+    x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    aModel.color3 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
+    */
+    x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    aModel.color3 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
+    aModel.color3 = aModel.color2;
+    aModel.color3 = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    //aModel.color2 = aModel.color1;
+    x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    aModel.color4 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
+
     const float zFightOffset = 0.02f;
     DirectX::SimpleMath::Matrix centerMassTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(aDimensions.x * 0.0f, -aDimensions.y * 0.0f, aDimensions.z * 0.0f);
 

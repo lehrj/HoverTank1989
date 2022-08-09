@@ -104,6 +104,12 @@ enum class NPCType
 
 struct NPCModel
 {
+    DirectX::SimpleMath::Vector4 color1;
+    DirectX::SimpleMath::Vector4 color2;
+    DirectX::SimpleMath::Vector4 color3;
+    DirectX::SimpleMath::Vector4 color4;
+
+
     std::unique_ptr<DirectX::GeometricPrimitive>    afterBurnShape;
     DirectX::SimpleMath::Matrix localAfterBurnLeftMatrix;
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix;

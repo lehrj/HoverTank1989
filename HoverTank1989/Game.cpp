@@ -151,6 +151,11 @@ void Game::Initialize(HWND window, int width, int height)
     pos = DirectX::SimpleMath::Vector3(50.0f, 13.0, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    pos.x += 20.0f;
+    pos.z += 20.0f;
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+
+
     // testing new terrain map
     m_terrainVector.clear();
 }
@@ -1299,7 +1304,7 @@ void Game::Render()
     m_effect3->Apply(context);
     m_batch3->Begin();
 
-    //DrawDebugLinesVector();
+    DrawDebugLinesVector();
 
     m_batch3->End();
 
