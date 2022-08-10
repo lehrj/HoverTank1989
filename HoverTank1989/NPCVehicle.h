@@ -73,7 +73,7 @@ struct HoverData
     float forwardThrust;
     //const float forwardThrustMax = 100000.0f;
     const float forwardThrustMax = 50000.0f;
-    const float reverseThrustMax = forwardThrustMax * 0.9f;
+    const float reverseThrustMax = forwardThrustMax * 1.0f;
     float omniThrust;
     const float omniThrustMax = 65000.0f;
     float omniThrustDirection = 0.0f;
@@ -354,7 +354,11 @@ public:
 
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
     DirectX::BoundingBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
-    const DirectX::BoundingBox& GetCollisionData() { return m_vehicleStruct00.vehicleData.collisionBox; };
+    bool GetAvoidanceIsTrue() const { return m_npcAI->GetIsAvoidanceTrue(); };
+    int GetAvoidanceTargetIndex() const { return m_avoidanceTargetIndex; };
+    NPCVehicle const* GetAvoidanceNPCTarget() { return m_npcAI->GetAvoidanceTarget(); };
+
+    const DirectX::BoundingBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
@@ -438,6 +442,8 @@ private:
     bool m_isGoToggleTrue = false;
 
     float m_testMaxVelocity = 0.0f;
+
+    int m_avoidanceTargetIndex = -1;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

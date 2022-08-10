@@ -611,7 +611,6 @@ bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, Direct
 {
     bool foundHeight = false;
     unsigned int i = 0;
-
     for (i; i < m_heightMapGamePlayData.terrainModel.size(); ++i)
     {
         DirectX::XMFLOAT3 vertex1 = m_heightMapGamePlayData.terrainModel[i].position;
@@ -643,7 +642,6 @@ bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, Direct
         }
     }
 
-    //return -DirectX::SimpleMath::Vector3::UnitX;
     return foundHeight;
 }
 

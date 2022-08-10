@@ -39,7 +39,14 @@ public:
     bool GetIsAvoidanceTrue1() const { return m_isAvoidanceTrueTest1; };
     bool GetIsAvoidanceTrue2() const { return m_isAvoidanceTrueTest2; };
 
+    NPCVehicle const* GetAvoidanceTarget() { return m_avoidanceTargetNpc; };
+    //NPCVehicle const* m_avoidanceTargetNpc = nullptr;
+
+
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
+
+    bool GetEmergencyToggle() const { return m_emergencyToggle; };
+
     float GetThrottleInput();
     DirectX::SimpleMath::Vector3 GetVecToDestination();
 
@@ -152,5 +159,6 @@ private:
 
     std::shared_ptr<DebugData> m_debugData;
     bool m_debugToggle = false;
+    bool m_emergencyToggle = false;
 };
 

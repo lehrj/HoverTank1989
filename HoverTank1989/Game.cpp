@@ -20,7 +20,8 @@ Game::Game() noexcept(false)
     //m_outputWidth = m_outputWidthDefault;
     //m_outputHeight = m_outputHeightDefault;
 
-    srand(0);
+    //srand(0);
+    srand(time(nullptr));
 
     m_environment = new Environment();
     m_debugData = std::make_shared<DebugData>();
@@ -127,7 +128,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->SetDebugData(m_debugData);
 
     const float xOrgVal = 270.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 13.0, 100.0f);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 13.0, 300.0f);
     //const float xOrgVal = 20.0f;
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, 0.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
@@ -135,7 +136,7 @@ void Game::Initialize(HWND window, int width, int height)
     const float low = 0.0f;
     const float high = 10.0f;
     const float zPosOffSet = 45.0f;
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 7; ++i)
     {
         for (int j = 0; j < 4; ++j)
         {
@@ -150,10 +151,10 @@ void Game::Initialize(HWND window, int width, int height)
     }
     pos = DirectX::SimpleMath::Vector3(50.0f, 13.0, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.x += 20.0f;
     pos.z += 20.0f;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
 
 
     // testing new terrain map
@@ -554,6 +555,18 @@ void Game::Tick()
     Render();
 }
 
+void Game::TogglePause()
+{
+    if (m_isPauseOn == true)
+    {
+        m_isPauseOn = false;
+    }
+    else
+    {
+        m_isPauseOn = true;
+    }
+}
+
 // Updates the world.
 void Game::Update(DX::StepTimer const& aTimer)
 {
@@ -561,13 +574,18 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     // TODO: Add your game logic here.
     elapsedTime;
-    m_debugData->DebugClearUI();
+    
 
     float time = float(aTimer.GetTotalSeconds());
     UpdateInput(aTimer);
-
-    m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
-    m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
+    
+    if (m_isPauseOn == false)
+    {
+        m_debugData->DebugClearUI();
+        m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
+        m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
+        
+    }
     m_camera->UpdateCamera(aTimer);
     m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
 
@@ -1065,7 +1083,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SPINCAMERA);
+            TogglePause();
         }
     }
     if (m_kbStateTracker.pressed.L)
@@ -1189,6 +1207,7 @@ void Game::Render()
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
 
+        
         // draw test shapes start
         const float yOffset = 0.5f;
         const float rodOffset = 0.05f;
@@ -1275,6 +1294,7 @@ void Game::Render()
         posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
         m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
         // draw test shapes end
+        
     }
 
     m_batch->End();

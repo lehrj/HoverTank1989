@@ -149,14 +149,74 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 // avoidance check
                 DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
                 DirectX::BoundingBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
+
+                bool testBool1 = avoidanceBox.Intersects(testV2.collisionBox);
+                bool testBool2 = avoidanceBox.Contains(testV2.collisionBox);
                 if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
                 {
+
+                    bool testBool7 = avoidanceBox.Intersects(testV2.collisionBox);
+                    bool testBool8 = avoidanceBox.Contains(testV2.collisionBox);
                     m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);
+
+                    bool testBool9 = avoidanceBox.Intersects(testV2.collisionBox);
+                    bool testBool10 = avoidanceBox.Contains(testV2.collisionBox);
+
+
+                    NPCVehicle const* testTarget = m_npcVec[j];
+                    DirectX::BoundingBox collisionBox = m_npcVec[i]->GetCollisionData();
+                    DirectX::BoundingBox avoidanceBox2 = testTarget->GetAvoidanceBox();
+                    //bool testBool3 = avoidanceBox.Intersects(testV2.collisionBox);
+                    //bool testBool4 = avoidanceBox.Contains(testV2.collisionBox);
+                    //if (avoidanceBox.Intersects(collisionBox) == false && avoidanceBox.Contains(collisionBox) == false)
+                    if (avoidanceBox2.Intersects(testV2.collisionBox) == false && avoidanceBox2.Contains(testV2.collisionBox) == false)
+                    {
+                        bool testBool3 = avoidanceBox2.Intersects(testV2.collisionBox);
+                        bool testBool4 = avoidanceBox2.Contains(testV2.collisionBox);
+                        bool testBool5 = avoidanceBox2.Intersects(testV2.collisionBox);
+                        bool testBool6 = avoidanceBox2.Contains(testV2.collisionBox);
+                        if (avoidanceBox.Intersects(collisionBox) == true && avoidanceBox.Contains(collisionBox) == false)
+                        {
+                        }
+                        int selfIndex = m_npcVec[i]->GetID();
+                        int targetIndex = testTarget->GetID();
+                        int testBreak = 0;
+                        //m_npcVec[i]->PushAvoidanceTarget(testTarget->GetPos(), testTarget);
+
+
+                        testBreak++;
+                    }
                 }
                 else if (avoidanceBox.Intersects(avoidanceBox2) == true || avoidanceBox.Contains(avoidanceBox2) == true)
                 {
                     //m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);
                 }
+            }
+        }
+    }
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetAvoidanceIsTrue() == true)
+        {
+            NPCVehicle const* testTarget = m_npcVec[i]->GetAvoidanceNPCTarget();
+            //DirectX::BoundingBox collisionBox = m_npcVec[i]->GetCollisionData();
+            //DirectX::BoundingBox avoidanceBox = testTarget->GetAvoidanceBox();
+            int testInt2 = testTarget->GetID();
+            DirectX::BoundingBox collisionBox = testTarget->GetCollisionData();
+            DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
+            if (avoidanceBox.Intersects(collisionBox) == false && avoidanceBox.Contains(collisionBox) == false)
+            {
+                if (avoidanceBox.Intersects(collisionBox) == true && avoidanceBox.Contains(collisionBox) == false)
+                {
+                }
+                int selfIndex = m_npcVec[i]->GetID();
+                int targetIndex = testTarget->GetID();
+                int testBreak = 0;
+                //m_npcVec[i]->PushAvoidanceTarget(testTarget->GetPos(), testTarget);
+
+                
+                testBreak++;
             }
         }
     }

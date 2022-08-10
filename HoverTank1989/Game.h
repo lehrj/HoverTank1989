@@ -105,6 +105,8 @@ private:
     bool InitializeTerrainArrayNew(Terrain& aTerrain);
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
 
+    void TogglePause();
+
     // Device resources.
     std::unique_ptr<DX::DeviceResources>    m_deviceResources;
 
@@ -396,4 +398,6 @@ private:
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
+
+    bool m_isPauseOn = false;
 };

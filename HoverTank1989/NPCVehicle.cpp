@@ -482,6 +482,8 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     //forwardColor = eyeColor;
     //skirtColor = forwardColor;
     //jetHousingShellColor = skirtColor;
+
+    /*
     eyeColor = m_vehicleStruct00.npcModel.color1;
     forwardColor = m_vehicleStruct00.npcModel.color1;
     skirtColor = m_vehicleStruct00.npcModel.color2;
@@ -489,6 +491,15 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     ventColor = m_vehicleStruct00.npcModel.color3;
     color = m_vehicleStruct00.npcModel.color3;
     ventColorAlt = m_vehicleStruct00.npcModel.color2;
+    */
+
+    eyeColor = m_vehicleStruct00.npcModel.color1;
+    forwardColor = m_vehicleStruct00.npcModel.color1;
+    skirtColor = m_vehicleStruct00.npcModel.color1;
+    jetHousingShellColor = m_vehicleStruct00.npcModel.color1;
+    ventColor = m_vehicleStruct00.npcModel.color2;
+    color = m_vehicleStruct00.npcModel.color2;
+    ventColorAlt = m_vehicleStruct00.npcModel.color1;
 
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2, aView, aProj, afterBurnColor);
@@ -569,12 +580,12 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         testColor.z -= 1.0f;
     }
-    //testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f);
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 1.0f;
     m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
-    m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
+    //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
@@ -1641,7 +1652,17 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
     velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
-    //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+
+    if (m_npcAI->GetIsAvoidanceTrue() == true || m_npcAI->GetIsAvoidanceTrue1() == true)
+    {
+        //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+    }
+
+    if (m_npcAI->GetEmergencyToggle() == true)
+    {
+        velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
+        //velocityUpdate += DirectX::SimpleMath::Vector3(0.0f, 200000.0f, 0.0f);
+    }
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
     if (m_isGoToggleTrue == true)
@@ -2129,12 +2150,16 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
 {
     m_testTimer += aTimeDelta;
+    m_avoidanceTargetIndex = -1;
+
     DirectX::SimpleMath::Vector3 preVelocity = m_vehicleStruct00.vehicleData.q.velocity;
 
     DirectX::SimpleMath::Vector3 preThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
     float preThrustLength = preThrust.Length();
 
-    bool testBool = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
+    //bool testBool = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
+    m_vehicleStruct00.vehicleData.terrainNormal = DirectX::SimpleMath::Vector3::UnitY;
+    m_vehicleStruct00.vehicleData.terrainHightAtPos = 1.0f;
 
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.hardPoints.basePos.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
 
