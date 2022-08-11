@@ -279,6 +279,22 @@ struct VehicleHardPoints
 
 };
 
+struct JumpData
+{
+    bool isJumpReady = true;
+    bool isJumpActive = false;
+    float jumpActiveTimer = 0.0f;
+    const float jumpActiveTimeTotal = 7.0f;
+    bool isJumpOnCoolDown = false;
+    float jumpCoolDownTimer = 0.0f;
+    const float jumpCoolDownTotal = 7.0f;
+    const float jumpVelocity = 100000.0f;
+    const float impulseBurnTimeTotal = 0.5f;
+    float impulseBurnTimer = 0.0f;
+    bool isImpulseBurnActive = false;
+    Utility::ImpulseForce jumpImpulseForce;
+};
+
 struct VehicleData
 {
     unsigned int                id;
@@ -317,6 +333,7 @@ struct VehicleData
     HoverData                    hoverData;
     NpcControlInput              controlInput;
     DirectX::SimpleMath::Vector3 playerPos;
+    JumpData                     jumpData;
 };
 
 struct VehicleStruct
@@ -331,7 +348,7 @@ class NPCVehicle
 {
 public:
     NPCVehicle();
-
+    bool ActivateJump();
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
@@ -363,6 +380,12 @@ public:
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
     int GetID() const { return m_vehicleStruct00.vehicleData.id; };
+
+    bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive;};
+    bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
+    bool GetIsJumpReady() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpReady; };
+    bool GetIsJumpImpulseBurnActive() const { return m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive; };
+
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
@@ -424,7 +447,8 @@ private:
     void UpdateControlInputFromAi2();
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
-    void UpdateImpulseForces(const float aTimeDelta);
+    void UpdateImpulseForces( const float aTimeDelta);
+    void UpdateJumpData(JumpData& aJumpData, const float aTimeDelta);
     void UpdateNPCModel(const double aTimeDelta);
 
     Environment const* m_environment;

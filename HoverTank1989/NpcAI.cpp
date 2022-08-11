@@ -401,7 +401,13 @@ void NpcAI::AvoidPos()
     //avoidanceVec2 = DirectX::SimpleMath::Vector3::Transform(avoidanceVec2, updateMat);
     //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), avoidanceVec, 40.0f, 8.0f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
     //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), avoidanceVec2, 40.0f, 8.5f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
-    m_currentDestination = avoidanceVec;
+
+
+
+    ///////////////////////m_currentDestination = avoidanceVec;
+
+
+
     //DirectX::SimpleMath::Vector3 testForward = m_npcOwner->GetForward();
     //testForward = DirectX::SimpleMath::Vector3::Transform(testForward, localMat);
     //testForward = DirectX::SimpleMath::Vector3::Transform(testForward, updateMat);
@@ -412,7 +418,15 @@ void NpcAI::AvoidPos()
     //testAvoidanceVec = DirectX::SimpleMath::Vector3::Transform(testAvoidanceVec, updateMat);
     testAvoidanceVec = DirectX::SimpleMath::Vector3::Transform(testAvoidanceVec, m_npcOwner->GetAlignment());
     testAvoidanceVec += m_npcOwner->GetPos();
-    m_currentDestination = testAvoidanceVec;
+
+
+
+    ///////m_currentDestination = testAvoidanceVec;
+
+
+
+
+
     //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), testAvoidanceVec, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
     //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), testAvoidanceVec, 40.0f, 8.5f, DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
 
@@ -451,23 +465,30 @@ void NpcAI::AvoidPos()
     //testAvoidanceVec *= 10.0f;
     
     
-    if (m_isAvoidanceTrue == true && m_isAvoidanceTrueTest1 == true && 1 == 0)
+    if (m_isAvoidanceTrue == true && m_isAvoidanceTrueTest1 == true)
     {
-        DirectX::SimpleMath::Vector3 testSelfVelocity = m_npcOwner->GetVelocity();
-        testSelfVelocity.Normalize();
-        testSelfVelocity *= -1.0f;
-        DirectX::SimpleMath::Vector3 directionToTarget = m_npcOwner->GetVelocity() - m_avoidanceTargetNpc->GetPos();
-        directionToTarget.Normalize();
-        DirectX::SimpleMath::Vector3 directionToTarget2 = m_avoidanceTargetNpc->GetVelocity() - m_npcOwner->GetPos();
-        directionToTarget2.Normalize();
-        //DirectX::SimpleMath::Vector3 avoidVec = testSelfVelocity + directionToTarget;
-        DirectX::SimpleMath::Vector3 avoidVec = testSelfVelocity;
-        avoidVec *= 130.0f;
-        avoidVec += m_npcOwner->GetPos();
-        m_currentDestination = avoidVec;
-        //testAvoidanceVec *= testRatio;
+        if (m_avoidanceTargetNpc->GetIsJumpActive() == true)
+        {
+            DirectX::SimpleMath::Vector3 testSelfVelocity = m_npcOwner->GetVelocity();
+            testSelfVelocity.Normalize();
+            testSelfVelocity *= -1.0f;
+            DirectX::SimpleMath::Vector3 directionToTarget = m_npcOwner->GetVelocity() - m_avoidanceTargetNpc->GetPos();
+            directionToTarget.Normalize();
+            DirectX::SimpleMath::Vector3 directionToTarget2 = m_avoidanceTargetNpc->GetVelocity() - m_npcOwner->GetPos();
+            directionToTarget2.Normalize();
+            //DirectX::SimpleMath::Vector3 avoidVec = testSelfVelocity + directionToTarget;
+            DirectX::SimpleMath::Vector3 avoidVec = testSelfVelocity;
+            avoidVec *= 130.0f;
+            avoidVec += m_npcOwner->GetPos();
+            m_currentDestination = avoidVec;
+            //testAvoidanceVec *= testRatio;
 
-        m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos() + DirectX::SimpleMath::Vector3(0.0f, 10.f, 0.0f), m_avoidanceTargetNpc->GetPos(), DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos() + DirectX::SimpleMath::Vector3(0.0f, 10.f, 0.0f), m_avoidanceTargetNpc->GetPos(), DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+        }
+        else
+        {
+            m_isJumpTriggered = true;
+        }
     }
     else
     {
@@ -1042,7 +1063,7 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
 
     m_emergencyToggle = m_isAvoidanceTrueTest1;
-
+    m_isJumpTriggered = false;
     m_destinationTargets.isSeparationTargetInRadius = false;
     m_isAvoidanceTrue = false;
     m_isAvoidanceTrueTest1 = false;
@@ -1134,6 +1155,14 @@ void NpcAI::UpdateControlOutput()
     SetForwardThrustOutput();
     SetOmniOutput();
     SetSteeringOutput();
+    if (m_isJumpTriggered == true)
+    {
+        m_aiControls.aiOutput.isTriggerJumpTrue = true;
+    }
+    else
+    {
+        m_aiControls.aiOutput.isTriggerJumpTrue = false;
+    }
 }
 
 void NpcAI::UpdateDestinationSmoothing()

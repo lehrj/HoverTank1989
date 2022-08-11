@@ -14,6 +14,7 @@ struct AIOutput
     float       omniThrust;
     float       steeringAngle;
     DirectX::SimpleMath::Vector3 steeringDirection;
+    bool isTriggerJumpTrue = false;
 };
 
 struct AIControls
@@ -38,7 +39,7 @@ public:
     bool GetIsAvoidanceTrue() const { return m_isAvoidanceTrue; };
     bool GetIsAvoidanceTrue1() const { return m_isAvoidanceTrueTest1; };
     bool GetIsAvoidanceTrue2() const { return m_isAvoidanceTrueTest2; };
-
+    bool GetIsJumpTriggered() const { return m_isJumpTriggered; };
     NPCVehicle const* GetAvoidanceTarget() { return m_avoidanceTargetNpc; };
     //NPCVehicle const* m_avoidanceTargetNpc = nullptr;
 
@@ -160,5 +161,6 @@ private:
     std::shared_ptr<DebugData> m_debugData;
     bool m_debugToggle = false;
     bool m_emergencyToggle = false;
+    bool m_isJumpTriggered = false;
 };
 

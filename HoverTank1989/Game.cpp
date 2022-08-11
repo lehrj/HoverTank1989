@@ -151,7 +151,7 @@ void Game::Initialize(HWND window, int width, int height)
     }
     pos = DirectX::SimpleMath::Vector3(50.0f, 13.0, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.x += 20.0f;
     pos.z += 20.0f;
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
