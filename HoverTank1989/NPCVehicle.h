@@ -163,12 +163,38 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldJetHousingShellRightMatrix;
 
     float jetRotationLeft = 0.0f;
+    float jetRotationLeftPrev = 0.0f;
+    float jetRotationLeftPrev2 = 0.0f;
+    float jetRotationLeftPrev3 = 0.0f;
     float jetRotationRight = 0.0f;
-
+    float jetRotationRightPrev = 0.0f;
+    float jetRotationRightPrev2 = 0.0f;
+    float jetRotationRightPrev3 = 0.0f;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    baseJetHousingShape;
     DirectX::SimpleMath::Matrix localBaseJetHousingMatrix;
     DirectX::SimpleMath::Matrix worldBaseJetHousingMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    jetMountShape;
+    DirectX::SimpleMath::Matrix localJetMountMatrix;
+    DirectX::SimpleMath::Matrix worldJetMountMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    jetIntakeCoverShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    jetIntakeCoverShape2;
+    DirectX::SimpleMath::Matrix localJetIntakeCoverLeftTranslationMatrix;
+    DirectX::SimpleMath::Matrix localJetIntakeCoverLeftMatrix;
+    DirectX::SimpleMath::Matrix worldJetIntakeCoverLeftMatrix;
+    DirectX::SimpleMath::Matrix localJetIntakeCoverLeftTranslationMatrix2;
+    DirectX::SimpleMath::Matrix localJetIntakeCoverLeftMatrix2;
+    DirectX::SimpleMath::Matrix worldJetIntakeCoverLeftMatrix2;
+
+    
+    DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix;
+    DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix;
+    
+    DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix2;
+    DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix2;
+
 
     std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;
     DirectX::SimpleMath::Matrix localModelMatrix;

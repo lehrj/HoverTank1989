@@ -540,23 +540,35 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     ventColor = m_vehicleStruct00.npcModel.color2;
     color = m_vehicleStruct00.npcModel.color2;
     ventColorAlt = m_vehicleStruct00.npcModel.color1;
+    jetHousingColor = m_vehicleStruct00.npcModel.color2;
+    DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
+    DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
+    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix, aView, aProj, testHighlight);
+    m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2, aView, aProj, testShadow);
+    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix, aView, aProj, testHighlight);
+    m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2, aView, aProj, testShadow);
 
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2, aView, aProj, afterBurnColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2, aView, aProj, afterBurnColor);
+    m_vehicleStruct00.npcModel.jetMountShape->Draw(m_vehicleStruct00.npcModel.worldJetMountMatrix, aView, aProj, ventColor);
 
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix, aView, aProj, jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellLeftMatrix, aView, aProj, jetHousingShellColor);
 
     m_vehicleStruct00.npcModel.baseJetHousingShape->Draw(m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix, aView, aProj, jetHousingColor);
 
+
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(m_vehicleStruct00.npcModel.worldBaseBurnMatrix1, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(m_vehicleStruct00.npcModel.worldBaseBurnMatrix2, aView, aProj, afterBurnColor);
 
+    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2, aView, aProj, afterBurnColor);
+    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2, aView, aProj, afterBurnColor);
+ 
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix, aView, aProj, afterBurnColor);
+    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix, aView, aProj, afterBurnColor);
+
     //m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldForwardBurnLeftMatrix, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix, aView, aProj, jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix, aView, aProj, jetHousingShellColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix, aView, aProj, afterBurnColor);
+    
     m_vehicleStruct00.npcModel.rearBodyShape->Draw(m_vehicleStruct00.npcModel.worldRearBodyMatrix, aView, aProj, jetHousingShellColor);
     m_vehicleStruct00.npcModel.rearDeckShape->Draw(m_vehicleStruct00.npcModel.worldRearDeckMatrix, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtMatrix, aView, aProj, ventColor);
@@ -981,11 +993,12 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localWingArmMatrix *= centerMassTranslation;
     aModel.worldWingArmMatrix = aModel.localWingArmMatrix;
 
+    
     DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
     testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f)));
     testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f));
     testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f)));
-
+    
 
     // wing
     DirectX::SimpleMath::Vector3 wingSize(2.0f, 1.0f, 1.0f);
@@ -1076,10 +1089,11 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     const float jetHousingThickness = 0.5f;
     aModel.jetHousingShape = DirectX::GeometricPrimitive::CreateTorus(aContext.Get(), jetHousingDiameter, jetHousingThickness);
     DirectX::SimpleMath::Vector3 jetHousingLeftTranslation;
-    jetHousingLeftTranslation.x = -aDimensions.x * 0.325f;
-    jetHousingLeftTranslation.y = aDimensions.y * 0.2f;
-    jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -0.3f);
-
+    //jetHousingLeftTranslation.x = -aDimensions.x * 0.325f;
+    jetHousingLeftTranslation.x = -aDimensions.x * 0.38f;
+    jetHousingLeftTranslation.y = aDimensions.y * 0.15f;
+    //jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -0.3f);
+    jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -1.1f);
     //jetHousingLeftTranslation.x = 0.0f;
     //jetHousingLeftTranslation.y = 0.5f;
     //jetHousingLeftTranslation.z = -5.5f;
@@ -1133,6 +1147,50 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     //aModel.localJetHousingShellRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingRightTranslation);   
     aModel.worldJetHousingShellRightMatrix = aModel.localJetHousingShellRightMatrix;
 
+
+    DirectX::SimpleMath::Vector3 jetMountSize;
+    jetMountSize.x = 1.1f;
+    jetMountSize.y = 2.0f;
+    jetMountSize.z = aDimensions.z * 1.13f;
+    DirectX::SimpleMath::Vector3 jetMountTranslation = jetHousingLeftTranslation;
+    jetMountTranslation.z = 0.0f;
+    //aModel.jetMountShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), jetMountSize);
+    aModel.jetMountShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), jetMountSize.z, jetMountSize.y);
+    aModel.localJetMountMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localJetMountMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    aModel.localJetMountMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetMountTranslation);
+    aModel.worldJetMountMatrix = aModel.localJetMountMatrix;
+
+    // jet intake
+    const float jetIntakeSize = 1.0f;
+    aModel.jetIntakeCoverShape = DirectX::GeometricPrimitive::CreateIcosahedron(aContext.Get(), jetIntakeSize);
+    aModel.jetIntakeCoverShape2 = DirectX::GeometricPrimitive::CreateIcosahedron(aContext.Get(), jetIntakeSize * 0.99f);
+
+    DirectX::SimpleMath::Vector3 jetIntakeLocalTranslation;
+    jetIntakeLocalTranslation.x = 1.4f;
+    jetIntakeLocalTranslation.y = 0.0f;
+    jetIntakeLocalTranslation.z = 0.0f;
+    const float jetIntakeAngle = 63.435f * 0.5f;
+    aModel.localJetIntakeCoverLeftTranslationMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(jetIntakeAngle));
+    aModel.localJetIntakeCoverLeftTranslationMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetIntakeLocalTranslation);
+    aModel.localJetIntakeCoverLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localJetIntakeCoverLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingLeftTranslation);
+    aModel.worldJetIntakeCoverLeftMatrix = aModel.localJetIntakeCoverLeftMatrix;
+
+    aModel.localJetIntakeCoverLeftTranslationMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(jetIntakeAngle));
+    aModel.localJetIntakeCoverLeftTranslationMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(30.0f));
+    aModel.localJetIntakeCoverLeftTranslationMatrix2 *= DirectX::SimpleMath::Matrix::CreateTranslation(jetIntakeLocalTranslation);
+    aModel.localJetIntakeCoverLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localJetIntakeCoverLeftMatrix2 *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingLeftTranslation);
+    aModel.worldJetIntakeCoverLeftMatrix2 = aModel.localJetIntakeCoverLeftMatrix;
+
+    // jet intake cover right
+    aModel.localJetIntakeCoverRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localJetIntakeCoverRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingRightTranslation);
+    aModel.worldJetIntakeCoverRightMatrix = aModel.localJetIntakeCoverRightMatrix;
+    aModel.localJetIntakeCoverRightMatrix2 = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localJetIntakeCoverRightMatrix2 *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingRightTranslation);
+    aModel.worldJetIntakeCoverRightMatrix2 = aModel.localJetIntakeCoverRightMatrix2;
 
     aModel.afterBurnLeftFlicker = 0.0f;
     aModel.afterBurnRightFlicker = 0.0f;
@@ -2453,9 +2511,52 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldRearDeckMatrix *= updateMat;
 
     
-    const float testRotation = cos(m_testTimer);
-    DirectX::SimpleMath::Matrix jetRotationMatLeft = DirectX::SimpleMath::Matrix::CreateRotationZ(m_vehicleStruct00.npcModel.jetRotationLeft);
-    DirectX::SimpleMath::Matrix jetRotationMatRight= DirectX::SimpleMath::Matrix::CreateRotationZ(m_vehicleStruct00.npcModel.jetRotationRight);
+    //const float testRotation = cos(m_testTimer);
+    //DirectX::SimpleMath::Matrix jetRotationMatLeft = DirectX::SimpleMath::Matrix::CreateRotationZ(m_vehicleStruct00.npcModel.jetRotationLeft);
+    //DirectX::SimpleMath::Matrix jetRotationMatRight= DirectX::SimpleMath::Matrix::CreateRotationZ(m_vehicleStruct00.npcModel.jetRotationRight);
+
+
+    float throttleTest = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
+    float steeringTest = m_vehicleStruct00.vehicleData.controlInput.steeringInput / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
+    throttleTest *= 1.0f;
+    steeringTest *= 1.0f;
+    float leftBurnLengthModTest = throttleTest - steeringTest;
+    float rightBurnLengthModTest = throttleTest + steeringTest;
+    if (leftBurnLengthModTest > 1.0f)
+    {
+        leftBurnLengthModTest = 1.0f;
+    }
+    if (leftBurnLengthModTest < -1.0f)
+    {
+        leftBurnLengthModTest = -1.0f;
+    }
+    if (rightBurnLengthModTest > 1.0f)
+    {
+        rightBurnLengthModTest = 1.0f;
+    }
+    if (rightBurnLengthModTest < -1.0f)
+    {
+        rightBurnLengthModTest = -1.0f;
+    }
+    //float testThrottleRotLeft = (m_vehicleStruct00.vehicleData.controlInput.throttleInput * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
+    //float testThrottleRotRight = (m_vehicleStruct00.vehicleData.controlInput.throttleInput * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
+    float testThrottleRotLeft = (leftBurnLengthModTest * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
+    float testThrottleRotRight = (rightBurnLengthModTest * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
+
+    testThrottleRotLeft = (testThrottleRotLeft + m_vehicleStruct00.npcModel.jetRotationLeftPrev + m_vehicleStruct00.npcModel.jetRotationLeftPrev2 
+        + m_vehicleStruct00.npcModel.jetRotationLeftPrev3) / 4.0f;
+    m_vehicleStruct00.npcModel.jetRotationLeftPrev3 = m_vehicleStruct00.npcModel.jetRotationLeftPrev2;
+    m_vehicleStruct00.npcModel.jetRotationLeftPrev2 = m_vehicleStruct00.npcModel.jetRotationLeftPrev;
+    m_vehicleStruct00.npcModel.jetRotationLeftPrev = testThrottleRotLeft;
+    testThrottleRotRight = (testThrottleRotRight + m_vehicleStruct00.npcModel.jetRotationRightPrev + m_vehicleStruct00.npcModel.jetRotationRightPrev2
+        + m_vehicleStruct00.npcModel.jetRotationRightPrev3) / 4.0f;
+    m_vehicleStruct00.npcModel.jetRotationRightPrev3 = m_vehicleStruct00.npcModel.jetRotationRightPrev2;
+    m_vehicleStruct00.npcModel.jetRotationRightPrev2 = m_vehicleStruct00.npcModel.jetRotationRightPrev;
+    m_vehicleStruct00.npcModel.jetRotationRightPrev = testThrottleRotRight;
+
+    DirectX::SimpleMath::Matrix jetRotationMatLeft = DirectX::SimpleMath::Matrix::CreateRotationZ(testThrottleRotLeft);
+    DirectX::SimpleMath::Matrix jetRotationMatRight = DirectX::SimpleMath::Matrix::CreateRotationZ(testThrottleRotRight);
+
 
     m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix = m_vehicleStruct00.npcModel.localJetHousingLeftMatrix;
     m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix *= jetRotationMatLeft;
@@ -2478,6 +2579,10 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix *= jetRotationMatRight;
     m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix *= m_vehicleStruct00.npcModel.jetHousingTranslationRightMatrix;;
     m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix *= updateMat;
+
+    // jet mount
+    m_vehicleStruct00.npcModel.worldJetMountMatrix = m_vehicleStruct00.npcModel.localJetMountMatrix;
+    m_vehicleStruct00.npcModel.worldJetMountMatrix *= updateMat;
 
     // base jet housing 
     m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix = m_vehicleStruct00.npcModel.localBaseJetHousingMatrix;
@@ -2734,7 +2839,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
         DirectX::SimpleMath::Matrix afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(afterBurnLength), 1.0f);
-
+        //DirectX::SimpleMath::Matrix afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, afterBurnLength, 1.0f);
 
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 -= (afterBurnFlickerModLeft * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker2);
@@ -2742,9 +2847,12 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
         if (afterBurnLengthModLeft <= 0.0f)
         {
-            afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;
-            m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
-            m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
+            afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY, 0.0f);
+            //afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;
+            //afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
+            //m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
+            //m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
+            
         }
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnScale;
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnTranslation;
@@ -2764,6 +2872,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         afterBurnLength = (afterBurnLengthModRight * afterBurnLengthSum);
         afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
         afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(afterBurnLength), 1.0f);
+        //afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, afterBurnLength, 1.0f);
         afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY, 0.0f);
 
         const float afterBurnFlickerModRight = afterBurnLengthModRight + idleFlicker;
@@ -2777,9 +2886,12 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
         if (afterBurnLengthModRight <= 0.0f)
         {
-            afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;
-            m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
-            m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
+            afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY, 0.0f);
+            //afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;
+            //afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
+            //m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
+            //m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
+            
         }
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= afterBurnScale;
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= afterBurnTranslation;
@@ -2840,7 +2952,30 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= updateMat;
     //
     //
+    //   
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix = m_vehicleStruct00.npcModel.localJetIntakeCoverLeftTranslationMatrix;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix *= jetRotationMatLeft;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix *= m_vehicleStruct00.npcModel.localJetIntakeCoverLeftMatrix;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix *= updateMat;
+
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2 = m_vehicleStruct00.npcModel.localJetIntakeCoverLeftTranslationMatrix2;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2 *= jetRotationMatLeft;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2 *= m_vehicleStruct00.npcModel.localJetIntakeCoverLeftMatrix2;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2 *= updateMat;
     //
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix = m_vehicleStruct00.npcModel.localJetIntakeCoverLeftTranslationMatrix;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(m_vehicleStruct00.npcModel.afterBurnRightFlicker);
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix *= jetRotationMatRight;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix *= m_vehicleStruct00.npcModel.localJetIntakeCoverRightMatrix;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix *= updateMat;
+
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2 = m_vehicleStruct00.npcModel.localJetIntakeCoverLeftTranslationMatrix2;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_vehicleStruct00.npcModel.afterBurnRightFlicker);
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2 *= jetRotationMatRight;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2 *= m_vehicleStruct00.npcModel.localJetIntakeCoverRightMatrix2;
+    m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2 *= updateMat;
 
     const float speed = m_vehicleStruct00.vehicleData.q.velocity.Length();
     const float rotMod = 0.001f;
