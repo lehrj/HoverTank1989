@@ -30,6 +30,7 @@ struct NpcControlInput
     const float throttleInputMax = 1.0f;
     //const float throttleInputRate = 0.4f;
     const float throttleInputRate = 0.1f;
+    float baseThrottleInput = 0.0f;
 };
 
 struct HoverData
@@ -109,7 +110,6 @@ struct NPCModel
     DirectX::SimpleMath::Vector4 color3;
     DirectX::SimpleMath::Vector4 color4;
 
-
     std::unique_ptr<DirectX::GeometricPrimitive>    afterBurnShape;
     DirectX::SimpleMath::Matrix localAfterBurnLeftMatrix;
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix;
@@ -134,16 +134,26 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localForwardBurnRightMatrix;
     DirectX::SimpleMath::Matrix worldForwardBurnRightMatrix;
 
-
     float afterBurnLeftFlicker;
     float afterBurnLeftFlicker2 = 0.0f;
     float afterBurnRightFlicker;
     float afterBurnRightFlicker2 = 0.0f;
     float afterBurnFlickerRate;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    baseBurnShape;
+    DirectX::SimpleMath::Matrix localBaseBurnMatrix;
+    DirectX::SimpleMath::Matrix worldBaseBurnMatrix1;
+    DirectX::SimpleMath::Matrix worldBaseBurnMatrix2;
+    float baseBurnLength;
+    float baseBurnLengthPrev1 = 0.0f;
+    float baseBurnFlicker1;
+    float baseBurnFlicker2;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    jetHousingShape;
+    DirectX::SimpleMath::Matrix jetHousingTranslationLeftMatrix;
     DirectX::SimpleMath::Matrix localJetHousingLeftMatrix;
     DirectX::SimpleMath::Matrix worldJetHousingLeftMatrix;
+    DirectX::SimpleMath::Matrix jetHousingTranslationRightMatrix;
     DirectX::SimpleMath::Matrix localJetHousingRightMatrix;
     DirectX::SimpleMath::Matrix worldJetHousingRightMatrix;
 
@@ -151,6 +161,14 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldJetHousingShellLeftMatrix;
     DirectX::SimpleMath::Matrix localJetHousingShellRightMatrix;
     DirectX::SimpleMath::Matrix worldJetHousingShellRightMatrix;
+
+    float jetRotationLeft = 0.0f;
+    float jetRotationRight = 0.0f;
+
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    baseJetHousingShape;
+    DirectX::SimpleMath::Matrix localBaseJetHousingMatrix;
+    DirectX::SimpleMath::Matrix worldBaseJetHousingMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;
     DirectX::SimpleMath::Matrix localModelMatrix;
@@ -284,12 +302,12 @@ struct JumpData
     bool isJumpReady = true;
     bool isJumpActive = false;
     float jumpActiveTimer = 0.0f;
-    const float jumpActiveTimeTotal = 7.0f;
+    const float jumpActiveTimeTotal = 5.0f;
     bool isJumpOnCoolDown = false;
     float jumpCoolDownTimer = 0.0f;
-    const float jumpCoolDownTotal = 7.0f;
-    const float jumpVelocity = 100000.0f;
-    const float impulseBurnTimeTotal = 0.5f;
+    const float jumpCoolDownTotal = 3.0f;
+    const float jumpVelocity = 25000.0f;
+    const float impulseBurnTimeTotal = 1.5f;
     float impulseBurnTimer = 0.0f;
     bool isImpulseBurnActive = false;
     Utility::ImpulseForce jumpImpulseForce;
