@@ -149,6 +149,8 @@ struct NPCModel
     float baseBurnFlicker1;
     float baseBurnFlicker2;
 
+    float mainThrustLengthMod = 1.0f;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    jetHousingShape;
     DirectX::SimpleMath::Matrix jetHousingTranslationLeftMatrix;
     DirectX::SimpleMath::Matrix localJetHousingLeftMatrix;
@@ -174,6 +176,10 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    baseJetHousingShape;
     DirectX::SimpleMath::Matrix localBaseJetHousingMatrix;
     DirectX::SimpleMath::Matrix worldBaseJetHousingMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    baseJetShadowShape;
+    DirectX::SimpleMath::Matrix localBaseJetShadowMatrix;
+    DirectX::SimpleMath::Matrix worldBaseJetShadowMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    jetMountShape;
     DirectX::SimpleMath::Matrix localJetMountMatrix;
@@ -512,6 +518,8 @@ private:
     float m_testMaxVelocity = 0.0f;
 
     int m_avoidanceTargetIndex = -1;
+
+   
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

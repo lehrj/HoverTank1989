@@ -553,9 +553,9 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix, aView, aProj, jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellLeftMatrix, aView, aProj, jetHousingShellColor);
 
-    m_vehicleStruct00.npcModel.baseJetHousingShape->Draw(m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix, aView, aProj, jetHousingColor);
+    m_vehicleStruct00.npcModel.baseJetHousingShape->Draw(m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix, aView, aProj, jetHousingShellColor);
 
-
+    m_vehicleStruct00.npcModel.baseJetShadowShape->Draw(m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix, aView, aProj, testShadow);
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(m_vehicleStruct00.npcModel.worldBaseBurnMatrix1, aView, aProj, afterBurnColor);
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(m_vehicleStruct00.npcModel.worldBaseBurnMatrix2, aView, aProj, afterBurnColor);
 
@@ -674,22 +674,40 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
     const float lowerCurveBound = aVehicleData.hoverData.hoverRangeLower;
     const float midCurveBound = aVehicleData.hoverData.hoverRangeMid;
     const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
+    float mainThrustMod = 1.0f;
     if (aVehicleData.altitude < lowerCurveBound)
     {
         float metersBelowLowerBound = aVehicleData.altitude - lowerCurveBound;
         float reboundMod = 0.1f;
         gravForce *= metersBelowLowerBound * reboundMod;
+
+
+        const float currentCurvePos = (aVehicleData.altitude / upperCurveBound);
+        mainThrustMod  = 1.0f + currentCurvePos + (-metersBelowLowerBound * reboundMod);
+        DirectX::SimpleMath::Vector3 stockGravForce = m_environment->GetGravityVec();
+        DirectX::SimpleMath::Vector3 moddedGravForce = (stockGravForce * currentCurvePos) - stockGravForce;
+        m_vehicleStruct00.npcModel.mainThrustLengthMod = moddedGravForce.y;
     }
     else if (aVehicleData.altitude > upperCurveBound)
     {
         gravForce = m_environment->GetGravityVec() * 3.0f;
+        m_vehicleStruct00.npcModel.mainThrustLengthMod = 1.0f;
     }
     else
     {
         const float currentCurvePos = (aVehicleData.altitude / upperCurveBound);
         gravForce = gravForce * currentCurvePos;
+        mainThrustMod = 1.0f + currentCurvePos;
+        //mainThrustMod = 1.0f;
+        DirectX::SimpleMath::Vector3 stockGravForce = m_environment->GetGravityVec();
+        DirectX::SimpleMath::Vector3 moddedGravForce = gravForce - stockGravForce;
+        m_vehicleStruct00.npcModel.mainThrustLengthMod = moddedGravForce.y;
     }
 
+    DirectX::SimpleMath::Vector3 stockGravForce = m_environment->GetGravityVec();
+    DirectX::SimpleMath::Vector3 moddedGravForce = gravForce - stockGravForce;
+    m_vehicleStruct00.npcModel.mainThrustLengthMod *= 0.2f;
+    //m_vehicleStruct00.npcModel.mainThrustLengthMod = moddedGravForce.y;
     //return gravForce * aVehicleData.mass;
     return gravForce;
 }
@@ -1269,6 +1287,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     noseConeSize.z *= 1.0f;
     DirectX::SimpleMath::Vector3 noseConeTranslation;
     noseConeTranslation.x = (aDimensions.x * 0.5f) - (mainBodyOffset * 1.0f);
+    noseConeTranslation.x += -0.02f;
     noseConeTranslation.y = 0.0f;
     noseConeTranslation.z = 0.0f;
     const float noseSize = (aDimensions.z * 0.5f) * sqrt(2.0f);
@@ -1438,11 +1457,12 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.worldGrillRightMatrix = aModel.localGrillRightMatrix;
 
     const float omniBaseDiameter = aDimensions.x * 0.32f;
-    const float omniBaseHeight = aDimensions.y * 1.05f;
+    //const float omniBaseHeight = aDimensions.y * 1.05f;
+    const float omniBaseHeight = aDimensions.y * 0.95f;
     aModel.omniBaseShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), omniBaseHeight, omniBaseDiameter);
     DirectX::SimpleMath::Vector3 omniBaseTranslation;
     omniBaseTranslation.x = -omniBaseDiameter * 0.21f;
-    omniBaseTranslation.y = 0.0f;
+    omniBaseTranslation.y = 0.35f;
     omniBaseTranslation.z = 0.0f;
     aModel.localOmniBaseMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localOmniBaseMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(omniBaseTranslation);
@@ -1459,30 +1479,44 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.worldOmniDialMatrix = aModel.localOmniDialMatrix;
     aModel.omniDialRadius = (omniBaseDiameter * 0.5f) - (omniDialDiameter * 0.5f);
 
-    const float baseJetHousingDiameter = omniBaseDiameter;
+    const float baseJetHousingDiameter = aDimensions.z * 0.7f;
     const float baseJetHousingThickness = 1.0f;
     aModel.baseJetHousingShape = DirectX::GeometricPrimitive::CreateTorus(aContext.Get(), baseJetHousingDiameter, baseJetHousingThickness);
     DirectX::SimpleMath::Vector3 baseJetHousingTranslation = omniBaseTranslation;
-    baseJetHousingTranslation.y = aDimensions.y * - 0.5f;
+    baseJetHousingTranslation.y = (aDimensions.y * - 0.5f) - 0.2f;
+    baseJetHousingTranslation.x += 0.75f;
     aModel.localBaseJetHousingMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localBaseJetHousingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(baseJetHousingTranslation);
     aModel.localBaseJetHousingMatrix *= centerMassTranslation;
     aModel.worldBaseJetHousingMatrix = aModel.localBaseJetHousingMatrix;
 
+    // base jet shadow 
+    const float baseJetShadowDiameter = baseJetHousingDiameter;
+    const float baseJetShadowHeight = baseJetHousingThickness;
+    aModel.baseJetShadowShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), baseJetShadowHeight, baseJetShadowDiameter);
+    DirectX::SimpleMath::Vector3 baseJetShadowTranslation = baseJetHousingTranslation;
+    baseJetShadowTranslation.y += baseJetShadowHeight * 0.5f;
+    aModel.localBaseJetShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localBaseJetShadowMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(baseJetShadowTranslation);
+    aModel.localBaseJetShadowMatrix *= centerMassTranslation;
+    aModel.worldBaseJetShadowMatrix = aModel.localBaseJetShadowMatrix;
+
     // base burner start
     aModel.baseBurnFlicker1 = 0.0f;
     aModel.baseBurnFlicker2 = 0.0f;
     const float baseBurnDiameter = baseJetHousingDiameter - baseJetHousingThickness;
+    //const float baseBurnDiameter = baseJetHousingDiameter * 1.3f;
     const float baseBurnHeight = 0.1f;
     aModel.baseBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), baseBurnDiameter, baseBurnHeight, 3);
     DirectX::SimpleMath::Vector3 baseBurnTranslation = baseJetHousingTranslation;
-    baseBurnTranslation.y -= 0.3f;
+    baseBurnTranslation.y -= 0.25f;
     aModel.localBaseBurnMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localBaseBurnMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
     aModel.localBaseBurnMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(baseBurnTranslation);
     aModel.worldBaseBurnMatrix1 = aModel.localBaseBurnMatrix;
     aModel.worldBaseBurnMatrix2 = aModel.localBaseBurnMatrix;
     // base burner end
+
 
 
     // old wing
@@ -2420,7 +2454,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     //bool testBool = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
     m_vehicleStruct00.vehicleData.terrainNormal = DirectX::SimpleMath::Vector3::UnitY;
-    m_vehicleStruct00.vehicleData.terrainHightAtPos = 1.0f;
+    m_vehicleStruct00.vehicleData.terrainHightAtPos = 3.0f;
 
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.hardPoints.basePos.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
 
@@ -2587,6 +2621,9 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     // base jet housing 
     m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix = m_vehicleStruct00.npcModel.localBaseJetHousingMatrix;
     m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix *= updateMat;
+
+    m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix = m_vehicleStruct00.npcModel.localBaseJetShadowMatrix;
+    m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix *= updateMat;
     //
     //
     //
@@ -2922,12 +2959,14 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         */
     }
 
+    //m_debugData->DebugPushUILineDecimalNumber("m_testMainThrustMod = ", m_testMainThrustMod, "");
     // base burner
     float baseBurnMod = 0.1f;
     float baseBurnLengthSum = 100.0f;
     float baseThrottleInputMod = m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput;
     float baseBurnLength = (baseBurnMod * baseBurnLengthSum) + (baseThrottleInputMod * 60.0f);
-    baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) / 2.0f;
+    baseBurnLength += (1.0f + m_vehicleStruct00.npcModel.mainThrustLengthMod) * 10.0f;
+    //baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
     m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;
 
     float baseBurnY = (baseBurnLength * 0.5f) * 0.1f;
