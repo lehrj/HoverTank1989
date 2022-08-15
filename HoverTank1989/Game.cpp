@@ -136,7 +136,7 @@ void Game::Initialize(HWND window, int width, int height)
     const float low = 0.0f;
     const float high = 10.0f;
     const float zPosOffSet = 45.0f;
-    for (int i = 0; i < 7; ++i)
+    for (int i = 0; i < 6; ++i)
     {
         for (int j = 0; j < 4; ++j)
         {
@@ -149,7 +149,7 @@ void Game::Initialize(HWND window, int width, int height)
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
-    pos = DirectX::SimpleMath::Vector3(50.0f, 13.0, 0.0f);
+    pos = DirectX::SimpleMath::Vector3(50.0f, 0.0, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.x += 20.0f;

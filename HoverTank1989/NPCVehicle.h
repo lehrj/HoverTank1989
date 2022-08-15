@@ -327,6 +327,14 @@ struct VehicleHardPoints
     DirectX::SimpleMath::Vector3 basePos;
     DirectX::SimpleMath::Vector3 localBasePos;
 
+    DirectX::SimpleMath::Vector3 jetArmCenterAxis;
+    DirectX::SimpleMath::Vector3 localJetArmCenterAxis;
+
+    DirectX::SimpleMath::Vector3 leftJetAxis;
+    DirectX::SimpleMath::Vector3 localLeftJetAxis;
+
+    DirectX::SimpleMath::Vector3 rightJetAxis;
+    DirectX::SimpleMath::Vector3 localRightJetAxis;
 };
 
 struct JumpData
@@ -334,15 +342,19 @@ struct JumpData
     bool isJumpReady = true;
     bool isJumpActive = false;
     float jumpActiveTimer = 0.0f;
-    const float jumpActiveTimeTotal = 5.0f;
+    const float jumpActiveTimeTotal = 7.0f;
     bool isJumpOnCoolDown = false;
     float jumpCoolDownTimer = 0.0f;
     const float jumpCoolDownTotal = 3.0f;
-    const float jumpVelocity = 25000.0f;
-    const float impulseBurnTimeTotal = 1.5f;
+    //const float jumpVelocity = 25000.0f;
+    const float jumpVelocity = 16000.0f;
+    const float impulseBurnTimeTotal = 1.0f;
     float impulseBurnTimer = 0.0f;
     bool isImpulseBurnActive = false;
-    Utility::ImpulseForce jumpImpulseForce;
+    Utility::ImpulseForce launchImpulseForce;
+    Utility::ImpulseForce landingImpulseForce;
+    bool isLandingTriggered = false;
+    const float landingStartAltitude = 20.0f;
 };
 
 struct VehicleData
@@ -469,6 +481,7 @@ private:
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
+    DirectX::SimpleMath::Vector3 GetBuoyancyForce(const VehicleData& aVehicleData, const float aTimeStep);
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetImpactForceSum(const VehicleData& aVehicleData);
@@ -484,7 +497,7 @@ private:
     static void InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         NPCModel& aModel);
     static void InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
-        NPCModel& aModel, const DirectX::SimpleMath::Vector3 aDimensions);
+        NPCModel& aModel, VehicleHardPoints& aHardPoints, const DirectX::SimpleMath::Vector3 aDimensions);
 
     void RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ);
     void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
@@ -519,7 +532,29 @@ private:
 
     int m_avoidanceTargetIndex = -1;
 
-   
+    float m_launchAltitude = 0.0f;
+    float m_altitudeDelta = 0.0f;
+    float m_prevMaxAltitudeDelta = 0.0f;
+    float m_launchVelocityY = 0.0f;
+    float m_launchForce = 0.0f;
+    float m_forceMod1 = 0.0f;
+    float m_forceMod2 = 0.0f;
+    float m_forceMod3 = 0.0f;
+    float m_testRatio1 = 0.0f;
+    float m_testRatio2 = 0.0f;
+    float m_testRatio3 = 0.0f;
+    float m_launchForceRatio = 0.0f;
+
+    float m_prevYvelocityStep = 0.0f;
+    float m_prevYvelocityStepHold = 0.0f;
+    float m_prevYvelocityStepHoldTest = 0.0f;
+    float m_prevYvelocityQ = 0.0f;
+    float m_prevYvelocityQHold = 0.0f;
+    float m_prevYvelocityQHoldTest = 0.0f;
+
+    float m_forceUsed = 0.0f;
+
+    DirectX::SimpleMath::Vector3 m_buoyancyTestForce = DirectX::SimpleMath::Vector3::Zero;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
