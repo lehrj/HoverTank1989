@@ -34,6 +34,8 @@ public:
     DirectX::SimpleMath::Matrix GetNpcAlignment(const int aId) { return m_npcVec[aId]->GetAlignment(); };
     int GetNpcCount() { return m_npcVec.size(); };
     DirectX::SimpleMath::Vector3 GetNpcPos(const int aId) { return m_npcVec[aId]->GetPos(); };
+    
+    void TestPositionChange();
 
 private:
     unsigned int GetUniqueID();

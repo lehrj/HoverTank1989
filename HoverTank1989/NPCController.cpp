@@ -307,3 +307,12 @@ void NPCController::CheckNpcCollisions()
         }
     }
 }
+
+
+void NPCController::TestPositionChange()
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        m_npcVec[i]->TestPositionChange();
+    }
+}

@@ -149,7 +149,7 @@ void Game::Initialize(HWND window, int width, int height)
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
-    pos = DirectX::SimpleMath::Vector3(50.0f, 0.0, 0.0f);
+    pos = DirectX::SimpleMath::Vector3(50.0f, 5.0, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.x += 20.0f;
@@ -575,13 +575,14 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
     
-
     float time = float(aTimer.GetTotalSeconds());
     UpdateInput(aTimer);
     
     if (m_isPauseOn == false)
     {
         m_debugData->DebugClearUI();
+        m_testTimer1 += aTimer.GetElapsedSeconds();
+        m_debugData->DebugPushUILineDecimalNumber("m_testTimer1 = ", m_testTimer1, "");
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
         
@@ -1105,6 +1106,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->DebugToggle();
+        }
+    }
+    if (m_kbStateTracker.pressed.H)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_testTimer1 = 0.0f;
+            m_npcController->TestPositionChange();
         }
     }
     if (m_kbStateTracker.pressed.K)

@@ -729,10 +729,13 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.bodyTorqueForce.axis += bodyTorqueUpdate.axis;
     q.bodyTorqueForce.magnitude += bodyTorqueUpdate.magnitude;
     q.position += posUpdate;
+
+    /*
     aHeli->q.velocity = q.velocity;
     aHeli->q.position = q.position;
     aHeli->q.engineForce = q.engineForce;
     aHeli->q.bodyTorqueForce = q.bodyTorqueForce;
+    */
 
     if (aHeli->q.position.y < aHeli->terrainHightAtPos)
     {

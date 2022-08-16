@@ -475,6 +475,9 @@ public:
     void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
 
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
+    void TestPositionChange() { m_vehicleStruct00.vehicleData.q.position.y = 25.0f;
+        m_vehicleStruct00.vehicleData.q.velocity.y = 0.2f;
+        };
 
 private:
     void CalculateTopSpeed();
@@ -482,6 +485,7 @@ private:
 
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetBuoyancyForce(const VehicleData& aVehicleData, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 GetBuoyancyForce2(const VehicleData& aVehicleData, const float aTimeStep);
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetImpactForceSum(const VehicleData& aVehicleData);
@@ -555,6 +559,7 @@ private:
     float m_forceUsed = 0.0f;
 
     DirectX::SimpleMath::Vector3 m_buoyancyTestForce = DirectX::SimpleMath::Vector3::Zero;
+    float m_testHoverFlutter = 0.0f;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

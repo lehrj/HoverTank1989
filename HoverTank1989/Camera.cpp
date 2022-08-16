@@ -27,6 +27,7 @@ Camera::Camera(int aWidth, int aHeight)
 	//m_cameraState = CameraState::CAMERASTATE_TESTCAMERA01;
 	m_cameraState = CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN;
 	m_cameraState = CameraState::CAMERASTATE_FOLLOWNPC;
+	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
 
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;

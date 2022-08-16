@@ -732,7 +732,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
         float reboundMod = 0.1f;
         gravForce *= metersBelowLowerBound * reboundMod;
 
-
         const float currentCurvePos = (aVehicleData.altitude / upperCurveBound);
         mainThrustMod  = 1.0f + currentCurvePos + (-metersBelowLowerBound * reboundMod);
         DirectX::SimpleMath::Vector3 stockGravForce = m_environment->GetGravityVec();
@@ -760,7 +759,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
         float t = 1.0f;
         float neededAccel = ((2.0f * distanceToLowerBound) / (t * t)) - ((2.0f * verticalVelocity) / t);
 
-
         //neededAccel += 9.8 * 1.0f;
         gravForce = DirectX::SimpleMath::Vector3(0.0f, neededAccel, 0.0f);
     }
@@ -776,7 +774,201 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
 
 DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVehicleData, const float aTimeStep)
 {
-    DirectX::SimpleMath::Vector3 gravForce = - m_environment->GetGravityVec();
+    const DirectX::SimpleMath::Vector3 gravForce = - m_environment->GetGravityVec();
+    float altitude = aVehicleData.q.position.y;
+    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter) * 0.5f) + 0.5f) * 2.9f) + 0.0f;
+    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter)) + 0.0f) * 0.2f) + 1.0f;
+    float flutterMod = (((cos(m_testTimer + m_testHoverFlutter) * 0.5f) + 0.5f) * 1.0f) + 1.0f;
+    //altitude -= flutterMod;
+    const float immersedDensityNeutralAtHalfDepth = 1.4286f;
+
+    const float curveAdjustVal = 0.0f;
+    float midCurveBound = 3.5f + curveAdjustVal;
+    float trueMidPoint = midCurveBound;
+    const float lowerCurveBound = midCurveBound - (aVehicleData.dimensions.y * 0.5f);
+    const float upperCurveBound = midCurveBound + (aVehicleData.dimensions.y * 0.5f);
+    const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
+
+    midCurveBound += 0.0f;
+
+    DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
+
+    //altitude += m_testHoverFlutter;
+    float immersedRange = upperCurveBound - lowerCurveBound;
+    float immersedPos = altitude - curveAdjustVal;
+    float immersedRatio;
+    //if (immersedPos >= upperCurveBound)
+    if (altitude >= upperCurveBound)
+    {
+        immersedRatio = 0.0f;
+    }
+    //else if (immersedPos <= lowerCurveBound)
+    else if (altitude <= lowerCurveBound)
+    {
+        //immersedRatio = 1.0f;
+        float testRatio = immersedPos / immersedRange;
+        immersedRatio = 1.0f - testRatio;
+    }
+    else
+    {
+        float testUpper = upperCurveBound - curveAdjustVal;
+        float testMid= midCurveBound - curveAdjustVal;
+        float testLower = lowerCurveBound - curveAdjustVal;
+        float testAlt = altitude - curveAdjustVal;
+        float testRange = testUpper - testLower;
+
+        float testRatio2 = testAlt / testRange;
+        float immersedRatio2 = 1.0f - testRatio2;
+
+        float testRatio = immersedPos / immersedRange;
+        immersedRatio = 1.0f - testRatio;
+        //immersedRatio = immersedRatio2;
+        //if (immersedRatio < 0.0f || immersedRatio > 1.0f)
+        if (immersedRatio != immersedRatio2)
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
+    }
+
+    float immersedVolume = abs(immersedRatio * vehicleVolumeMax);
+    m_debugData->DebugPushUILineDecimalNumber("immersedRatio        = ", immersedRatio, "");    
+    m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
+    if (immersedPos > upperCurveBound)
+    {
+        //immersedVolume = 0.0f;
+    }
+    if (immersedVolume > vehicleVolumeMax)
+    {
+        //immersedVolume = vehicleVolumeMax;
+    }
+    else if (immersedVolume < 0.0f)
+    {
+        immersedVolume *= -1.0f;
+    }
+    float immersedVolumeRatio = immersedVolume / vehicleVolumeMax;
+    m_debugData->DebugPushUILineDecimalNumber("immersedVolumeRatio = ", immersedVolumeRatio, "");
+    //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
+    //immersedVolumeRatio = 0.5f;
+    const float penetrationVelocity = -9.0f;
+    int stateVal = -1;
+    if (aVehicleData.q.position.y > upperCurveBound)
+    {
+        stateVal = 0;
+    }
+    float testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + immersedVolumeRatio);
+    //float testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio + immersedVolumeRatio);
+    //if (aVehicleData.q.velocity.y >= 0.0f && altitude > (midCurveBound))
+    if (aVehicleData.q.velocity.y >= 0.0f && altitude > (lowerCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
+        stateVal = 1;
+    }
+    //if (aVehicleData.q.velocity.y <= 0.0f && altitude < (midCurveBound))
+    if (aVehicleData.q.velocity.y <= 0.0f && altitude < (upperCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio));
+        stateVal = 2;
+        if (aVehicleData.q.velocity.y <= penetrationVelocity && altitude > (midCurveBound))
+        {
+            const float overPen = aVehicleData.q.velocity.y / penetrationVelocity;
+
+            float testDensity1 = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio));
+            float testDensity2 = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+            float testDensity3 = immersedDensityNeutralAtHalfDepth * (3.5f + (immersedVolumeRatio));
+            testDensity = 90.0f * immersedVolumeRatio;
+            testDensity = (immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio))) * overPen;
+            stateVal = 6;
+        }
+        else
+        {
+            stateVal = 7;
+        }
+    }
+    if (aVehicleData.q.velocity.y <= 0.0f && altitude < (midCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+        stateVal = 5;
+        if (aVehicleData.q.velocity.y <= penetrationVelocity && altitude > (lowerCurveBound))
+        {
+            const float overPen = aVehicleData.q.velocity.y / penetrationVelocity;
+
+            testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+            testDensity *= overPen;
+        }
+    }
+    if (aVehicleData.q.velocity.y <= 0.0f && altitude < (lowerCurveBound))
+    {
+        //testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+        testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+        stateVal = 3;
+        if (aVehicleData.q.velocity.y <= penetrationVelocity && altitude < (lowerCurveBound))
+        {
+            const float overPen = aVehicleData.q.velocity.y / penetrationVelocity;
+
+            testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+            testDensity *= overPen;
+        }
+    }
+    if (aVehicleData.q.velocity.y >= 0.0f && altitude < (lowerCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
+        stateVal = 4;
+    }
+    float flutterMod3 = (((cos(m_testTimer + m_testHoverFlutter) * 1.0f) + 0.0f) * 0.5f) + 1.0f;
+    //immersedVolume *= flutterMod3;
+    buoyancyForce = testDensity * immersedVolume * gravForce;
+
+    m_debugData->DebugPushUILineWholeNumber("stateVal = ", stateVal, "");
+
+    if (altitude < upperCurveBound && aVehicleData.q.velocity.y > 0.0f)
+    {
+        //buoyancyForce *= 0.51f;
+        if (altitude > lowerCurveBound)
+        {
+            //buoyancyForce *= 0.0f + immersedRatio;
+        }
+        else
+        {
+            //buoyancyForce *= 0.0f + immersedRatio;
+        }
+    }
+
+    float rawGravForce = gravForce.y * aVehicleData.mass;  
+    float neutralBuoyantVolume = rawGravForce / (immersedDensityNeutralAtHalfDepth * gravForce.y);
+    float neutralRatio = neutralBuoyantVolume / vehicleVolumeMax;
+    float neutralDensity = rawGravForce / ((vehicleVolumeMax * 0.5f) * gravForce.y);
+    //m_debugData->DebugPushUILineDecimalNumber("aVehicleData.q.position.y = ", aVehicleData.q.position.y, "");
+    DirectX::SimpleMath::Vector3 gravForce2 = m_environment->GetGravityVec();
+    //buoyancyForce = - gravForce2 * (aVehicleData.mass);
+    float ratio = buoyancyForce.y / rawGravForce;
+    //buoyancyForce = 1.42857146f * 490.0f * gravForce;
+
+    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
+    if (buoyancyForce.y < 0.0f)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, midCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, upperCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, lowerCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, altitude, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 30.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, trueMidPoint, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushUILineDecimalNumber("m_testTimer = ", m_testTimer, "");
+    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter) * 0.5f) + 0.5f) * 2.9f) + 0.0f;
+    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter)) + 0.0f) * 0.2f) + 1.0f;
+    float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter)) + 1.0f) * 0.5f) + 0.5f;
+    m_debugData->DebugPushUILineDecimalNumber("flutterMod3 = ", flutterMod3, "");
+
+    //buoyancyForce.y *= flutterMod2;
+    return buoyancyForce;
+}
+
+DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce2(const VehicleData& aVehicleData, const float aTimeStep)
+{
+    DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();
     const float altitude = aVehicleData.q.position.y;
     //const float altitude = 0.0f;
     //const float altitude = 8.25f;
@@ -793,8 +985,9 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     float midCurveBound = 3.5f;
     const float lowerCurveBound = midCurveBound - (aVehicleData.dimensions.y * 0.5f);
     const float upperCurveBound = midCurveBound + (aVehicleData.dimensions.y * 0.5f);
-    
+
     const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
+
     DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
     /*
     if (altitude > upperCurveBound)
@@ -846,7 +1039,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
             testBreak++;
         }
     }
-      
+
     float immersedVolume = abs(immersedRatio * vehicleVolumeMax);
     //m_debugData->DebugPushUILineDecimalNumber("immersedRatio = ", immersedRatio, "");    
     //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
@@ -890,7 +1083,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
 
 
     float rawGravForce = gravForce.y * aVehicleData.mass;
-    
+
     float neutralBuoyantVolume = rawGravForce / (immersedDensity * gravForce.y);
     float neutralRatio = neutralBuoyantVolume / vehicleVolumeMax;
     float neutralDensity = rawGravForce / ((vehicleVolumeMax * 0.5f) * gravForce.y);
@@ -1992,6 +2185,11 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     m_environment = aEnvironment;
     m_npcController = aNpcController;
     m_vehicleStruct00.vehicleData.id = aID;
+
+    const float low = -1.0f;
+    const float high = 1.0f;
+    m_testHoverFlutter = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
@@ -2042,7 +2240,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
         //velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
     }
 
-    velocityUpdate += airResistance;
+    //velocityUpdate += airResistance;
     velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
 
     if (m_npcAI->GetIsAvoidanceTrue() == true || m_npcAI->GetIsAvoidanceTrue1() == true)
@@ -2108,7 +2306,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
         //velocityUpdate += antiGravForce * mass;
     }
 
-    velocityUpdate += m_buoyancyTestForce;
+
 
     /*
     //DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec() * aVehicle->mass;
@@ -2133,13 +2331,20 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     pendTorque.magnitude = 0.0f;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
 
-    //velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate += m_buoyancyTestForce;
     gravForce = m_environment->GetGravityVec();
-    //velocityUpdate += gravForce * (mass);
-    velocityUpdate += GetBuoyancyForce(m_vehicleStruct00.vehicleData, aTimeDelta);
+    velocityUpdate += gravForce * (mass);
+    velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
+    //velocityUpdate += GetBuoyancyForce(m_vehicleStruct00.vehicleData, aTimeDelta);
     airResistance = velocityNorm * (-frontDragResistance);
-    //velocityUpdate += airResistance;
+    velocityUpdate += airResistance;
 
+    DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
+    float flutterMod = (((cos((m_testTimer * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
+    m_debugData->DebugPushUILineDecimalNumber("rungeFluter = ", flutterMod, "");
+    flutter.y = flutterMod * 7.0f;
+    velocityUpdate += flutter * mass;
     aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -2185,6 +2390,9 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     q.bodyTorqueForce.axis += bodyTorqueUpdate.axis;
     q.bodyTorqueForce.magnitude += bodyTorqueUpdate.magnitude;
 
+    m_debugData->DebugPushUILineDecimalNumber("velocityUpdate.y = ", velocityUpdate.y, "");
+    float testV = velocityUpdate.y / aTimeDelta;
+    m_debugData->DebugPushUILineDecimalNumber("testV = ", testV, "");
     q.velocity += velocityUpdate;
     q.position += posUpdate;
 
@@ -2754,17 +2962,16 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("q.velocity.y = ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
     */
 
-    //m_debugData->DebugPushUILineDecimalNumber("q.position.y = ", m_vehicleStruct00.vehicleData.q.position.y, "");
-
+    m_debugData->DebugPushUILineDecimalNumber("q.position.y = ", m_vehicleStruct00.vehicleData.q.position.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("q.velocity.y = ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
     UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
-    UpdateImpulseForces(static_cast<float>(aTimeDelta));
-
-    
+    UpdateImpulseForces(static_cast<float>(aTimeDelta));   
+    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
 
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
+    
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignment();
@@ -2790,6 +2997,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         m_testMaxVelocity = currentVelocity;
     }
     //m_debugData->DebugPushUILineDecimalNumber("Top Speed = ", m_testMaxVelocity, "");
+    m_debugData->DebugClearUI();
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
