@@ -53,6 +53,7 @@ struct HoverData
     float forwardThrust;
     //const float forwardThrustMax = 100000.0f;
     const float forwardThrustMax = 50000.0f;
+    //const float forwardThrustMax = 500.0f;
     const float reverseThrustMax = forwardThrustMax * 1.0f;
     float omniThrust;
     const float omniThrustMax = 65000.0f;
@@ -173,10 +174,10 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localJetIntakeCoverLeftMatrix2;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverLeftMatrix2;
 
-    
+
     DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix;
-    
+
     DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix2;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix2;
 
@@ -318,22 +319,28 @@ struct VehicleHardPoints
 
 struct JumpData
 {
-    bool isJumpReady = true;
+    bool isImpulseBurnActive = false;
+    bool isLaunchImpulseBurnActive = false;
+    bool isLandImpulseBurnActive = false;
     bool isJumpActive = false;
+    bool isJumpOnCoolDown = false;
+    bool isJumpReady = true;
+    //bool isLandingTriggered = false;
+
     float jumpActiveTimer = 0.0f;
     const float jumpActiveTimeTotal = 7.0f;
-    bool isJumpOnCoolDown = false;
+
     float jumpCoolDownTimer = 0.0f;
     const float jumpCoolDownTotal = 3.0f;
     const float jumpVelocity = 25000.0f;
     //const float jumpVelocity = 16000.0f;
     const float impulseBurnTimeTotal = 1.0f;
     float impulseBurnTimer = 0.0f;
-    bool isImpulseBurnActive = false;
+
     Utility::ImpulseForce launchImpulseForce;
     Utility::ImpulseForce landingImpulseForce;
-    bool isLandingTriggered = false;
-    const float landingStartAltitude = 20.0f;
+
+    float landingStartAltitude = 20.0f;
 };
 
 struct VehicleData
@@ -422,10 +429,10 @@ public:
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
     int GetID() const { return m_vehicleStruct00.vehicleData.id; };
 
-    bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive;};
+    bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
     bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
     bool GetIsJumpReady() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpReady; };
-    bool GetIsJumpImpulseBurnActive() const { return m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive; };
+    //bool GetIsJumpImpulseBurnActive() const { return m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive; };
 
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
@@ -454,11 +461,13 @@ public:
     void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
 
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
-    void TestPositionChange() { m_vehicleStruct00.vehicleData.q.position.y = 25.0f;
+    void TestPositionChange() {
+        m_vehicleStruct00.vehicleData.q.position.y = 25.0f;
         m_vehicleStruct00.vehicleData.q.velocity.y = 0.2f;
-        };
+    };
 
 private:
+    void ActivateJumpLanding();
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
@@ -493,7 +502,7 @@ private:
     void UpdateControlInputFromAi2();
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
-    void UpdateImpulseForces( const float aTimeDelta);
+    void UpdateImpulseForces(const float aTimeDelta);
     void UpdateJumpData(JumpData& aJumpData, const float aTimeDelta);
     void UpdateNPCModel(const double aTimeDelta);
 

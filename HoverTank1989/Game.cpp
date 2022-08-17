@@ -142,14 +142,14 @@ void Game::Initialize(HWND window, int width, int height)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
-            m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+            //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
             pos.x += 25.0f;
         }
         //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-7.0f)));
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
-    pos = DirectX::SimpleMath::Vector3(50.0f, 5.0, 0.0f);
+    pos = DirectX::SimpleMath::Vector3(50.0f, 8.5f, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
     m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.x += 20.0f;
