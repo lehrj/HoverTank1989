@@ -42,34 +42,13 @@ struct HoverData
     const float hoverRangeMid = 3.0f;
     const float hoverRangeUpper = 5.0f;
     */
-    const float groundNormalForceRange = 5.0f;
-    const float hoverNeutralBoyantAlt = 0.52f;
-    const float hoverRangeLower = 1.5f;
-    const float hoverRangeMid = 3.0f;
-    const float hoverRangeUpper = 5.0f;
-    /*
-    const float groundNormalForceRange = 5.0f;
-    const float hoverNeutralBoyantAlt = 2.52f;
-    const float hoverRangeLower = 3.5f;
-    const float hoverRangeMid = 5.0f;
-    const float hoverRangeUpper = 8.0f;
-    */
 
-    /*
-    const float groundNormalForceRange = 5.0f;
-    const float hoverNeutralBoyantAlt = 0.52f;
-    const float hoverRangeLower = 0.5f;
-    const float hoverRangeMid = 1.0f;
-    const float hoverRangeUpper = 3.0f;
-    */
+    const float hoverRangeLower = 5.0f;
+    const float hoverRangeMid = 8.5f;
+    const float hoverRangeUpper = 12.0f;
+    const float groundNormalForceRange = hoverRangeUpper;
+    const float hoverNeutralBoyantAlt = hoverRangeMid;
 
-    /*
-    const float groundNormalForceRange = 5.0f;
-    const float hoverNeutralBoyantAlt = 0.52f;
-    const float hoverRangeLower = 0.5f;
-    const float hoverRangeMid = 1.0f;
-    const float hoverRangeUpper = 3.0f;
-    */
 
     float forwardThrust;
     //const float forwardThrustMax = 100000.0f;
@@ -346,8 +325,8 @@ struct JumpData
     bool isJumpOnCoolDown = false;
     float jumpCoolDownTimer = 0.0f;
     const float jumpCoolDownTotal = 3.0f;
-    //const float jumpVelocity = 25000.0f;
-    const float jumpVelocity = 16000.0f;
+    const float jumpVelocity = 25000.0f;
+    //const float jumpVelocity = 16000.0f;
     const float impulseBurnTimeTotal = 1.0f;
     float impulseBurnTimer = 0.0f;
     bool isImpulseBurnActive = false;

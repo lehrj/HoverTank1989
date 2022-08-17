@@ -582,7 +582,6 @@ void Game::Update(DX::StepTimer const& aTimer)
     {
         m_debugData->DebugClearUI();
         m_testTimer1 += aTimer.GetElapsedSeconds();
-        m_debugData->DebugPushUILineDecimalNumber("m_testTimer1 = ", m_testTimer1, "");
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
         

@@ -776,20 +776,24 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
 {
     const DirectX::SimpleMath::Vector3 gravForce = - m_environment->GetGravityVec();
     float altitude = aVehicleData.q.position.y;
-    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter) * 0.5f) + 0.5f) * 2.9f) + 0.0f;
-    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter)) + 0.0f) * 0.2f) + 1.0f;
-    float flutterMod = (((cos(m_testTimer + m_testHoverFlutter) * 0.5f) + 0.5f) * 1.0f) + 1.0f;
-    //altitude -= flutterMod;
     const float immersedDensityNeutralAtHalfDepth = 1.4286f;
 
+    const float curveAdjustVal = 0.0f;
+    float midCurveBound = aVehicleData.hoverData.hoverRangeMid;
+    //float trueMidPoint = midCurveBound;
+    const float lowerCurveBound = aVehicleData.hoverData.hoverRangeLower;
+    const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
+    const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
+    //midCurveBound += 0.0f;
+    /*
     const float curveAdjustVal = 0.0f;
     float midCurveBound = 3.5f + curveAdjustVal;
     float trueMidPoint = midCurveBound;
     const float lowerCurveBound = midCurveBound - (aVehicleData.dimensions.y * 0.5f);
     const float upperCurveBound = midCurveBound + (aVehicleData.dimensions.y * 0.5f);
     const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
-
     midCurveBound += 0.0f;
+    */
 
     DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
 
@@ -832,8 +836,8 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     }
 
     float immersedVolume = abs(immersedRatio * vehicleVolumeMax);
-    m_debugData->DebugPushUILineDecimalNumber("immersedRatio        = ", immersedRatio, "");    
-    m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
+    //m_debugData->DebugPushUILineDecimalNumber("immersedRatio        = ", immersedRatio, "");    
+    //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
     if (immersedPos > upperCurveBound)
     {
         //immersedVolume = 0.0f;
@@ -847,7 +851,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
         immersedVolume *= -1.0f;
     }
     float immersedVolumeRatio = immersedVolume / vehicleVolumeMax;
-    m_debugData->DebugPushUILineDecimalNumber("immersedVolumeRatio = ", immersedVolumeRatio, "");
+    //m_debugData->DebugPushUILineDecimalNumber("immersedVolumeRatio = ", immersedVolumeRatio, "");
     //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
     //immersedVolumeRatio = 0.5f;
     const float penetrationVelocity = -9.0f;
@@ -919,7 +923,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     //immersedVolume *= flutterMod3;
     buoyancyForce = testDensity * immersedVolume * gravForce;
 
-    m_debugData->DebugPushUILineWholeNumber("stateVal = ", stateVal, "");
+    //m_debugData->DebugPushUILineWholeNumber("stateVal = ", stateVal, "");
 
     if (altitude < upperCurveBound && aVehicleData.q.velocity.y > 0.0f)
     {
@@ -944,25 +948,22 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     float ratio = buoyancyForce.y / rawGravForce;
     //buoyancyForce = 1.42857146f * 490.0f * gravForce;
 
-    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
     if (buoyancyForce.y < 0.0f)
     {
         int testBreak = 0;
         testBreak++;
     }
 
+    /*
     m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, midCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, upperCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, lowerCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, altitude, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 30.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, trueMidPoint, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushUILineDecimalNumber("m_testTimer = ", m_testTimer, "");
-    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter) * 0.5f) + 0.5f) * 2.9f) + 0.0f;
-    //float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter)) + 0.0f) * 0.2f) + 1.0f;
-    float flutterMod2 = (((cos(m_testTimer + m_testHoverFlutter)) + 1.0f) * 0.5f) + 0.5f;
-    m_debugData->DebugPushUILineDecimalNumber("flutterMod3 = ", flutterMod3, "");
+    */
 
-    //buoyancyForce.y *= flutterMod2;
     return buoyancyForce;
 }
 
@@ -2332,6 +2333,17 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
 
     velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+
+    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
+    {
+        DirectX::SimpleMath::Vector3 testNorm = m_vehicleStruct00.vehicleData.jumpData.launchImpulseForce.directionNorm;
+        testNorm = DirectX::SimpleMath::Vector3::UnitY;
+        float jumpMag = m_vehicleStruct00.vehicleData.jumpData.launchImpulseForce.currentMagnitude;
+        //m_debugData->DebugPushUILineDecimalNumber("jumpMag = ", jumpMag, "");
+        //velocityUpdate += m_vehicleStruct00.vehicleData.jumpData.jumpImpulseForce.directionNorm * m_vehicleStruct00.vehicleData.jumpData.jumpImpulseForce.currentMagnitude;
+        velocityUpdate += testNorm * jumpMag;
+    }
+
     velocityUpdate += m_buoyancyTestForce;
     gravForce = m_environment->GetGravityVec();
     velocityUpdate += gravForce * (mass);
@@ -2340,11 +2352,14 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     airResistance = velocityNorm * (-frontDragResistance);
     velocityUpdate += airResistance;
 
+    
     DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
     float flutterMod = (((cos((m_testTimer * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
-    m_debugData->DebugPushUILineDecimalNumber("rungeFluter = ", flutterMod, "");
+    //m_debugData->DebugPushUILineDecimalNumber("rungeFluter = ", flutterMod, "");
     flutter.y = flutterMod * 7.0f;
     velocityUpdate += flutter * mass;
+    
+
     aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -2390,9 +2405,6 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     q.bodyTorqueForce.axis += bodyTorqueUpdate.axis;
     q.bodyTorqueForce.magnitude += bodyTorqueUpdate.magnitude;
 
-    m_debugData->DebugPushUILineDecimalNumber("velocityUpdate.y = ", velocityUpdate.y, "");
-    float testV = velocityUpdate.y / aTimeDelta;
-    m_debugData->DebugPushUILineDecimalNumber("testV = ", testV, "");
     q.velocity += velocityUpdate;
     q.position += posUpdate;
 
@@ -2501,7 +2513,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     float torqueMag = impactTorque.magnitude + gravTorque.magnitude + turnTestTorque.magnitude;
 
     //if (m_vehicleStruct00.vehicleData.jumpData.jumpImpulseForce.isActive == true)
-    if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == true && 1 == 0)
+    if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == true)
     {
         DirectX::SimpleMath::Vector3 jumpTorqueAxis = -m_vehicleStruct00.vehicleData.right;
         float jumpTorqueMag = m_vehicleStruct00.vehicleData.jumpData.launchImpulseForce.currentMagnitude * 0.00115f;
@@ -2943,9 +2955,9 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         //TerrainImpactHandling();
     }
 
-    //bool testActivate = ActivateJump();
+    bool testActivate = ActivateJump();
     //if (testActivate == true)
-    //UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
+    UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
 
     /*
     m_debugData->DebugPushUILineDecimalNumber("jumpMag = ", m_vehicleStruct00.vehicleData.jumpData.jumpImpulseForce.currentMagnitude, "");
@@ -2960,13 +2972,15 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("isImpulseBurnActive = ", m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive, "");
     
     m_debugData->DebugPushUILineDecimalNumber("q.velocity.y = ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
-    */
-
     m_debugData->DebugPushUILineDecimalNumber("q.position.y = ", m_vehicleStruct00.vehicleData.q.position.y, "");
     m_debugData->DebugPushUILineDecimalNumber("q.velocity.y = ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
+    */
+
+
+
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
-    UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
+    //UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
     UpdateImpulseForces(static_cast<float>(aTimeDelta));   
     m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
 
@@ -2997,7 +3011,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         m_testMaxVelocity = currentVelocity;
     }
     //m_debugData->DebugPushUILineDecimalNumber("Top Speed = ", m_testMaxVelocity, "");
-    m_debugData->DebugClearUI();
+    //m_debugData->DebugClearUI();
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
