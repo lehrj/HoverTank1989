@@ -328,17 +328,18 @@ struct JumpData
     //bool isLandingTriggered = false;
 
     float jumpActiveTimer = 0.0f;
-    const float jumpActiveTimeTotal = 7.0f;
+    const float jumpActiveTimeTotal = 1.0f;
 
     float jumpCoolDownTimer = 0.0f;
-    const float jumpCoolDownTotal = 3.0f;
+    const float jumpCoolDownTotal = 0.0f;
     const float jumpVelocity = 25000.0f;
     //const float jumpVelocity = 16000.0f;
     const float impulseBurnTimeTotal = 1.0f;
     float impulseBurnTimer = 0.0f;
 
-    Utility::ImpulseForce launchImpulseForce;
-    Utility::ImpulseForce landingImpulseForce;
+    //Utility::ImpulseForce launchImpulseForce;
+    //Utility::ImpulseForce landingImpulseForce;
+    Utility::ImpulseForce impulseBurnForce;
 
     float landingStartAltitude = 20.0f;
 };
@@ -397,6 +398,8 @@ class NPCVehicle
 public:
     NPCVehicle();
     bool ActivateJump();
+    bool ActivateJump2();
+
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
@@ -462,8 +465,9 @@ public:
 
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
     void TestPositionChange() {
-        m_vehicleStruct00.vehicleData.q.position.y = 25.0f;
-        m_vehicleStruct00.vehicleData.q.velocity.y = 0.2f;
+        //m_vehicleStruct00.vehicleData.q.position.y = 45.0f;
+        //m_vehicleStruct00.vehicleData.q.velocity.y = -10.2f;
+        ActivateJump();
     };
 
 private:
@@ -548,6 +552,9 @@ private:
 
     DirectX::SimpleMath::Vector3 m_buoyancyTestForce = DirectX::SimpleMath::Vector3::Zero;
     float m_testHoverFlutter = 0.0f;
+
+    float m_testMaxAlt = 0.0f;
+    float m_testValForce = 0.0f;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
