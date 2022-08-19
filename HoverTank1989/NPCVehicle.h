@@ -21,7 +21,12 @@ struct NpcControlInput
     const float steeringDecayRate = 0.2f;
     const float steeringInputMax = 6.0f;
     const float steeringInputMin = -6.0f;
+    const float steeringInputRate = 3.0f;
+    /*
+    const float steeringInputMax = 6.0f;
+    const float steeringInputMin = -6.0f;
     const float steeringInputRate = 4.0f;
+    */
     DirectX::SimpleMath::Vector3 steeringVec;
 
     float       throttleInput;
@@ -251,6 +256,10 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localWingFinRightMatrix;
     DirectX::SimpleMath::Matrix worldWingFinRightMatrix;
 
+    float wingRotPrev1 = 0.0f;
+    float wingRotPrev2 = 0.0f;
+    float wingRotPrev3 = 0.0f;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    skirtShape;
     DirectX::SimpleMath::Matrix localSkirtMatrix;
     DirectX::SimpleMath::Matrix worldSkirtMatrix;
@@ -331,7 +340,7 @@ struct JumpData
     const float jumpActiveTimeTotal = 1.0f;
 
     float jumpCoolDownTimer = 0.0f;
-    const float jumpCoolDownTotal = 0.0f;
+    const float jumpCoolDownTotal = 1.0f;
     const float jumpVelocity = 25000.0f;
     //const float jumpVelocity = 16000.0f;
     const float impulseBurnTimeTotal = 1.0f;
@@ -399,7 +408,7 @@ public:
     NPCVehicle();
     bool ActivateJump();
     bool ActivateJump2();
-
+    bool ActivateJump3();
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);

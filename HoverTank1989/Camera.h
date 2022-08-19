@@ -170,7 +170,7 @@ private:
     DirectX::SimpleMath::Matrix     m_projectionMatrix;
     DirectX::SimpleMath::Matrix     m_orthogonalMatrix;
 
-    const float                     m_posTravelSpeed = 60.6f;
+    const float                     m_posTravelSpeed = 50.6f;
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
@@ -280,9 +280,9 @@ private:
     DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(560.0f, 441.0f, 0.0f);
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(186.0, 0.0f, 0.0f);
 
-    const float m_trailerTimeDuration = 3.0f;
+    const float m_trailerTimeDuration = 7.0f;
     float m_trailerTimerDelay2 = 3.0f;
-    float m_trailerTimeDuration2 = 3.0f;
+    float m_trailerTimeDuration2 = 6.0f;
 
     int m_npcFocusID = 0;
 

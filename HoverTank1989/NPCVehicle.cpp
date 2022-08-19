@@ -11,6 +11,87 @@ bool NPCVehicle::ActivateJump()
 {
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpReady == true)
     {
+        m_testMaxAlt = 0.0f;
+        m_vehicleStruct00.vehicleData.jumpData.isJumpActive = true;
+        m_vehicleStruct00.vehicleData.jumpData.isJumpReady = false;
+        m_vehicleStruct00.vehicleData.jumpData.jumpActiveTimer = 0.0f;
+        m_vehicleStruct00.vehicleData.jumpData.isLaunchImpulseBurnActive = true;
+        m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive = true;
+
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude = 0.0f;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentTime = 0.0f;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.directionNorm = m_vehicleStruct00.vehicleData.up;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm = m_vehicleStruct00.vehicleData.right;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.isActive = true;
+ 
+        float desiredAlt = 40.0f;
+        const float distanceToDesiredAlt = desiredAlt - m_vehicleStruct00.vehicleData.q.position.y;
+        const float gravity = m_environment->GetGravity();
+        const float initialVelocity = m_vehicleStruct00.vehicleData.q.velocity.y;
+        float a = gravity;
+        float b = initialVelocity;
+        float c = distanceToDesiredAlt;
+        float u = b;
+        float s = c;
+        float burnTime = 1.5f;
+        float accel = 2.0f * (distanceToDesiredAlt - initialVelocity * (burnTime)) / (burnTime * burnTime);
+        float accel2 = (2.0f * (distanceToDesiredAlt - initialVelocity * (burnTime))) / (burnTime * burnTime);
+        float accel3 = (2.0f * (distanceToDesiredAlt - initialVelocity)) / ( burnTime);
+        float accel4 = 2.0f * ((distanceToDesiredAlt - initialVelocity * (burnTime)) / (burnTime * burnTime));
+        m_vehicleStruct00.vehicleData.jumpData.isLaunchImpulseBurnActive = true;
+        m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive = true;
+        //ActivateJumpLanding();
+
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude = 0.0f;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentTime = 0.0f;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.directionNorm = -m_vehicleStruct00.vehicleData.up;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.isActive = true;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude = (accel ) * 2.0f;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm = m_vehicleStruct00.vehicleData.right;
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.totalTime = burnTime;
+        /*
+        float quad = (-b + sqrt((b * b) - 4.0f * (a * c))) / (2.0f * a);
+        if (quad <= 0.0f)
+        {
+            quad = (-b - sqrt((b * b) - 4.0f * (a * c))) / (2.0f * a);
+        }
+        if (quad <= 0.0f)
+        {
+            quad = 0.0001f;
+        }
+        float t = quad;
+
+        float deceleration = (0.0f - initialVelocity) / t;
+        float decelerationForce = deceleration * m_vehicleStruct00.vehicleData.mass;
+        const float decelForceLimit = 26000.0f;
+
+        if (decelerationForce > decelForceLimit || t < 1.0f)
+        {
+            m_vehicleStruct00.vehicleData.jumpData.isLandImpulseBurnActive = true;
+            m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive = true;
+            //ActivateJumpLanding();
+
+            m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude = 0.0f;
+            m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentTime = 0.0f;
+            m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.directionNorm = -m_vehicleStruct00.vehicleData.up;
+            m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.isActive = true;
+            m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude = deceleration + -gravity;
+            m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm = m_vehicleStruct00.vehicleData.right;
+            m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.totalTime = t;
+        }
+        */
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool NPCVehicle::ActivateJump3()
+{
+    if (m_vehicleStruct00.vehicleData.jumpData.isJumpReady == true)
+    {
         m_vehicleStruct00.vehicleData.jumpData.isJumpActive = true;
         m_vehicleStruct00.vehicleData.jumpData.isJumpReady = false;
         m_vehicleStruct00.vehicleData.jumpData.jumpActiveTimer = 0.0f;
@@ -23,7 +104,9 @@ bool NPCVehicle::ActivateJump()
         m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.isActive = true;
         m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude = m_vehicleStruct00.vehicleData.jumpData.jumpVelocity;
         m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.totalTime = m_vehicleStruct00.vehicleData.jumpData.impulseBurnTimeTotal;
-        
+
+        m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm = m_vehicleStruct00.vehicleData.right;
+
         float desiredHeight = 45.0f;
         float currentHeight = m_vehicleStruct00.vehicleData.q.position.y;
         float heightDelta = desiredHeight - currentHeight;
@@ -764,7 +847,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
-
+    /*
     if (m_vehicleStruct00.vehicleData.jumpData.isLaunchImpulseBurnActive == true)
     {
         afterBurnColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -777,6 +860,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     {
         afterBurnColor = DirectX::SimpleMath::Vector4(1.0f, 0.5f, 0.5f, 1.0f);
     }
+    */
 
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix, aView, aProj, testHighlight);
     m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2, aView, aProj, testShadow);
@@ -877,7 +961,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 1.0f;
-    m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
+    //m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
 }
 
@@ -1739,7 +1823,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     jetHousingLeftTranslation.x = -aDimensions.x * 0.38f;
     jetHousingLeftTranslation.y = aDimensions.y * 0.15f;
     //jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -0.3f);
-    jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -1.1f);
+    jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -1.5f);
     //jetHousingLeftTranslation.x = 0.0f;
     //jetHousingLeftTranslation.y = 0.5f;
     //jetHousingLeftTranslation.z = -5.5f;
@@ -1803,7 +1887,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     DirectX::SimpleMath::Vector3 jetMountSize;
     jetMountSize.x = 1.1f;
     jetMountSize.y = 2.0f;
-    jetMountSize.z = aDimensions.z * 1.13f;
+    jetMountSize.z = aDimensions.z * 1.2f;
     DirectX::SimpleMath::Vector3 jetMountTranslation = jetHousingLeftTranslation;
     jetMountTranslation.z = 0.0f;
     //aModel.jetMountShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), jetMountSize);
@@ -2417,7 +2501,7 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
 void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
 {
     //  Compute the intermediate values of the 
-//  dependent variables.
+    //  dependent variables.
     MotionNPC newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
@@ -2426,15 +2510,16 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     const float v = newQ.velocity.Length();
     const float airDensity = m_environment->GetAirDensity(); // ToDo rework to pull data from environment
 
-
     float dragCoefficient = aVehicle->dragCoefficient;
     float frontSurfaceArea = aVehicle->frontalArea;
 
+    /*
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == true)
     {
         //dragCoefficient = 1.2f;
         //frontSurfaceArea = 14.0f;// aVehicle->frontalArea;
     }
+    */
 
     const float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
     float mass = aVehicle->mass;
@@ -2451,16 +2536,18 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     float airRLength = airResistance.Length();
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-
+    /*
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == false)
     {
         //velocityUpdate += airResistance;
         //velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
     }
+    */
 
     //velocityUpdate += airResistance;
-    velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
+    //velocityUpdate += GetForwardThrust(m_vehicleStruct00.vehicleData);
 
+    /*
     if (m_npcAI->GetIsAvoidanceTrue() == true || m_npcAI->GetIsAvoidanceTrue1() == true)
     {
         //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
@@ -2471,7 +2558,9 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
         //velocityUpdate += GetOmniDirectionalThrust(m_vehicleStruct00.vehicleData);
         //velocityUpdate += DirectX::SimpleMath::Vector3(0.0f, 200000.0f, 0.0f);
     }
-
+    */
+    
+    /*
     if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
     {
         DirectX::SimpleMath::Vector3 testNorm = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.directionNorm;
@@ -2481,6 +2570,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
         //velocityUpdate += m_vehicleStruct00.vehicleData.jumpData.jumpImpulseForce.directionNorm * m_vehicleStruct00.vehicleData.jumpData.jumpImpulseForce.currentMagnitude;
         velocityUpdate += testNorm * jumpMag;
     }
+    */
 
     /*
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(m_vehicleStruct00.vehicleData);
@@ -2494,11 +2584,14 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     }
     */
 
+    /*
     if (m_vehicleStruct00.vehicleData.altitude > 10.0f && airResistance.y > 0.0f)
     {
         airResistance.y = 0.0f;
     }
+    */
 
+    /*
     DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec();
     velocityUpdate += gravForce * (mass);
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == true)
@@ -2523,7 +2616,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
         DirectX::SimpleMath::Vector3 antiGravForce = GetAntiGravGravityForce(m_vehicleStruct00.vehicleData);
         //velocityUpdate += antiGravForce * mass;
     }
-
+    */
 
 
     /*
@@ -2564,11 +2657,12 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     {
         velocityUpdate += m_buoyancyTestForce;
     }
-    gravForce = m_environment->GetGravityVec();
+    DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec();
     velocityUpdate += gravForce * (mass);
 
     DirectX::SimpleMath::Vector3 forwardThrustUpdate = GetForwardThrust(m_vehicleStruct00.vehicleData);
     forwardThrustUpdate.y = 0.0f;
+    /*
     if (aVehicle->jumpData.isImpulseBurnActive == true)
     {
         if (m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude > 0.0f)
@@ -2582,19 +2676,22 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
             testBreak++;
         }
     }
+    */
+
     velocityUpdate += forwardThrustUpdate;
     //velocityUpdate += GetBuoyancyForce(m_vehicleStruct00.vehicleData, aTimeDelta);
     airResistance = velocityNorm * (-frontDragResistance);
     airResistance.y = 0.0f;
     velocityUpdate += airResistance;
 
-    /*
-    DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
-    float flutterMod = (((cos((m_testTimer * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
-    //m_debugData->DebugPushUILineDecimalNumber("rungeFluter = ", flutterMod, "");
-    flutter.y = flutterMod * 7.0f;
-    velocityUpdate += flutter * mass;
-    */
+    if (m_npcAI->GetAiToggle() == false)
+    {
+        DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
+        float flutterMod = (((cos((m_testTimer * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
+        //m_debugData->DebugPushUILineDecimalNumber("rungeFluter = ", flutterMod, "");
+        flutter.y = flutterMod * 7.0f;
+        velocityUpdate += flutter * mass;
+    }
 
     aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
@@ -2748,11 +2845,13 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (turnTestTorque.axis * turnTestTorque.magnitude);
     float torqueMag = impactTorque.magnitude + gravTorque.magnitude + turnTestTorque.magnitude;
 
-    //if (m_vehicleStruct00.vehicleData.jumpData.jumpImpulseForce.isActive == true)
-    if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == true)
+    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
+    //if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == true)
     {
         DirectX::SimpleMath::Vector3 jumpTorqueAxis = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm;
-        float jumpTorqueMag = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude * 0.00115f;
+        //float jumpTorqueMag = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude * 0.00115f;
+        float jumpTorqueMag = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude * 0.55f;
+        //float jumpTorqueMag =  10.00115f;
         DirectX::SimpleMath::Vector3 torqueAxis2 = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (turnTestTorque.axis * turnTestTorque.magnitude) + (jumpTorqueAxis * jumpTorqueMag);
         //DirectX::SimpleMath::Vector3 torqueAxis2 = (impactTorque.axis * impactTorque.magnitude) + (turnTestTorque.axis * turnTestTorque.magnitude) + (jumpTorqueAxis * jumpTorqueMag);
         float torqueMag2 = impactTorque.magnitude + gravTorque.magnitude + turnTestTorque.magnitude + jumpTorqueMag;
@@ -3079,7 +3178,7 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
 
 void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
 {
-    aJumpData.landingStartAltitude = m_vehicleStruct00.vehicleData.hoverData.hoverRangeUpper + 5.0f;
+    aJumpData.landingStartAltitude = m_vehicleStruct00.vehicleData.hoverData.hoverRangeUpper + 15.0f;
     if (aJumpData.isJumpActive == true)
     {
         aJumpData.jumpActiveTimer += aTimeDelta;
@@ -3091,15 +3190,58 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
             aJumpData.jumpActiveTimer = 0.0f;
         }
         */
-        if (aJumpData.isLaunchImpulseBurnActive == false && m_vehicleStruct00.vehicleData.q.velocity.y <= 0.0f && m_vehicleStruct00.vehicleData.q.position.y <= aJumpData.landingStartAltitude)
+        if (aJumpData.isLaunchImpulseBurnActive == false)// && m_vehicleStruct00.vehicleData.q.velocity.y <= 0.0f && m_vehicleStruct00.vehicleData.q.position.y <= aJumpData.landingStartAltitude)
         {
+            /*
             if (aJumpData.isLandImpulseBurnActive == false)
             {
                 aJumpData.isLandImpulseBurnActive = true;
                 aJumpData.isImpulseBurnActive = true;
                 ActivateJumpLanding();
             }
-            else
+            */
+            if (m_vehicleStruct00.vehicleData.q.velocity.y <= 0.0f && aJumpData.isLandImpulseBurnActive == false)
+            {
+                const float distanceToHoverRange = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.hoverData.hoverRangeUpper;
+                const float gravity = m_environment->GetGravity();
+                const float initialVelocity = m_vehicleStruct00.vehicleData.q.velocity.y;
+                float a = gravity;
+                float b = initialVelocity;
+                float c = distanceToHoverRange;
+                float u = b;
+                float s = c;
+                float quad = (-b + sqrt((b * b) - 4.0f * (a * c))) / (2.0f * a);
+                if (quad <= 0.0f)
+                {
+                    quad = (-b - sqrt((b * b) - 4.0f * (a * c))) / (2.0f * a);
+                }
+                if (quad <= 0.0f)
+                {
+                    quad = 0.0001f;
+                }
+                float t = quad;
+
+                float deceleration = (0.0f - initialVelocity) / t;
+                float decelerationForce = deceleration * m_vehicleStruct00.vehicleData.mass;
+                const float decelForceLimit = 26000.0f;
+
+                if (decelerationForce > decelForceLimit || t < 1.0f)
+                {
+                    aJumpData.isLandImpulseBurnActive = true;
+                    aJumpData.isImpulseBurnActive = true;
+                    //ActivateJumpLanding();
+
+                    aJumpData.impulseBurnForce.currentMagnitude = 0.0f;
+                    aJumpData.impulseBurnForce.currentTime = 0.0f;
+                    aJumpData.impulseBurnForce.directionNorm = -m_vehicleStruct00.vehicleData.up;
+                    aJumpData.impulseBurnForce.isActive = true;
+                    aJumpData.impulseBurnForce.maxMagnitude = deceleration + -gravity;
+                    aJumpData.impulseBurnForce.torqueArm = m_vehicleStruct00.vehicleData.right;
+                    aJumpData.impulseBurnForce.totalTime = t;
+                }
+
+            }
+            if(aJumpData.isLandImpulseBurnActive == true)
             {
                 //aJumpData.impulseBurnTimer += aTimeDelta;
                 if (aJumpData.impulseBurnForce.currentTime >= aJumpData.impulseBurnForce.totalTime)
@@ -3147,14 +3289,23 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
                     //Utility::UpdateImpulseForceBellCurve(aJumpData.impulseBurnForce, aTimeDelta);
                     Utility::UpdateImpulseForceBellCurve(aJumpData.impulseBurnForce, aTimeDelta);
                     float jetRotationRatio = aJumpData.impulseBurnForce.currentMagnitude / aJumpData.impulseBurnForce.maxMagnitude;
-
+                    /*
                     m_vehicleStruct00.npcModel.jetRotationLeft = jetRotationRatio * (Utility::GetPi() * 0.5f);
                     m_vehicleStruct00.npcModel.jetRotationRight = jetRotationRatio * (Utility::GetPi() * 0.5f);
-
-                    m_vehicleStruct00.npcModel.jetRotationLeft = Utility::ToRadians(30.0f);
-                    m_vehicleStruct00.npcModel.jetRotationRight = Utility::ToRadians(30.0f);
+                    */
+                    const float jetRotation = 225.0f;
+                    m_vehicleStruct00.npcModel.jetRotationLeft = Utility::ToRadians(jetRotation);
+                    m_vehicleStruct00.npcModel.jetRotationRight = Utility::ToRadians(jetRotation);
                 }
             }
+            /*
+            if (aJumpData.isLandImpulseBurnActive == false)
+            {
+                aJumpData.isLandImpulseBurnActive = true;
+                aJumpData.isImpulseBurnActive = true;
+                ActivateJumpLanding();
+            }
+            */
         }
         if (aJumpData.isLaunchImpulseBurnActive == true)
         {
@@ -3185,16 +3336,45 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
                 aJumpData.impulseBurnForce.directionNorm = DirectX::SimpleMath::Vector3::UnitY;
                 aJumpData.impulseBurnForce.directionNorm = DirectX::SimpleMath::Vector3::UnitY;
 
-
                 Utility::UpdateImpulseForceBellCurve(aJumpData.impulseBurnForce, aTimeDelta);
                 float jetRotationRatio = aJumpData.impulseBurnForce.currentMagnitude / aJumpData.impulseBurnForce.maxMagnitude;
 
-                m_vehicleStruct00.npcModel.jetRotationLeft = jetRotationRatio * (Utility::GetPi() * 0.5f);
-                m_vehicleStruct00.npcModel.jetRotationRight = jetRotationRatio * (Utility::GetPi() * 0.5f);
+                m_vehicleStruct00.npcModel.jetRotationLeft = jetRotationRatio * (Utility::GetPi() * 1.0f);
+                m_vehicleStruct00.npcModel.jetRotationRight = jetRotationRatio * (Utility::GetPi() * 1.0f);
+
+                m_vehicleStruct00.npcModel.jetRotationLeft = Utility::ToRadians(112.0f);
+                m_vehicleStruct00.npcModel.jetRotationRight = Utility::ToRadians(112.0f);
+                /*
+                if (aJumpData.isLaunchImpulseBurnActive == true)
+                {
+                    Utility::UpdateImpulseForceBellCurve(aJumpData.impulseBurnForce, aTimeDelta);
+                    float jetRotationRatio = aJumpData.impulseBurnForce.currentMagnitude / aJumpData.impulseBurnForce.maxMagnitude;
+
+                    m_vehicleStruct00.npcModel.jetRotationLeft = jetRotationRatio * (Utility::GetPi() * 1.0f);
+                    m_vehicleStruct00.npcModel.jetRotationRight = jetRotationRatio * (Utility::GetPi() * 1.0f);
 
 
-                m_vehicleStruct00.npcModel.jetRotationLeft = Utility::ToRadians(60.0f);
-                m_vehicleStruct00.npcModel.jetRotationRight = Utility::ToRadians(60.0f);
+                    m_vehicleStruct00.npcModel.jetRotationLeft = Utility::ToRadians(-90.0f);
+                    m_vehicleStruct00.npcModel.jetRotationRight = Utility::ToRadians(-90.0f);
+                }
+                else if (aJumpData.isLandImpulseBurnActive == true)
+                {
+                    Utility::UpdateImpulseForceBellCurve(aJumpData.impulseBurnForce, aTimeDelta);
+                    float jetRotationRatio = aJumpData.impulseBurnForce.currentMagnitude / aJumpData.impulseBurnForce.maxMagnitude;
+
+                    m_vehicleStruct00.npcModel.jetRotationLeft = jetRotationRatio * (Utility::GetPi() * 0.5f);
+                    m_vehicleStruct00.npcModel.jetRotationRight = jetRotationRatio * (Utility::GetPi() * 0.5f);
+
+
+                    m_vehicleStruct00.npcModel.jetRotationLeft = Utility::ToRadians(90.0f);
+                    m_vehicleStruct00.npcModel.jetRotationRight = Utility::ToRadians(90.0f);
+                }
+                else
+                {
+                    int breakpoint = 0;
+                    breakpoint++;
+                }
+                */
             }
         }
     }
@@ -3210,9 +3390,17 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
     }
 
     // control base burner length
-    if (aJumpData.isLaunchImpulseBurnActive == true)
+    if (aJumpData.isImpulseBurnActive == true)
     {
-        m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput = aJumpData.impulseBurnForce.currentMagnitude / aJumpData.impulseBurnForce.maxMagnitude;
+        if (aJumpData.isLaunchImpulseBurnActive)
+        {
+            m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput = aJumpData.impulseBurnForce.currentMagnitude / aJumpData.impulseBurnForce.maxMagnitude;
+        }
+        else
+        {
+            const float landingBurnLengthMod = 2.0f;
+            m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput = (aJumpData.impulseBurnForce.currentMagnitude * landingBurnLengthMod) / aJumpData.impulseBurnForce.maxMagnitude;
+        }
     }
     else
     {
@@ -3303,6 +3491,9 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("m_testMaxAlt = ", m_testMaxAlt, "");
     m_debugData->DebugPushUILineDecimalNumber("m_testValForce = ", m_testValForce, "");
 
+    DirectX::SimpleMath::Vector3 torqueArmVec = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm;
+    float torqueArmLength = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm.Length();
+    m_debugData->DebugPushUILineDecimalNumber("torqueArmLength = ", torqueArmLength, "");
     //bool testActivate = ActivateJump();
 
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
@@ -3390,13 +3581,13 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         m_testMaxVelocity = currentVelocity;
     }
     //m_debugData->DebugPushUILineDecimalNumber("Top Speed = ", m_testMaxVelocity, "");
-    //m_debugData->DebugClearUI();
+    m_debugData->DebugClearUI();
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 {
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
-
+    
     m_vehicleStruct00.npcModel.worldModelMatrix = m_vehicleStruct00.npcModel.localModelMatrix;
     m_vehicleStruct00.npcModel.worldModelMatrix *= updateMat;
     m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix = m_vehicleStruct00.npcModel.localInteriorShadowRightMatrix;
@@ -3456,10 +3647,18 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     float testThrottleRotLeft = (leftBurnLengthModTest * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
     float testThrottleRotRight = (rightBurnLengthModTest * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
 
-    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive)
+    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
     {
         testThrottleRotLeft = m_vehicleStruct00.npcModel.jetRotationLeft;
         testThrottleRotRight = m_vehicleStruct00.npcModel.jetRotationRight;
+        if (m_vehicleStruct00.vehicleData.jumpData.isLandImpulseBurnActive == true)
+        {
+            float leftRot = m_vehicleStruct00.npcModel.jetRotationLeft;
+            float rightRot = m_vehicleStruct00.npcModel.jetRotationRight;
+
+            testThrottleRotLeft = m_vehicleStruct00.npcModel.jetRotationLeft;
+            testThrottleRotRight = m_vehicleStruct00.npcModel.jetRotationRight;
+        }
     }
 
     testThrottleRotLeft = (testThrottleRotLeft + m_vehicleStruct00.npcModel.jetRotationLeftPrev + m_vehicleStruct00.npcModel.jetRotationLeftPrev2
@@ -3655,11 +3854,13 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         const float throttle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
         const float steering = m_vehicleStruct00.vehicleData.controlInput.steeringInput / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
 
-        float leftBurnLengthMod = throttle - steering;
-        float rightBurnLengthMod = throttle + steering;
+        const float afterBurnIdleLengthMod = 0.25f;
+
+        float leftBurnLengthMod = throttle - steering + afterBurnIdleLengthMod;
+        float rightBurnLengthMod = throttle + steering + afterBurnIdleLengthMod;
 
         float turnRatio = abs(m_vehicleStruct00.vehicleData.controlInput.steeringInput) / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
-        const float afterBurnLengthSum = 300.0f;
+        const float afterBurnLengthSum = 190.0f;
         float afterBurnLengthModLeft;
         float afterBurnLengthModRight;
         if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
@@ -3671,26 +3872,40 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
             m_vehicleStruct00.npcModel.jetRotationRight = jetRotationRatio * (Utility::GetPi() * 0.5f);
             */
             const float burnRatio = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude / m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude;
-            afterBurnLengthModLeft = burnRatio;
-            afterBurnLengthModRight = burnRatio;
+            //afterBurnLengthModLeft = burnRatio;
+            //afterBurnLengthModRight = burnRatio;
             leftBurnLengthMod = burnRatio;
             rightBurnLengthMod = burnRatio;
         }
+        /*
         else if (m_vehicleStruct00.vehicleData.controlInput.steeringInput > 0.0f)
         {
             afterBurnLengthModLeft = turnRatio;
             afterBurnLengthModRight = 1.0f - turnRatio;
+            leftBurnLengthMod = turnRatio;
+            rightBurnLengthMod = 1.0f - turnRatio;
         }
         else if (m_vehicleStruct00.vehicleData.controlInput.steeringInput < 0.0f)
         {
             afterBurnLengthModRight = turnRatio;
             afterBurnLengthModLeft = 1.0f - turnRatio;
+            leftBurnLengthMod = turnRatio;
+            rightBurnLengthMod = 1.0f - turnRatio;
         }
         else
         {
             afterBurnLengthModLeft = 0.5f;
             afterBurnLengthModRight = 0.5f;
+            leftBurnLengthMod = 0.5f;
+            rightBurnLengthMod = 0.5f;
         }
+        */
+        /*
+        afterBurnLengthModLeft = 0.5f;
+        afterBurnLengthModRight = 0.5f;
+        leftBurnLengthMod = 0.5f;
+        rightBurnLengthMod = 0.5f;
+        */
 
         float prevBurnLengthLeft = m_vehicleStruct00.npcModel.afterBurnLengthLeft;
         float prevBurnLengthRight = m_vehicleStruct00.npcModel.afterBurnLengthRight;
@@ -3742,12 +3957,15 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
         afterBurnLengthModLeft = leftBurnLengthMod;
         afterBurnLengthModRight = rightBurnLengthMod;
-
+        /*
+        const float idleAfterBurnLengthMod = 0.3f;
+        afterBurnLengthModLeft += idleAfterBurnLengthMod;
+        afterBurnLengthModRight += idleAfterBurnLengthMod;
+        */
         m_vehicleStruct00.npcModel.afterBurnLengthLeft = afterBurnLengthModLeft;
         m_vehicleStruct00.npcModel.afterBurnLengthRight = afterBurnLengthModRight;
 
         float testThrottle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
-        //float afterBurnLength = testThrottle * (afterBurnLengthModLeft * afterBurnLengthSum);
         float afterBurnLength = (afterBurnLengthModLeft * afterBurnLengthSum);
         float afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
         DirectX::SimpleMath::Matrix afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY, 0.0f);
@@ -3761,7 +3979,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
         DirectX::SimpleMath::Matrix afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(afterBurnLength), 1.0f);
-        //DirectX::SimpleMath::Matrix afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, afterBurnLength, 1.0f);
 
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 -= (afterBurnFlickerModLeft * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
         m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker2);
@@ -3770,11 +3987,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         if (afterBurnLengthModLeft <= 0.0f)
         {
             afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY, 0.0f);
-            //afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;
-            //afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
-            //m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
-            //m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
-
         }
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnScale;
         m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnTranslation;
@@ -3794,7 +4006,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         afterBurnLength = (afterBurnLengthModRight * afterBurnLengthSum);
         afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
         afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(afterBurnLength), 1.0f);
-        //afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, afterBurnLength, 1.0f);
         afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY, 0.0f);
 
         const float afterBurnFlickerModRight = afterBurnLengthModRight + idleFlicker;
@@ -3809,11 +4020,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         if (afterBurnLengthModRight <= 0.0f)
         {
             afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY, 0.0f);
-            //afterBurnY = -(afterBurnLength * 0.5f) * 0.1f;
-            //afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
-            //m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
-            //m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(180.0f));
-
         }
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= afterBurnScale;
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= afterBurnTranslation;
@@ -3828,37 +4034,18 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= jetRotationMatRight;
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= m_vehicleStruct00.npcModel.jetHousingTranslationRightMatrix;
         m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= updateMat;
-
-        //float oldBurnLengthLeft = testThrottle * (afterBurnLengthModLeft * afterBurnLengthSum);
-        //float oldBurnLengthRight = testThrottle * (afterBurnLengthModRight * afterBurnLengthSum);
-        float oldBurnLengthLeft = testThrottle * (afterBurnLengthModLeft * 1.0f);
-        float oldBurnLengthRight = testThrottle * (afterBurnLengthModRight * 1.0f);
-
-        /*
-        m_debugData->DebugPushUILineDecimalNumber("throttle = ", throttle, "");
-        m_debugData->DebugPushUILineDecimalNumber("steering = ", steering, "");
-        m_debugData->DebugPushUILineDecimalNumber("leftBurnLengthMod = ", leftBurnLengthMod, "");
-        m_debugData->DebugPushUILineDecimalNumber("oldBurnLengthLeft = ", oldBurnLengthLeft, "");
-        m_debugData->DebugPushUILineDecimalNumber("rightBurnLengthMod = ", rightBurnLengthMod, "");
-        m_debugData->DebugPushUILineDecimalNumber("oldBurnLengthRight = ", oldBurnLengthRight, "");
-        */
     }
+    
 
-    //m_debugData->DebugPushUILineDecimalNumber("m_testMainThrustMod = ", m_testMainThrustMod, "");
+
     // base burner
-    float baseBurnMod = 0.1f;
-    float baseBurnLengthSum = 100.0f;
-    float baseThrottleInputMod = m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput;
-    float baseBurnLength = (baseBurnMod * baseBurnLengthSum) + (baseThrottleInputMod * 60.0f);
-    baseBurnLength += (1.0f + m_vehicleStruct00.npcModel.mainThrustLengthMod) * 10.0f;
-    //baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
-    m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;
-
+    float baseBurnLength = ((10.0f) + (m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput * 60.0f)) + ((1.0f + m_vehicleStruct00.npcModel.mainThrustLengthMod) * 10.0f);
+    baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
+    m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;  
     float baseBurnY = (baseBurnLength * 0.5f) * 0.1f;
     DirectX::SimpleMath::Matrix baseBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(baseBurnLength), 1.0f);
     DirectX::SimpleMath::Matrix baseBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, baseBurnY, 0.0f);
-    const float baseIdleFlicker = 0.5f;
-    const float baseBurnFlickerMod = baseBurnMod + baseIdleFlicker;
+    const float baseBurnFlickerMod = 0.6f;
     m_vehicleStruct00.npcModel.baseBurnFlicker1 -= (baseBurnFlickerMod * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.baseBurnFlicker1 = Utility::WrapAngle(m_vehicleStruct00.npcModel.baseBurnFlicker1);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.baseBurnFlicker1);
@@ -3965,7 +4152,10 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         //wingRotationAngle = (m_vehicleStruct00.vehicleData.controlInput.throttleInput) * 0.5f;
         wingRotationAngle = (testAngle) * 1.6f;
     }
-
+    m_vehicleStruct00.npcModel.wingRotPrev3 = m_vehicleStruct00.npcModel.wingRotPrev2;
+    m_vehicleStruct00.npcModel.wingRotPrev2 = m_vehicleStruct00.npcModel.wingRotPrev1;
+    m_vehicleStruct00.npcModel.wingRotPrev1 = wingRotationAngle;
+    wingRotationAngle = (m_vehicleStruct00.npcModel.wingRotPrev1 + m_vehicleStruct00.npcModel.wingRotPrev2 + m_vehicleStruct00.npcModel.wingRotPrev3) / 3.0f;
 
     DirectX::SimpleMath::Matrix wingRotation = DirectX::SimpleMath::Matrix::CreateRotationZ(wingRotationAngle);
 

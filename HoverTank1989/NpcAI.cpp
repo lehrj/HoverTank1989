@@ -567,16 +567,16 @@ void NpcAI::CreateWayPath()
     wp8 = Utility::CreateWaypoint(pos, radius);
 
 
-    Utility::PushWaypointToPath(m_currentWayPath, wp7);
-    Utility::PushWaypointToPath(m_currentWayPath, wp2);
+    //Utility::PushWaypointToPath(m_currentWayPath, wp7);
+    //Utility::PushWaypointToPath(m_currentWayPath, wp2);
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     Utility::PushWaypointToPath(m_currentWayPath, wp5);
     Utility::PushWaypointToPath(m_currentWayPath, wp6);
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
-    //Utility::PushWaypointToPath(m_currentWayPath, wp7);
-    //Utility::PushWaypointToPath(m_currentWayPath, wp2);
+    Utility::PushWaypointToPath(m_currentWayPath, wp7);
+    Utility::PushWaypointToPath(m_currentWayPath, wp2);
 
     /*
     if (m_npcOwner->GetID() % 2)

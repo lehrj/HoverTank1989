@@ -128,9 +128,9 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->SetDebugData(m_debugData);
 
     const float xOrgVal = 270.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 13.0, 300.0f);
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 13.0, 300.0f);
     //const float xOrgVal = 20.0f;
-    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 3.0, 0.0f);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, 105.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
     //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f)));
     const float low = 0.0f;
@@ -142,7 +142,7 @@ void Game::Initialize(HWND window, int width, int height)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
-            //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+            m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
             pos.x += 25.0f;
         }
         //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-7.0f)));
@@ -151,7 +151,7 @@ void Game::Initialize(HWND window, int width, int height)
     }
     pos = DirectX::SimpleMath::Vector3(50.0f, 8.5f, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.x += 20.0f;
     pos.z += 20.0f;
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
@@ -1205,13 +1205,13 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout.Get());
 
     DirectX::SimpleMath::Matrix modelWorldBarrel01 = DirectX::SimpleMath::Matrix::Identity;
-    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    //m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
 
     m_batch->Begin();
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
+        //m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
 
@@ -1332,7 +1332,7 @@ void Game::Render()
     m_effect3->Apply(context);
     m_batch3->Begin();
 
-    DrawDebugLinesVector();
+    //DrawDebugLinesVector();
 
     m_batch3->End();
 
