@@ -396,6 +396,12 @@ private:
     float m_testTimer1 = 0.0f;
     float m_testTimer2 = 0.0f;
 
+    float m_unlockTimer1 = 0.0f;
+    float m_unlockTimer2 = 0.0f;
+    const int m_unlockCountDownTicks = 5;
+    int m_unlockCountdown = m_unlockCountDownTicks;
+    bool m_isDisplayCountdownTrue = false;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
 

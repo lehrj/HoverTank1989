@@ -3361,7 +3361,11 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
-    UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
+    if (m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked == true)
+    {
+        UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
+    }
+    //UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
     //m_vehicleStruct00.vehicleData.jumpData.isJumpReady = false;
 
     UpdateImpulseForces(static_cast<float>(aTimeDelta));
@@ -3376,8 +3380,12 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     UpdateNPCModel(aTimeDelta);
     UpdateHardPoints();
 
-    if (m_vehicleStruct00.vehicleData.q.position.y > 300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f)
+    if (m_vehicleStruct00.vehicleData.q.position.y > 300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)
     {
+
+        JumpData testData = m_vehicleStruct00.vehicleData.jumpData;
+
+
         int testbreak = 0;
         testbreak++;
 

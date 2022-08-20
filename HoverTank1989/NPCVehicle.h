@@ -333,7 +333,8 @@ struct JumpData
     bool isLandImpulseBurnActive = false;
     bool isJumpActive = false;
     bool isJumpOnCoolDown = false;
-    bool isJumpReady = true;
+    bool isJumpReady = false;
+    bool isJumpUnlocked = false;
 
     float jumpActiveTimer = 0.0f;
     const float jumpActiveTimeTotal = 1.0f;
@@ -455,8 +456,6 @@ public:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
 
-    void UpdateNPC(const double aTimeDelta);
-
     void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos, aVehicle); };
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
     void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
@@ -466,14 +465,20 @@ public:
 
     void SetCollisionVal(const bool aIsCollisionTrue);
 
-    void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
-
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
     void TestPositionChange() {
         //m_vehicleStruct00.vehicleData.q.position.y = 45.0f;
         //m_vehicleStruct00.vehicleData.q.velocity.y = -10.2f;
         ActivateJump();
     };
+
+    void UnlockJump() {
+        m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked = true;
+        m_vehicleStruct00.vehicleData.jumpData.isJumpReady = true;
+    };
+
+    void UpdateNPC(const double aTimeDelta);
+    void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
 
 private:
     void ActivateJumpLanding();

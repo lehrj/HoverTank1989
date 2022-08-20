@@ -103,6 +103,14 @@ void NPCController::SetPlayer(Vehicle const* aVehicle)
     m_player = aVehicle;
 }
 
+void NPCController::UnlockJumpAbility()
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        m_npcVec[i]->UnlockJump();
+    }
+}
+
 void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)

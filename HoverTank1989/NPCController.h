@@ -37,6 +37,8 @@ public:
     
     void TestPositionChange();
 
+    void UnlockJumpAbility();
+
 private:
     unsigned int GetUniqueID();
 

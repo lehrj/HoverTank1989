@@ -1111,8 +1111,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_testTimer1 = 0.0f;
-            m_npcController->TestPositionChange();
+            m_isDisplayCountdownTrue = true;
+            //m_testTimer1 = 0.0f;
+            //m_npcController->TestPositionChange();
         }
     }
     if (m_kbStateTracker.pressed.K)
@@ -1339,8 +1340,12 @@ void Game::Render()
 
     m_spriteBatch->Begin();
 
+    if (m_isDisplayCountdownTrue == true)
+    {
+        DrawUnlockUI();
+    }
     DrawDebugDataUI();
-    //DrawUnlockUI();
+    
 
     m_spriteBatch->End();
 
@@ -1599,10 +1604,23 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
+
+    textLine = "m_unlockTimer1   " + std::to_string(m_unlockTimer1);
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
+    textLine = "m_unlockTimer2   " + std::to_string(m_unlockTimer2);
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
 }
 
 void Game::DrawUnlockUI()
 {
+    m_unlockTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
+
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
 
     textLinePos.x = 960;
@@ -1613,18 +1631,61 @@ void Game::DrawUnlockUI()
     //textLinePos.y += 30;
 
     //std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
-    std::string textLine = "Unlocking Jump Boosters in :  ";
+    std::string textLine = "Unlocking Jump Boosters in :   ";
+    //std::string textLine = "Unlocking Jump Boosters in : " + std::to_string(m_unlockCountdown);
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    //textLineOrigin.x = 235.f;
     //textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, 3.0f);
-    const float shiftMod = -2.0f;
+    //const float shiftMod = -2.0f;
+    const float shiftMod = 0.0f;
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, 3.0f);
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, 3.0f);
-    textLinePos.y += 30;
+
+
+    textLinePos.y += 125;
+    //textLinePos.y -= 35;
+    textLinePos.x = 960;
+    //textLinePos.x = 960 + 700;
+    const float maxScale = 3.0f;
+    float fontScale = (cos(m_unlockTimer1) + 1.0f) * 2.5f;   
+    fontScale = m_unlockTimer2;
+    fontScale *= 3.5f;
+    if (fontScale > maxScale)
+    {
+        fontScale = maxScale;
+    }
+
+    textLine = std::to_string(m_unlockCountdown);
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLineOrigin.y = 0.0f;
+    textLinePos.y -= fontScale;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, fontScale);
+
+    m_unlockTimer2 += static_cast<float>(m_timer.GetElapsedSeconds());
+    if (m_unlockTimer2 > 1.0f)
+    {
+        m_unlockCountdown--;
+        m_unlockTimer2 = 0.0f;
+    }
+
+    if (m_unlockCountdown <= 0)
+    {
+        m_unlockCountdown = m_unlockCountDownTicks;
+        m_unlockTimer1 = 0.0f;
+        m_npcController->UnlockJumpAbility();
+        m_isDisplayCountdownTrue = false;
+    }
 }
 
 void Game::DrawDebugLinesVector()
