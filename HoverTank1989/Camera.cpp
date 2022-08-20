@@ -818,6 +818,10 @@ void Camera::UpdateFirstPersonCamera()
 	m_moveUpDown = 0.0f;
 
 	m_target = m_position + m_target;
+
+	m_debugData->DebugPushUILineDecimalNumber("m_position.x = ", m_position.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.y = ", m_position.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
 }
 
 void Camera::SetSpinCameraStart()
@@ -1056,11 +1060,11 @@ void Camera::UpdateChaseCameraNPC()
 	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, m_npcController->GetNpcAlignment(m_npcFocusID));
 	//DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
 	DirectX::SimpleMath::Vector3 targetPos = m_npcController->GetNpcPos(m_npcFocusID) + m_followCamTargOffset;
-	targetPos += targetPitch;
+	//targetPos += targetPitch;
 
 	DirectX::SimpleMath::Vector3 updatedTarget = DirectX::SimpleMath::Vector3::SmoothStep(prevTarg, targetPos, 0.17);
-	//SetTargetPos(targetPos);
-	SetTargetPos(updatedTarget);
+	SetTargetPos(targetPos);
+	//SetTargetPos(updatedTarget);
 
 
 	//DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::SmoothStep(preCamPosition, accelCamPos, 0.15);

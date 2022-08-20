@@ -76,7 +76,7 @@ private:
     void DrawDebugLinesVector();
 
     void DrawDebugDataUI();
-
+    void DrawUnlockUI();
     void DrawGridForStartScreen();
     void DrawGamePlayStart();
     void DrawIntroScene();

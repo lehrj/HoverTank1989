@@ -334,20 +334,16 @@ struct JumpData
     bool isJumpActive = false;
     bool isJumpOnCoolDown = false;
     bool isJumpReady = true;
-    //bool isLandingTriggered = false;
 
     float jumpActiveTimer = 0.0f;
     const float jumpActiveTimeTotal = 1.0f;
 
     float jumpCoolDownTimer = 0.0f;
-    const float jumpCoolDownTotal = 1.0f;
+    const float jumpCoolDownTotal = 6.0f;
     const float jumpVelocity = 25000.0f;
-    //const float jumpVelocity = 16000.0f;
     const float impulseBurnTimeTotal = 1.0f;
     float impulseBurnTimer = 0.0f;
 
-    //Utility::ImpulseForce launchImpulseForce;
-    //Utility::ImpulseForce landingImpulseForce;
     Utility::ImpulseForce impulseBurnForce;
 
     float landingStartAltitude = 20.0f;

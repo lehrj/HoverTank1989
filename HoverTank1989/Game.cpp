@@ -136,7 +136,7 @@ void Game::Initialize(HWND window, int width, int height)
     const float low = 0.0f;
     const float high = 10.0f;
     const float zPosOffSet = 45.0f;
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 8; ++i)
     {
         for (int j = 0; j < 4; ++j)
         {
@@ -582,12 +582,12 @@ void Game::Update(DX::StepTimer const& aTimer)
     {
         m_debugData->DebugClearUI();
         m_testTimer1 += aTimer.GetElapsedSeconds();
-        m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
+        //m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
         
     }
     m_camera->UpdateCamera(aTimer);
-    m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
+    //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
 
     m_proj = m_camera->GetProjectionMatrix();
     m_effect->SetProjection(m_proj);
@@ -599,7 +599,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
 
-    m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
+    //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
 
 
 }
@@ -1340,6 +1340,7 @@ void Game::Render()
     m_spriteBatch->Begin();
 
     DrawDebugDataUI();
+    //DrawUnlockUI();
 
     m_spriteBatch->End();
 
@@ -1597,6 +1598,32 @@ void Game::DrawDebugDataUI()
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
+}
+
+void Game::DrawUnlockUI()
+{
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
+
+    textLinePos.x = 960;
+    textLinePos.y = 540;
+    // 960
+    // 540
+    //textLinePos.x = 200;
+    //textLinePos.y += 30;
+
+    //std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
+    std::string textLine = "Unlocking Jump Boosters in :  ";
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    //textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, 3.0f);
+    const float shiftMod = -2.0f;
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, 3.0f);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, 3.0f);
     textLinePos.y += 30;
 }
 

@@ -19,7 +19,7 @@ NPCController::~NPCController()
 void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, std::shared_ptr<NPCController> aNpcController)
 {
     NPCVehicle* newNPC = new NPCVehicle;
-    newNPC->SetDebugData(m_debugData);  
+    newNPC->SetDebugData(m_debugData);
     newNPC->InitializeNPCVehicle(aContext, aHeading, aPosition, m_environment, aNpcController, m_player, GetUniqueID());
     m_npcVec.push_back(newNPC);
 }
@@ -215,7 +215,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 int testBreak = 0;
                 //m_npcVec[i]->PushAvoidanceTarget(testTarget->GetPos(), testTarget);
 
-                
+
                 testBreak++;
             }
         }
@@ -225,7 +225,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
 void NPCController::CheckNpcCollisions()
 {
     std::vector<std::pair<int, int>> collisionsRecorded;
-    
+
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         for (unsigned int j = 0; j < m_npcVec.size(); ++j)

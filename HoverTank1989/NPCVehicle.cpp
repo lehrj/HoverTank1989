@@ -1203,81 +1203,9 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
         testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
         stateVal = 4;
     }
-    float flutterMod3 = (((cos(m_testTimer + m_testHoverFlutter) * 1.0f) + 0.0f) * 0.5f) + 1.0f;
+    //float flutterMod3 = (((cos(m_testTimer + m_testHoverFlutter) * 1.0f) + 0.0f) * 0.5f) + 1.0f;
     //immersedVolume *= flutterMod3;
     buoyancyForce = testDensity * immersedVolume * gravForce;
-
-    m_debugData->DebugPushUILineWholeNumber("stateVal = ", stateVal, "");
-
-    if (aVehicleData.q.velocity.y > 0.0f && altitude < upperCurveBound)
-    {
-        //buoyancyForce *= 0.51f;
-        if (altitude > lowerCurveBound)
-        {
-            //buoyancyForce *= 0.0f + immersedRatio;
-        }
-        else
-        {
-            //buoyancyForce *= 0.0f + immersedRatio;
-        }
-    }
-
-    float rawGravForce = gravForce.y * aVehicleData.mass;
-    float neutralBuoyantVolume = rawGravForce / (immersedDensityNeutralAtHalfDepth * gravForce.y);
-    float neutralRatio = neutralBuoyantVolume / vehicleVolumeMax;
-    float neutralDensity = rawGravForce / ((vehicleVolumeMax * 0.5f) * gravForce.y);
-    //m_debugData->DebugPushUILineDecimalNumber("aVehicleData.q.position.y = ", aVehicleData.q.position.y, "");
-    DirectX::SimpleMath::Vector3 gravForce2 = m_environment->GetGravityVec();
-    //buoyancyForce = - gravForce2 * (aVehicleData.mass);
-    float ratio = buoyancyForce.y / rawGravForce;
-    //buoyancyForce = 1.42857146f * 490.0f * gravForce;
-
-    //m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
-    if (buoyancyForce.y < 0.0f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-    if (altitude > upperCurveBound)
-    {
-        if (buoyancyForce.y < 0.0f || buoyancyForce.y > 0.0f)
-        {
-            int testBreak = 0;
-            testBreak++;
-        }
-        int testBreak = 0;
-        testBreak++;
-    }
-
-    //if (stateVal == 10)
-    if (breakToggle == true)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-
-    if (aVehicleData.q.velocity.y >= 0.0f && altitude > (lowerCurveBound))
-    {
-        if (stateVal != 7 && stateVal != -1 && stateVal != 1)
-        {
-            int testBreak = 0;
-            testBreak++;
-        }
-    }
-    
-    float buoyancyForceY = buoyancyForce.y;
-
-    float testAltZ = altitude;
-    float testAlt1 = m_vehicleStruct00.vehicleData.q.position.y;
-
-    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, midCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, upperCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, lowerCurveBound, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, altitude, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 30.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    /*
-    m_debugData->DebugPushTestLine(DirectX::SimpleMath::Vector3(50.0f, trueMidPoint, -5.0f), DirectX::SimpleMath::Vector3::UnitZ, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushUILineDecimalNumber("m_testTimer = ", m_testTimer, "");
-    */
 
     return buoyancyForce;
 }
@@ -3431,128 +3359,14 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     //m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.hardPoints.basePos.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
 
-
-    /*
-    m_debugData->DebugPushUILineWholeNumber("altitude = ", static_cast<int>(m_vehicleStruct00.vehicleData.altitude), "");
-    m_debugData->DebugPushUILineWholeNumber("m_altitudeDelta = ", static_cast<int>(m_altitudeDelta), "");
-    m_debugData->DebugPushUILineWholeNumber("m_prevMaxAltitudeDelta = ", static_cast<int>(m_prevMaxAltitudeDelta), "");
-    m_debugData->DebugPushUILineWholeNumber("m_launchVelocityY = ", static_cast<int>(m_launchVelocityY), "");
-    m_debugData->DebugPushUILineWholeNumber("m_launchForce = ", static_cast<int>(m_launchForce), "");
-
-    m_debugData->DebugPushUILineDecimalNumber("m_forceMod1", m_forceMod1, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_forceMod2", m_forceMod2, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_forceMod3", m_forceMod3, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_testRatio1", m_testRatio1, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_testRatio2", m_testRatio2, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_testRatio3", m_testRatio3, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_launchForceRatio", m_launchForceRatio, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("m_prevYvelocityStepHold", m_prevYvelocityStepHold, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_prevYvelocityQHold", m_prevYvelocityQHold, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("m_prevYvelocityStepHoldTest", m_prevYvelocityStepHoldTest, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_prevYvelocityQHoldTest", m_prevYvelocityQHoldTest, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_forceUsed", m_forceUsed, "");
-    */
-
-    if (m_vehicleStruct00.vehicleData.altitude <= 0.0f && m_vehicleStruct00.vehicleData.q.velocity.y < 0.0f)
-    {
-        //m_vehicleStruct00.vehicleData.q.velocity.y *= -0.1f;
-        //TerrainImpactHandling();
-    }
-
-    //bool testActivate = ActivateJump();
-    //if (testActivate == true)
-    //UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
-
-
-    m_debugData->DebugPushUILineDecimalNumber("launch.currentMagnitude = ", m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude, "");
-    m_debugData->DebugPushUILineDecimalNumber("landing.currentMagnitude = ", m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("jumpActiveTimer = ", m_vehicleStruct00.vehicleData.jumpData.jumpActiveTimer, "");
-    m_debugData->DebugPushUILineDecimalNumber("jumpCoolDownTimer = ", m_vehicleStruct00.vehicleData.jumpData.jumpCoolDownTimer, "");
-    m_debugData->DebugPushUILineDecimalNumber("impulseBurnTimer = ", m_vehicleStruct00.vehicleData.jumpData.impulseBurnTimer, "");
-
-    m_debugData->DebugPushUILineWholeNumber("isJumpReady = ", m_vehicleStruct00.vehicleData.jumpData.isJumpReady, "");
-    m_debugData->DebugPushUILineWholeNumber("isJumpActive = ", m_vehicleStruct00.vehicleData.jumpData.isJumpActive, "");
-    m_debugData->DebugPushUILineDecimalNumber("isJumpOnCoolDown = ", m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown, "");
-    m_debugData->DebugPushUILineWholeNumber("isImpulseBurnActive = ", m_vehicleStruct00.vehicleData.jumpData.isLaunchImpulseBurnActive, "");
-    m_debugData->DebugPushUILineWholeNumber("isLandImpulseBurnActive = ", m_vehicleStruct00.vehicleData.jumpData.isLandImpulseBurnActive, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("q.velocity.y = ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("q.position.y = ", m_vehicleStruct00.vehicleData.q.position.y, "");
-
-    m_debugData->DebugPushUILineWholeNumber("isImpulseBurnActive = ", m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive, "");
-
-    if (m_vehicleStruct00.vehicleData.q.position.y >= m_testMaxAlt)
-    {
-        m_testMaxAlt = m_vehicleStruct00.vehicleData.q.position.y;
-    }
-    m_debugData->DebugPushUILineDecimalNumber("m_testMaxAlt = ", m_testMaxAlt, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_testValForce = ", m_testValForce, "");
-
-    DirectX::SimpleMath::Vector3 torqueArmVec = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm;
-    float torqueArmLength = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm.Length();
-    m_debugData->DebugPushUILineDecimalNumber("torqueArmLength = ", torqueArmLength, "");
-    //bool testActivate = ActivateJump();
-
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
     UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
+    //m_vehicleStruct00.vehicleData.jumpData.isJumpReady = false;
+
     UpdateImpulseForces(static_cast<float>(aTimeDelta));
 
-    
-    //m_vehicleStruct00.vehicleData.q.velocity.y = -200.0f;
-    /*
-    m_vehicleStruct00.vehicleData.q.position.y = 12.1f;
     m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-
-    
-    m_vehicleStruct00.vehicleData.q.position.y = 10.25f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    
-    m_vehicleStruct00.vehicleData.q.position.y = 6.75f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
- 
-    m_vehicleStruct00.vehicleData.q.position.y = 3.25f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    */
-
-    /*
-    m_vehicleStruct00.vehicleData.q.position.y = 12.1f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 11.9f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 10.25f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 8.6f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 8.4f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 6.75f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 5.1f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 4.9f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 3.25f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    */
-    /*
-    m_vehicleStruct00.vehicleData.q.position.y = 4.9f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    m_vehicleStruct00.vehicleData.q.position.y = 3.25f;
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-    */
-
-    
-
-
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
-
-
-
-
 
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
@@ -3561,6 +3375,24 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     UpdateAlignment();
     UpdateNPCModel(aTimeDelta);
     UpdateHardPoints();
+
+    if (m_vehicleStruct00.vehicleData.q.position.y > 300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f)
+    {
+        int testbreak = 0;
+        testbreak++;
+
+        DirectX::SimpleMath::Vector3 testBuoyancy = m_buoyancyTestForce;
+        m_buoyancyTestForce = DirectX::SimpleMath::Vector3::Zero;
+        m_vehicleStruct00.vehicleData.q.position.x = 1000.0f;
+        m_vehicleStruct00.vehicleData.q.position.y = 12.0f;
+        m_vehicleStruct00.vehicleData.q.position.z = 0.0f;
+
+        m_vehicleStruct00.vehicleData.q.velocity.x = 0.0f;
+        m_vehicleStruct00.vehicleData.q.velocity.y = 0.0f;
+        m_vehicleStruct00.vehicleData.q.velocity.z = 0.0f;
+
+    }
+
 
     m_vehicleStruct00.vehicleData.isCollisionTrue = false;
 
@@ -3574,14 +3406,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     UpdateForceTorqueVecs();
 
-
-    float currentVelocity = m_vehicleStruct00.vehicleData.q.velocity.Length();
-    if (currentVelocity > m_testMaxVelocity)
-    {
-        m_testMaxVelocity = currentVelocity;
-    }
-    //m_debugData->DebugPushUILineDecimalNumber("Top Speed = ", m_testMaxVelocity, "");
-    m_debugData->DebugClearUI();
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)

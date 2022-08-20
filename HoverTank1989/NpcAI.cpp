@@ -1054,9 +1054,9 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
     else
     {
-        UpdateDestinationSmoothing();
+        //UpdateDestinationSmoothing();
     }
-    //UpdateDestinationSmoothing();
+    UpdateDestinationSmoothing();
     if (m_debugToggle == true)
     {
         UpdateControlOutput();
