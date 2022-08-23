@@ -398,7 +398,7 @@ private:
 
     float m_unlockTimer1 = 0.0f;
     float m_unlockTimer2 = 0.0f;
-    const int m_unlockCountDownTicks = 5;
+    const int m_unlockCountDownTicks = 1;
     int m_unlockCountdown = m_unlockCountDownTicks;
     bool m_isDisplayCountdownTrue = false;
 

@@ -152,10 +152,13 @@ void Game::Initialize(HWND window, int width, int height)
     pos = DirectX::SimpleMath::Vector3(50.0f, 8.5f, 0.0f);
     heading = -DirectX::SimpleMath::Vector3::UnitX;
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.x += 20.0f;
-    pos.z += 20.0f;
+    //pos.x += 20.0f;
+    pos.z += 7.0001f;
+    pos.y += 5.0f;
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-
+    pos.z -= 5.0001f;
+    //pos.y += 5.0f;
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
 
     // testing new terrain map
     m_terrainVector.clear();
@@ -1111,9 +1114,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
+            m_testTimer1 = 0.0f;
+            m_npcController->TestPositionChange();
+        }
+    }
+    if (m_kbStateTracker.pressed.G)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
             m_isDisplayCountdownTrue = true;
-            //m_testTimer1 = 0.0f;
-            //m_npcController->TestPositionChange();
         }
     }
     if (m_kbStateTracker.pressed.K)

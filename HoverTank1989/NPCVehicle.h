@@ -382,6 +382,9 @@ struct VehicleData
     std::vector<Utility::Torque> impactTorqueVec;
     std::vector<Utility::ImpulseForce> impulseForceVec;
 
+    DirectX::SimpleMath::Vector3    collisionImpulseForceSum = DirectX::SimpleMath::Vector3::Zero;
+    Utility::Torque              collisionImpulseTorqueSum;
+
     DirectX::SimpleMath::Vector3 testProjectileImpulse;
     Utility::Torque       testProjectileTorque;
 
@@ -410,7 +413,7 @@ public:
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
     void CalculateImpactForce4(const VehicleData& aVehicleHit);
-    void CalculateImpulseForce(const VehicleData& aVehicleHit);
+    void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
 
     void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
@@ -456,6 +459,7 @@ public:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
 
+    float GetTestTimer() const { return m_testTimer; };
     void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos, aVehicle); };
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
     void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
@@ -466,6 +470,8 @@ public:
     void SetCollisionVal(const bool aIsCollisionTrue);
 
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
+    
+    
     void TestPositionChange() {
         //m_vehicleStruct00.vehicleData.q.position.y = 45.0f;
         //m_vehicleStruct00.vehicleData.q.velocity.y = -10.2f;
@@ -492,6 +498,10 @@ private:
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetImpactForceSum(const VehicleData& aVehicleData);
     Utility::Torque GetImpactTorqueSum(const VehicleData& aVehicleData);
+
+    DirectX::SimpleMath::Vector3 GetCollisionImpulseForceSum(const VehicleData& aVehicleData);
+    Utility::Torque GetCollisionImpulseTorqueSum(const VehicleData& aVehicleData);
+
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetOmniDirectionalThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetRepulsionForce(const VehicleData& aRepulsorVehicleData);

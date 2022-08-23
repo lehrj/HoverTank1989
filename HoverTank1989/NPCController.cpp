@@ -46,7 +46,9 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
 
 void NPCController::DebugToggleAI()
 {
-    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    //for (unsigned int i = 28; i < m_npcVec.size(); ++i)
+    for (unsigned int i = 28; i < m_npcVec.size(); ++i)
+    //for (unsigned int i = 28; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->DebugToggleAI();
     }
@@ -233,6 +235,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
 void NPCController::CheckNpcCollisions()
 {
     std::vector<std::pair<int, int>> collisionsRecorded;
+    
 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
@@ -242,6 +245,30 @@ void NPCController::CheckNpcCollisions()
             if (i != j)
             {
                 VehicleData testV2 = m_npcVec[j]->GetVehicleData();
+                /*
+                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+                testV1.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
+                testV2.q.velocity = DirectX::SimpleMath::Vector3(0.5f, 0.0f, 0.0f);
+                testV2.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+                */
+                /*
+                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+                testV1.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+                testV2.q.velocity = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f);
+                testV2.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
+                */
+                /*
+                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.5f, 0.0f, 0.0f);
+                testV1.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+                testV2.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+                testV2.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
+                */
+                /*
+                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+                testV1.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
+                testV2.q.velocity = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f);
+                testV2.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+                */
                 const float distance = (testV1.q.position - testV2.q.position).Length();
                 const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
                 // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
@@ -259,19 +286,58 @@ void NPCController::CheckNpcCollisions()
                             }
                         }
 
-                        collisionsRecorded.push_back(std::pair<int, int>(testV1.id, testV2.id));
+                        //collisionsRecorded.push_back(std::pair<int, int>(testV1.id, testV2.id));
 
                         if (hasCollisionBeenRecordedYet == false)
                         {
+                            collisionsRecorded.push_back(std::pair<int, int>(testV1.id, testV2.id));
+
+                            DirectX::SimpleMath::Vector3 p1localizedTo2 = testV1.q.position - testV2.q.position;
+                            DirectX::SimpleMath::Vector3 p1localizedTo2Norm = p1localizedTo2;
+                            p1localizedTo2Norm.Normalize();
+                            DirectX::SimpleMath::Vector3 p2localizedTo1 = testV2.q.position - testV1.q.position;
+                            DirectX::SimpleMath::Vector3 p2localizedTo1Norm = p2localizedTo1;
+                            p2localizedTo1Norm.Normalize();
+
                             float mass1 = testV1.mass; // aVehicleHit.mass;
                             float mass2 = testV2.mass; // m_vehicleStruct00.vehicleData.mass;
                             float e = 0.4f;
+                            //float e = 1.0f;
 
                             float tmp = 1.0f / (mass1 + mass2);
                             DirectX::SimpleMath::Vector3 vx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
                             DirectX::SimpleMath::Vector3 vx2 = testV2.q.velocity; // m_vehicleStruct00.vehicleData.q.velocity;
+
+                            DirectX::SimpleMath::Vector3 aVelocityvx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
+                            DirectX::SimpleMath::Vector3 aVelocityvx2 = testV2.q.velocity; // m_vehicleStruct00.vehicleData.q.velocity;
+
+                            float aLengthVel1 = aVelocityvx1.Length();
+                            float aLengthVel2 = aVelocityvx2.Length();
+
+                            DirectX::SimpleMath::Vector3 aNormVelocity1 = aVelocityvx1;
+                            aNormVelocity1.Normalize();
+                            DirectX::SimpleMath::Vector3 aNormVelocity2 = aVelocityvx2;
+                            aNormVelocity2.Normalize();
+
+                            DirectX::SimpleMath::Vector3 aPositionvx1 = testV1.q.position; // aVehicleHit.q.velocity;
+                            DirectX::SimpleMath::Vector3 aPositionvx2 = testV2.q.position; // m_vehicleStruct00.vehicleData.q.velocity;
+
+                            DirectX::SimpleMath::Vector3 testVelocityPre1 = vx1 - vx2;
+                            DirectX::SimpleMath::Vector3 testVelocityPre2 = vx2 - vx1;
+
+                            DirectX::SimpleMath::Vector3 testVelocityNorm1 = testVelocityPre1;
+                            testVelocityNorm1.Normalize();
+
+                            DirectX::SimpleMath::Vector3 testVelocityNorm2 = testVelocityPre2;
+                            testVelocityNorm2.Normalize();
+                            //vx1 = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+                            //vx2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+
                             DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp + (1.0 + e) * mass2 * vx2 * tmp;
                             DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp + (mass2 - e * mass1) * vx2 * tmp;
+
+                            DirectX::SimpleMath::Vector3 testVelocityPost1 = newVx1 - newVx2;
+                            DirectX::SimpleMath::Vector3 testVelocityPost2 = newVx2 - newVx1;
 
                             float newVX1Length = newVx1.Length();
                             float newVX2Length = newVx2.Length();
@@ -284,25 +350,127 @@ void NPCController::CheckNpcCollisions()
 
                             //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
                             //m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
-                            m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
-                            m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
 
 
-                            DirectX::SimpleMath::Vector3 testVec = newVx1.Cross(newVx2);
-                            float testDot2 = vx1.Dot(vx2);
-                            vx1.Normalize();
-                            vx2.Normalize();
-                            float testDot = vx1.Dot(vx2);
-                            if (testDot < 0.5f)
+                            //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
+                            //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
+
+
+                            //DirectX::SimpleMath::Vector3 testVec = newVx1.Cross(newVx2);
+                            //float testDot2 = vx1.Dot(vx2);
+                            DirectX::SimpleMath::Vector3 vx1Norm = vx1;
+                            vx1Norm.Normalize();
+                            DirectX::SimpleMath::Vector3 vx2Norm = vx2;
+                            vx2Norm.Normalize();
+
+                            DirectX::SimpleMath::Vector3 newVx1Norm = newVx1;
+                            newVx1Norm.Normalize();
+                            DirectX::SimpleMath::Vector3 newVx2Norm = newVx2;
+                            newVx1Norm.Normalize();
+
+                            float vxDot = vx1Norm.Dot(vx2Norm);
+                            float newVxDot = newVx1Norm.Dot(newVx2Norm);
+
+                            float testvx1Dot = vx1Norm.Dot(newVx1Norm);
+                            float testvx2Dot = vx2Norm.Dot(newVx2Norm);
+
+                            float p1DotA = p1localizedTo2Norm.Dot(vx1Norm);
+                            float p1DotB = p1localizedTo2Norm.Dot(vx2Norm);
+                            float p1DotC = p1localizedTo2Norm.Dot(newVx1Norm);
+                            float p1DotD = p1localizedTo2Norm.Dot(newVx2Norm);
+                            float p2DotA = p2localizedTo1Norm.Dot(vx2Norm);
+                            float p2DotB = p2localizedTo1Norm.Dot(vx1Norm);
+                            float p2DotC = p2localizedTo1Norm.Dot(newVx2Norm);
+                            float p2DotD = p2localizedTo1Norm.Dot(newVx1Norm);
+
+                            float pP1 = p1localizedTo2Norm.Dot(vx1Norm);
+                            float pP2 = p2localizedTo1Norm.Dot(vx2Norm);
+
+                            float x1a = p1localizedTo2Norm.Dot(testVelocityNorm1);
+                            float x1b = p2localizedTo1Norm.Dot(testVelocityNorm1);
+                            float x2a = p2localizedTo1Norm.Dot(testVelocityNorm2);
+                            float x2b = p1localizedTo2Norm.Dot(testVelocityNorm2);
+
+                            //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
+                            //m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
+                            //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
+                            //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
+                            if (x1a < 0.0f)
+                            {
+                                m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData(), newVx1, newVx2);
+                                m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData(), newVx2, newVx1);
+                                //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
+                                //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
+                                m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                                m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+
+                            }
+                            else
+                            {
+                                if (x1b > 0.0f || x2a < 0.0f || x2b > 0.0f)
+                                {
+                                    int testBreak3 = 0;
+                                    testBreak3++;
+                                }
+                                else
+                                {
+                                    int testBreak4 = 0;
+                                    testBreak4++;
+                                }
+                            }
+
+                            /*
+                            if (pP1 < 0.0f)
+                            {
+                                m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                            }
+                            if (pP2 < 0.0f)
+                            {
+                                m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                            }
+
+                            if (pP1 < 0.5f && pP2 < 0.5f)
+                            {
+                                m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                                m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                            }
+                            */
+                            int testBreak2 = 0;
+                            testBreak2++;
+
+                            //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                            //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                            //if (vxDot < 0.5f)
+                            /*
+                            if (vxDot < 0.5f)
                             {
                                 m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
                                 m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
                             }
                             else
                             {
-                                int testBreak = 0;
-                                testBreak++;
+                                if (newVxDot < 0.5f)
+                                {
+                                    int testBreak = 0;
+                                    testBreak++;
+                                    m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                                    m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                                }
+                                else
+                                {
+                                    int testBreak = 0;
+                                    testBreak++;
+                                    //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                                    //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                                }
+
+                                //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                                //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                                int testBreak1 = 0;
+                                testBreak1++;
                             }
+                            */
+
                             //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
                             //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
                         }
@@ -314,6 +482,8 @@ void NPCController::CheckNpcCollisions()
             }
         }
     }
+
+    m_debugData->DebugPushUILineWholeNumber("collisionsRecorded Size = ", collisionsRecorded.size(), "");
 }
 
 

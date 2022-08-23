@@ -569,6 +569,7 @@ void NpcAI::CreateWayPath()
 
     //Utility::PushWaypointToPath(m_currentWayPath, wp7);
     //Utility::PushWaypointToPath(m_currentWayPath, wp2);
+    /*
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     Utility::PushWaypointToPath(m_currentWayPath, wp5);
     Utility::PushWaypointToPath(m_currentWayPath, wp6);
@@ -577,31 +578,31 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
     Utility::PushWaypointToPath(m_currentWayPath, wp7);
     Utility::PushWaypointToPath(m_currentWayPath, wp2);
-
-    /*
+    */
+    
     if (m_npcOwner->GetID() % 2)
     {
+        Utility::PushWaypointToPath(m_currentWayPath, wp4);
+        Utility::PushWaypointToPath(m_currentWayPath, wp5);
+        Utility::PushWaypointToPath(m_currentWayPath, wp6);
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
         Utility::PushWaypointToPath(m_currentWayPath, wp3);
         Utility::PushWaypointToPath(m_currentWayPath, wp8);
         Utility::PushWaypointToPath(m_currentWayPath, wp7);
         Utility::PushWaypointToPath(m_currentWayPath, wp2);
-        Utility::PushWaypointToPath(m_currentWayPath, wp4);
-        Utility::PushWaypointToPath(m_currentWayPath, wp5);
-        Utility::PushWaypointToPath(m_currentWayPath, wp6);
     }
     else
     {
-        Utility::PushWaypointToPath(m_currentWayPath, wp6);
-        Utility::PushWaypointToPath(m_currentWayPath, wp5);
-        Utility::PushWaypointToPath(m_currentWayPath, wp4);
         Utility::PushWaypointToPath(m_currentWayPath, wp2);
         Utility::PushWaypointToPath(m_currentWayPath, wp7);
         Utility::PushWaypointToPath(m_currentWayPath, wp8);
         Utility::PushWaypointToPath(m_currentWayPath, wp3);
         Utility::PushWaypointToPath(m_currentWayPath, wp1);
+        Utility::PushWaypointToPath(m_currentWayPath, wp6);
+        Utility::PushWaypointToPath(m_currentWayPath, wp5);
+        Utility::PushWaypointToPath(m_currentWayPath, wp4);
     }
-    */
+    
     m_currentWayPath.targetNode = 0;
 }
 
@@ -1037,12 +1038,12 @@ void NpcAI::UpdateAI(const float aTimeStep)
     UpdateSeparation();
     if (m_destinationTargets.isSeparationTargetInRadius == true)
     {
-        m_currentDestination = m_destinationTargets.separationTarget;
+        //m_currentDestination = m_destinationTargets.separationTarget;
     }
 
     if (m_isAvoidanceTrue == true)
     {
-        AvoidPos();
+        //AvoidPos();
         if (m_debugToggle == false)
         {
 
