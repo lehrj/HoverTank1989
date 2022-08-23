@@ -157,6 +157,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 }
                 */
                 // avoidance check
+                
                 DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
                 DirectX::BoundingBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
 
@@ -172,9 +173,10 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                     bool testBool9 = avoidanceBox.Intersects(testV2.collisionBox);
                     bool testBool10 = avoidanceBox.Contains(testV2.collisionBox);
 
-
+                    
                     NPCVehicle const* testTarget = m_npcVec[j];
                     DirectX::BoundingBox collisionBox = m_npcVec[i]->GetCollisionData();
+                    //DirectX::BoundingOrientedBox collisionBox = m_npcVec[i]->GetCollisionData();
                     DirectX::BoundingBox avoidanceBox2 = testTarget->GetAvoidanceBox();
                     //bool testBool3 = avoidanceBox.Intersects(testV2.collisionBox);
                     //bool testBool4 = avoidanceBox.Contains(testV2.collisionBox);
@@ -196,11 +198,13 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
 
                         testBreak++;
                     }
+                    
                 }
                 else if (avoidanceBox.Intersects(avoidanceBox2) == true || avoidanceBox.Contains(avoidanceBox2) == true)
                 {
                     //m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);
                 }
+                
             }
         }
     }
@@ -214,6 +218,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
             //DirectX::BoundingBox avoidanceBox = testTarget->GetAvoidanceBox();
             int testInt2 = testTarget->GetID();
             DirectX::BoundingBox collisionBox = testTarget->GetCollisionData();
+            //DirectX::BoundingOrientedBox collisionBox = testTarget->GetCollisionData();
             DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
             if (avoidanceBox.Intersects(collisionBox) == false && avoidanceBox.Contains(collisionBox) == false)
             {
@@ -245,30 +250,7 @@ void NPCController::CheckNpcCollisions()
             if (i != j)
             {
                 VehicleData testV2 = m_npcVec[j]->GetVehicleData();
-                /*
-                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
-                testV1.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
-                testV2.q.velocity = DirectX::SimpleMath::Vector3(0.5f, 0.0f, 0.0f);
-                testV2.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
-                */
-                /*
-                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
-                testV1.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
-                testV2.q.velocity = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f);
-                testV2.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
-                */
-                /*
-                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.5f, 0.0f, 0.0f);
-                testV1.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
-                testV2.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
-                testV2.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
-                */
-                /*
-                testV1.q.velocity = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
-                testV1.q.position = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
-                testV2.q.velocity = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f);
-                testV2.q.position = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
-                */
+                //const VehicleData& testV2 = m_npcVec[j]->GetVehicleData();
                 const float distance = (testV1.q.position - testV2.q.position).Length();
                 const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
                 // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
@@ -330,8 +312,6 @@ void NPCController::CheckNpcCollisions()
 
                             DirectX::SimpleMath::Vector3 testVelocityNorm2 = testVelocityPre2;
                             testVelocityNorm2.Normalize();
-                            //vx1 = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
-                            //vx2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
                             DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp + (1.0 + e) * mass2 * vx2 * tmp;
                             DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp + (mass2 - e * mass1) * vx2 * tmp;
@@ -397,13 +377,132 @@ void NPCController::CheckNpcCollisions()
                             //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
                             if (x1a < 0.0f)
                             {
-                                m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData(), newVx1, newVx2);
-                                m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData(), newVx2, newVx1);
+                                DirectX::XMFLOAT3 testV1Corners[8];
+                                DirectX::XMFLOAT3* pCorners1;
+                                pCorners1 = testV1Corners;
+                                testV1.collisionBox.GetCorners(pCorners1);
+                                
+
+                                DirectX::XMFLOAT3 testV2Corners[8];         
+                                DirectX::XMFLOAT3* pCorners2 = testV2Corners;
+                                testV2.collisionBox.GetCorners(pCorners2);
+                                pCorners2 = nullptr;
+ 
+                                int impactCornerCount = 0;
+                                DirectX::SimpleMath::Vector3 testV1ClosestCorner = DirectX::SimpleMath::Vector3::Zero;
+                                float testV1ClosestCornerDistance = 0.0f;
+                                bool isTestV1ClosestCornerFound = false;
+                                DirectX::SimpleMath::Vector3 testV1SecondClosestCorner = DirectX::SimpleMath::Vector3::Zero;
+                                float testV1ClosestSecondCornerDistance = 0.0f;
+                                bool isTestV1SecondClosestCornerFound = false;
+                                for (int l = 0; l < 8; ++l)
+                                {
+                                    DirectX::SimpleMath::Vector3 cornerPos = testV1Corners[l];
+                                    float distanceToCenter = (cornerPos - testV2.collisionBox.Center).Length();
+
+                                    if (isTestV1ClosestCornerFound == false)
+                                    {
+                                        testV1ClosestCorner = cornerPos;
+                                        testV1ClosestCornerDistance = distanceToCenter;
+                                        isTestV1ClosestCornerFound = true;
+                                    }
+                                    else if (isTestV1SecondClosestCornerFound == false)
+                                    {
+                                        if (distanceToCenter < testV1ClosestCornerDistance)
+                                        {
+                                            testV1SecondClosestCorner = testV1ClosestCorner;
+                                            testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                            testV1ClosestCorner = cornerPos;
+                                            testV1ClosestCornerDistance = distanceToCenter;
+                                            isTestV1SecondClosestCornerFound = true;
+                                        }
+                                        else
+                                        {
+                                            testV1SecondClosestCorner = cornerPos;
+                                            testV1ClosestSecondCornerDistance = distanceToCenter;
+                                            isTestV1SecondClosestCornerFound = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (distanceToCenter < testV1ClosestCornerDistance)
+                                        {
+                                            testV1SecondClosestCorner = testV1ClosestCorner;
+                                            testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                            testV1ClosestCorner = cornerPos;
+                                            testV1ClosestCornerDistance = distanceToCenter;
+
+                                        }
+                                        else if(distanceToCenter < testV1ClosestSecondCornerDistance)
+                                        {
+                                            testV1SecondClosestCorner = cornerPos;
+                                            testV1ClosestSecondCornerDistance = distanceToCenter;
+                                        }
+                                    }
+                                }
+                                DirectX::SimpleMath::Vector3 testV1ImpactPos = (testV1ClosestCorner + testV1SecondClosestCorner) * 0.5f;
+                                isTestV1ClosestCornerFound = false;
+                                isTestV1SecondClosestCornerFound = false;
+                                for (int l = 0; l < 8; ++l)
+                                {
+                                    DirectX::SimpleMath::Vector3 cornerPos = testV2Corners[l];
+                                    //float distanceToCenter = (cornerPos - testV1ImpactPos).Length();
+                                    float distanceToCenter = (cornerPos - testV1.collisionBox.Center).Length();
+                                    //float distanceToCenter = (cornerPos - testV1.hardPoints.centerOfMassPos).Length();
+                                    if (isTestV1ClosestCornerFound == false)
+                                    {
+                                        testV1ClosestCorner = cornerPos;
+                                        testV1ClosestCornerDistance = distanceToCenter;
+                                        isTestV1ClosestCornerFound = true;
+                                    }
+                                    else if (isTestV1SecondClosestCornerFound == false)
+                                    {
+                                        if (distanceToCenter < testV1ClosestCornerDistance)
+                                        {
+                                            testV1SecondClosestCorner = testV1ClosestCorner;
+                                            testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                            testV1ClosestCorner = cornerPos;
+                                            testV1ClosestCornerDistance = distanceToCenter;
+                                            isTestV1SecondClosestCornerFound = true;
+                                        }
+                                        else
+                                        {
+                                            testV1SecondClosestCorner = cornerPos;
+                                            testV1ClosestSecondCornerDistance = distanceToCenter;
+                                            isTestV1SecondClosestCornerFound = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (distanceToCenter < testV1ClosestCornerDistance)
+                                        {
+                                            testV1SecondClosestCorner = testV1ClosestCorner;
+                                            testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                            testV1ClosestCorner = cornerPos;
+                                            testV1ClosestCornerDistance = distanceToCenter;
+
+                                        }
+                                        else if (distanceToCenter < testV1ClosestSecondCornerDistance)
+                                        {
+                                            testV1SecondClosestCorner = cornerPos;
+                                            testV1ClosestSecondCornerDistance = distanceToCenter;
+                                        }
+                                    }
+                                }
+                                DirectX::SimpleMath::Vector3 testV2ImpactPos = (testV1ClosestCorner + testV1SecondClosestCorner) * 0.5f;
+                                DirectX::SimpleMath::Vector3 impactPoint = (testV1ImpactPos + testV2ImpactPos) * 0.5f;
+
+                                pCorners1 = nullptr;
+                                pCorners2 = nullptr;
+                                delete pCorners1;
+                                delete pCorners2;
+
+                                m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData(), newVx1, newVx2, impactPoint);
+                                m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData(), newVx2, newVx1, impactPoint);
                                 //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
                                 //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
                                 m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
                                 m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-
                             }
                             else
                             {

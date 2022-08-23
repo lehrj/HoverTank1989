@@ -740,7 +740,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit)
 
 
 
-void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2)
+void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
     DirectX::SimpleMath::Vector3 testVecUsed = aForceVec1;
     Utility::ImpulseForce impulseToVec;
@@ -756,17 +756,20 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     //impulseToVec.maxMagnitude *= 0.9f;
     //impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
     impulseToVec.torqueArm = aVehicleHit.hardPoints.centerOfMassPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    impulseToVec.torqueArm = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos - aImpactPos;
+    impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    //impulseToVec.torqueArm = DirectX::SimpleMath::Vector3::Zero;
     //impulseToVec.torqueArm = m_vehicleStruct00.vehicleData.up * 5.0f;
     //impulseToVec.torqueArm = aForceVec2;
-    impulseToVec.torqueArm.Normalize();
+    //impulseToVec.torqueArm.Normalize();
     impulseToVec.torqueArm *= 1.0f;
     impulseToVec.totalTime = 0.1f;
     float impactVelocity = (aVehicleHit.q.velocity - m_vehicleStruct00.vehicleData.q.velocity).Length();
     float impactTime = 1 / (impactVelocity + 0.00000000001);
     //impulseToVec.totalTime = impactTime;
 
-    impulseToVec.maxMagnitude = testVecUsed.Length() * 5000.0f;
-    //impulseToVec.maxMagnitude = 100000.0f;
+    impulseToVec.maxMagnitude = aForceVec1.Length() * aVehicleHit.mass;
+
     PushImpulseForce(impulseToVec);
 
     Utility::ImpulseForce repulsorToVec;
@@ -783,6 +786,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     //repulsorToVec.maxMagnitude = GetRepulsionForce(aVehicleHit).Length() * 10000.0f;
     repulsorToVec.maxMagnitude = repulsionForce.Length() * 10000.0f;
     repulsorToVec.torqueArm = DirectX::SimpleMath::Vector3::Zero;
+    repulsorToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
     repulsorToVec.totalTime = 0.1f;
 
     PushImpulseForce(repulsorToVec);
@@ -1076,26 +1080,31 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     {
         testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     }
-   
+
+    //DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::BoundingBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
+    //DirectX::BoundingOrientedBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 2.0f;
 
     DirectX::SimpleMath::Vector3 testPos = m_vehicleStruct00.vehicleData.q.position;
     testPos.y += 0.0f;
     DirectX::SimpleMath::Matrix collisionMat = DirectX::SimpleMath::Matrix::Identity;
-    collisionMat = m_vehicleStruct00.vehicleData.alignment;
+    //collisionMat = m_vehicleStruct00.vehicleData.alignment;
+    //collisionMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(avoidBox.Orientation);
     collisionMat *= DirectX::SimpleMath::Matrix::CreateTranslation(testPos);
 
-    m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
+    //m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
-    m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
-
+    //m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
+    
+    
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
 {
     DirectX::BoundingBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
+    //DirectX::BoundingOrientedBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
     updatedCollision.Center = aPos;
 
     bool isPosPenetrating = false;
@@ -3243,6 +3252,8 @@ void NPCVehicle::UpdateHardPoints()
     m_vehicleStruct00.vehicleData.hardPoints.leftJetAxis = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localLeftJetAxis, updateMat);
     m_vehicleStruct00.vehicleData.hardPoints.rightJetAxis = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localRightJetAxis, updateMat);
 
+    DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleStruct00.vehicleData.alignment);
+    //m_vehicleStruct00.vehicleData.collisionBox.Orientation = updateQuat;
 }
 
 void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)

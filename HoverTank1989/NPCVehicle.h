@@ -373,6 +373,7 @@ struct VehicleData
     VehicleHardPoints           hardPoints;
     NPCType                     npcType;
     DirectX::BoundingBox        collisionBox;
+    //DirectX::BoundingOrientedBox        collisionBox;
     bool                        isCollisionTrue;
 
     Utility::ImpactForce        impactForce;
@@ -413,7 +414,7 @@ public:
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
     void CalculateImpactForce4(const VehicleData& aVehicleHit);
-    void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2);
+    void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
 
     void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
@@ -436,6 +437,7 @@ public:
     NPCVehicle const* GetAvoidanceNPCTarget() { return m_npcAI->GetAvoidanceTarget(); };
 
     const DirectX::BoundingBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
+    //const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
