@@ -372,8 +372,8 @@ struct VehicleData
 
     VehicleHardPoints           hardPoints;
     NPCType                     npcType;
-    DirectX::BoundingBox        collisionBox;
-    //DirectX::BoundingOrientedBox        collisionBox;
+    //DirectX::BoundingBox        collisionBox;
+    DirectX::BoundingOrientedBox        collisionBox;
     bool                        isCollisionTrue;
 
     Utility::ImpactForce        impactForce;
@@ -392,6 +392,8 @@ struct VehicleData
     HoverData                    hoverData;
     NpcControlInput              controlInput;
     DirectX::SimpleMath::Vector3 playerPos;
+    DirectX::SimpleMath::Vector3 playerVelocity = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Matrix playerAlignment = DirectX::SimpleMath::Matrix::Identity;
     JumpData                     jumpData;
 };
 
@@ -431,13 +433,14 @@ public:
     float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
 
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
-    DirectX::BoundingBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
+    //DirectX::BoundingBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
+    DirectX::BoundingOrientedBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
     bool GetAvoidanceIsTrue() const { return m_npcAI->GetIsAvoidanceTrue(); };
     int GetAvoidanceTargetIndex() const { return m_avoidanceTargetIndex; };
     NPCVehicle const* GetAvoidanceNPCTarget() { return m_npcAI->GetAvoidanceTarget(); };
 
-    const DirectX::BoundingBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
-    //const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
+    //const DirectX::BoundingBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
+    const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
@@ -450,6 +453,9 @@ public:
 
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
+
+    int GetNodesHit() const { return m_npcAI->GetNodesReachCount(); };
+
     DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
     DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
     float GetTopSpeedCalculated() const { return m_vehicleStruct00.vehicleData.topSpeedCalculated; };
@@ -487,6 +493,8 @@ public:
 
     void UpdateNPC(const double aTimeDelta);
     void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
+    void UpdatePlayerVelocity(const DirectX::SimpleMath::Vector3 aPlayerVelocity);
+    void UpdatePlayerAlignment(const DirectX::SimpleMath::Matrix aAlignment);
 
 private:
     void ActivateJumpLanding();
@@ -577,6 +585,8 @@ private:
 
     float m_testMaxAlt = 0.0f;
     float m_testValForce = 0.0f;
+
+    DirectX::SimpleMath::Vector3 m_lastImpactPos = DirectX::SimpleMath::Vector3::Zero;
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

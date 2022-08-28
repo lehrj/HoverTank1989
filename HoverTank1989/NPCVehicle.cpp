@@ -742,6 +742,8 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit)
 
 void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
+    m_lastImpactPos = aImpactPos;
+
     DirectX::SimpleMath::Vector3 testVecUsed = aForceVec1;
     Utility::ImpulseForce impulseToVec;
     impulseToVec.currentMagnitude = 0.0f;
@@ -770,7 +772,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
 
     impulseToVec.maxMagnitude = aForceVec1.Length() * aVehicleHit.mass;
 
-    PushImpulseForce(impulseToVec);
+    //PushImpulseForce(impulseToVec);
 
     Utility::ImpulseForce repulsorToVec;
     DirectX::SimpleMath::Vector3 repulsionForce = GetRepulsionForce(aVehicleHit);
@@ -789,7 +791,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     repulsorToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
     repulsorToVec.totalTime = 0.1f;
 
-    PushImpulseForce(repulsorToVec);
+    //PushImpulseForce(repulsorToVec);
 
     Utility::ImpactForce repulsionForceToVec;
     repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
@@ -1070,7 +1072,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     //m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
     */
-
+    /*
     testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     if (m_vehicleStruct00.vehicleData.isCollisionTrue == true)
     {
@@ -1080,31 +1082,35 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     {
         testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     }
+    */
 
     //DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
-    DirectX::BoundingBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
-    //DirectX::BoundingOrientedBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
+    //DirectX::BoundingOrientedBox avoidBox = m_npcAI->GetAiAvoidanceBox();
+    //DirectX::BoundingBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
+    DirectX::BoundingOrientedBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 2.0f;
 
-    DirectX::SimpleMath::Vector3 testPos = m_vehicleStruct00.vehicleData.q.position;
-    testPos.y += 0.0f;
     DirectX::SimpleMath::Matrix collisionMat = DirectX::SimpleMath::Matrix::Identity;
     //collisionMat = m_vehicleStruct00.vehicleData.alignment;
-    //collisionMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(avoidBox.Orientation);
-    collisionMat *= DirectX::SimpleMath::Matrix::CreateTranslation(testPos);
+    collisionMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(avoidBox.Orientation);
+    collisionMat *= DirectX::SimpleMath::Matrix::CreateTranslation(avoidBox.Center);
 
-    //m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
+    m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
     
-    
+    if (m_vehicleStruct00.vehicleData.id == 0)
+    {
+        
+    }
+    m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
 {
-    DirectX::BoundingBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
-    //DirectX::BoundingOrientedBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
+    //DirectX::BoundingBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
+    DirectX::BoundingOrientedBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
     updatedCollision.Center = aPos;
 
     bool isPosPenetrating = false;
@@ -2575,6 +2581,23 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
+
+    if (m_vehicleStruct00.vehicleData.id % 2)
+    {
+        DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        m_vehicleStruct00.npcModel.color1 = testColor;
+        m_vehicleStruct00.npcModel.color2 = testColor;
+        m_vehicleStruct00.npcModel.color3 = testColor;
+        m_vehicleStruct00.npcModel.color4 = testColor;
+    }
+    else
+    {
+        DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+        m_vehicleStruct00.npcModel.color1 = testColor;
+        m_vehicleStruct00.npcModel.color2 = testColor;
+        m_vehicleStruct00.npcModel.color3 = testColor;
+        m_vehicleStruct00.npcModel.color4 = testColor;
+    }
     m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController);
 }
 
@@ -2853,6 +2876,8 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     aVehicle->q.velocity = q.velocity;
     aVehicle->q.position = q.position;
     aVehicle->q.bodyTorqueForce = q.bodyTorqueForce;
+
+
 }
 
 void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
@@ -2946,7 +2971,8 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     //m_vehicleStruct00.vehicleData.collisionImpulseForceSum = forceSum;
     //m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum = torqueSum;
     //impactTorque.magnitude *= 0.00002f;
-    impactTorque.magnitude *= .0392f;
+    //impactTorque.magnitude *= .0392f;
+    impactTorque.magnitude *= .000392f;
     if (impactTorque.magnitude > 0.0f)
     {
         int testBreak = 0;
@@ -3253,7 +3279,7 @@ void NPCVehicle::UpdateHardPoints()
     m_vehicleStruct00.vehicleData.hardPoints.rightJetAxis = DirectX::SimpleMath::Vector3::Transform(m_vehicleStruct00.vehicleData.hardPoints.localRightJetAxis, updateMat);
 
     DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleStruct00.vehicleData.alignment);
-    //m_vehicleStruct00.vehicleData.collisionBox.Orientation = updateQuat;
+    m_vehicleStruct00.vehicleData.collisionBox.Orientation = updateQuat;
 }
 
 void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
@@ -3552,6 +3578,22 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
     UpdateControlInputFromAi();
+
+    // for override testing, avoidance and such
+    /*
+    if (m_vehicleStruct00.vehicleData.id == 0)
+    {
+        m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+        UpdateControlInputFromAi();
+    }
+    else
+    {
+        m_vehicleStruct00.vehicleData.q.position = m_vehicleStruct00.vehicleData.playerPos;
+        m_vehicleStruct00.vehicleData.q.velocity = m_vehicleStruct00.vehicleData.playerVelocity;
+        m_vehicleStruct00.vehicleData.alignment = m_vehicleStruct00.vehicleData.playerAlignment;
+    }
+    */
+
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked == true)
     {
         UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, aTimeDelta);
@@ -3565,6 +3607,10 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
+    if (m_vehicleStruct00.vehicleData.id == 0)
+    {
+        //RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    }
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignment();
@@ -3607,6 +3653,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     UpdateForceTorqueVecs();
 
+    //m_debugData->DebugPushTestLinePositionIndicator(m_lastImpactPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
@@ -4240,6 +4287,16 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 void NPCVehicle::UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos)
 {
     m_vehicleStruct00.vehicleData.playerPos = aPlayerPos;
+}
+
+void NPCVehicle::UpdatePlayerVelocity(const DirectX::SimpleMath::Vector3 aPlayerVelocity)
+{
+    m_vehicleStruct00.vehicleData.playerVelocity = aPlayerVelocity;
+}
+
+void NPCVehicle::UpdatePlayerAlignment(const DirectX::SimpleMath::Matrix aAlignment)
+{
+    m_vehicleStruct00.vehicleData.playerAlignment = aAlignment;
 }
 
 

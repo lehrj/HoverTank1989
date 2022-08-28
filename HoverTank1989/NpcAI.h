@@ -33,7 +33,8 @@ public:
     void DebugToggle();
     bool GetAiToggle() const { return  m_debugToggle; };
     float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);
-    DirectX::BoundingBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
+    //DirectX::BoundingBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
+    DirectX::BoundingOrientedBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
     DirectX::SimpleMath::Matrix GetAiAvoidanceBoxAlignment() const { return m_avoidanceAlignment; };
     AIOutput GetAiControlOutput() const { return m_aiControls.aiOutput; };
 
@@ -49,6 +50,8 @@ public:
 
     bool GetEmergencyToggle() const { return m_emergencyToggle; };
 
+    int GetNodesReachCount() const { return m_lapCounter; };
+
     float GetThrottleInput();
     DirectX::SimpleMath::Vector3 GetVecToDestination();
 
@@ -58,6 +61,8 @@ public:
 
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
     void PushAiAvoidanceTarget2(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
+    void PushAiAvoidanceTarget3(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
+    void PushAiAvoidanceTarget4(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
 
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
 
@@ -104,7 +109,12 @@ private:
     void AvoidPos();
     void AvoidPos2();
     void AvoidPos3();
-
+    void AvoidPos4();
+    void AvoidPos5();
+    void AvoidPos6();
+    void AvoidPos7();
+    void AvoidPosOld();
+    void AvoidPosNewAlt1();
     void CreateWayPath();
 
     void InitializeControlOutput();
@@ -143,7 +153,8 @@ private:
     float m_desiredVelocity;
 
     DirectX::SimpleMath::Matrix m_avoidanceAlignment = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::BoundingBox        m_avoidanceBox;
+    //DirectX::BoundingBox        m_avoidanceBox;
+    DirectX::BoundingOrientedBox m_avoidanceBox;
     DirectX::SimpleMath::Vector3 m_avoidanceBoxBase = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_avoidanceBoxRight = - DirectX::SimpleMath::Vector3::UnitZ;
     DirectX::SimpleMath::Vector3 m_avoidaneBoxUp = DirectX::SimpleMath::Vector3::UnitY;
@@ -163,5 +174,7 @@ private:
     bool m_debugToggle = false;
     bool m_emergencyToggle = false;
     bool m_isJumpTriggered = false;
+
+    int m_lapCounter = 0;
 };
 

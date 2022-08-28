@@ -136,6 +136,7 @@ void Game::Initialize(HWND window, int width, int height)
     const float low = 0.0f;
     const float high = 10.0f;
     const float zPosOffSet = 45.0f;
+    //for (int i = 0; i < 8; ++i)
     for (int i = 0; i < 8; ++i)
     {
         for (int j = 0; j < 4; ++j)
@@ -150,14 +151,20 @@ void Game::Initialize(HWND window, int width, int height)
         pos.z += zPosOffSet;
     }
     pos = DirectX::SimpleMath::Vector3(50.0f, 8.5f, 0.0f);
+    pos = DirectX::SimpleMath::Vector3(25.0f, 0.0f, 0.0f);
+    
     heading = -DirectX::SimpleMath::Vector3::UnitX;
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    heading = DirectX::SimpleMath::Vector3(-0.7f, 0.0f, -1.0f);
+    heading.Normalize();
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     //pos.x += 20.0f;
-    pos.z += 7.0001f;
-    pos.y += 5.0f;
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    //pos.z += 7.0001f;
+    pos.x += 25.0f;
+    heading = DirectX::SimpleMath::Vector3::UnitX;
+    pos = DirectX::SimpleMath::Vector3::Zero;
+    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.z -= 5.0001f;
-    //pos.y += 5.0f;
+    pos.x += 25.0f;
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
 
     // testing new terrain map
@@ -585,9 +592,9 @@ void Game::Update(DX::StepTimer const& aTimer)
     {
         m_debugData->DebugClearUI();
         m_testTimer1 += aTimer.GetElapsedSeconds();
-        //m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
-        m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
-        
+        m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
+        //m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
+        m_npcController->UpdateNPCController(m_vehicle->GetPos(), m_vehicle->GetVelocity(), m_vehicle->GetAlignment(),aTimer.GetElapsedSeconds());
     }
     m_camera->UpdateCamera(aTimer);
     //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
@@ -602,7 +609,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
 
-    //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
+    m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
 
 
 }
@@ -1215,7 +1222,7 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout.Get());
 
     DirectX::SimpleMath::Matrix modelWorldBarrel01 = DirectX::SimpleMath::Matrix::Identity;
-    //m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
 
     m_batch->Begin();
 
@@ -1342,7 +1349,7 @@ void Game::Render()
     m_effect3->Apply(context);
     m_batch3->Begin();
 
-    //DrawDebugLinesVector();
+    DrawDebugLinesVector();
 
     m_batch3->End();
 
@@ -1614,6 +1621,7 @@ void Game::DrawDebugDataUI()
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
 
+    /*
     textLine = "m_unlockTimer1   " + std::to_string(m_unlockTimer1);
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
@@ -1624,6 +1632,7 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
+    */
 }
 
 void Game::DrawUnlockUI()

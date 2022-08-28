@@ -819,9 +819,11 @@ void Camera::UpdateFirstPersonCamera()
 
 	m_target = m_position + m_target;
 
+	/*
 	m_debugData->DebugPushUILineDecimalNumber("m_position.x = ", m_position.x, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.y = ", m_position.y, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
+	*/
 }
 
 void Camera::SetSpinCameraStart()

@@ -12,7 +12,8 @@ public:
     void DebugToggleAI();
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment);
-    void UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta);
+    //void UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta);
+    void UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Matrix aPlayerAlignment, const double aTimeDelta);
     void DrawNPCs();
     
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
