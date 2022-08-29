@@ -1083,11 +1083,12 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     }
     */
-
+    
+    /*
     //DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
-    //DirectX::BoundingOrientedBox avoidBox = m_npcAI->GetAiAvoidanceBox();
+    DirectX::BoundingOrientedBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     //DirectX::BoundingBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
-    DirectX::BoundingOrientedBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
+    //DirectX::BoundingOrientedBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
     testSize *= 2.0f;
 
@@ -1105,6 +1106,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         
     }
     m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
+    */
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
@@ -2497,7 +2499,6 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     cornerVertex.z *= 0.5f;
     // set max collision detection range slightly larger than box radius  
     aVehicleStruct.vehicleData.maxCollisionDetectionRange = (cornerVertex - aVehicleStruct.vehicleData.collisionBox.Center).Length() * 1.2f;
-    //aVehicleStruct.vehicleData.maxCollisionDetectionRange = 50.0f;
 
     aVehicleStruct.vehicleData.isCollisionTrue = false;
 
@@ -2582,7 +2583,7 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
 
-    if (m_vehicleStruct00.vehicleData.id % 2)
+    if ((m_vehicleStruct00.vehicleData.id + 1) % 3 == 0)
     {
         DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         m_vehicleStruct00.npcModel.color1 = testColor;
@@ -2590,13 +2591,21 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
         m_vehicleStruct00.npcModel.color3 = testColor;
         m_vehicleStruct00.npcModel.color4 = testColor;
     }
-    else
+    else if ((m_vehicleStruct00.vehicleData.id + 0) % 3 == 0)
     {
         DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
         m_vehicleStruct00.npcModel.color1 = testColor;
         m_vehicleStruct00.npcModel.color2 = testColor;
         m_vehicleStruct00.npcModel.color3 = testColor;
         m_vehicleStruct00.npcModel.color4 = testColor;
+    }
+    else
+    {
+    DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    m_vehicleStruct00.npcModel.color1 = testColor;
+    m_vehicleStruct00.npcModel.color2 = testColor;
+    m_vehicleStruct00.npcModel.color3 = testColor;
+    m_vehicleStruct00.npcModel.color4 = testColor;
     }
     m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController);
 }

@@ -11,9 +11,11 @@ public:
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector4>> DebugGetTestLines() const { return m_debugLinesVec; };
 
     void DebugClearUI() {
+        
         m_debugUI.clear();
         m_debugUIVector.clear();
         m_debugLinesVec.clear();
+        
     };
 
     void DebugPushUILine(std::string aString, float aVal);
@@ -28,5 +30,7 @@ private:
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector4>> m_debugLinesVec;
     std::vector<std::pair<std::string, float>> m_debugUI;
     std::vector<std::string> m_debugUIVector;
+
+    const bool m_isDebugOn = false;
 };
 

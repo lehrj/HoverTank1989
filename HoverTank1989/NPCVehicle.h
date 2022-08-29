@@ -437,6 +437,7 @@ public:
     DirectX::BoundingOrientedBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
     bool GetAvoidanceIsTrue() const { return m_npcAI->GetIsAvoidanceTrue(); };
     int GetAvoidanceTargetIndex() const { return m_avoidanceTargetIndex; };
+    float GetAvoidanceRadius() const { return m_npcAI->GetAvoidanceRadius(); };
     NPCVehicle const* GetAvoidanceNPCTarget() { return m_npcAI->GetAvoidanceTarget(); };
 
     //const DirectX::BoundingBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };

@@ -38,6 +38,8 @@ public:
     DirectX::SimpleMath::Matrix GetAiAvoidanceBoxAlignment() const { return m_avoidanceAlignment; };
     AIOutput GetAiControlOutput() const { return m_aiControls.aiOutput; };
 
+    float GetAvoidanceRadius() const { return m_avoidanceRadius; };
+
     bool GetIsAvoidanceTrue() const { return m_isAvoidanceTrue; };
     bool GetIsAvoidanceTrue1() const { return m_isAvoidanceTrueTest1; };
     bool GetIsAvoidanceTrue2() const { return m_isAvoidanceTrueTest2; };
@@ -162,6 +164,7 @@ private:
     const float                 m_avoidanceBoxLengthMin = 15.0f;
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
     float                       m_avoidanceBoxWidth;
+    float                       m_avoidanceRadius = m_avoidanceBoxLengthMin;
     DirectX::SimpleMath::Vector3 m_avoidanceTargetPos = DirectX::SimpleMath::Vector3::Zero;
     NPCVehicle const*           m_avoidanceTargetNpc = nullptr;
     bool                        m_isAvoidanceTrue = false;

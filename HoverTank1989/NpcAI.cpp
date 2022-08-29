@@ -2020,7 +2020,6 @@ void NpcAI::AvoidPos()
     testRotAvoid1 = DirectX::SimpleMath::Vector3::Transform(testRotAvoid1, zRot1);
     testRotAvoid1 = DirectX::SimpleMath::Vector3::Transform(testRotAvoid1, xRot1);
 
-
     DirectX::SimpleMath::Matrix zRot2 = DirectX::SimpleMath::Matrix::CreateRotationY(zRotVal2);
     DirectX::SimpleMath::Matrix xRot2 = DirectX::SimpleMath::Matrix::CreateRotationY(xRotVal2);
     testRotAvoid2 = DirectX::SimpleMath::Vector3::Transform(testRotAvoid2, zRot2);
@@ -2050,8 +2049,7 @@ void NpcAI::AvoidPos()
 
     DirectX::SimpleMath::Vector3 testRotAvoidWorld4 = testRotAvoid4;
     testRotAvoidWorld4 = DirectX::SimpleMath::Vector3::Transform(testRotAvoidWorld4, toWorldRotation);
-
-    
+  
     /*
     m_debugData->DebugPushTestLine(avoidanceCenterWorld, testRotAvoidWorld1, 20.0f, 8.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(avoidanceCenterWorld, testRotAvoidWorld2, 20.0f, 10.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f));
@@ -2059,14 +2057,12 @@ void NpcAI::AvoidPos()
     m_debugData->DebugPushTestLine(avoidanceCenterWorld, testRotAvoidWorld4, 20.0f, 14.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
     m_debugData->DebugPushTestLine(targetPos, DirectX::SimpleMath::Vector3::UnitY, 20.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     */
-
     //m_debugData->DebugClearUI();
     DirectX::SimpleMath::Vector3 updatedDest = testRotAvoid4;
     //updatedDest *= 25.0f;
     updatedDest *= 15.0f + (100.0f * (1.0f - xDistanceRatioMed));
     updatedDest = DirectX::SimpleMath::Vector3::Transform(updatedDest, toWorldCord);
     //m_debugData->DebugPushTestLinePositionIndicator(updatedDest, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-
 
     const float distanceBetween = (selfPos - targetPos).Length();
     DirectX::SimpleMath::Vector3 intersectVelocity = selfVelocity - targetVelocity;
@@ -2121,19 +2117,14 @@ void NpcAI::AvoidPos()
     }
     */
   
-
     testAvoidanceVec += m_npcOwner->GetPos();
     m_currentDestination = testAvoidanceVec;
     m_currentDestination = updatedDest;
 
     //m_debugData->DebugPushTestLinePositionIndicator(m_currentDestination, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-
     //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
     int testBreak = 0;
     testBreak++;
-
-    
 }
 
 void NpcAI::AvoidPosNewAlt1()
@@ -2422,7 +2413,6 @@ void NpcAI::AvoidPosNewAlt1()
     DirectX::SimpleMath::Vector3 testRotAvoidWorld4 = testRotAvoid4;
     testRotAvoidWorld4 = DirectX::SimpleMath::Vector3::Transform(testRotAvoidWorld4, toWorldRotation);
 
-
     /*
     m_debugData->DebugPushTestLine(avoidanceCenterWorld, testRotAvoidWorld1, 20.0f, 8.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(avoidanceCenterWorld, testRotAvoidWorld2, 20.0f, 10.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f));
@@ -2434,11 +2424,11 @@ void NpcAI::AvoidPosNewAlt1()
     //m_debugData->DebugClearUI();
     DirectX::SimpleMath::Vector3 updatedDest = testRotAvoid4;
     //updatedDest *= 25.0f;
-    updatedDest *= 15.0f + (100.0f * (1.0f - xDistanceRatioMed));
+    updatedDest *= 25.0f + (100.0f * (1.0f - xDistanceRatioMed));
     updatedDest = DirectX::SimpleMath::Vector3::Transform(updatedDest, toWorldCord);
     //m_debugData->DebugPushTestLinePositionIndicator(updatedDest, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
-
+    /*
     const float distanceBetween = (selfPos - targetPos).Length();
     DirectX::SimpleMath::Vector3 intersectVelocity = selfVelocity - targetVelocity;
     const float velocityMag = (selfVelocity - targetVelocity).Length();
@@ -2455,6 +2445,7 @@ void NpcAI::AvoidPosNewAlt1()
     float distanceRatio = vecToTarget.Length();
     distanceRatio /= m_avoidanceBoxLength;
     testAvoidanceVec *= 10.0f;
+    */
 
     /*
     if (m_isAvoidanceTrue == true && m_isAvoidanceTrueTest1 == true)
@@ -2491,16 +2482,12 @@ void NpcAI::AvoidPosNewAlt1()
         m_currentDestination = testAvoidanceVec;
     }
     */
-
-
-    testAvoidanceVec += m_npcOwner->GetPos();
-    m_currentDestination = testAvoidanceVec;
+    //testAvoidanceVec += m_npcOwner->GetPos();
+    //m_currentDestination = testAvoidanceVec;
     m_currentDestination = updatedDest;
 
     //m_debugData->DebugPushTestLinePositionIndicator(m_currentDestination, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-
     //m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
     int testBreak = 0;
     testBreak++;
 }
@@ -3292,7 +3279,21 @@ void NpcAI::UpdateAI(const float aTimeStep)
 
     if (m_isAvoidanceTrue == true)
     {
+        /*
         if (m_npcOwner->GetID() % 2)
+        {
+            AvoidPos();
+        }
+        else
+        {
+            AvoidPosNewAlt1();
+        }
+        */
+        if ((m_npcOwner->GetID() +1) % 3 == 0)
+        {
+            AvoidPosOld();
+        }
+        else if ((m_npcOwner->GetID() + 0) % 3 == 0)
         {
             AvoidPos();
         }
@@ -3385,6 +3386,12 @@ void NpcAI::UpdateAvoidanceBox()
     DirectX::SimpleMath::Quaternion velocityAlignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(velocityAlignment);
     m_avoidanceBox.Orientation = velocityAlignmentQuat;
 
+    DirectX::SimpleMath::Vector3 testPos2 = m_npcOwner->GetPos();
+    float testRadius = (m_avoidanceBox.Center - m_npcOwner->GetPos()).Length();
+    m_avoidanceRadius = (avoidanceLength + avoidanceLength + (m_avoidanceBoxWidth * 0.5f) + (vehicleDimensions.x * 0.5f)) * 0.9f;
+
+    int testBreak = 0;
+    testBreak++;
 }
 
 void NpcAI::UpdateControlOutput()
