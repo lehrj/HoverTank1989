@@ -296,6 +296,7 @@ struct NPCModel
 
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    collisionShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceRadiusShape;
 };
 
 struct VehicleHardPoints
@@ -442,6 +443,7 @@ public:
 
     //const DirectX::BoundingBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
+    float GetCollisionDetectionRange() const { return m_vehicleStruct00.vehicleData.maxCollisionDetectionRange; };
     DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
@@ -459,6 +461,7 @@ public:
 
     DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
     DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
+    DirectX::SimpleMath::Vector3 GetTestAccelVec() const { return m_testAccelVec; };
     float GetTopSpeedCalculated() const { return m_vehicleStruct00.vehicleData.topSpeedCalculated; };
     DirectX::SimpleMath::Vector3 GetUp() const { return m_vehicleStruct00.vehicleData.up; };
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_vehicleStruct00.vehicleData.q.velocity; };
@@ -589,6 +592,7 @@ private:
 
     DirectX::SimpleMath::Vector3 m_lastImpactPos = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Vector3 m_testAccelVec = DirectX::SimpleMath::Vector3::Zero;
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
 

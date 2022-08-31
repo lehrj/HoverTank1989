@@ -35,7 +35,7 @@ public:
     DirectX::SimpleMath::Matrix GetNpcAlignment(const int aId) { return m_npcVec[aId]->GetAlignment(); };
     int GetNpcCount() { return m_npcVec.size(); };
     DirectX::SimpleMath::Vector3 GetNpcPos(const int aId) { return m_npcVec[aId]->GetPos(); };
-    
+    DirectX::SimpleMath::Vector3 GetNpcAccelVecTest(const int aId) { return m_npcVec[aId]->GetTestAccelVec(); };
     void TestPositionChange();
 
     void UnlockJumpAbility();

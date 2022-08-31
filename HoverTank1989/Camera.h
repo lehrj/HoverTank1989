@@ -25,6 +25,7 @@ enum class CameraState
     CAMERASTATE_TRAILERCAMERA,
     CAMERASTATE_TRAILERCAMERA2,
     CAMERASTATE_TRAILERCAMERA3,
+    CAMERASTATE_TRAILERCAMERA4,
     CAMERASTATE_STATIC,
     CAMERASTATE_FOLLOWNPC,
 };
@@ -109,6 +110,8 @@ public:
     void SpinCounterClockwise(float aRotation);
 
     void StartTrailerCamera(DX::StepTimer const& aTimer);
+    void StartTrailerCamera3(DX::StepTimer const& aTimer);
+    void StartTrailerCamera4(DX::StepTimer const& aTimer);
 
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
 
@@ -132,6 +135,7 @@ private:
     void InitializeViewMatrix(); //Pavel
 
     void UpdateChaseCameraNPC();
+    void UpdateChaseCameraNPC2();
     void UpdateChaseCamera();
     void UpdateChaseCamera2();
     void UpdateChaseCamera3();
@@ -147,6 +151,7 @@ private:
     void UpdateTrailerCamera(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera2(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera3(DX::StepTimer const& aTimer);
+    void UpdateTrailerCamera4(DX::StepTimer const& aTimer);
     void UpdateViewMatrix();
 
     DirectX::SimpleMath::Vector3    m_destinationPosition;
@@ -214,7 +219,7 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 m_followCamPosOffset = DirectX::SimpleMath::Vector3(-1.0, 1.0, 0.0);
     DirectX::SimpleMath::Vector3 m_followCamPosOffsetTest = DirectX::SimpleMath::Vector3(-15.0, 0.0, 0.0);
-    DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 5.0, 0.0);
     float                       m_followCamDistance = 1.0;
 
     Environment const* m_environment;
@@ -264,26 +269,34 @@ private:
     float                        m_spinCamCurrentRotation;
 
 
-    const float xLine1 = 380.0f;
+    const float xLine1 = 390.0f;
     const float yLine1 = 11.0f;
-    const float zLine1 = 580.0f;
+    const float zLine1 = 585.0f;
     const float yTarg1 = 8.0f;
     DirectX::SimpleMath::Vector3 m_trailerCamStartPos = DirectX::SimpleMath::Vector3(xLine1, yLine1, zLine1);
     DirectX::SimpleMath::Vector3 m_trailerCamEndPos = DirectX::SimpleMath::Vector3(xLine1, yLine1, 10.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(329.0f, yTarg1, zLine1);
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(328.0, yTarg1, 109.0f);
-    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(379.0f, 11.0f, 12.0f);
-
+    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(379.0f, 11.0f, 12.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(389.0f, 11.0f, 11.6f);
 
     DirectX::SimpleMath::Vector3 m_trailerCamStartPos2 = m_trailerCamEndPos;
     DirectX::SimpleMath::Vector3 m_trailerCamEndPos2 = DirectX::SimpleMath::Vector3(562.0f, 444.0, 0.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos2 = m_trailerTargetEndPos;
-    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(560.0f, 441.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(560.0f, 441.4f, 0.0f);
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(186.0, 0.0f, 0.0f);
 
-    const float m_trailerTimeDuration = 7.0f;
+    DirectX::SimpleMath::Vector3 m_trailerCamStartPos3 = DirectX::SimpleMath::Vector3::Zero;
+    //DirectX::SimpleMath::Vector3 m_trailerCamEndPos3 = DirectX::SimpleMath::Vector3(562.0f, 444.0, 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerCamEndPos3 = DirectX::SimpleMath::Vector3(640.0f, 75.0, 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetStartPos3 = DirectX::SimpleMath::Vector3::UnitX;
+    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(560.0f, 441.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 70.0f, 0.0f);
+
+    const float m_trailerTimeDuration = 3.0f;
     float m_trailerTimerDelay2 = 3.0f;
-    float m_trailerTimeDuration2 = 6.0f;
+    float m_trailerTimeDuration2 = 2.0f;
+    float m_trailerTimeDuration3 = 2.0f;
 
     int m_npcFocusID = 0;
 

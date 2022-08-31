@@ -108,6 +108,7 @@ private:
 
     void AdjustHeadingForVelocity();
     void AdjustHeadingForVelocity2();
+    void AvoidPosCurrent();
     void AvoidPos();
     void AvoidPos2();
     void AvoidPos3();
@@ -116,6 +117,8 @@ private:
     void AvoidPos6();
     void AvoidPos7();
     void AvoidPosOld();
+    void AvoidPosOld1();
+    void AvoidPosOld2();
     void AvoidPosNewAlt1();
     void CreateWayPath();
 

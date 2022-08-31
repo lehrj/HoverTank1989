@@ -165,13 +165,14 @@ void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlay
     int delta01 = nodeHit0 - nodeHit1;
     int delta12 = nodeHit1 - nodeHit2;
     int delta20 = nodeHit2 - nodeHit0;
+    /*
     m_debugData->DebugPushUILineWholeNumber("nodeHit0  = ", nodeHit0, "");
     m_debugData->DebugPushUILineWholeNumber("nodeHit1 = ", nodeHit1, "");
     m_debugData->DebugPushUILineWholeNumber("nodeHit2 = ", nodeHit2, "");
     m_debugData->DebugPushUILineWholeNumber("delta01      = ", delta01, "");
     m_debugData->DebugPushUILineWholeNumber("delta12      = ", delta12, "");
     m_debugData->DebugPushUILineWholeNumber("delta20      = ", delta20, "");
-    
+    */
     UpdateNPCs(aTimeDelta);
 }
 
@@ -198,33 +199,21 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                 const float distance = (m_npcVec[i]->GetPos() - m_npcVec[j]->GetPos()).Length();
                 //const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
                 // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
-                /*
-                if (distance < maxCollisionRange && distance > -1.0f)
-                {
-                    if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
-                    {
-                        m_npcVec[i]->SetCollisionVal(true);
-                        Utility::ImpactForce projectileForce;
-                        projectileForce.impactMass = testV2.mass;
-                        projectileForce.impactVelocity = testV2.q.velocity;
-                        //m_npcVec[i]->CalculateImpactForce2(projectileForce, testV1.collisionBox.Center);
-                        m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
-                    }
-                }
-                */
                 // avoidance check
-                
-                
+
+
                 //DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
                 //DirectX::BoundingBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
                 //DirectX::BoundingOrientedBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
-                DirectX::BoundingOrientedBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
+                //DirectX::BoundingOrientedBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
+                //DirectX::BoundingOrientedBox avoidanceBox2 = m_npcVec[j]->GetCollisionData();
 
-                // To do only cech if with in maxRange
+                // To do only check if with in maxRange
                 //const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
                 //if (distance < (avoidanceBox.Extents.x + avoidanceBox2.Extents.x))
                 if (distance < (m_npcVec[i]->GetAvoidanceRadius() + m_npcVec[j]->GetAvoidanceRadius()))
                 {
+                    DirectX::BoundingOrientedBox avoidanceBox2 = m_npcVec[j]->GetCollisionData();
                     //if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
                     //if (avoidanceBox.Contains(testV2.collisionBox) == true || avoidanceBox.Intersects(testV2.collisionBox) == true)
                     //if (avoidanceBox.Contains(testV2.collisionBox) == true)
@@ -233,19 +222,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
                         //m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);    
                         m_npcVec[i]->PushAvoidanceTarget(m_npcVec[j]->GetPos(), m_npcVec[j]);
                     }
-                }               
-                else
-                {
-                    float distance2 = m_npcVec[i]->GetAvoidanceRadius() + m_npcVec[j]->GetAvoidanceRadius();
-                    float distance3 = m_npcVec[i]->GetAvoidanceRadius();
-                    float distance4 = m_npcVec[j]->GetAvoidanceRadius();
-                    if (avoidanceBox.Contains(avoidanceBox2) == true || avoidanceBox.Intersects(avoidanceBox2) == true)
-                    {
-                        //m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);    
-                        m_npcVec[i]->PushAvoidanceTarget(m_npcVec[j]->GetPos(), m_npcVec[j]);
-                    }
                 }
-                
             }
         }
     }
@@ -265,12 +242,15 @@ void NPCController::CheckNpcCollisions()
             if (i != j)
             {
                 //VehicleData testV2 = m_npcVec[j]->GetVehicleData();
-                const VehicleData& testV2 = m_npcVec[j]->GetVehicleData();
-                const float distance = (testV1.q.position - testV2.q.position).Length();
-                const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
+                //const VehicleData& testV2 = m_npcVec[j]->GetVehicleData();
+                //const float distance = (testV1.q.position - testV2.q.position).Length();
+                const float distance = (m_npcVec[i]->GetPos() - m_npcVec[j]->GetPos()).Length();
+                //const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
+                const float maxCollisionRange = m_npcVec[i]->GetCollisionDetectionRange() + m_npcVec[j]->GetCollisionDetectionRange();
                 // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
                 if (distance < maxCollisionRange && distance > -1.0f)
                 {
+                    const VehicleData& testV2 = m_npcVec[j]->GetVehicleData();
                     //if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
                     if (testV1.collisionBox.Contains(testV2.collisionBox) == true || testV1.collisionBox.Intersects(testV2.collisionBox) == true)
                     //if (testV1.collisionBox.Contains(testV2.collisionBox) == true)
@@ -600,7 +580,7 @@ void NPCController::CheckNpcCollisions()
         }
     }
 
-    m_debugData->DebugPushUILineWholeNumber("collisionsRecorded Size = ", collisionsRecorded.size(), "");
+    //m_debugData->DebugPushUILineWholeNumber("collisionsRecorded Size = ", collisionsRecorded.size(), "");
 }
 
 

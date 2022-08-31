@@ -772,7 +772,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
 
     impulseToVec.maxMagnitude = aForceVec1.Length() * aVehicleHit.mass;
 
-    //PushImpulseForce(impulseToVec);
+    PushImpulseForce(impulseToVec);
 
     Utility::ImpulseForce repulsorToVec;
     DirectX::SimpleMath::Vector3 repulsionForce = GetRepulsionForce(aVehicleHit);
@@ -799,7 +799,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
 
     repulsionForceToVec.impactVelocity *= 150.0f;
     repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
-    //PushImpactForce(repulsionForceToVec);
+    PushImpactForce(repulsionForceToVec);
 
 }
 
@@ -1064,7 +1064,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         testColor.z -= 1.0f;
     }
-    //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f);
+    //testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 1.0f, 1.0f);
     /*
     DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
@@ -1106,6 +1106,14 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         
     }
     m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
+    */
+
+    /*
+    float avoidanceRadius = GetAvoidanceRadius() * 2.0f;
+    m_vehicleStruct00.npcModel.avoidanceRadiusShape = DirectX::GeometricPrimitive::CreateSphere(m_context.Get(), avoidanceRadius);
+    DirectX::SimpleMath::Matrix avoidanceRadMat = DirectX::SimpleMath::Matrix::Identity;
+    avoidanceRadMat = DirectX::SimpleMath::Matrix::CreateTranslation(m_vehicleStruct00.vehicleData.q.position);
+    m_vehicleStruct00.npcModel.avoidanceRadiusShape->Draw(avoidanceRadMat, aView, aProj, testColor, nullptr, true);
     */
 }
 
@@ -2796,7 +2804,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     airResistance.y = 0.0f;
     velocityUpdate += airResistance;
 
-    /*
+    
     if (m_npcAI->GetAiToggle() == false)
     {
         DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
@@ -2805,7 +2813,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
         flutter.y = flutterMod * 7.0f;
         velocityUpdate += flutter * mass;
     }
-    */
+    
 
     //velocityUpdate += GetImpactForceSum(m_vehicleStruct00.vehicleData);
     //velocityUpdate += GetImpactForceSum(m_vehicleStruct00.vehicleData);
@@ -2981,12 +2989,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
     //m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum = torqueSum;
     //impactTorque.magnitude *= 0.00002f;
     //impactTorque.magnitude *= .0392f;
-    impactTorque.magnitude *= .000392f;
-    if (impactTorque.magnitude > 0.0f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
+    impactTorque.magnitude *= .0000392f;
 
     DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (turnTestTorque.axis * turnTestTorque.magnitude);
     float torqueMag = impactTorque.magnitude + gravTorque.magnitude + turnTestTorque.magnitude;
@@ -3566,7 +3569,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 {
     m_testTimer += aTimeDelta;
     m_avoidanceTargetIndex = -1;
-
+   
     DirectX::SimpleMath::Vector3 preVelocity = m_vehicleStruct00.vehicleData.q.velocity;
 
     DirectX::SimpleMath::Vector3 preThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
@@ -3648,7 +3651,9 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         m_vehicleStruct00.vehicleData.q.velocity.z = 0.0f;
 
     }
-
+    m_debugData->DebugPushTestLinePositionIndicator(m_vehicleStruct00.vehicleData.q.position, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    
+    m_testAccelVec = (m_testAccelVec + (m_vehicleStruct00.vehicleData.q.velocity - preVelocity) / static_cast<float>(aTimeDelta)) * 0.5f;
 
     m_vehicleStruct00.vehicleData.isCollisionTrue = false;
 

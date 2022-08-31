@@ -139,7 +139,7 @@ void Game::Initialize(HWND window, int width, int height)
     //for (int i = 0; i < 8; ++i)
     for (int i = 0; i < 8; ++i)
     {
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < 5; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
@@ -156,13 +156,13 @@ void Game::Initialize(HWND window, int width, int height)
     heading = -DirectX::SimpleMath::Vector3::UnitX;
     heading = DirectX::SimpleMath::Vector3(-0.7f, 0.0f, -1.0f);
     heading.Normalize();
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     //pos.x += 20.0f;
     //pos.z += 7.0001f;
     pos.x += 25.0f;
     heading = DirectX::SimpleMath::Vector3::UnitX;
     pos = DirectX::SimpleMath::Vector3::Zero;
-    m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
+    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
     pos.z -= 5.0001f;
     pos.x += 25.0f;
     //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
@@ -895,6 +895,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.T)
     {
+        m_testTimer1 = 0.0f;
         m_npcController->DebugToggleAI();
     }
     if (m_kbStateTracker.pressed.Y)
@@ -1136,14 +1137,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->TestFire();
+            m_camera->StartTrailerCamera4(aTimer);
+            //m_vehicle->TestFire();
         }
     }
     if (m_kbStateTracker.pressed.J)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->TestFire2();
+            m_camera->StartTrailerCamera3(aTimer);
+            //m_vehicle->TestFire2();
         }
     }
     if (m_kbStateTracker.pressed.OemOpenBrackets)
@@ -1609,7 +1612,8 @@ void Game::DrawDebugDataUI()
     }
 
     // Draw Timer
-    std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
+    //std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
+    std::string textLine = "Timer  " + std::to_string(m_testTimer1);
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
