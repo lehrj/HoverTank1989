@@ -117,28 +117,6 @@ void NPCController::UnlockJumpAbility()
 void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Matrix aPlayerAlignment, const double aTimeDelta)
 {
     /*
-    int nodeHitOdd = 0;
-    int nodeHitEven = 0;
-    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
-    {
-        m_npcVec[i]->UpdatePlayerPos(aPlayerPos);
-        m_npcVec[i]->UpdatePlayerVelocity(aPlayerVelocity);
-        m_npcVec[i]->UpdatePlayerAlignment(aPlayerAlignment);
-
-        if (m_npcVec[i]->GetID() % 2)
-        {
-            nodeHitOdd += m_npcVec[i]->GetNodesHit();
-        }
-        else
-        {
-            nodeHitEven += m_npcVec[i]->GetNodesHit();
-        }      
-    }
-    int delta = nodeHitEven - nodeHitOdd;
-    m_debugData->DebugPushUILineWholeNumber("Odd Nodes  = ", nodeHitOdd, "");
-    m_debugData->DebugPushUILineWholeNumber("Even Nodes = ", nodeHitEven, "");
-    m_debugData->DebugPushUILineWholeNumber("delta      = ", delta, "");
-    */
     int nodeHit0 = 0;
     int nodeHit1 = 0;
     int nodeHit2 = 0;
@@ -165,6 +143,7 @@ void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlay
     int delta01 = nodeHit0 - nodeHit1;
     int delta12 = nodeHit1 - nodeHit2;
     int delta20 = nodeHit2 - nodeHit0;
+    */
     /*
     m_debugData->DebugPushUILineWholeNumber("nodeHit0  = ", nodeHit0, "");
     m_debugData->DebugPushUILineWholeNumber("nodeHit1 = ", nodeHit1, "");
@@ -226,6 +205,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
             }
         }
     }
+
 }
 
 void NPCController::CheckNpcCollisions()
@@ -332,7 +312,7 @@ void NPCController::CheckNpcCollisions()
                             //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
                             //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
 
-
+                            /*
                             //DirectX::SimpleMath::Vector3 testVec = newVx1.Cross(newVx2);
                             //float testDot2 = vx1.Dot(vx2);
                             DirectX::SimpleMath::Vector3 vx1Norm = vx1;
@@ -344,7 +324,7 @@ void NPCController::CheckNpcCollisions()
                             newVx1Norm.Normalize();
                             DirectX::SimpleMath::Vector3 newVx2Norm = newVx2;
                             newVx1Norm.Normalize();
-
+                            
                             float vxDot = vx1Norm.Dot(vx2Norm);
                             float newVxDot = newVx1Norm.Dot(newVx2Norm);
 
@@ -359,14 +339,16 @@ void NPCController::CheckNpcCollisions()
                             float p2DotB = p2localizedTo1Norm.Dot(vx1Norm);
                             float p2DotC = p2localizedTo1Norm.Dot(newVx2Norm);
                             float p2DotD = p2localizedTo1Norm.Dot(newVx1Norm);
+                            */
 
-                            float pP1 = p1localizedTo2Norm.Dot(vx1Norm);
-                            float pP2 = p2localizedTo1Norm.Dot(vx2Norm);
+
+                            //float pP1 = p1localizedTo2Norm.Dot(vx1Norm);
+                            //float pP2 = p2localizedTo1Norm.Dot(vx2Norm);
 
                             float x1a = p1localizedTo2Norm.Dot(testVelocityNorm1);
-                            float x1b = p2localizedTo1Norm.Dot(testVelocityNorm1);
-                            float x2a = p2localizedTo1Norm.Dot(testVelocityNorm2);
-                            float x2b = p1localizedTo2Norm.Dot(testVelocityNorm2);
+                            //float x1b = p2localizedTo1Norm.Dot(testVelocityNorm1);
+                            //float x2a = p2localizedTo1Norm.Dot(testVelocityNorm2);
+                            //float x2b = p1localizedTo2Norm.Dot(testVelocityNorm2);
 
                             //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
                             //m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
@@ -494,7 +476,7 @@ void NPCController::CheckNpcCollisions()
                                 delete pCorners1;
                                 delete pCorners2;
 
-                                m_debugData->DebugPushTestLinePositionIndicator(impactPoint, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+                                //m_debugData->DebugPushTestLinePositionIndicator(impactPoint, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
                                 m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData(), newVx1, newVx2, impactPoint);
                                 m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData(), newVx2, newVx1, impactPoint);
                                 //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
@@ -502,19 +484,7 @@ void NPCController::CheckNpcCollisions()
                                 m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
                                 m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
                             }
-                            else
-                            {
-                                if (x1b > 0.0f || x2a < 0.0f || x2b > 0.0f)
-                                {
-                                    int testBreak3 = 0;
-                                    testBreak3++;
-                                }
-                                else
-                                {
-                                    int testBreak4 = 0;
-                                    testBreak4++;
-                                }
-                            }
+     
 
                             /*
                             if (pP1 < 0.0f)
@@ -532,8 +502,7 @@ void NPCController::CheckNpcCollisions()
                                 m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
                             }
                             */
-                            int testBreak2 = 0;
-                            testBreak2++;
+    
 
                             //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
                             //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);

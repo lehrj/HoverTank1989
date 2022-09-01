@@ -1625,11 +1625,12 @@ void NpcAI::AvoidPosCurrent()
     }
     */
  
+    /*
     m_debugData->DebugPushTestLineBetweenPoints(m_npcOwner->GetPos(), m_currentDestination, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_currentDestination, DirectX::SimpleMath::Vector3::UnitY, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), DirectX::SimpleMath::Vector3::UnitY, 30.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    int testBreak = 0;
-    testBreak++;
+    */
+
 }
 
 void NpcAI::AvoidPosOld()
@@ -3114,7 +3115,7 @@ void NpcAI::CreateWayPath()
         Utility::PushWaypointToPath(m_currentWayPath, wp4);
     }
     */
-
+    Utility::PushWaypointToPath(m_currentWayPath, wp2);
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     Utility::PushWaypointToPath(m_currentWayPath, wp5);
     Utility::PushWaypointToPath(m_currentWayPath, wp6);
@@ -3122,7 +3123,7 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
     Utility::PushWaypointToPath(m_currentWayPath, wp7);
-    Utility::PushWaypointToPath(m_currentWayPath, wp2);
+    
 
     m_currentWayPath.targetNode = 0;
 }
@@ -3312,9 +3313,20 @@ void NpcAI::PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NP
     }
     if (testDot5 < 0.0f && targetLocalVelocity.x <= selfLocalVelocity.x)
     {
-        isCurrentTargetBlue = true;
-        m_isAvoidanceTrueTest1 = true;
+        //isCurrentTargetBlue = true;
+        //m_isAvoidanceTrueTest1 = true;
         isPushTarget = true;
+        if ((targetLocalPos.z <= 0.0f && targetLocalVelocity.z >= 0.0f) || (targetLocalPos.z >= 0.0f && targetLocalVelocity.z <= 0.0f))
+        {
+            //m_debugData->DebugPushTestLineBetweenPoints(targetWorldPos, selfWorldPos, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+            m_isAvoidanceTrueTest1 = true;
+            isCurrentTargetBlue = true;
+        }
+        else
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
     }
 
     if (isCurrentTargetBlue == true && isPushTarget == false)
@@ -3784,51 +3796,14 @@ void NpcAI::UpdateAI(const float aTimeStep)
         ++m_lapCounter;
     }
 
-    //std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
-    //std::string lapCount = "Car " + std::to_string(m_npcOwner->GetID()) + " = ";
-    //m_debugData->DebugPushUILineWholeNumber(lapCount, m_lapCounter, "");
-
     m_currentWaypoint = Utility::GetWaypointFromPath(m_currentWayPath);
     m_currentDestination = m_currentWaypoint.waypointPos;
 
     AdjustHeadingForVelocity();
 
-
-
-    //m_avoidanceTargetPos = m_playerVehicle->GetPos();
-
-
     if (m_isAvoidanceTrue == true)
     {
-        /*
-        if (m_npcOwner->GetID() % 2)
-        {
-            AvoidPos();
-        }
-        else
-        {
-            AvoidPosNewAlt1();
-        }
-        */
-        if ((m_npcOwner->GetID() +1) % 3 == 0)
-        {
-            //AvoidPosOld();
-        }
-        else if ((m_npcOwner->GetID() + 0) % 3 == 0)
-        {
-            //AvoidPosOld();
-            //AvoidPos();
-        }
-        else
-        {
-            //AvoidPosOld();
-            //AvoidPosNewAlt1();
-        }
         AvoidPosCurrent();
-        if (m_debugToggle == false)
-        {
-            
-        }
     }
     else
     {

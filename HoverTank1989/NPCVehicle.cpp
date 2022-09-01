@@ -24,7 +24,7 @@ bool NPCVehicle::ActivateJump()
         m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm = m_vehicleStruct00.vehicleData.right;
         m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.isActive = true;
  
-        float desiredAlt = 40.0f;
+        float desiredAlt = 42.0f;
         const float distanceToDesiredAlt = desiredAlt - m_vehicleStruct00.vehicleData.q.position.y;
         const float gravity = m_environment->GetGravity();
         const float initialVelocity = m_vehicleStruct00.vehicleData.q.velocity.y;
@@ -345,9 +345,6 @@ void NPCVehicle::ActivateJumpLanding()
 
     Utility::ImpulseForce testLaunchImpulse = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce;
     Utility::ImpulseForce testLandImpulse = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce;
-
-    int testBreak = 0;
-    testBreak++;
 }
 
 void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
@@ -1072,6 +1069,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     //m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
     //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
     */
+    
     /*
     testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     if (m_vehicleStruct00.vehicleData.isCollisionTrue == true)
@@ -1084,7 +1082,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     }
     */
     
-    /*
+    
     //DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::BoundingOrientedBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     //DirectX::BoundingBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
@@ -1106,7 +1104,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         
     }
     m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
-    */
+    
 
     /*
     float avoidanceRadius = GetAvoidanceRadius() * 2.0f;
@@ -2590,7 +2588,7 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
-
+    /*
     if ((m_vehicleStruct00.vehicleData.id + 1) % 3 == 0)
     {
         DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2615,6 +2613,7 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     m_vehicleStruct00.npcModel.color3 = testColor;
     m_vehicleStruct00.npcModel.color4 = testColor;
     }
+    */
     m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController);
 }
 
@@ -3640,6 +3639,13 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         int testbreak = 0;
         testbreak++;
 
+        m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive = false;
+        m_vehicleStruct00.vehicleData.jumpData.isJumpActive = false;
+        m_vehicleStruct00.vehicleData.jumpData.isLaunchImpulseBurnActive = false;
+        m_vehicleStruct00.vehicleData.jumpData.isJumpReady = false;
+        m_vehicleStruct00.vehicleData.jumpData.isLandImpulseBurnActive = false;
+        m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown = true;
+
         DirectX::SimpleMath::Vector3 testBuoyancy = m_buoyancyTestForce;
         m_buoyancyTestForce = DirectX::SimpleMath::Vector3::Zero;
         m_vehicleStruct00.vehicleData.q.position.x = 1000.0f;
@@ -3651,8 +3657,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         m_vehicleStruct00.vehicleData.q.velocity.z = 0.0f;
 
     }
-    m_debugData->DebugPushTestLinePositionIndicator(m_vehicleStruct00.vehicleData.q.position, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    
+
     m_testAccelVec = (m_testAccelVec + (m_vehicleStruct00.vehicleData.q.velocity - preVelocity) / static_cast<float>(aTimeDelta)) * 0.5f;
 
     m_vehicleStruct00.vehicleData.isCollisionTrue = false;
@@ -3957,9 +3962,11 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
             m_vehicleStruct00.npcModel.jetRotationLeft = jetRotationRatio * (Utility::GetPi() * 0.5f);
             m_vehicleStruct00.npcModel.jetRotationRight = jetRotationRatio * (Utility::GetPi() * 0.5f);
             */
-            const float burnRatio = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude / m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude;
+            float burnRatio = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude / m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude;
             //afterBurnLengthModLeft = burnRatio;
             //afterBurnLengthModRight = burnRatio;
+
+            
             leftBurnLengthMod = burnRatio;
             rightBurnLengthMod = burnRatio;
         }
@@ -4126,6 +4133,15 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     // base burner
     float baseBurnLength = ((10.0f) + (m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput * 60.0f)) + ((1.0f + m_vehicleStruct00.npcModel.mainThrustLengthMod) * 10.0f);
+    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
+    {
+        float burnRatio = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude / m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.maxMagnitude;
+
+        baseBurnLength *= (1.0f + burnRatio);
+        //leftBurnLengthMod = burnRatio;
+        //rightBurnLengthMod = burnRatio;
+    }
+    
     baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
     m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;  
     float baseBurnY = (baseBurnLength * 0.5f) * 0.1f;

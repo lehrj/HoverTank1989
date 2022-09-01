@@ -133,13 +133,13 @@ void Game::Initialize(HWND window, int width, int height)
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, 105.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
     //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f)));
-    const float low = 0.0f;
-    const float high = 10.0f;
+    const float low = 3.0f;
+    const float high = 13.0f;
     const float zPosOffSet = 45.0f;
     //for (int i = 0; i < 8; ++i)
     for (int i = 0; i < 8; ++i)
     {
-        for (int j = 0; j < 5; ++j)
+        for (int j = 0; j < 4; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
@@ -278,6 +278,10 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         float elevationPercentage = aTerrain.terrainVertexArray[i].position.y / m_gameTerrainMaxY;
         float colorVal = elevationPercentage;
 
+        float red = 8.0f / 256.0f;
+        float green = 39.0f / 256.0f;
+        float blue = 245.0f / 256.0f;
+
         colorVal += testFloat;
         baseColor.x = colorVal;
         const float colorMax = 0.85f;
@@ -365,11 +369,21 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     {
         gridLineOffSetY = 0.3f;
     }
-    gridLineOffSetY = 0.03f;
+    //gridLineOffSetY = 0.03f;
+    gridLineOffSetY = 0.22f;
+    const float gridLineOffSetY2 = 1.5f;
     for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
     {
         //aTerrain.terrainVertexArray2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
-        aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY;
+        if (aTerrain.terrainVertexArray[i].position.y > 5.0f)
+        {
+            aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY2;
+        }
+        else
+        {
+            aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY;
+        }
+        //aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY;
         //aTerrain.terrainVertexArrayBase2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         testNorms[i] = aTerrain.terrainVertexArray[i].normal;
         testNorms2[i] = aTerrain.terrainVertexArrayBase[i].normal;
@@ -592,7 +606,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     {
         m_debugData->DebugClearUI();
         m_testTimer1 += aTimer.GetElapsedSeconds();
-        m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
+        //m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         //m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(m_vehicle->GetPos(), m_vehicle->GetVelocity(), m_vehicle->GetAlignment(),aTimer.GetElapsedSeconds());
     }
@@ -609,7 +623,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
 
-    m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
+    //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
 
 
 }
@@ -1167,7 +1181,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERANPC);
         }
     }
     if (m_kbStateTracker.pressed.V)
@@ -1177,7 +1192,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->ReturnToOverwatchPosition();
         }
     }
-
+    if (m_kbStateTracker.pressed.Q)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_endScreenTimer = 0.0f;
+            m_isDisplayEndScreenTrue = true;
+        }
+    }
     auto mouse = m_mouse->GetState();
 
     if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
@@ -1224,8 +1246,7 @@ void Game::Render()
 
     context->IASetInputLayout(m_inputLayout.Get());
 
-    DirectX::SimpleMath::Matrix modelWorldBarrel01 = DirectX::SimpleMath::Matrix::Identity;
-    m_modelController->DrawModel(context, *m_states, modelWorldBarrel01, m_camera->GetViewMatrix(), m_proj);
+    //m_modelController->DrawModel(context, *m_states, DirectX::SimpleMath::Matrix::Identity, m_camera->GetViewMatrix(), m_proj);
 
     m_batch->Begin();
 
@@ -1363,8 +1384,11 @@ void Game::Render()
     {
         DrawUnlockUI();
     }
-    DrawDebugDataUI();
-    
+    //DrawDebugDataUI();
+    if (m_isDisplayEndScreenTrue == true)
+    {
+        DrawEndUI();
+    }
 
     m_spriteBatch->End();
 
@@ -1639,14 +1663,51 @@ void Game::DrawDebugDataUI()
     */
 }
 
+void Game::DrawEndUI()
+{
+    m_endScreenTimer += static_cast<float>(m_timer.GetElapsedSeconds());
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
+    textLinePos.x = 960;
+    textLinePos.y = 540; 
+    const float maxScale = 3.0f;
+
+    //float fontScale = (cos(m_endScreenTimer) + 1.0f) * 2.5f;
+    float fontScale = m_endScreenTimer * 0.5f;
+    //fontScale = m_endScreenTimer;
+    fontScale *= 3.0f;
+    if (fontScale > maxScale)
+    {
+        fontScale = maxScale;
+    }
+    std::string textLine = "Thanks for watching";
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, fontScale);
+    const float shiftMod = -2.0f;
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::DimGray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, fontScale);
+
+}
+
 void Game::DrawUnlockUI()
 {
     m_unlockTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
 
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
 
-    textLinePos.x = 960;
-    textLinePos.y = 540;
+    //textLinePos.x = 960;
+    textLinePos.x = 870;
+    //textLinePos.y = 540;
+    textLinePos.y = 890;
     // 960
     // 540
     //textLinePos.x = 200;
@@ -1660,7 +1721,7 @@ void Game::DrawUnlockUI()
     //textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, 3.0f);
     //const float shiftMod = -2.0f;
-    const float shiftMod = 0.0f;
+    const float shiftMod = 2.0f;
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, 3.0f);
@@ -1668,15 +1729,18 @@ void Game::DrawUnlockUI()
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, 3.0f);
 
-
-    textLinePos.y += 125;
+    //textLinePos.y += 125;
+    //textLinePos.y += 125;
     //textLinePos.y -= 35;
-    textLinePos.x = 960;
+    textLinePos.y -= textLineOrigin.y;
+    textLinePos.y -= 20;
+    //textLinePos.x = 960;
+    textLinePos.x = 1580;
     //textLinePos.x = 960 + 700;
     const float maxScale = 3.0f;
     float fontScale = (cos(m_unlockTimer1) + 1.0f) * 2.5f;   
     fontScale = m_unlockTimer2;
-    fontScale *= 3.5f;
+    fontScale *= 3.0f;
     if (fontScale > maxScale)
     {
         fontScale = maxScale;
@@ -1724,9 +1788,13 @@ void Game::DrawDebugLinesVector()
 
 void Game::DrawSky()
 {
-    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-30.0f));
-    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0f));
-    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(10.0f));
+    m_skyRotation += m_timer.GetElapsedSeconds() * 0.19f;
+    //DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-30.0f));
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
+    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
+    //rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(m_testTimer1));
+    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
+    //rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(m_testTimer1));
     m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
 }
 

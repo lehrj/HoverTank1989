@@ -179,13 +179,11 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localJetIntakeCoverLeftMatrix2;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverLeftMatrix2;
 
-
     DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix;
 
     DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix2;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix2;
-
 
     std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;
     DirectX::SimpleMath::Matrix localModelMatrix;
@@ -341,7 +339,7 @@ struct JumpData
     const float jumpActiveTimeTotal = 1.0f;
 
     float jumpCoolDownTimer = 0.0f;
-    const float jumpCoolDownTotal = 6.0f;
+    const float jumpCoolDownTotal = 8.0f;
     const float jumpVelocity = 25000.0f;
     const float impulseBurnTimeTotal = 1.0f;
     float impulseBurnTimer = 0.0f;

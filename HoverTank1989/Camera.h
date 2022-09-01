@@ -16,6 +16,7 @@ enum class CameraState
     CAMERASTATE_TRANSTONEWSHOT,
     CAMERASTATE_FOLLOWVEHICLE,
     CAMERASTATE_SPRINGCAMERA,
+    CAMERASTATE_SPRINGCAMERANPC,
     CAMERASTATE_SPINCAMERA,
     CAMERASTATE_TESTCAMERA01,
     CAMERASTATE_TESTCAMERA02,
@@ -221,6 +222,7 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamPosOffsetTest = DirectX::SimpleMath::Vector3(-15.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 5.0, 0.0);
     float                       m_followCamDistance = 1.0;
+    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-45.0, 22.0f, 0.0f);
 
     Environment const* m_environment;
     Vehicle const* m_vehicleFocus;
@@ -291,11 +293,12 @@ private:
     DirectX::SimpleMath::Vector3 m_trailerCamEndPos3 = DirectX::SimpleMath::Vector3(640.0f, 75.0, 0.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos3 = DirectX::SimpleMath::Vector3::UnitX;
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(560.0f, 441.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 70.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 70.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 73.0f, 0.0f);
 
-    const float m_trailerTimeDuration = 3.0f;
+    const float m_trailerTimeDuration = 7.0f;
     float m_trailerTimerDelay2 = 3.0f;
-    float m_trailerTimeDuration2 = 2.0f;
+    float m_trailerTimeDuration2 = 6.0f;
     float m_trailerTimeDuration3 = 2.0f;
 
     int m_npcFocusID = 0;

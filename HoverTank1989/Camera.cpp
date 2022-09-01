@@ -28,14 +28,16 @@ Camera::Camera(int aWidth, int aHeight)
 	m_cameraState = CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN;
 	m_cameraState = CameraState::CAMERASTATE_FOLLOWNPC;
 	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
+	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERANPC;
 
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
-	springTarget.position = DirectX::SimpleMath::Vector3(0.0, 2.2f, 0.0);;
-	float springConst = 100.0;
-	float hDist = -m_followCamPos.x;
-	float vDist = m_followCamPos.y;
+	//springTarget.position = DirectX::SimpleMath::Vector3(0.0, 2.2f, 0.0);
+	springTarget.position = DirectX::SimpleMath::Vector3(0.0, 0.0f, 0.0);
+	float springConst = 50.0;
+	float hDist = -m_springCamPos.x;
+	float vDist = m_springCamPos.y;
 
 	InitializeSpringCamera(springTarget, springConst, hDist, vDist);
 
@@ -382,11 +384,12 @@ void Camera::UpdateTrailerCamera2(DX::StepTimer const& aTimer)
 
 		float testVal = 0.0f;
 		const float camPosDistance2 = DirectX::SimpleMath::Vector3::Distance(m_position, endCamPos1);
+		/*
 		m_debugData->DebugPushUILineDecimalNumber("camPosDistance2 = ", camPosDistance2, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_trailerTimer = ", m_trailerTimer, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
 		m_debugData->DebugPushUILineDecimalNumber("Transition On = ", 0.0f, "");
-
+		*/
 		if (m_trailerTimer > m_trailerTimeDuration2 + m_trailerTimerDelay2)
 		{
 			m_position = m_trailerCamEndPos2;
@@ -455,11 +458,12 @@ void Camera::UpdateTrailerCamera3(DX::StepTimer const& aTimer)
 
 		float testVal = 0.0f;
 		const float camPosDistance2 = DirectX::SimpleMath::Vector3::Distance(m_position, endCamPos1);
+		/*
 		m_debugData->DebugPushUILineDecimalNumber("camPosDistance2 = ", camPosDistance2, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_trailerTimer = ", m_trailerTimer, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
 		m_debugData->DebugPushUILineDecimalNumber("Transition On = ", 0.0f, "");
-
+		*/
 		if (m_trailerTimer > m_trailerTimeDuration3)
 		{
 			m_position = m_trailerCamEndPos3;
@@ -528,11 +532,12 @@ void Camera::UpdateTrailerCamera4(DX::StepTimer const& aTimer)
 
 		float testVal = 0.0f;
 		const float camPosDistance2 = DirectX::SimpleMath::Vector3::Distance(m_position, endCamPos1);
+		/*
 		m_debugData->DebugPushUILineDecimalNumber("camPosDistance2 = ", camPosDistance2, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_trailerTimer = ", m_trailerTimer, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
 		m_debugData->DebugPushUILineDecimalNumber("Transition On = ", 0.0f, "");
-
+		*/
 		if (m_trailerTimer > m_trailerTimeDuration3)
 		{
 			m_position = m_trailerCamEndPos2;
@@ -907,6 +912,23 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		UpdateSpringCamera(aTimer);
 		m_viewMatrix = m_springCameraMatrix;
 	}
+	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERANPC)
+	{
+		//m_springTarget.position = m_vehicleFocus->GetPos(); m_npcController->GetNpcAlignment(m_npcFocusID));
+		m_springTarget.position = m_npcController->GetNpcPos(m_npcFocusID);
+		DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
+		//DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetVehicleRotation());
+		//DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(Utility::ToRadians(0.0f), 0.0f, 0.0f);
+		//DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetVehicleOrientation();
+		DirectX::SimpleMath::Matrix rotMat = m_npcController->GetNpcAlignment(m_npcFocusID);
+		//rotMat *= m_vehicleFocus->GetVehicleOrientation();
+		testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
+		m_springTarget.forward = testHeading;
+		//m_springTarget.forward = m_vehicleFocus->GetForward();
+
+		UpdateSpringCamera(aTimer);
+		m_viewMatrix = m_springCameraMatrix;
+	}
 	else if (m_cameraState == CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN)
 	{
 		UpdateSpinCameraGamePlayStart(aTimer);
@@ -949,7 +971,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
 	//UpdateViewMatrix();
-	m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	
 	/*
 	m_debugData->DebugPushUILineDecimalNumber("m_trailerTimer = ", m_trailerTimer, "");
