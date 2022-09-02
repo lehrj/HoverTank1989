@@ -29,6 +29,8 @@ enum class CameraState
     CAMERASTATE_TRAILERCAMERA4,
     CAMERASTATE_STATIC,
     CAMERASTATE_FOLLOWNPC,
+    CAMERASTATE_TRANSITIONFROMSPRINGCAM,
+    CAMERASTATE_TRANSITIONTOSPRINGCAM
 };
 
 // spring camera target
@@ -110,10 +112,12 @@ public:
     void SpinClockwise(float aRotation);
     void SpinCounterClockwise(float aRotation);
 
+    //void StartNpcSpringCamera();
     void StartTrailerCamera(DX::StepTimer const& aTimer);
     void StartTrailerCamera3(DX::StepTimer const& aTimer);
     void StartTrailerCamera4(DX::StepTimer const& aTimer);
 
+    void TransitionToNpcSpringCamera();
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
 
     void UpdateCamera(DX::StepTimer const& aTimer);
@@ -153,6 +157,10 @@ private:
     void UpdateTrailerCamera2(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera3(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera4(DX::StepTimer const& aTimer);
+
+    void UpdateTransitionToSpringCamera();
+    void UpdateTransitionFromSpringCamera();
+
     void UpdateViewMatrix();
 
     DirectX::SimpleMath::Vector3    m_destinationPosition;
@@ -296,9 +304,9 @@ private:
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 70.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 73.0f, 0.0f);
 
-    const float m_trailerTimeDuration = 7.0f;
-    float m_trailerTimerDelay2 = 3.0f;
-    float m_trailerTimeDuration2 = 6.0f;
+    const float m_trailerTimeDuration = 9.0f;
+    float m_trailerTimerDelay2 = 4.0f;
+    float m_trailerTimeDuration2 = 7.0f;
     float m_trailerTimeDuration3 = 2.0f;
 
     int m_npcFocusID = 0;

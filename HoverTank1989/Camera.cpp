@@ -226,6 +226,26 @@ void Camera::ReturnToOverwatchPosition()
 	m_cameraState = CameraState::CAMERASTATE_TRAILERCAMERA2;
 }
 
+void Camera::TransitionToNpcSpringCamera()
+{
+	m_cameraState = CameraState::CAMERASTATE_TRANSITIONTOSPRINGCAM;
+	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERANPC;
+	Target springTarget;
+	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
+	
+	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
+	//springTarget.position = DirectX::SimpleMath::Vector3(0.0, 2.2f, 0.0);
+	//springTarget.position = DirectX::SimpleMath::Vector3(0.0, 0.0f, 0.0);
+	springTarget.position = m_position;
+	float springConst = 50.0;
+	float hDist = -m_springCamPos.x;
+	float vDist = m_springCamPos.y;
+
+	InitializeSpringCamera(springTarget, springConst, hDist, vDist);
+
+
+}
+
 void Camera::StartTrailerCamera(DX::StepTimer const& aTimer)
 {
 	m_cameraState = CameraState::CAMERASTATE_TRAILERCAMERA;
@@ -233,6 +253,11 @@ void Camera::StartTrailerCamera(DX::StepTimer const& aTimer)
 
 void Camera::StartTrailerCamera3(DX::StepTimer const& aTimer)
 {
+	if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERANPC)
+	{
+		m_position = m_actualPosition;
+		m_target = m_npcController->GetNpcPos(m_npcFocusID);
+	}
 	m_trailerTimer = 0.0f;
 	m_trailerCamStartPos3 = m_position;
 	m_trailerTargetStartPos3 = m_target;
@@ -914,20 +939,15 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERANPC)
 	{
-		//m_springTarget.position = m_vehicleFocus->GetPos(); m_npcController->GetNpcAlignment(m_npcFocusID));
+		/*
 		m_springTarget.position = m_npcController->GetNpcPos(m_npcFocusID);
 		DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
-		//DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetVehicleRotation());
-		//DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(Utility::ToRadians(0.0f), 0.0f, 0.0f);
-		//DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetVehicleOrientation();
 		DirectX::SimpleMath::Matrix rotMat = m_npcController->GetNpcAlignment(m_npcFocusID);
-		//rotMat *= m_vehicleFocus->GetVehicleOrientation();
 		testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
 		m_springTarget.forward = testHeading;
-		//m_springTarget.forward = m_vehicleFocus->GetForward();
-
+		*/
 		UpdateSpringCamera(aTimer);
-		m_viewMatrix = m_springCameraMatrix;
+		//m_viewMatrix = m_springCameraMatrix;
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_GAMEPLAYSTARTSPIN)
 	{
@@ -1239,12 +1259,27 @@ void Camera::InitializeSpringCamera(Target aTarget, float aSpringConstant, float
 
 void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 {
+	DirectX::SimpleMath::Vector3 vehiclePos = m_npcController->GetNpcPos(m_npcFocusID);
+	vehiclePos = DirectX::SimpleMath::Vector3::Lerp(vehiclePos, m_target, 0.9f);
+	
+	//m_springTarget.position = m_npcController->GetNpcPos(m_npcFocusID);
+	m_springTarget.position = vehiclePos;
+	DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
+	DirectX::SimpleMath::Matrix rotMat = m_npcController->GetNpcAlignment(m_npcFocusID);
+	testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
+	m_springTarget.forward = testHeading;
+
 	DirectX::SimpleMath::Vector3 idealPosition = m_springTarget.position - m_springTarget.forward * m_hDistance + m_springTarget.up * m_vDistance;
 	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
 	DirectX::SimpleMath::Vector3 springAccel = (-m_springConstant * displacement) - (m_dampConstant * m_velocity);
 	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
+
+	m_position = m_actualPosition;
+	m_target = m_springTarget.position;
 	ComputeSpringMatrix();
+
+	m_viewMatrix = m_springCameraMatrix;
 }
 
 void Camera::UpdateChaseCameraNPC2()

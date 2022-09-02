@@ -1082,7 +1082,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     }
     */
     
-    
+    /*
     //DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     DirectX::BoundingOrientedBox avoidBox = m_npcAI->GetAiAvoidanceBox();
     //DirectX::BoundingBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
@@ -1104,7 +1104,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         
     }
     m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
-    
+    */
 
     /*
     float avoidanceRadius = GetAvoidanceRadius() * 2.0f;

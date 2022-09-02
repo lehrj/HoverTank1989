@@ -1182,7 +1182,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERANPC);
+            m_camera->TransitionToNpcSpringCamera();
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERANPC);
         }
     }
     if (m_kbStateTracker.pressed.V)
@@ -1695,7 +1696,6 @@ void Game::DrawEndUI()
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, fontScale);
-
 }
 
 void Game::DrawUnlockUI()
@@ -1721,7 +1721,13 @@ void Game::DrawUnlockUI()
     //textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, 3.0f);
     //const float shiftMod = -2.0f;
-    const float shiftMod = 2.0f;
+    const float shiftMod = -2.0f;
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::DimGray, 0.f, textLineOrigin, 3.0f);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, 3.0f);
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, 3.0f);
@@ -1732,8 +1738,10 @@ void Game::DrawUnlockUI()
     //textLinePos.y += 125;
     //textLinePos.y += 125;
     //textLinePos.y -= 35;
+    /*
     textLinePos.y -= textLineOrigin.y;
     textLinePos.y -= 20;
+    */
     //textLinePos.x = 960;
     textLinePos.x = 1580;
     //textLinePos.x = 960 + 700;
@@ -1748,9 +1756,16 @@ void Game::DrawUnlockUI()
 
     textLine = std::to_string(m_unlockCountdown);
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-    textLineOrigin.y = 0.0f;
+    //textLineOrigin.y = 0.0f;
     textLinePos.y -= fontScale;
+    //fontScale = 3.0f;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::DimGray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
