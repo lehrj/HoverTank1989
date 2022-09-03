@@ -247,6 +247,7 @@ private:
     float m_fDistance;
     float m_vDistance;
 
+    const float m_springConstantSet = 10.0f;
     float m_springConstant;
     float m_dampConstant;
     DirectX::SimpleMath::Vector3 m_velocity;
@@ -303,7 +304,9 @@ private:
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos3 = DirectX::SimpleMath::Vector3::UnitX;
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(560.0f, 441.0f, 0.0f);
     //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 70.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 73.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 73.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(187.0f, 20.0f, 0.0f);
+
 
     const float m_trailerTimeDuration = 9.0f;
     float m_trailerTimerDelay2 = 4.0f;
