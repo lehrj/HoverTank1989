@@ -410,4 +410,6 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
 
     bool m_isPauseOn = false;
+    bool m_isSlowMoOn = false;
+
 };

@@ -30,7 +30,7 @@ enum class CameraState
     CAMERASTATE_STATIC,
     CAMERASTATE_FOLLOWNPC,
     CAMERASTATE_TRANSITIONFROMSPRINGCAM,
-    CAMERASTATE_TRANSITIONTOSPRINGCAM
+    CAMERASTATE_TRANSITIONTOSPRINGCAM,
 };
 
 // spring camera target
@@ -254,6 +254,7 @@ private:
     DirectX::SimpleMath::Matrix m_springCameraMatrix;
     Target m_springTarget;
     void ComputeSpringMatrix();
+    DirectX::SimpleMath::Vector3 GetSpringCameraTarget(DX::StepTimer const& aTimer);
     void InitializeSpringCamera(Target aTarget, float aSpringConstant, float ahDist, float aVDist);
     void UpdateSpringCamera(DX::StepTimer const& aTimeDelta);
 
@@ -321,5 +322,8 @@ private:
 
     double                       m_trailerTimer = 0.0f;
     int                          m_trailerStep = 0;
+
+    float                        m_transitionTimer = 0.0f;
+    const float                  m_transitionTimeMax = 2.0f;
 };
 

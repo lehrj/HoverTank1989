@@ -609,8 +609,9 @@ void Game::Update(DX::StepTimer const& aTimer)
         //m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         //m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(m_vehicle->GetPos(), m_vehicle->GetVelocity(), m_vehicle->GetAlignment(),aTimer.GetElapsedSeconds());
+        m_camera->UpdateCamera(aTimer);
     }
-    m_camera->UpdateCamera(aTimer);
+    //m_camera->UpdateCamera(aTimer);
     //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
 
     m_proj = m_camera->GetProjectionMatrix();
@@ -625,6 +626,10 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
 
+    if (m_isSlowMoOn == true)
+    {
+        m_isPauseOn = true;
+    }
 
 }
 #pragma endregion
@@ -1182,6 +1187,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
+            //m_isSlowMoOn = true;
             m_camera->TransitionToNpcSpringCamera();
             //m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERANPC);
         }
@@ -1190,7 +1196,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->ReturnToOverwatchPosition();
+            m_isSlowMoOn = false;
+            //m_camera->ReturnToOverwatchPosition();
         }
     }
     if (m_kbStateTracker.pressed.Q)
@@ -1385,7 +1392,7 @@ void Game::Render()
     {
         DrawUnlockUI();
     }
-    //DrawDebugDataUI();
+    DrawDebugDataUI();
     if (m_isDisplayEndScreenTrue == true)
     {
         DrawEndUI();
