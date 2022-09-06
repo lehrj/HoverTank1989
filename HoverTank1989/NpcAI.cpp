@@ -3130,6 +3130,8 @@ void NpcAI::CreateWayPath()
 
 void NpcAI::DebugToggle()
 {
+    m_isStartTrue = true;
+    /*
     if (m_debugToggle == true)
     {
         m_debugToggle = false;
@@ -3138,6 +3140,7 @@ void NpcAI::DebugToggle()
     {
         m_debugToggle = true;
     }
+    */
 }
 
 float NpcAI::GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest)
@@ -3225,6 +3228,46 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer
     m_avoidanceTargetPos = DirectX::SimpleMath::Vector3::Zero;
     m_isAvoidanceTrue = false;
     UpdateAvoidanceBox();
+
+    float base = 0.0f;
+    float offset = 0.5f;
+    const int idNum = m_npcOwner->GetID();
+    if (idNum <= 3)
+    {
+        m_startOffsetTime = base;
+    }
+    else if (idNum <= 7)
+    {
+        m_startOffsetTime = base + (offset * 1.0f);
+    }
+    else if (idNum <= 11)
+    {
+        m_startOffsetTime = base + (offset * 2.0f);
+    }
+    else if (idNum <= 15)
+    {
+        m_startOffsetTime = base + (offset * 3.0f);
+    }
+    else if (idNum <= 19)
+    {
+        m_startOffsetTime = base + (offset * 4.0f);
+    }
+    else if (idNum <= 23)
+    {
+        m_startOffsetTime = base + (offset * 5.0f);
+    }
+    else if (idNum <= 27)
+    {
+        m_startOffsetTime = base + (offset * 6.0f);
+    }
+    else if (idNum <= 31)
+    {
+        m_startOffsetTime = base + (offset * 7.0f);
+    }
+
+    const float low = -.4f;
+    const float high = .4f;
+    m_startOffsetTime += low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 }
 
 void NpcAI::InitializeControlOutput()
@@ -3789,6 +3832,16 @@ void NpcAI::SetSteeringOutput()
 
 void NpcAI::UpdateAI(const float aTimeStep)
 {
+    //m_debugData->DebugPushUILineDecimalNumber("m_startTimer", m_startTimer, "");
+    if (m_isStartTrue == true)
+    {
+        m_startTimer += aTimeStep;
+        if (m_startTimer >= m_startOffsetTime)
+        {
+            m_debugToggle = true;
+        }
+    }
+
     UpdateAvoidanceBox();
     if ((m_npcOwner->GetPos() - m_currentWaypoint.waypointPos).Length() < m_currentWaypoint.waypointRadius)
     {

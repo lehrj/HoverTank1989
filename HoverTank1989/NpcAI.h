@@ -182,5 +182,9 @@ private:
     bool m_isJumpTriggered = false;
 
     int m_lapCounter = 0;
+
+    bool m_isStartTrue = false;
+    float m_startOffsetTime = 0.0f;
+    float m_startTimer = 0.0f;
 };
 
