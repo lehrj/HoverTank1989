@@ -12,7 +12,6 @@
 #include "Camera.h"
 #include "DebugData.h"
 #include "Environment.h"
-//#include "FireControl.h"
 #include "Lighting.h"
 #include "NPCController.h"
 #include "ModelController.h"
@@ -60,60 +59,32 @@ public:
     void GetDefaultSize( int& width, int& height ) const noexcept;
 
 private:
-
-    void Update(DX::StepTimer const& aTimer);
-    void UpdateInput(DX::StepTimer const& aTimer);
-    void Render();
-
     void Clear();
 
     void CreateDeviceDependentResources();
     void CreateWindowSizeDependentResources();
 
-
-    void DrawDebugLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
-    void DrawDebugNormalLines(const DirectX::SimpleMath::Vector3 aPos, const DirectX::XMVECTORF32 aColor);
     void DrawDebugLinesVector();
-
     void DrawDebugDataUI();
     void DrawEndUI();
     void DrawUnlockUI();
-    void DrawGridForStartScreen();
-    void DrawGamePlayStart();
-    void DrawIntroScene();
-    void DrawLightBar();
-
-    void DrawLoadScreen();
-    void DrawLogoScreen();
-    void DrawMenuEnvironmentSelect();
-    void DrawMenuMain();
     void DrawSky();
-    void DrawStartScreen();
-    void DrawTeaserScreen();
-    void DrawTerrain();
-    void DrawTerrain2();
     void DrawTerrainNew(Terrain& aTerrain);
-    void DrawTerrainNormals();
-    void DrawTimer();
-    void DrawUIIntroScreen();
-    void DrawWorld();
-    void DrawWorldCube();
-    void DrawWorldCubeTextured();
 
     bool InitializeTerrainArray();
-    bool InitializeTerrainArray2();
-
     bool InitializeTerrainArrayNew(Terrain& aTerrain);
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
 
+    void Render();
     void TogglePause();
+    void Update(DX::StepTimer const& aTimer);
+    void UpdateInput(DX::StepTimer const& aTimer);
 
     // Device resources.
     std::unique_ptr<DX::DeviceResources>    m_deviceResources;
 
     // Rendering loop timer.
     DX::StepTimer                           m_timer;
-
     
     DirectX::SimpleMath::Matrix m_world;
     DirectX::SimpleMath::Matrix m_view;
@@ -139,13 +110,11 @@ private:
     Environment* m_environment;
     Lighting* m_lighting;
 
-    //NPCController* m_npcController;
     std::shared_ptr<NPCController> m_npcController;
 
     Vehicle* m_vehicle;
     std::shared_ptr<ModelController> m_modelController;
     std::shared_ptr<DebugData> m_debugData;
-
 
     std::shared_ptr<VehicleHover> m_testVehicleHover;
 
@@ -156,8 +125,6 @@ private:
     std::unique_ptr<DirectX::BasicEffect> m_effect4;
     std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalColor>> m_batch4;
 
-
-    //std::unique_ptr<DirectX::CommonStates>          m_states;
     std::shared_ptr<DirectX::NormalMapEffect>       m_effect;
     std::shared_ptr<DirectX::BasicEffect>           m_effect2;
     std::shared_ptr<DirectX::BasicEffect>           m_effect3;
@@ -195,23 +162,13 @@ private:
     std::shared_ptr<DirectX::IEffect>               m_lightEffect;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    m_skyShape;
-    /*
-    DirectX::SimpleMath::Matrix                     m_world;
-    DirectX::SimpleMath::Matrix                     m_view;
-    DirectX::SimpleMath::Matrix                     m_proj;
-    */
-    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_raster; // WLJ anti-aliasing
 
-    // WLJ added for drawing projectile and swing  
-    int                                             m_swingPathStep = 0;
-    int                                             m_projectilePathStep = 0;
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_raster;
 
-    // WLJ add for mouse and keybord interface
     std::unique_ptr<DirectX::Keyboard>              m_keyboard;
     std::unique_ptr<DirectX::Mouse>                 m_mouse;
     DirectX::Keyboard::KeyboardStateTracker         m_kbStateTracker;
 
-    // WLJ added for displaying text
     std::unique_ptr<DirectX::SpriteFont>            m_font;
     std::unique_ptr<DirectX::SpriteFont>            m_titleFont;
     std::unique_ptr<DirectX::SpriteFont>            m_bitwiseFont;
@@ -255,7 +212,6 @@ private:
     DirectX::SimpleMath::Vector2                    m_environSelectAlienPos;
     DirectX::SimpleMath::Vector2                    m_environSelectAlienOrigin;
 
-    // WLJ Intro screen logos
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_bmwLogoTexture;
     DirectX::SimpleMath::Vector2                    m_bmwLogoPos;
     DirectX::SimpleMath::Vector2                    m_bmwLogoOrigin;
@@ -264,7 +220,6 @@ private:
     DirectX::SimpleMath::Vector2                    m_jiLogoPos;
     DirectX::SimpleMath::Vector2                    m_jiLogoOrigin;
 
-    // WLJ variable to hold selected menu item
     int                                             m_menuSelect = 0;
 
     enum class GameState
@@ -391,8 +346,6 @@ private:
     const DirectX::XMFLOAT4 m_defaultGameTerrainColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 1.0f);
 
     const float m_startTerrainMaxY = 0.347000033f;
-    //const float m_gameTerrainMaxY = 2471.24097f;
-    //const float m_gameTerrainMaxY = 600.24097f;
     const float m_gameTerrainMaxY = 396.0f;
 
     float m_testTimer1 = 0.0f;
@@ -412,5 +365,4 @@ private:
 
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;
-
 };

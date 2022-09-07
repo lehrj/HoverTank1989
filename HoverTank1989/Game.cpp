@@ -17,17 +17,11 @@ Game::Game() noexcept(false)
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_deviceResources->RegisterDeviceNotify(this);
 
-    //m_outputWidth = m_outputWidthDefault;
-    //m_outputHeight = m_outputHeightDefault;
-
-    //srand(0);
     srand(time(nullptr));
 
     m_environment = new Environment();
     m_debugData = std::make_shared<DebugData>();
 
-    // WLJ ToDo : get default window size on launch
-    //m_camera = new Camera(m_outputWidth, m_outputHeight);
     int outputWidth = 800;
     int outputHeight = 600;
     GetDefaultSize(outputWidth, outputHeight);
@@ -40,13 +34,11 @@ Game::Game() noexcept(false)
     m_camera->SetCameraEnvironment(m_environment);
     m_camera->SetDebugData(m_debugData);
 
-    //m_npcController = new NPCController();
     m_npcController = std::make_shared<NPCController>();
 
     m_npcController->SetNPCEnvironment(m_environment);
     m_npcController->SetDebugData(m_debugData);
     m_npcController->SetPlayer(m_vehicle);
-    //m_vehicle->SetDebugData(m_debugData);
     m_camera->SetNpcController(m_npcController);
     m_modelController = std::make_shared<ModelController>();
     m_modelController->SetDebugData(m_debugData);
@@ -57,7 +49,6 @@ Game::Game() noexcept(false)
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
-    //InitializeWorldGrid();
 }
 
 // Initialize the Direct3D resources required to run.
@@ -77,10 +68,6 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetFixedTimeStep(true);
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
-    //m_window = window;
-    //m_outputWidth = std::max(width, 1);
-    //m_outputHeight = std::max(height, 1);
-    // WLJ add for mouse and keybord interface
     m_keyboard = std::make_unique<DirectX::Keyboard>();
     m_mouse = std::make_unique<Mouse>();
     m_mouse->SetWindow(window);
@@ -128,15 +115,11 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->SetDebugData(m_debugData);
 
     const float xOrgVal = 270.0f;
-    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 13.0, 300.0f);
-    //const float xOrgVal = 20.0f;
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, 105.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
-    //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f)));
     const float low = 7.0f;
     const float high = 13.0f;
     const float zPosOffSet = 45.0f;
-    //for (int i = 0; i < 8; ++i)
     for (int i = 0; i < 8; ++i)
     {
         for (int j = 0; j < 4; ++j)
@@ -146,28 +129,10 @@ void Game::Initialize(HWND window, int width, int height)
             m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
             pos.x += 25.0f;
         }
-        //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-7.0f)));
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
-    pos = DirectX::SimpleMath::Vector3(50.0f, 8.5f, 0.0f);
-    pos = DirectX::SimpleMath::Vector3(25.0f, 0.0f, 0.0f);
-    
-    heading = -DirectX::SimpleMath::Vector3::UnitX;
-    heading = DirectX::SimpleMath::Vector3(-0.7f, 0.0f, -1.0f);
-    heading.Normalize();
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    //pos.x += 20.0f;
-    //pos.z += 7.0001f;
-    pos.x += 25.0f;
-    heading = DirectX::SimpleMath::Vector3::UnitX;
-    pos = DirectX::SimpleMath::Vector3::Zero;
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
-    pos.z -= 5.0001f;
-    pos.x += 25.0f;
-    //m_npcController->AddNPC(context, NPCType::NPCTYPE_NPC00, heading, pos, m_npcController);
 
-    // testing new terrain map
     m_terrainVector.clear();
 }
 
@@ -225,11 +190,8 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
     DirectX::XMFLOAT4 lineColor(.486274540f, .988235354f, 0.0, 1.0);
     DirectX::XMFLOAT4 baseColor(0.01, 0.01, 0.01, 1.0);
-    //DirectX::XMFLOAT4 baseColor(0.0, 0.0, 0.0, 1.0);
-    //DirectX::XMFLOAT4 baseColor(0.000000000f, 0.292156899f, 0.000000000f, 1.000000000f);
 
     DirectX::XMFLOAT4 baseColor2(1.0, 1.0, 1.0, 1.0);
-    //baseColor = baseColor2;
     m_testColor = baseColor;
     DirectX::XMFLOAT4 sandColor1(0.956862807f, 0.643137276f, 0.376470625f, 1.0);
     DirectX::XMFLOAT4 sandColor2(0.960784376f, 0.960784376f, 0.862745166f, 1.0);
@@ -242,7 +204,6 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
     DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
     DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
-    //baseColor = sandColor1;
     testWhite = baseColor;
 
     float maxY = 0.0f;
@@ -262,7 +223,6 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     {
         DirectX::SimpleMath::Vector3 flipNormal = vertexPC[i].normal;
         aTerrain.terrainVertexArray[i].position = vertexPC[i].position;
-        //m_terrainVertexArray2[i].normal = vertexPC[i].normal;
         // Flip normals around for lighting;
         aTerrain.terrainVertexArray[i].normal.x = flipNormal.x;
         aTerrain.terrainVertexArray[i].normal.y = flipNormal.y;
@@ -270,17 +230,9 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
         int testRandom = rand() % 1000;
         float testFloat = testRandom * 0.000001f;
-
-        //DirectX::XMFLOAT4 testColor(0.0f, 0.292156899f, 0.0f, 0.0f);
-        //DirectX::XMFLOAT4 baseColor = m_defaultGameTerrainColor;
         DirectX::XMFLOAT4 baseColor(0.0f, 0.292156899f, 0.0f, 0.0f);
-        //float colorVal = aTerrain.terrainVertexArray[i].position.y / 2224.16675f;
         float elevationPercentage = aTerrain.terrainVertexArray[i].position.y / m_gameTerrainMaxY;
         float colorVal = elevationPercentage;
-
-        float red = 8.0f / 256.0f;
-        float green = 39.0f / 256.0f;
-        float blue = 245.0f / 256.0f;
 
         colorVal += testFloat;
         baseColor.x = colorVal;
@@ -299,10 +251,8 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         {
             baseColor.z = colorMax;
         }
-        //baseColor.w = 1.0f;
-        //testColor= DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
+
         DirectX::XMFLOAT4 lineColor = baseColor;
-        //lineColor.y += 0.15f;
 
         if (elevationPercentage > 0.4f)
         {
@@ -316,13 +266,12 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
         aTerrain.terrainVertexArray[i].color = lineColor;
         aTerrain.terrainVertexArrayBase[i].position = vertexPC[i].position;
-        //m_terrainVertexArrayBase2[i].normal = vertexPC[i].normal;
+
         // flip normals around for lighting
         aTerrain.terrainVertexArrayBase[i].normal.x = flipNormal.x;
         aTerrain.terrainVertexArrayBase[i].normal.y = flipNormal.y;
         aTerrain.terrainVertexArrayBase[i].normal.z = flipNormal.z;
 
-        //testColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
         if (i % 2 == 0)
         {
             aTerrain.terrainVertexArrayBase[i].color = baseColor;
@@ -331,25 +280,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         {
             aTerrain.terrainVertexArrayBase[i].color = baseColor;
         }
-        /*
-        if (i == i)
-            //if (i < 96)
-            //if (i % 96 == 0)
-        {
-            if ((i + 5) % 6 == 0)
-            {
-                aTerrain.terrainVertexArrayBase[i].color = baseColor;
-            }
-            if ((i + 2) % 6 == 0)
-            {
-                aTerrain.terrainVertexArrayBase[i].color = testWhite;
-            }
-            if (i % 6 == 0)
-            {
-                aTerrain.terrainVertexArrayBase[i].color = testWhite;
-            }
-        }
-        */
+
         if (aTerrain.terrainVertexArray[i].position.y >= maxY)
         {
             maxY = aTerrain.terrainVertexArray[i].position.y;
@@ -369,12 +300,10 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     {
         gridLineOffSetY = 0.3f;
     }
-    //gridLineOffSetY = 0.03f;
     gridLineOffSetY = 0.22f;
     const float gridLineOffSetY2 = 1.1f;
     for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
     {
-        //aTerrain.terrainVertexArray2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         if (aTerrain.terrainVertexArray[i].position.y > 5.0f)
         {
             aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY2;
@@ -383,8 +312,6 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         {
             aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY;
         }
-        //aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY;
-        //aTerrain.terrainVertexArrayBase2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         testNorms[i] = aTerrain.terrainVertexArray[i].normal;
         testNorms2[i] = aTerrain.terrainVertexArrayBase[i].normal;
     }
@@ -403,11 +330,7 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
 
     DirectX::XMFLOAT4 lineColor(.486274540f, .988235354f, 0.0, 1.0);
     DirectX::XMFLOAT4 baseColor(0.01, 0.01, 0.01, 1.0);
-    //DirectX::XMFLOAT4 baseColor(0.0, 0.0, 0.0, 1.0);
-    //DirectX::XMFLOAT4 baseColor(0.000000000f, 0.292156899f, 0.000000000f, 1.000000000f);
-
     DirectX::XMFLOAT4 baseColor2(1.0, 1.0, 1.0, 1.0);
-    //baseColor = baseColor2;
     m_testColor = baseColor;
     DirectX::XMFLOAT4 sandColor1(0.956862807f, 0.643137276f, 0.376470625f, 1.0);
     DirectX::XMFLOAT4 sandColor2(0.960784376f, 0.960784376f, 0.862745166f, 1.0);
@@ -420,7 +343,6 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
     DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
     DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
     DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
-    //baseColor = sandColor1;
     testWhite = baseColor;
 
     testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
@@ -434,7 +356,6 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
         aTerrain.terrainVertexArray[i].normal.x = flipNormal.x;
         aTerrain.terrainVertexArray[i].normal.y = flipNormal.y;
         aTerrain.terrainVertexArray[i].normal.z = flipNormal.z;
-
 
         int testRandom = rand() % 1000;
         float testFloat = testRandom * 0.000001f;
@@ -465,8 +386,6 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
         DirectX::XMFLOAT4 testColor2 = testColor;
         testColor2.y -= 0.15f;
 
-
-
         aTerrain.terrainVertexArray[i].color = lineColor;
         aTerrain.terrainVertexArrayBase[i].position = vertexPC[i].position;
 
@@ -476,7 +395,6 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
         aTerrain.terrainVertexArrayBase[i].normal.y = flipNormal.y;
         aTerrain.terrainVertexArrayBase[i].normal.z = flipNormal.z;
 
-        //testColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
         if (i % 2 == 0)
         {
             aTerrain.terrainVertexArrayBase[i].color = testColor;
@@ -490,25 +408,7 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
         {
             aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         }
-        /*
-        //if (i == i)
-        if (i < 96)
-            //if (i % 96 == 0)
-        {
-            if ((i + 5) % 6 == 0)
-            {
-                aTerrain.terrainVertexArrayBase[i].color = baseColor;
-            }
-            if ((i + 2) % 6 == 0)
-            {
-                aTerrain.terrainVertexArrayBase[i].color = testWhite;
-            }
-            if (i % 6 == 0)
-            {
-                aTerrain.terrainVertexArrayBase[i].color = testWhite;
-            }
-        }
-        */
+
         if (aTerrain.terrainVertexArray[i].position.y >= maxY)
         {
             maxY = aTerrain.terrainVertexArray[i].position.y;
@@ -530,9 +430,7 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
     }
     for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
     {
-        //aTerrain.terrainVertexArray2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY;
-        //aTerrain.terrainVertexArrayBase2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
         testNorms[i] = aTerrain.terrainVertexArray[i].normal;
         testNorms2[i] = aTerrain.terrainVertexArrayBase[i].normal;
     }
@@ -552,9 +450,7 @@ Game::~Game()
     delete m_camera;
     delete m_environment;
     delete m_lighting;
-    //delete m_npcController;
     delete m_vehicle;
-
 
     delete[] m_terrainGamePlay.terrainVertexArray;
     m_terrainGamePlay.terrainVertexArray = 0;
@@ -1055,7 +951,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_camera->SpinCounterClockwise(static_cast<float>(aTimer.GetElapsedSeconds()));
             m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
@@ -1156,7 +1051,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_camera->StartTrailerCamera4(aTimer);
+            m_camera->StartTrailerCamera4(aTimer);
             //m_vehicle->TestFire();
         }
     }
@@ -1263,8 +1158,7 @@ void Game::Render()
         //m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
-
-        
+   
         // draw test shapes start
         const float yOffset = 0.5f;
         const float rodOffset = 0.05f;
@@ -1574,7 +1468,6 @@ void Game::CreateDeviceDependentResources()
     m_bitwiseFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/bitwise24.spritefont");
     m_spriteBatch = std::make_unique<SpriteBatch>(context);
 
-
     m_effect4 = std::make_unique<BasicEffect>(device);
     m_effect4->SetVertexColorEnabled(true);
 
@@ -1590,10 +1483,6 @@ void Game::CreateDeviceDependentResources()
     m_modelTankBarrel01 = Model::CreateFromCMO(device, L"HoverTankBarrel02.cmo", *m_fxFactory);
 
     m_modelTest = Model::CreateFromCMO(device, L"HoverTankBarrel02.cmo", *m_fxFactory);
-    //Model testModel = m_modelTankBody01;
-    //testModel.
-    //= Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
-    //m_modelController->InitModel2(m_modelTest);
 
     m_modelTestBarrel = Model::CreateFromCMO(device, L"HoverTankBarrel02.cmo", *m_fxFactory);
     m_modelTestBody = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
@@ -1611,9 +1500,7 @@ void Game::CreateWindowSizeDependentResources()
     // TODO: Initialize windows-size dependent objects here.
     auto size = m_deviceResources->GetOutputSize();
     m_view = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3(2.f, 2.f, 2.f), DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitY);
-    //m_proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f, float(size.right) / float(size.bottom), 0.1f, 1000.f);
     m_proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f, float(size.right) / float(size.bottom), m_camera->GetViewPlaneNear(), m_camera->GetViewPlaneFar());
-    //m_proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f, float(backBufferWidth) / float(backBufferHeight), m_camera->GetViewPlaneNear(), m_camera->GetViewPlaneFar());
 
     m_effect->SetView(m_view);
     m_effect->SetProjection(m_proj);
@@ -1621,9 +1508,6 @@ void Game::CreateWindowSizeDependentResources()
     m_effect2->SetProjection(m_proj);
     m_effect3->SetView(m_view);
     m_effect3->SetProjection(m_proj);
-    // world end
-
-
     m_effect4->SetView(m_view);
     m_effect4->SetProjection(m_proj);
 }
@@ -1679,9 +1563,7 @@ void Game::DrawEndUI()
     textLinePos.y = 540; 
     const float maxScale = 3.0f;
 
-    //float fontScale = (cos(m_endScreenTimer) + 1.0f) * 2.5f;
     float fontScale = m_endScreenTimer * 0.5f;
-    //fontScale = m_endScreenTimer;
     fontScale *= 3.0f;
     if (fontScale > maxScale)
     {
@@ -1708,26 +1590,12 @@ void Game::DrawEndUI()
 void Game::DrawUnlockUI()
 {
     m_unlockTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
-
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
-
-    //textLinePos.x = 960;
     textLinePos.x = 870;
-    //textLinePos.y = 540;
     textLinePos.y = 890;
-    // 960
-    // 540
-    //textLinePos.x = 200;
-    //textLinePos.y += 30;
-
-    //std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
     std::string textLine = "Unlocking Jump Boosters in :   ";
-    //std::string textLine = "Unlocking Jump Boosters in : " + std::to_string(m_unlockCountdown);
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-    //textLineOrigin.x = 235.f;
-    //textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, 3.0f);
-    //const float shiftMod = -2.0f;
     const float shiftMod = -2.0f;
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
@@ -1742,16 +1610,7 @@ void Game::DrawUnlockUI()
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, 3.0f);
 
-    //textLinePos.y += 125;
-    //textLinePos.y += 125;
-    //textLinePos.y -= 35;
-    /*
-    textLinePos.y -= textLineOrigin.y;
-    textLinePos.y -= 20;
-    */
-    //textLinePos.x = 960;
     textLinePos.x = 1580;
-    //textLinePos.x = 960 + 700;
     const float maxScale = 3.0f;
     float fontScale = (cos(m_unlockTimer1) + 1.0f) * 2.5f;   
     fontScale = m_unlockTimer2;
@@ -1763,9 +1622,7 @@ void Game::DrawUnlockUI()
 
     textLine = std::to_string(m_unlockCountdown);
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
-    //textLineOrigin.y = 0.0f;
     textLinePos.y -= fontScale;
-    //fontScale = 3.0f;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, fontScale);
     textLinePos.x += shiftMod;
     textLinePos.y += shiftMod;
@@ -1811,12 +1668,9 @@ void Game::DrawDebugLinesVector()
 void Game::DrawSky()
 {
     m_skyRotation += m_timer.GetElapsedSeconds() * 0.19f;
-    //DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-30.0f));
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
-    //rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(m_testTimer1));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
-    //rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(m_testTimer1));
     m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
 }
 
@@ -1841,7 +1695,6 @@ void Game::OnDeviceLost()
     m_modelTestBarrel.reset();
     m_modelTestBody.reset();
     m_modelTestTurret.reset();
-
 
     m_raster.Reset(); // anti-aliased lines
     m_states.reset();
