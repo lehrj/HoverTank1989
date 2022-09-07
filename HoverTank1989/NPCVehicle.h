@@ -392,12 +392,8 @@ public:
     NPCVehicle();
     bool ActivateJump();
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
-    void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
-    void CalculateImpactForce3(const VehicleData& aVehicleHit);
-    void CalculateImpactForce4(const VehicleData& aVehicleHit);
-    void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
-
+    void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateSelfRightingTorque();
 
@@ -409,8 +405,6 @@ public:
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
         std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);
 
-    float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
-
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
     DirectX::BoundingOrientedBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
     bool GetAvoidanceIsTrue() const { return m_npcAI->GetIsAvoidanceTrue(); };
@@ -420,10 +414,11 @@ public:
 
     const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     float GetCollisionDetectionRange() const { return m_vehicleStruct00.vehicleData.maxCollisionDetectionRange; };
+    float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
     DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
     DirectX::SimpleMath::Vector3 GetForward() const { return m_vehicleStruct00.vehicleData.forward; };
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
-    int GetID() const { return m_vehicleStruct00.vehicleData.id; };
+    unsigned int GetID() const { return m_vehicleStruct00.vehicleData.id; };
 
     bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
     bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
@@ -431,6 +426,10 @@ public:
 
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
+
+    static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+        const DirectX::SimpleMath::Vector3 aHeading,
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
 
     int GetNodesHit() const { return m_npcAI->GetNodesReachCount(); };
 
@@ -442,23 +441,16 @@ public:
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_vehicleStruct00.vehicleData.q.velocity; };
     VehicleData GetVehicleData() { return m_vehicleStruct00.vehicleData; };
 
-    static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
-        const DirectX::SimpleMath::Vector3 aHeading,
-        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
-
     float GetTestTimer() const { return m_testTimer; };
     void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos, aVehicle); };
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
     void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
     void PushImpulseForce(Utility::ImpulseForce aImpulse) { m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); };
 
+    void SetCollisionVal(const bool aIsCollisionTrue);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
 
-    void SetCollisionVal(const bool aIsCollisionTrue);
-
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
-    
-    
     void TestPositionChange() {
         //m_vehicleStruct00.vehicleData.q.position.y = 45.0f;
         //m_vehicleStruct00.vehicleData.q.velocity.y = -10.2f;
@@ -471,9 +463,9 @@ public:
     };
 
     void UpdateNPC(const double aTimeDelta);
+    void UpdatePlayerAlignment(const DirectX::SimpleMath::Matrix aAlignment);
     void UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos);
     void UpdatePlayerVelocity(const DirectX::SimpleMath::Vector3 aPlayerVelocity);
-    void UpdatePlayerAlignment(const DirectX::SimpleMath::Matrix aAlignment);
 
 private:
     void ActivateJumpLanding();
@@ -482,15 +474,10 @@ private:
 
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetBuoyancyForce(const VehicleData& aVehicleData, const float aTimeStep);
-    DirectX::SimpleMath::Vector3 GetBuoyancyForce2(const VehicleData& aVehicleData, const float aTimeStep);
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetImpactForceSum(const VehicleData& aVehicleData);
     Utility::Torque GetImpactTorqueSum(const VehicleData& aVehicleData);
-
-    DirectX::SimpleMath::Vector3 GetCollisionImpulseForceSum(const VehicleData& aVehicleData);
-    Utility::Torque GetCollisionImpulseTorqueSum(const VehicleData& aVehicleData);
-
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetOmniDirectionalThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetRepulsionForce(const VehicleData& aRepulsorVehicleData);
@@ -499,8 +486,7 @@ private:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition,
         const NPCType aNPCType, Environment const* aEnvironment);
-    static void InitializeNPCModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
-        NPCModel& aModel);
+
     static void InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         NPCModel& aModel, VehicleHardPoints& aHardPoints, const DirectX::SimpleMath::Vector3 aDimensions);
 
@@ -512,7 +498,6 @@ private:
     Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
     void UpdateControlInput();
     void UpdateControlInputFromAi();
-    void UpdateControlInputFromAi2();
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
     void UpdateImpulseForces(const float aTimeDelta);

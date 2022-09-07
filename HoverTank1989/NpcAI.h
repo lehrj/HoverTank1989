@@ -36,31 +36,22 @@ public:
     DirectX::BoundingOrientedBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
     DirectX::SimpleMath::Matrix GetAiAvoidanceBoxAlignment() const { return m_avoidanceAlignment; };
     AIOutput GetAiControlOutput() const { return m_aiControls.aiOutput; };
-
     float GetAvoidanceRadius() const { return m_avoidanceRadius; };
-
+    NPCVehicle const* GetAvoidanceTarget() { return m_avoidanceTargetNpc; };
+    Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
+    bool GetEmergencyToggle() const { return m_emergencyToggle; };
     bool GetIsAvoidanceTrue() const { return m_isAvoidanceTrue; };
     bool GetIsAvoidanceTrue1() const { return m_isAvoidanceTrueTest1; };
     bool GetIsAvoidanceTrue2() const { return m_isAvoidanceTrueTest2; };
     bool GetIsJumpTriggered() const { return m_isJumpTriggered; };
-    NPCVehicle const* GetAvoidanceTarget() { return m_avoidanceTargetNpc; };
-
-    Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
-
-    bool GetEmergencyToggle() const { return m_emergencyToggle; };
-
     int GetNodesReachCount() const { return m_lapCounter; };
-
     float GetThrottleInput();
     DirectX::SimpleMath::Vector3 GetVecToDestination();
 
     void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController);
-
-    void UpdateAI(const float aTimeStep);
-
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
-
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
+    void UpdateAI(const float aTimeStep);
 
 private:
     struct Behavior
@@ -102,17 +93,13 @@ private:
 
     void AdjustHeadingForVelocity();
     void AvoidPosCurrent();
-
     void CreateWayPath();
-
     void InitializeControlOutput();
     void InitializeDestinationTargets();
     void InitializeBehavior();
-
     void SetForwardThrustOutput();
     void SetOmniOutput();
     void SetSteeringOutput();
-
     void UpdateAvoidanceBox();
     void UpdateControlOutput();
     void UpdateDesiredHeading();

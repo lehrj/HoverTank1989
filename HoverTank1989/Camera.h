@@ -187,7 +187,6 @@ private:
     DirectX::SimpleMath::Vector4    m_defaultRight = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector4    m_right = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
-
     float                           m_moveBackForward = 0.0f;
     float                           m_moveLeftRight = 0.0f;
     float                           m_moveUpDown = 0.0f;
@@ -222,7 +221,6 @@ private:
     Vehicle const* m_vehicleFocus;
     std::shared_ptr<DebugData>      m_debugData;
     std::shared_ptr<NPCController> m_npcController;
-
 
     DirectX::SimpleMath::Quaternion m_testRotQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Identity;

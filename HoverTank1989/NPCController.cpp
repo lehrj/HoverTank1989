@@ -35,8 +35,6 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
             Utility::ImpactForce projectileForce;
             projectileForce.impactMass = aProjectile.mass;
             projectileForce.impactVelocity = aProjectile.velocity;
-            //m_npcVec[i]->CalculateImpactForce(projectileForce, aProjectile.collisionSphere.Center);
-            //m_npcVec[i]->CalculateImpactForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
             m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
             isCollisionTrue = true;
         }
@@ -46,9 +44,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
 
 void NPCController::DebugToggleAI()
 {
-    //for (unsigned int i = 28; i < m_npcVec.size(); ++i)
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
-    //for (unsigned int i = 28; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->DebugToggleAI();
     }
@@ -87,7 +83,6 @@ void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceC
     m_nextUniqueID = 0;
     m_npcVec.clear();
     m_environment = aEnvironment;
-    //AddNPC(NPCType::NPCTYPE_NPC00, const DirectX::SimpleMath::Vector3(10.0f, 2.0f, 0.0f));
 }
 
 void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
@@ -113,45 +108,8 @@ void NPCController::UnlockJumpAbility()
     }
 }
 
-//void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const double aTimeDelta)
 void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Matrix aPlayerAlignment, const double aTimeDelta)
 {
-    /*
-    int nodeHit0 = 0;
-    int nodeHit1 = 0;
-    int nodeHit2 = 0;
-    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
-    {
-        m_npcVec[i]->UpdatePlayerPos(aPlayerPos);
-        m_npcVec[i]->UpdatePlayerVelocity(aPlayerVelocity);
-        m_npcVec[i]->UpdatePlayerAlignment(aPlayerAlignment);
-
-        if ((m_npcVec[i]->GetID() + 1) % 3 == 0)
-        {
-            nodeHit0 += m_npcVec[i]->GetNodesHit();
-        }
-        if ((m_npcVec[i]->GetID() + 0) % 3 == 0)
-        {
-            nodeHit1 += m_npcVec[i]->GetNodesHit();
-        }
-        else
-        {
-            nodeHit2 += m_npcVec[i]->GetNodesHit();
-        }
-    }
-
-    int delta01 = nodeHit0 - nodeHit1;
-    int delta12 = nodeHit1 - nodeHit2;
-    int delta20 = nodeHit2 - nodeHit0;
-    */
-    /*
-    m_debugData->DebugPushUILineWholeNumber("nodeHit0  = ", nodeHit0, "");
-    m_debugData->DebugPushUILineWholeNumber("nodeHit1 = ", nodeHit1, "");
-    m_debugData->DebugPushUILineWholeNumber("nodeHit2 = ", nodeHit2, "");
-    m_debugData->DebugPushUILineWholeNumber("delta01      = ", delta01, "");
-    m_debugData->DebugPushUILineWholeNumber("delta12      = ", delta12, "");
-    m_debugData->DebugPushUILineWholeNumber("delta20      = ", delta20, "");
-    */
     UpdateNPCs(aTimeDelta);
 }
 
@@ -163,49 +121,26 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
     CheckNpcCollisions();
-    // collisions, 
+    // Avoidance box checks, 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        //VehicleData testV1 = m_npcVec[i]->GetVehicleData();
         DirectX::BoundingOrientedBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
         for (unsigned int j = 0; j < m_npcVec.size(); ++j)
         {
-            //VehicleData testV1 = m_npcVec[i]->GetVehicleData();
             if (i != j)
             {
-                //VehicleData testV2 = m_npcVec[j]->GetVehicleData();
-                //const float distance = (testV1.q.position - testV2.q.position).Length();
                 const float distance = (m_npcVec[i]->GetPos() - m_npcVec[j]->GetPos()).Length();
-                //const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
-                // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
-                // avoidance check
-
-
-                //DirectX::BoundingBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
-                //DirectX::BoundingBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
-                //DirectX::BoundingOrientedBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();
-                //DirectX::BoundingOrientedBox avoidanceBox2 = m_npcVec[j]->GetAvoidanceBox();
-                //DirectX::BoundingOrientedBox avoidanceBox2 = m_npcVec[j]->GetCollisionData();
-
-                // To do only check if with in maxRange
-                //const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
-                //if (distance < (avoidanceBox.Extents.x + avoidanceBox2.Extents.x))
                 if (distance < (m_npcVec[i]->GetAvoidanceRadius() + m_npcVec[j]->GetAvoidanceRadius()))
                 {
                     DirectX::BoundingOrientedBox avoidanceBox2 = m_npcVec[j]->GetCollisionData();
-                    //if (avoidanceBox.Intersects(testV2.collisionBox) == true || avoidanceBox.Contains(testV2.collisionBox) == true)
-                    //if (avoidanceBox.Contains(testV2.collisionBox) == true || avoidanceBox.Intersects(testV2.collisionBox) == true)
-                    //if (avoidanceBox.Contains(testV2.collisionBox) == true)
                     if (avoidanceBox.Contains(avoidanceBox2) == true || avoidanceBox.Intersects(avoidanceBox2) == true)
                     {
-                        //m_npcVec[i]->PushAvoidanceTarget(testV2.q.position, m_npcVec[j]);    
                         m_npcVec[i]->PushAvoidanceTarget(m_npcVec[j]->GetPos(), m_npcVec[j]);
                     }
                 }
             }
         }
     }
-
 }
 
 void NPCController::CheckNpcCollisions()
@@ -214,26 +149,18 @@ void NPCController::CheckNpcCollisions()
     
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        //VehicleData testV1 = m_npcVec[i]->GetVehicleData();
         const VehicleData& testV1 = m_npcVec[i]->GetVehicleData();
         for (unsigned int j = 0; j < m_npcVec.size(); ++j)
         {
-            //VehicleData testV1 = m_npcVec[i]->GetVehicleData();
             if (i != j)
             {
-                //VehicleData testV2 = m_npcVec[j]->GetVehicleData();
-                //const VehicleData& testV2 = m_npcVec[j]->GetVehicleData();
-                //const float distance = (testV1.q.position - testV2.q.position).Length();
                 const float distance = (m_npcVec[i]->GetPos() - m_npcVec[j]->GetPos()).Length();
-                //const float maxCollisionRange = testV1.maxCollisionDetectionRange + testV2.maxCollisionDetectionRange;
                 const float maxCollisionRange = m_npcVec[i]->GetCollisionDetectionRange() + m_npcVec[j]->GetCollisionDetectionRange();
                 // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
                 if (distance < maxCollisionRange && distance > -1.0f)
                 {
                     const VehicleData& testV2 = m_npcVec[j]->GetVehicleData();
-                    //if (testV1.collisionBox.Intersects(testV2.collisionBox) == true || testV1.collisionBox.Contains(testV2.collisionBox) == true)
                     if (testV1.collisionBox.Contains(testV2.collisionBox) == true || testV1.collisionBox.Intersects(testV2.collisionBox) == true)
-                    //if (testV1.collisionBox.Contains(testV2.collisionBox) == true)
                     {
                         bool hasCollisionBeenRecordedYet = false;
                         for (int k = 0; k < collisionsRecorded.size(); ++k)
@@ -244,8 +171,6 @@ void NPCController::CheckNpcCollisions()
                                 hasCollisionBeenRecordedYet = true;
                             }
                         }
-
-                        //collisionsRecorded.push_back(std::pair<int, int>(testV1.id, testV2.id));
 
                         if (hasCollisionBeenRecordedYet == false)
                         {
@@ -260,8 +185,7 @@ void NPCController::CheckNpcCollisions()
 
                             float mass1 = testV1.mass; // aVehicleHit.mass;
                             float mass2 = testV2.mass; // m_vehicleStruct00.vehicleData.mass;
-                            float e = 0.4f;
-                            //float e = 1.0f;
+                            float e = 0.4f; // rebound coefficent 
 
                             float tmp = 1.0f / (mass1 + mass2);
                             DirectX::SimpleMath::Vector3 vx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
@@ -299,61 +223,11 @@ void NPCController::CheckNpcCollisions()
                             float newVX1Length = newVx1.Length();
                             float newVX2Length = newVx2.Length();
 
-                            //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                            //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-
                             m_npcVec[i]->m_prevImpact = newVx1;
                             m_npcVec[j]->m_prevImpact = newVx2;
 
-                            //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
-                            //m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
-
-
-                            //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
-                            //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
-
-                            /*
-                            //DirectX::SimpleMath::Vector3 testVec = newVx1.Cross(newVx2);
-                            //float testDot2 = vx1.Dot(vx2);
-                            DirectX::SimpleMath::Vector3 vx1Norm = vx1;
-                            vx1Norm.Normalize();
-                            DirectX::SimpleMath::Vector3 vx2Norm = vx2;
-                            vx2Norm.Normalize();
-
-                            DirectX::SimpleMath::Vector3 newVx1Norm = newVx1;
-                            newVx1Norm.Normalize();
-                            DirectX::SimpleMath::Vector3 newVx2Norm = newVx2;
-                            newVx1Norm.Normalize();
-                            
-                            float vxDot = vx1Norm.Dot(vx2Norm);
-                            float newVxDot = newVx1Norm.Dot(newVx2Norm);
-
-                            float testvx1Dot = vx1Norm.Dot(newVx1Norm);
-                            float testvx2Dot = vx2Norm.Dot(newVx2Norm);
-
-                            float p1DotA = p1localizedTo2Norm.Dot(vx1Norm);
-                            float p1DotB = p1localizedTo2Norm.Dot(vx2Norm);
-                            float p1DotC = p1localizedTo2Norm.Dot(newVx1Norm);
-                            float p1DotD = p1localizedTo2Norm.Dot(newVx2Norm);
-                            float p2DotA = p2localizedTo1Norm.Dot(vx2Norm);
-                            float p2DotB = p2localizedTo1Norm.Dot(vx1Norm);
-                            float p2DotC = p2localizedTo1Norm.Dot(newVx2Norm);
-                            float p2DotD = p2localizedTo1Norm.Dot(newVx1Norm);
-                            */
-
-
-                            //float pP1 = p1localizedTo2Norm.Dot(vx1Norm);
-                            //float pP2 = p2localizedTo1Norm.Dot(vx2Norm);
-
                             float x1a = p1localizedTo2Norm.Dot(testVelocityNorm1);
-                            //float x1b = p2localizedTo1Norm.Dot(testVelocityNorm1);
-                            //float x2a = p2localizedTo1Norm.Dot(testVelocityNorm2);
-                            //float x2b = p1localizedTo2Norm.Dot(testVelocityNorm2);
-
-                            //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
-                            //m_npcVec[j]->CalculateImpactForce4(m_npcVec[i]->GetVehicleData());
-                            //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
-                            //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
+   
                             if (x1a < 0.0f)
                             {
                                 DirectX::XMFLOAT3 testV1Corners[8];
@@ -425,9 +299,7 @@ void NPCController::CheckNpcCollisions()
                                 for (int l = 0; l < 8; ++l)
                                 {
                                     DirectX::SimpleMath::Vector3 cornerPos = testV2Corners[l];
-                                    //float distanceToCenter = (cornerPos - testV1ImpactPos).Length();
                                     float distanceToCenter = (cornerPos - testV1.collisionBox.Center).Length();
-                                    //float distanceToCenter = (cornerPos - testV1.hardPoints.centerOfMassPos).Length();
                                     if (isTestV1ClosestCornerFound == false)
                                     {
                                         testV1ClosestCorner = cornerPos;
@@ -476,82 +348,18 @@ void NPCController::CheckNpcCollisions()
                                 delete pCorners1;
                                 delete pCorners2;
 
-                                //m_debugData->DebugPushTestLinePositionIndicator(impactPoint, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
                                 m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData(), newVx1, newVx2, impactPoint);
                                 m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData(), newVx2, newVx1, impactPoint);
-                                //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData());
-                                //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData());
                                 m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
                                 m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
                             }
-     
-
-                            /*
-                            if (pP1 < 0.0f)
-                            {
-                                m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                            }
-                            if (pP2 < 0.0f)
-                            {
-                                m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-                            }
-
-                            if (pP1 < 0.5f && pP2 < 0.5f)
-                            {
-                                m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                                m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-                            }
-                            */
-    
-
-                            //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                            //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-                            //if (vxDot < 0.5f)
-                            /*
-                            if (vxDot < 0.5f)
-                            {
-                                m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                                m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-                            }
-                            else
-                            {
-                                if (newVxDot < 0.5f)
-                                {
-                                    int testBreak = 0;
-                                    testBreak++;
-                                    m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                                    m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-                                }
-                                else
-                                {
-                                    int testBreak = 0;
-                                    testBreak++;
-                                    //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                                    //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-                                }
-
-                                //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                                //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
-                                int testBreak1 = 0;
-                                testBreak1++;
-                            }
-                            */
-
-                            //m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
-                            //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
                         }
-
-                        //m_npcVec[i]->SetCollisionVal(true);
-                        //m_npcVec[i]->CalculateImpactForce4(m_npcVec[j]->GetVehicleData());
                     }
                 }
             }
         }
     }
-
-    //m_debugData->DebugPushUILineWholeNumber("collisionsRecorded Size = ", collisionsRecorded.size(), "");
 }
-
 
 void NPCController::TestPositionChange()
 {

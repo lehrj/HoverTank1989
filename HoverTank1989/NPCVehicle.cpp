@@ -129,198 +129,6 @@ void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, c
     m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
 }
 
-void NPCVehicle::CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
-{
-    float mass1 = aImpactForce.impactMass;
-    //mass1 = 1.05f;
-    float mass2 = m_vehicleStruct00.vehicleData.mass;
-    float e = 0.9f;
-
-    float tmp = 1.0f / (mass1 + mass2);
-    DirectX::SimpleMath::Vector3 vx1 = aImpactForce.impactVelocity;
-    DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
-    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-        (1.0 + e) * mass2 * vx2 * tmp;
-    DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
-        (mass2 - e * mass1) * vx2 * tmp;
-
-    float newVX1Length = newVx1.Length();
-    float newVX2Length = newVx2.Length();
-    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
-    m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
-    m_vehicleStruct00.vehicleData.impactForce.impactMass = aImpactForce.impactMass;
-    m_debugData->DebugPushTestLinePositionIndicator(aImpactPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-    Utility::ImpactForce impactForceToVec;
-    impactForceToVec.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
-    impactForceToVec.impactVelocity *= 61.0f;
-    impactForceToVec.impactMass = aImpactForce.impactMass;
-
-    // test calc kinetic energy
-    DirectX::SimpleMath::Vector3 kE = 0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity;
-    float keLength = kE.Length();
-    float kEVal = 0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity.Length() * aImpactForce.impactVelocity.Length();
-    float newtonForce = kEVal * 10.0f;
-    float testTwMass = newtonForce / m_vehicleStruct00.vehicleData.mass;
-    // end kinetic energy test
-
-    DirectX::SimpleMath::Vector3 testV = aImpactForce.impactVelocity;
-    testV.Normalize();
-    testV *= 4000.0f;
-    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = testV;
-    DirectX::SimpleMath::Vector3 impactForce = aImpactForce.impactVelocity * aImpactForce.impactMass;
-    //impactForce.Normalize();
-    //impactForce *= 0.01f;
-    DirectX::SimpleMath::Vector3 torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.collisionBox.Center;
-    Utility::Torque impactTorque = Utility::GetTorqueForce(torqueArm, impactForce);
-
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis += impactTorque.axis * impactTorque.magnitude;
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude += impactTorque.magnitude;
-    // new variable for combined torque, test
-    m_vehicleStruct00.vehicleData.impactTorque.axis += impactTorque.axis * impactTorque.magnitude;
-    m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
-
-    //impactForceToVec.impactVelocity = aImpactForce.impactVelocity;
-    //impactForceToVec.impactMass = aImpactForce.impactMass;
-
-    PushImpactForce(impactForceToVec);
-    PushImpactTorque(impactTorque);
-}
-
-void NPCVehicle::CalculateImpactForce3(const VehicleData& aVehicleHit)
-{
-    float mass1 = aVehicleHit.mass;
-    float mass2 = m_vehicleStruct00.vehicleData.mass;
-    float e = 0.9f;
-
-    float tmp = 1.0f / (mass1 + mass2);
-    DirectX::SimpleMath::Vector3 vx1 = aVehicleHit.q.velocity;
-    DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
-    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-        (1.0 + e) * mass2 * vx2 * tmp;
-    DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
-        (mass2 - e * mass1) * vx2 * tmp;
-
-    float newVX1Length = newVx1.Length();
-    float newVX2Length = newVx2.Length();
-    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
-    m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
-    m_vehicleStruct00.vehicleData.impactForce.impactMass = aVehicleHit.mass;
-
-    Utility::ImpactForce impactForceToVec;
-    impactForceToVec.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
-    impactForceToVec.impactVelocity *= 21.0f;
-    impactForceToVec.impactMass = aVehicleHit.mass;
-
-    // test calc kinetic energy
-    DirectX::SimpleMath::Vector3 kE = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity * aVehicleHit.q.velocity;
-    float keLength = kE.Length();
-    float kEVal = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity.Length() * aVehicleHit.q.velocity.Length();
-    float newtonForce = kEVal * 10.0f;
-    float testTwMass = newtonForce / m_vehicleStruct00.vehicleData.mass;
-    // end kinetic energy test
-
-    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = testV;
-    DirectX::SimpleMath::Vector3 impactForce = aVehicleHit.q.velocity * aVehicleHit.mass;
-    //impactForce.Normalize();
-    //impactForce *= 0.01f;
-    DirectX::SimpleMath::Vector3 torqueArm = aVehicleHit.q.position - m_vehicleStruct00.vehicleData.collisionBox.Center;
-    Utility::Torque impactTorque = Utility::GetTorqueForce(torqueArm, impactForce);
-
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis += impactTorque.axis * impactTorque.magnitude;
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude += impactTorque.magnitude;
-    // new variable for combined torque, test
-    m_vehicleStruct00.vehicleData.impactTorque.axis += impactTorque.axis * impactTorque.magnitude;
-    m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
-
-    //impactForceToVec.impactVelocity = aImpactForce.impactVelocity;
-    //impactForceToVec.impactMass = aImpactForce.impactMass;
-
-    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, impactForce, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    Utility::ImpactForce repulsionForceToVec;
-    repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
-    repulsionForceToVec.impactMass = aVehicleHit.mass;
-
-    repulsionForceToVec.impactVelocity *= 300.0f;
-    //PushImpactForce(repulsionForceToVec);
-
-    PushImpactForce(impactForceToVec);
-
-    //PushImpactTorque(impactTorque);
-}
-
-void NPCVehicle::CalculateImpactForce4(const VehicleData& aVehicleHit)
-{
-    float mass1 = aVehicleHit.mass;
-    float mass2 = m_vehicleStruct00.vehicleData.mass;
-    float e = 0.9f;
-
-    float tmp = 1.0f / (mass1 + mass2);
-    DirectX::SimpleMath::Vector3 vx1 = aVehicleHit.q.velocity;
-    DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
-    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-        (1.0 + e) * mass2 * vx2 * tmp;
-    DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp +
-        (mass2 - e * mass1) * vx2 * tmp;
-
-    float newVX1Length = newVx1.Length();
-    float newVX2Length = newVx2.Length();
-    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
-    m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
-    m_vehicleStruct00.vehicleData.impactForce.impactMass = aVehicleHit.mass;
-
-    m_vehicleStruct00.vehicleData.q.velocity = newVx2;
-    Utility::ImpactForce impactForceToVec;
-    impactForceToVec.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
-    impactForceToVec.impactVelocity *= 21.0f;
-    impactForceToVec.impactMass = aVehicleHit.mass;
-
-    // test calc kinetic energy
-    DirectX::SimpleMath::Vector3 kE = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity * aVehicleHit.q.velocity;
-    float keLength = kE.Length();
-    float kEVal = 0.5f * aVehicleHit.mass * aVehicleHit.q.velocity.Length() * aVehicleHit.q.velocity.Length();
-    float newtonForce = kEVal * 10.0f;
-    float testTwMass = newtonForce / m_vehicleStruct00.vehicleData.mass;
-
-    impactForceToVec.kineticEnergy = kE * 0.01f;
-    // end kinetic energy test
-
-    //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = testV;
-    DirectX::SimpleMath::Vector3 impactForce = aVehicleHit.q.velocity * aVehicleHit.mass;
-    //impactForce.Normalize();
-    //impactForce *= 0.01f;
-    DirectX::SimpleMath::Vector3 torqueArm = aVehicleHit.q.position - m_vehicleStruct00.vehicleData.collisionBox.Center;
-    Utility::Torque impactTorque = Utility::GetTorqueForce(torqueArm, impactForce);
-
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis += impactTorque.axis * impactTorque.magnitude;
-    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude += impactTorque.magnitude;
-    // new variable for combined torque, test
-    m_vehicleStruct00.vehicleData.impactTorque.axis += impactTorque.axis * impactTorque.magnitude;
-    m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
-
-    //impactForceToVec.impactVelocity = aImpactForce.impactVelocity;
-    //impactForceToVec.impactMass = aImpactForce.impactMass;
-
-    //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, impactForce, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    DirectX::SimpleMath::Vector3 testImpactVelocityNorm = impactForceToVec.impactVelocity;
-    testImpactVelocityNorm.Normalize();
-    DirectX::SimpleMath::Vector3 testKENorm = kE;
-    testKENorm.Normalize();
-
-    Utility::ImpactForce repulsionForceToVec;
-    repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
-    repulsionForceToVec.impactMass = aVehicleHit.mass;
-
-    repulsionForceToVec.impactVelocity *= 300.0f;
-    repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
-    //PushImpactForce(repulsionForceToVec);
-
-    //PushImpactForce(impactForceToVec);
-
-    PushImpactTorque(impactTorque);
-}
-
 void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
     //float mass1 = aVehicleHit.mass;
@@ -765,42 +573,25 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     const float immersedDensityNeutralAtHalfDepth = 1.4286f;
     bool breakToggle = false;
 
-    /*
-    const float curveAdjustVal = 0.0f;
-    float midCurveBound = 3.5f + curveAdjustVal;
-    float trueMidPoint = midCurveBound;
-    const float lowerCurveBound = midCurveBound - (aVehicleData.dimensions.y * 0.5f);
-    const float upperCurveBound = midCurveBound + (aVehicleData.dimensions.y * 0.5f);
-    const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
-    midCurveBound += 0.0f;
-    */
     float midCurveBound = aVehicleData.hoverData.hoverRangeMid;
     const float lowerCurveBound = aVehicleData.hoverData.hoverRangeLower;
     const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
     const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
-    //const float curveAdjustVal = midCurveBound - lowerCurveBound;
-    //const float curveAdjustVal = upperCurveBound - lowerCurveBound;
     const float curveAdjustVal = lowerCurveBound;
 
     DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
 
-    //altitude += m_testHoverFlutter;
     float immersedRange = upperCurveBound - lowerCurveBound;
     float immersedPos = altitude - curveAdjustVal;
     float immersedRatio;
-    //if (immersedPos >= upperCurveBound)
+
     if (altitude >= upperCurveBound)
     {
         immersedRatio = 0.0f;
     }
-    //else if (immersedPos <= lowerCurveBound)
     else if (altitude <= lowerCurveBound)
     {
         immersedRatio = 1.0f;
-        //float testRatio = immersedPos / immersedRange;
-        //immersedRatio = 1.0f - testRatio;
-
-
     }
     else
     {
@@ -815,8 +606,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
 
         float testRatio = immersedPos / immersedRange;
         immersedRatio = 1.0f - testRatio;
-        //immersedRatio = immersedRatio2;
-        //if (immersedRatio < 0.0f || immersedRatio > 1.0f)
+
         if (immersedRatio != immersedRatio2)
         {
             int testBreak = 0;
@@ -825,8 +615,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     }
 
     float immersedVolume = abs(immersedRatio * vehicleVolumeMax);
-    //m_debugData->DebugPushUILineDecimalNumber("immersedRatio        = ", immersedRatio, "");    
-    //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
+
     if (immersedPos > upperCurveBound)
     {
         //immersedVolume = 0.0f;
@@ -840,9 +629,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
         immersedVolume *= -1.0f;
     }
     float immersedVolumeRatio = immersedVolume / vehicleVolumeMax;
-    //m_debugData->DebugPushUILineDecimalNumber("immersedVolumeRatio = ", immersedVolumeRatio, "");
-    //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
-    //immersedVolumeRatio = 0.5f;
+
     const float penetrationVelocity = -10.0f;
     int stateVal = -1;
     if (aVehicleData.q.position.y > upperCurveBound)
@@ -850,14 +637,11 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
         stateVal = 0;
     }
     float testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + immersedVolumeRatio);
-    //float testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio + immersedVolumeRatio);
-    //if (aVehicleData.q.velocity.y >= 0.0f && altitude > (midCurveBound))
     if (aVehicleData.q.velocity.y >= 0.0f && altitude > (lowerCurveBound))
     {
         testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
         stateVal = 1;
     }
-    //if (aVehicleData.q.velocity.y <= 0.0f && altitude < (midCurveBound))
     if (aVehicleData.q.velocity.y <= 0.0f && altitude < (upperCurveBound))
     {
         testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio));
@@ -902,7 +686,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     }
     if (aVehicleData.q.velocity.y <= 0.0f && altitude < (lowerCurveBound))
     {
-        //testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
         testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
         stateVal = 3;
         if (aVehicleData.q.velocity.y <= penetrationVelocity && altitude < (lowerCurveBound))
@@ -921,151 +704,8 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
         testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
         stateVal = 4;
     }
-    //float flutterMod3 = (((cos(m_testTimer + m_testHoverFlutter) * 1.0f) + 0.0f) * 0.5f) + 1.0f;
-    //immersedVolume *= flutterMod3;
-    buoyancyForce = testDensity * immersedVolume * gravForce;
-
-    return buoyancyForce;
-}
-
-DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce2(const VehicleData& aVehicleData, const float aTimeStep)
-{
-    DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();
-    const float altitude = aVehicleData.q.position.y;
-    //const float altitude = 0.0f;
-    //const float altitude = 8.25f;
-    //const float immersedDensity = 1025.0f; // kg/m^3 of seawater
-    //const float immersedDensity = 1.42857146;
-    //const float immersedDensity = 3.42857146f;
-    const float immersedDensity = 1.42857146f;
-    //const float immersedDensity = 0.7143f;
-    /*
-    const float lowerCurveBound = aVehicleData.hoverData.hoverRangeLower;
-    const float midCurveBound = aVehicleData.hoverData.hoverRangeMid;
-    const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
-    */
-    float midCurveBound = 3.5f;
-    const float lowerCurveBound = midCurveBound - (aVehicleData.dimensions.y * 0.5f);
-    const float upperCurveBound = midCurveBound + (aVehicleData.dimensions.y * 0.5f);
-
-    const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
-
-    DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
-    /*
-    if (altitude > upperCurveBound)
-    {
-        buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
-    }
-    else if (altitude > lowerCurveBound)
-    {
-        float immersedRange = upperCurveBound - lowerCurveBound;
-        float immersedPos = altitude - lowerCurveBound;
-        float immersedRatio = immersedPos / immersedRange;
-        float immersedVolume = immersedRatio * vehicleVolume;
-        buoyancyForce = immersedDensity * immersedVolume * gravForce;
-    }
-    else
-    {
-        float immersedRange = upperCurveBound - lowerCurveBound;
-        float immersedPos = altitude - lowerCurveBound;
-        float immersedRatio = immersedPos / immersedRange;
-        float immersedVolume = vehicleVolume;
-        //float immersedVolume = immersedRatio * vehicleVolume;
-        buoyancyForce = immersedDensity * immersedVolume * gravForce;
-    }
-    */
-
-    float immersedRange = upperCurveBound - lowerCurveBound;
-    //m_debugData->DebugPushUILineDecimalNumber("immersedRange = ", immersedRange, "");
-    //float immersedPos = altitude - lowerCurveBound;
-    //float immersedPos = abs(altitude);
-    //float immersedPos = altitude - midCurveBound;
-    float immersedPos = altitude;
-    float immersedRatio;
-    if (immersedPos >= upperCurveBound)
-    {
-        immersedRatio = 0.0f;
-    }
-    else if (immersedPos <= lowerCurveBound)
-    {
-        immersedRatio = 1.0f;
-    }
-    else
-    {
-        float testRatio = immersedPos / immersedRange;
-        immersedRatio = 1.0f - testRatio;
-
-        if (immersedRatio < 0.0f || immersedRatio > 1.0f)
-        {
-            int testBreak = 0;
-            testBreak++;
-        }
-    }
-
-    float immersedVolume = abs(immersedRatio * vehicleVolumeMax);
-    //m_debugData->DebugPushUILineDecimalNumber("immersedRatio = ", immersedRatio, "");    
-    //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
-    if (immersedPos > upperCurveBound)
-    {
-        //immersedVolume = 0.0f;
-    }
-    if (immersedVolume > vehicleVolumeMax)
-    {
-        //immersedVolume = vehicleVolumeMax;
-    }
-    else if (immersedVolume < 0.0f)
-    {
-        immersedVolume *= -1.0f;
-    }
-    float immersedVolumeRatio = immersedVolume / vehicleVolumeMax;
-    //m_debugData->DebugPushUILineDecimalNumber("immersedVolumeRatio = ", immersedVolumeRatio, "");
-    //m_debugData->DebugPushUILineDecimalNumber("immersedVolume = ", immersedVolume, "");
-    //immersedVolumeRatio = 0.5f;
-    //float testDensity = immersedDensity * (1.0f + immersedVolumeRatio);
-    float testDensity = immersedDensity * (immersedVolumeRatio + immersedVolumeRatio);
-    if (aVehicleData.q.velocity.y >= 0.0f && altitude > (midCurveBound))
-    {
-        testDensity = immersedDensity * (immersedVolumeRatio);
-    }
 
     buoyancyForce = testDensity * immersedVolume * gravForce;
-
-    if (altitude < upperCurveBound && aVehicleData.q.velocity.y > 0.0f)
-    {
-        //buoyancyForce *= 0.51f;
-        if (altitude > lowerCurveBound)
-        {
-            //buoyancyForce *= 0.0f + immersedRatio;
-        }
-        else
-        {
-            //buoyancyForce *= 0.0f + immersedRatio;
-        }
-    }
-
-
-    float rawGravForce = gravForce.y * aVehicleData.mass;
-
-    float neutralBuoyantVolume = rawGravForce / (immersedDensity * gravForce.y);
-    float neutralRatio = neutralBuoyantVolume / vehicleVolumeMax;
-    float neutralDensity = rawGravForce / ((vehicleVolumeMax * 0.5f) * gravForce.y);
-
-    //m_debugData->DebugPushUILineDecimalNumber("aVehicleData.q.position.y = ", aVehicleData.q.position.y, "");
-
-    DirectX::SimpleMath::Vector3 gravForce2 = m_environment->GetGravityVec();
-    //buoyancyForce = - gravForce2 * (aVehicleData.mass);
-
-    float ratio = buoyancyForce.y / rawGravForce;
-    //m_debugData->DebugPushUILineDecimalNumber("ratio           = ", ratio, "");
-    //m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
-    if (aVehicleData.q.position.y < 0.0f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-
-
-    //buoyancyForce = 1.42857146f * 490.0f * gravForce;
 
     return buoyancyForce;
 }
@@ -1094,8 +734,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetDamperForce(const VehicleData& aVehi
 
         }
     }
-    //DebugPushUILineDecimalNumber("damperForce.y : ", damperForce.y, "");
-    //return damperForce * aVehicleData.mass;
+
     return damperForce;
 }
 
@@ -1189,18 +828,14 @@ Utility::Torque NPCVehicle::GetImpactTorqueSum(const VehicleData& aVehicleData)
         impactTorque.magnitude += aVehicleData.impactTorqueVec[i].magnitude;
     }
     impactTorque.axis.Normalize();
-    //m_debugData->DebugPushUILineDecimalNumber("impactTorqueMag = ", impactTorque.magnitude, "");
     return impactTorque;
 }
 
 DirectX::SimpleMath::Vector3 NPCVehicle::GetOmniDirectionalThrust(const VehicleData& aVehicleData)
 {
-    //DirectX::SimpleMath::Vector3 thrustUpdate = aVehicleData.controlInput.steeringVec * (aVehicleData.hoverData.forwardThrust);
-
     DirectX::SimpleMath::Vector3 thrustDir = aVehicleData.forward;
     thrustDir = DirectX::SimpleMath::Vector3::Transform(thrustDir, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aVehicleData.up, aVehicleData.controlInput.angleToDestination));
     thrustDir.Normalize();
-    //m_debugData->DebugPushTestLine(aVehicleData.q.position, thrustDir, 15.0f, 20.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     thrustDir *= aVehicleData.hoverData.omniThrustMax;
 
     DirectX::SimpleMath::Vector3 omniThrust = aVehicleData.hoverData.omniThrustVec;
@@ -1211,20 +846,12 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetRepulsionForce(const VehicleData& aR
 {
     DirectX::SimpleMath::Vector3 testSelfPos = m_vehicleStruct00.vehicleData.q.position;
     DirectX::SimpleMath::Vector3 testRepulsedPos = aRepulsorVehicleData.q.position;
-    //testSelfPos = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
-    //testRepulsedPos = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 repulsionForce = DirectX::SimpleMath::Vector3::Zero;
     const float repulsionForceMax = 1.0f * m_vehicleStruct00.vehicleData.mass;
-    //DirectX::SimpleMath::Vector3 repulsionForceNorm = m_vehicleStruct00.vehicleData.q.position - aRepulsorVehicleData.q.position;
-    //DirectX::SimpleMath::Vector3 repulsionForceNorm =  aRepulsorVehicleData.q.position - m_vehicleStruct00.vehicleData.q.position;
-    //DirectX::SimpleMath::Vector3 repulsionForceNorm = testSelfPos - testRepulsedPos;
     DirectX::SimpleMath::Vector3 repulsionForceNorm = testRepulsedPos - testSelfPos;
     const float distance = repulsionForceNorm.Length();
     repulsionForceNorm.Normalize();
-    //float ratio = (1.0f + (distance / (m_vehicleStruct00.vehicleData.maxCollisionDetectionRange + aRepulsorVehicleData.maxCollisionDetectionRange)));
     float ratio = (2.0f - (distance / (m_vehicleStruct00.vehicleData.maxCollisionDetectionRange + aRepulsorVehicleData.maxCollisionDetectionRange)));
-    //float ratio = (2.0f - (distance / (50.0f + 50.0f)));
-    //float ratio = (1.0f + (distance / (m_vehicleStruct00.vehicleData.maxCollisionDetectionRange)));
     repulsionForce = -repulsionForceNorm * (ratio * repulsionForceMax);
 
     return repulsionForce;
@@ -1235,34 +862,20 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 {
     const float low = 0.0f;
     const float high = 1.0f;
-    float xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     float x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     float y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     float z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     aModel.color1 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
-    /*
-    x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-    y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-    z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-    aModel.color2 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
-    */
     x = 1.0f - x;
     y = 1.0f - y;
     z = 1.0f - z;
     aModel.color2 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
-    /*
-    x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-    y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-    z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-    aModel.color3 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
-    */
     x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     aModel.color3 = DirectX::SimpleMath::Vector4(x, y, z, 1.0f);
     aModel.color3 = aModel.color2;
     aModel.color3 = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    //aModel.color2 = aModel.color1;
     x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     y = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     z = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
@@ -1274,7 +887,6 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     DirectX::SimpleMath::Vector3 mainBodySize = aDimensions;
     mainBodySize.x -= zFightOffset * 2.0f;
     mainBodySize.y -= (zFightOffset * 10.0f) * 2.0f;
-    //mainBodySize.z *= 0.925f;
     mainBodySize.z *= 0.45f;
 
     const float mainBodyOffset = 2.0f;
@@ -1334,18 +946,12 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     rearDeckTranslation.y += -1.8f;
     rearDeckTranslation.y += (rearDeckSize * rearDeckScale.y) * 0.5f;
     rearDeckTranslation.z += 0.0f;
-    //const float rearDeckSize = (aDimensions.z * 0.5f) * sqrt(2.0f);
 
     aModel.rearDeckShape = DirectX::GeometricPrimitive::CreateOctahedron(aContext.Get(), rearDeckSize);
     aModel.localRearDeckMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f));
     aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(55.0f));
     aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateScale(rearDeckScale);
-    /*
-    aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(14.0f));
-    aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
-    aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
-    */
     aModel.localRearDeckMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rearDeckTranslation);
     aModel.localRearDeckMatrix *= centerMassTranslation;
     aModel.worldRearDeckMatrix = aModel.localRearDeckMatrix;
@@ -1358,13 +964,12 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.wingArmShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingArmSize);
     DirectX::SimpleMath::Vector3 wingArmTranslation = rearDeckTranslation;
     wingArmTranslation.x += 1.6f;
-    wingArmTranslation.x -= 0.61f; /// testbadjust val
+    wingArmTranslation.x -= 0.61f;
     wingArmTranslation.y += rearDeckSize * 0.6f;
     wingArmTranslation.z = 0.0f;
 
     DirectX::SimpleMath::Vector3 wingArmLocalTranslation;
     wingArmLocalTranslation.x = -wingArmSize.x * 0.85f;
-    //wingArmLocalTranslation.x -= 0.61f; /// testbadjust val
     wingArmLocalTranslation.y = 0.0f;
     wingArmLocalTranslation.z = 0.0f;
 
@@ -1373,17 +978,9 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
     aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
     aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmLocalTranslation);
-    //aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
     aModel.localWingArmTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
     aModel.localWingArmMatrix *= centerMassTranslation;
     aModel.worldWingArmMatrix = aModel.localWingArmMatrix;
-
-
-    DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f)));
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f));
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f)));
-
 
     // wing
     DirectX::SimpleMath::Vector3 wingSize(2.0f, 1.0f, 1.0f);
@@ -1392,12 +989,9 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     wingSize.z *= aDimensions.z;
     aModel.wingShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingSize);
     DirectX::SimpleMath::Vector3 wingTranslation = wingArmTranslation;
-    //wingTranslation.x += -0.36 * wingSize.x;
-    //wingTranslation.y += wingSize.y * 0.5f;
     wingTranslation.z += 0.0f;
 
     DirectX::SimpleMath::Vector3 wingLocalTranslation = wingArmLocalTranslation;
-    //wingLocalTranslation.x += -(wingSize.x * 1.0f) * 0.02564895;
     wingLocalTranslation.x += -0.26 * 1.0f;
     wingLocalTranslation.y += wingSize.y * 1.5f;
     wingLocalTranslation.z += 0.0f;
@@ -1407,7 +1001,6 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
     aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-7.0f));
     aModel.localWingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingLocalTranslation);
-    //aModel.localWingArmMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(wingArmTranslation);
     aModel.localWingTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(wingTranslation);
     aModel.localWingMatrix *= centerMassTranslation;
     aModel.worldWingMatrix = aModel.localWingMatrix;
@@ -1417,25 +1010,20 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     wingFinSize.x *= 1.0f;
     wingFinSize.y *= 0.95f;
     wingFinSize.z *= 0.5f;
-    //wingFinSize.y = wingSize.y;
     const float wingFinOffSetX = rearBodySize.x - wingFinSize.x;
     wingFinSize.x += wingFinOffSetX;
 
     aModel.wingFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingFinSize);
     DirectX::SimpleMath::Vector3 wingFinLeftTranslation = wingTranslation;
     wingFinLeftTranslation.x += 0.0f;
-    //wingFinLeftTranslation.x -= wingFinOffSetX;
     wingFinLeftTranslation.y += 0.0f;
     wingFinLeftTranslation.z += 0.0f;
     wingFinLeftTranslation.z += (-wingSize.z * 0.5f) + (-wingFinSize.z * 0.5f);
 
     DirectX::SimpleMath::Vector3 wingFinLeftLocalTranslation = wingLocalTranslation;
-    //wingFinLeftLocalTranslation.x += -0.36 * 1.0f;
     wingFinLeftLocalTranslation.x += 0.0f;
     wingFinLeftLocalTranslation.x -= wingFinOffSetX;
-    //wingFinLeftLocalTranslation.y += wingSize.y * 1.0f;
     wingFinLeftLocalTranslation.y += 0.0f;
-    //wingFinLeftLocalTranslation.z += (-wingSize.z * 0.5f) + (-wingFinSize.z * 0.5f);
 
     aModel.localWingFinLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localWingFinLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(14.0f));
@@ -1453,10 +1041,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     wingFinRightTranslation.z += 0.0f;
 
     DirectX::SimpleMath::Vector3 wingFinRightLocalTranslation = wingLocalTranslation;
-    //wingFinRightLocalTranslation.x += -0.36 * 1.0f;
     wingFinRightLocalTranslation.x += 0.0f;
     wingFinRightLocalTranslation.x -= wingFinOffSetX;
-    //wingFinRightLocalTranslation.y += wingSize.y * 1.0f;
     wingFinRightLocalTranslation.y += 0.0f;
     wingFinRightLocalTranslation.z += (wingSize.z * 0.5f) + (wingFinSize.z * 0.5f);
 
@@ -1474,25 +1060,17 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     const float jetHousingThickness = 0.5f;
     aModel.jetHousingShape = DirectX::GeometricPrimitive::CreateTorus(aContext.Get(), jetHousingDiameter, jetHousingThickness);
     DirectX::SimpleMath::Vector3 jetHousingLeftTranslation;
-    //jetHousingLeftTranslation.x = -aDimensions.x * 0.325f;
     jetHousingLeftTranslation.x = -aDimensions.x * 0.38f;
     jetHousingLeftTranslation.y = aDimensions.y * 0.15f;
-    //jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -0.3f);
     jetHousingLeftTranslation.z = -(aDimensions.z * 0.5f) - (jetHousingDiameter * 0.5f) + (jetHousingThickness * -1.5f);
-    //jetHousingLeftTranslation.x = 0.0f;
-    //jetHousingLeftTranslation.y = 0.5f;
-    //jetHousingLeftTranslation.z = -5.5f;
 
     aModel.localJetHousingLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localJetHousingLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.localJetHousingLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(30.0f));
     DirectX::SimpleMath::Matrix jetHousingScale = DirectX::SimpleMath::Matrix::CreateScale(11.0f, 1.0f, 1.0f);
-    //DirectX::SimpleMath::Matrix jetHousingScale = DirectX::SimpleMath::Matrix::CreateScale(36.0f, 1.0f, 1.0f);
     aModel.localJetHousingLeftMatrix *= jetHousingScale;
-    //aModel.localJetHousingLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingLeftTranslation);
     aModel.jetHousingTranslationLeftMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingLeftTranslation);
     aModel.worldJetHousingLeftMatrix = aModel.localJetHousingLeftMatrix;
-
 
     aHardPoints.localLeftJetAxis = jetHousingLeftTranslation;
     aHardPoints.leftJetAxis = aHardPoints.localLeftJetAxis;
@@ -1502,29 +1080,17 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localJetHousingShellLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.localJetHousingShellLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(30.0f));
     DirectX::SimpleMath::Matrix jetHousingShellScale = DirectX::SimpleMath::Matrix::CreateScale(8.0f, 1.1f, 1.1f);
-    //DirectX::SimpleMath::Matrix jetHousingShellScale = DirectX::SimpleMath::Matrix::CreateScale(32.0f, 1.1f, 1.1f);
     aModel.localJetHousingShellLeftMatrix *= jetHousingShellScale;
-    //aModel.localJetHousingShellLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingLeftTranslation);
     aModel.worldJetHousingShellLeftMatrix = aModel.localJetHousingShellLeftMatrix;
 
     // Jet housing right
     DirectX::SimpleMath::Vector3 jetHousingRightTranslation = jetHousingLeftTranslation;
-
-    //jetHousingRightTranslation.x = -aDimensions.x * 0.25f;
-    //jetHousingRightTranslation.y = aDimensions.y * 0.2f;
     jetHousingRightTranslation.z = -jetHousingLeftTranslation.z;
-
-    /*
-    jetHousingRightTranslation.x = -6.5f;
-    jetHousingRightTranslation.y = 0.0f;
-    jetHousingRightTranslation.z = 3.5f;
-    */
 
     aModel.localJetHousingRightMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localJetHousingRightMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.localJetHousingRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(30.0f));
     aModel.localJetHousingRightMatrix *= jetHousingScale;
-    //aModel.localJetHousingRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingRightTranslation);
     aModel.jetHousingTranslationRightMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingRightTranslation);
     aModel.worldJetHousingRightMatrix = aModel.localJetHousingRightMatrix;
 
@@ -1532,8 +1098,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localJetHousingShellRightMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localJetHousingShellRightMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.localJetHousingShellRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(30.0f));
-    aModel.localJetHousingShellRightMatrix *= jetHousingShellScale;
-    //aModel.localJetHousingShellRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingRightTranslation);   
+    aModel.localJetHousingShellRightMatrix *= jetHousingShellScale;  
     aModel.worldJetHousingShellRightMatrix = aModel.localJetHousingShellRightMatrix;
 
     aHardPoints.localRightJetAxis = jetHousingRightTranslation;
@@ -1545,7 +1110,6 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     jetMountSize.z = aDimensions.z * 1.2f;
     DirectX::SimpleMath::Vector3 jetMountTranslation = jetHousingLeftTranslation;
     jetMountTranslation.z = 0.0f;
-    //aModel.jetMountShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), jetMountSize);
     aModel.jetMountShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), jetMountSize.z, jetMountSize.y);
     aModel.localJetMountMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localJetMountMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
@@ -1595,12 +1159,9 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.afterBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), afterBurnDiameter, afterBurnHeight, 3);
     DirectX::SimpleMath::Vector3 afterBurnLowerLeftTranslation;
     afterBurnLowerLeftTranslation = jetHousingLeftTranslation;
-    //afterBurnLowerLeftTranslation.x += -jetHousingDiameter * 0.7f;
     afterBurnLowerLeftTranslation.y += 0.0f;
-    //afterBurnLowerLeftTranslation.z = 0.0f;
     aModel.localAfterBurnLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localAfterBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
-    //aModel.localAfterBurnLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(afterBurnLowerLeftTranslation);
     aModel.worldAfterBurnLeftMatrix = aModel.localAfterBurnLeftMatrix;
 
     // foward burn left
@@ -1608,10 +1169,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     forwardBurnLeftTranslation = jetHousingLeftTranslation;
     forwardBurnLeftTranslation.x += jetHousingDiameter * 0.7f;
     forwardBurnLeftTranslation.y += 0.0f;
-    //forwardBurnLeftTranslation.z += 0.0f;
     aModel.localForwardBurnLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localForwardBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
-    //aModel.localForwardBurnLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(forwardBurnLeftTranslation);
     aModel.worldForwardBurnLeftMatrix = aModel.localForwardBurnLeftMatrix;
 
     // Jet after burn right
@@ -1621,14 +1180,11 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localAfterBurnRightMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localAfterBurnRightMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.localAfterBurnRightMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
-    //aModel.localAfterBurnRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(afterBurnRightTranslation);
     aModel.worldAfterBurnRightMatrix = aModel.localAfterBurnRightMatrix;
     // end
 
     DirectX::SimpleMath::Vector3 skirtSize(aDimensions);
     skirtSize.x *= 1.1f;
-    //skirtSize.x *= 0.4f;
-    //skirtSize.x *= 0.45f;
     skirtSize.y *= 0.5f;
     skirtSize.z *= 1.01f;
     DirectX::SimpleMath::Vector3 skirtTranslation;
@@ -1641,15 +1197,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localSkirtMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-55.0f));
     aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     const float skirtRot = 15.0f;
-    //aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-skirtRot));
-    //aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.5f, 1.0f, 1.0f);
-    //aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(6.0f));
-    //aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f));
-    //aModel.localSkirtMatrix = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-55.0f));
-    //aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateScale(16.5f, 3.5f, 1.0f);
     aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateScale(19.8f, 5.0f, 1.0f);
     aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(3.0f));
-    //skirtTranslation.y = (-aDimensions.y * 0.4f);
     skirtTranslation.y = (-aDimensions.y * 0.15f);
     skirtTranslation.y = -1.85f;
 
@@ -1746,24 +1295,6 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     //aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeRightTranslation2);
     aModel.localEyeRightMatrix *= centerMassTranslation;
     aModel.worldEyeRightMatrix = aModel.localEyeRightMatrix;
-
-
-
-    /*
-        DirectX::SimpleMath::Vector3 eyeRightTranslation = eyeLeftTranslation;
-    //eyeRightTranslation.x = aDimensions.x * 0.47f;
-    //eyeRightTranslation.y = aDimensions.y * 0.1f;
-    eyeRightTranslation.z *= -1.0f;
-    aModel.localEyeRightMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(24.0f));
-    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateScale(2.0f, 1.0f, 1.0f);
-    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-12.0f));
-    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-eyeInflection));
-    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(eyeRotation));
-    aModel.localEyeRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeRightTranslation);
-    aModel.localEyeRightMatrix *= centerMassTranslation;
-    aModel.worldEyeRightMatrix = aModel.localEyeRightMatrix;
-    */
 
     // front air dam
     DirectX::SimpleMath::Vector3 frontAirDamSize(aDimensions);
@@ -1878,8 +1409,6 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.worldBaseBurnMatrix1 = aModel.localBaseBurnMatrix;
     aModel.worldBaseBurnMatrix2 = aModel.localBaseBurnMatrix;
     // base burner end
-
-
 
     // old wing
     DirectX::SimpleMath::Vector3 rearShapeSize = aDimensions;
@@ -2057,12 +1586,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
     aVehicleStruct.vehicleData.dimensions = dimensions;
-    //aVehicleStruct.vehicleData.dimensions = DirectX::SimpleMath::Vector3(44.0f, 27.0f, 30.0f);
-    // to do update when transisioned from sphere to box
-    //dimensions *= 1.12f;
     aVehicleStruct.vehicleData.collisionBox.Extents = dimensions * 0.5f;
-    //aVehicleStruct.vehicleData.collisionBox.Extents = dimensions * 1.0f;
-    //aVehicleStruct.vehicleData.collisionBox.Extents = aVehicleStruct.vehicleData.dimensions * 0.5f;
 
     aVehicleStruct.vehicleData.collisionBox.Center = DirectX::SimpleMath::Vector3::Zero;
 
@@ -2099,7 +1623,6 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.impactTorqueVec.clear();
     aVehicleStruct.vehicleData.impulseForceVec.clear();
 
-
     aVehicleStruct.vehicleData.collisionImpulseTorqueSum.axis = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.collisionImpulseTorqueSum.magnitude = 0.0f;
 
@@ -2110,7 +1633,6 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.hardPoints.localWeaponPos = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.hardPoints.weaponPos = aVehicleStruct.vehicleData.hardPoints.localWeaponPos;
 
-    //aVehicleStruct.vehicleData.hardPoints.localVerticalStabilizerPos = DirectX::SimpleMath::Vector3(0.0f, 30.5f, 0.0f);
     aVehicleStruct.vehicleData.hardPoints.localVerticalStabilizerPos = DirectX::SimpleMath::Vector3(0.0f, aVehicleStruct.vehicleData.dimensions.y, 0.0f);
     aVehicleStruct.vehicleData.hardPoints.verticalStabilizerPos = aVehicleStruct.vehicleData.hardPoints.localVerticalStabilizerPos;
     aVehicleStruct.vehicleData.hardPoints.localSteeringTorqueArmPos = DirectX::SimpleMath::Vector3(aVehicleStruct.vehicleData.dimensions.x * 0.5f, 0.0f, 0.0f);
@@ -2155,32 +1677,7 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
     CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
-    /*
-    if ((m_vehicleStruct00.vehicleData.id + 1) % 3 == 0)
-    {
-        DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-        m_vehicleStruct00.npcModel.color1 = testColor;
-        m_vehicleStruct00.npcModel.color2 = testColor;
-        m_vehicleStruct00.npcModel.color3 = testColor;
-        m_vehicleStruct00.npcModel.color4 = testColor;
-    }
-    else if ((m_vehicleStruct00.vehicleData.id + 0) % 3 == 0)
-    {
-        DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-        m_vehicleStruct00.npcModel.color1 = testColor;
-        m_vehicleStruct00.npcModel.color2 = testColor;
-        m_vehicleStruct00.npcModel.color3 = testColor;
-        m_vehicleStruct00.npcModel.color4 = testColor;
-    }
-    else
-    {
-    DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-    m_vehicleStruct00.npcModel.color1 = testColor;
-    m_vehicleStruct00.npcModel.color2 = testColor;
-    m_vehicleStruct00.npcModel.color3 = testColor;
-    m_vehicleStruct00.npcModel.color4 = testColor;
-    }
-    */
+
     m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController);
 }
 
@@ -2217,7 +1714,6 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (static_cast<float>(aTimeDelta) * (-frontDragResistance));
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
     //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, airResistance, 15.f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, .0f));
-
 
     float airRLength = airResistance.Length();
 
@@ -2304,7 +1800,6 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     }
     */
 
-
     /*
     //DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec() * aVehicle->mass;
     DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec();
@@ -2369,18 +1864,15 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     airResistance = velocityNorm * (-frontDragResistance);
     airResistance.y = 0.0f;
     velocityUpdate += airResistance;
-
-    
+ 
     if (m_npcAI->GetAiToggle() == false)
     {
         DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
         float flutterMod = (((cos((m_testTimer * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
-        //m_debugData->DebugPushUILineDecimalNumber("rungeFluter = ", flutterMod, "");
         flutter.y = flutterMod * 7.0f;
         velocityUpdate += flutter * mass;
     }
     
-
     //velocityUpdate += GetImpactForceSum(m_vehicleStruct00.vehicleData);
     //velocityUpdate += GetImpactForceSum(m_vehicleStruct00.vehicleData);
 
@@ -2397,8 +1889,6 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
 
 void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
 {
-    //  Define a convenience variables
-
     const float numEqns = static_cast<float>(6);
     //  Retrieve the current values of the dependent and independent variables.
     MotionNPC q = aVehicle->q;
@@ -2407,23 +1897,9 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     MotionNPC dq3;
     MotionNPC dq4;
 
-    DirectX::SimpleMath::Vector3 testImpact = GetImpactForceSum(m_vehicleStruct00.vehicleData);
-    if (testImpact.Length() > 0.001f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
     //aVehicle->impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
     aVehicle->impactForceSum = m_vehicleStruct00.vehicleData.testProjectileImpulse;
     aVehicle->impactForceSum += GetImpactForceSum(m_vehicleStruct00.vehicleData);
-
-    if (aVehicle->impulseForceVec.size() > 0)
-    {
-        int aaId = aVehicle->id;
-
-        int testBreak = 0;
-        testBreak++;
-    }
 
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
@@ -2446,21 +1922,12 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     q.velocity += velocityUpdate;
     q.position += posUpdate;
 
-    bool isPenetrating = CheckVehiclePenetration(q.position);
-    if (isPenetrating == true)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-
     m_prevYvelocityStep = velocityUpdate.y;
     m_prevYvelocityQ = q.velocity.y;
 
     aVehicle->q.velocity = q.velocity;
     aVehicle->q.position = q.position;
     aVehicle->q.bodyTorqueForce = q.bodyTorqueForce;
-
-
 }
 
 void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
@@ -2736,93 +2203,6 @@ void NPCVehicle::UpdateControlInputFromAi()
     else
     {
         m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
-    }
-
-    // omni trust
-    m_vehicleStruct00.vehicleData.controlInput.omniDirection = aiInput.omniDirection;
-    m_vehicleStruct00.vehicleData.controlInput.omniThrust = aiInput.omniThrust * m_vehicleStruct00.vehicleData.hoverData.omniThrustMax;
-    m_vehicleStruct00.vehicleData.hoverData.omniThrustVec = m_vehicleStruct00.vehicleData.controlInput.omniDirection * m_vehicleStruct00.vehicleData.controlInput.omniThrust;
-}
-
-void NPCVehicle::UpdateControlInputFromAi2()
-{
-    AIOutput aiInput = m_npcAI->GetAiControlOutput();
-
-    //m_vehicleStruct00.vehicleData.controlInput.steeringVec = m_npcAI->GetVecToDestination();
-    m_vehicleStruct00.vehicleData.controlInput.steeringVec = aiInput.steeringDirection;
-    //m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
-    m_vehicleStruct00.vehicleData.controlInput.angleToDestination = aiInput.angleToDestination;
-
-    //m_debugData->DebugPushUILineDecimalNumber("angleToDestination ", Utility::ToDegrees(m_vehicleStruct00.vehicleData.controlInput.angleToDestination), "");
-    //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.controlInput.steeringVec, 25.f, 10.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-    //m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.forward, 45.f, 7.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-    const float yawInput = m_vehicleStruct00.vehicleData.controlInput.angleToDestination;
-    float updatedYaw;
-    if (abs(yawInput) < abs(m_vehicleStruct00.vehicleData.controlInput.steeringInput))
-    {
-        updatedYaw = yawInput * m_vehicleStruct00.vehicleData.controlInput.steeringInputRate;
-    }
-    else
-    {
-        updatedYaw = (yawInput * m_vehicleStruct00.vehicleData.controlInput.steeringInputRate) + m_vehicleStruct00.vehicleData.controlInput.steeringInput;
-    }
-    //const float updatedYaw = (yawInput) + m_vehicleStruct00.vehicleData.controlInput.steeringInput;
-    //const float updatedYaw = m_vehicleStruct00.vehicleData.controlInput.angleToDestination;
-
-
-    if (updatedYaw > m_vehicleStruct00.vehicleData.controlInput.steeringInputMax)
-    {
-        m_vehicleStruct00.vehicleData.controlInput.steeringInput = m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
-    }
-    else if (updatedYaw < m_vehicleStruct00.vehicleData.controlInput.steeringInputMin)
-    {
-        m_vehicleStruct00.vehicleData.controlInput.steeringInput = m_vehicleStruct00.vehicleData.controlInput.steeringInputMin;
-    }
-    else if (updatedYaw < m_vehicleStruct00.vehicleData.controlInput.inputDeadZone && updatedYaw > -m_vehicleStruct00.vehicleData.controlInput.inputDeadZone)
-    {
-        //m_vehicleStruct00.vehicleData.controlInput.steeringInput = 0.0f;
-        m_vehicleStruct00.vehicleData.controlInput.steeringInput = updatedYaw;
-    }
-    else
-    {
-        m_vehicleStruct00.vehicleData.controlInput.steeringInput = updatedYaw;
-    }
-
-    //m_vehicleStruct00.vehicleData.controlInput.steeringInput = aiInput.steeringAngle;
-
-    //m_vehicleStruct00.vehicleData.controlInput.steeringInput = aiInput.angleToDestination;
-    //m_debugData->DebugPushUILineDecimalNumber("steeringInput ", Utility::ToDegrees(m_vehicleStruct00.vehicleData.controlInput.steeringInput), "");
-    //m_debugData->DebugPushUILineDecimalNumber("inputDeadZone ", m_vehicleStruct00.vehicleData.controlInput.inputDeadZone, "");
-    //m_debugData->DebugPushUILineDecimalNumber("inputDeadZone degrees ", Utility::ToDegrees(m_vehicleStruct00.vehicleData.controlInput.inputDeadZone), "");
-    // velocity
-    float absAngleToDest = abs(m_vehicleStruct00.vehicleData.controlInput.angleToDestination);
-    //float rawThrottleInput = m_npcAI->GetThrottleInput();
-    float rawThrottleInput = aiInput.forwardThrust;
-    float modThrottleInput = rawThrottleInput - absAngleToDest;
-    if (modThrottleInput < 0.0f)
-    {
-        m_vehicleStruct00.vehicleData.controlInput.throttleInput = 0.0f;
-    }
-    else
-    {
-        m_vehicleStruct00.vehicleData.controlInput.throttleInput = modThrottleInput;
-    }
-
-    m_vehicleStruct00.vehicleData.controlInput.throttleInput = aiInput.forwardThrust;
-    if (aiInput.forwardThrust < 0.0f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-    //m_vehicleStruct00.vehicleData.controlInput.throttleInput = m_npcAI->GetThrottleInput();
-    //m_vehicleStruct00.vehicleData.hoverData.forwardThrust = m_vehicleStruct00.vehicleData.controlInput.throttleInput * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
-    if (aiInput.forwardThrust < 0.0f)
-    {
-        m_vehicleStruct00.vehicleData.hoverData.forwardThrust = aiInput.forwardThrust * m_vehicleStruct00.vehicleData.hoverData.reverseThrustMax;
-    }
-    else
-    {
-        m_vehicleStruct00.vehicleData.hoverData.forwardThrust = aiInput.forwardThrust * m_vehicleStruct00.vehicleData.hoverData.forwardThrustMax;
     }
 
     // omni trust
