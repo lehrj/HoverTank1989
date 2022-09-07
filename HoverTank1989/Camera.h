@@ -112,7 +112,6 @@ public:
     void SpinClockwise(float aRotation);
     void SpinCounterClockwise(float aRotation);
 
-    //void StartNpcSpringCamera();
     void StartTrailerCamera(DX::StepTimer const& aTimer);
     void StartTrailerCamera3(DX::StepTimer const& aTimer);
     void StartTrailerCamera4(DX::StepTimer const& aTimer);
@@ -140,15 +139,8 @@ private:
     void InitializeViewMatrix(); //Pavel
 
     void UpdateChaseCameraNPC();
-    void UpdateChaseCameraNPC2();
     void UpdateChaseCamera();
-    void UpdateChaseCamera2();
-    void UpdateChaseCamera3();
-    void UpdateChaseCameraTest01();
-    void UpdateChaseCameraTest02();
-    void UpdateChaseCameraTest03();
-    void UpdateChaseCameraTest04();
-    void UpdateChaseCameraTest05();
+
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateSpinCamera(DX::StepTimer const& aTimer);
@@ -157,9 +149,6 @@ private:
     void UpdateTrailerCamera2(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera3(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera4(DX::StepTimer const& aTimer);
-
-    void UpdateTransitionToSpringCamera();
-    void UpdateTransitionFromSpringCamera();
 
     void UpdateViewMatrix();
 
@@ -173,7 +162,6 @@ private:
     float                           m_pitch;
     float                           m_homeYaw;
     float                           m_yaw;
-    //float                           m_frustumAngle;
     int                             m_clientWidth;
     int                             m_clientHeight;
 
@@ -188,7 +176,6 @@ private:
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
-    //bool                            m_isCameraAtDestination;
     bool                            m_isCameraAtDestination = false;
 
     CameraState                     m_cameraState;
@@ -221,7 +208,6 @@ private:
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
 
     DirectX::SimpleMath::Vector3 m_followCamDirection = DirectX::SimpleMath::Vector3::UnitX;
-    //DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-17.0, 3.5f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followCamPos = DirectX::SimpleMath::Vector3(-45.0, 35.5f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followNpcCamPos = DirectX::SimpleMath::Vector3(-44.0, 25.5f, 0.0f);
     DirectX::SimpleMath::Vector3 m_followCamTarget = DirectX::SimpleMath::Vector3::Zero;
@@ -259,7 +245,6 @@ private:
     void InitializeSpringCamera(Target aTarget, float aSpringConstant, float ahDist, float aVDist);
     void UpdateSpringCamera(DX::StepTimer const& aTimeDelta);
 
-
     // SpinCamera
     float m_cameraSpin = 0.0;
     float m_cameraSpinPitch = 0.0;
@@ -280,41 +265,26 @@ private:
     float                        m_spinCamTotalRotation;
     float                        m_spinCamCurrentRotation;
 
-
-    const float xLine1 = 390.0f;
-    const float yLine1 = 11.0f;
-    const float zLine1 = 585.0f;
-    const float yTarg1 = 8.0f;
-    DirectX::SimpleMath::Vector3 m_trailerCamStartPos = DirectX::SimpleMath::Vector3(xLine1, yLine1, zLine1);
-    DirectX::SimpleMath::Vector3 m_trailerCamEndPos = DirectX::SimpleMath::Vector3(xLine1, yLine1, 10.0f);
-    DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(329.0f, yTarg1, zLine1);
-    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(328.0, yTarg1, 109.0f);
-    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(379.0f, 11.0f, 12.0f);
+    DirectX::SimpleMath::Vector3 m_trailerCamStartPos = DirectX::SimpleMath::Vector3(390.0f, 11.0f, 585.0f);
+    DirectX::SimpleMath::Vector3 m_trailerCamEndPos = DirectX::SimpleMath::Vector3(390.0f, 11.0f, 10.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetStartPos = DirectX::SimpleMath::Vector3(329.0f, 8.0f, 585.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetEndPos = DirectX::SimpleMath::Vector3(389.0f, 11.0f, 11.6f);
 
     DirectX::SimpleMath::Vector3 m_trailerCamStartPos2 = m_trailerCamEndPos;
     DirectX::SimpleMath::Vector3 m_trailerCamEndPos2 = DirectX::SimpleMath::Vector3(562.0f, 444.0, 0.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos2 = m_trailerTargetEndPos;
-    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(560.0f, 441.4f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(186.0, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_trailerTargetEndPos2 = DirectX::SimpleMath::Vector3(560.0f, 441.4f, 0.0f);  
 
     DirectX::SimpleMath::Vector3 m_trailerCamStartPos3 = DirectX::SimpleMath::Vector3::Zero;
-    //DirectX::SimpleMath::Vector3 m_trailerCamEndPos3 = DirectX::SimpleMath::Vector3(562.0f, 444.0, 0.0f);
     DirectX::SimpleMath::Vector3 m_trailerCamEndPos3 = DirectX::SimpleMath::Vector3(640.0f, 75.0, 0.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetStartPos3 = DirectX::SimpleMath::Vector3::UnitX;
-    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(560.0f, 441.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 70.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(620.0f, 73.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_trailerTargetEndPos3 = DirectX::SimpleMath::Vector3(187.0f, 20.0f, 0.0f);
-
 
     const float m_trailerTimeDuration = 9.0f;
     float m_trailerTimerDelay2 = 4.0f;
     float m_trailerTimeDuration2 = 7.0f;
     float m_trailerTimeDuration3 = 2.0f;
-
-    int m_npcFocusID = 0;
-
+    
     DirectX::SimpleMath::Vector3 m_testCamPos1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testCamPos2 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testCamPos3 = DirectX::SimpleMath::Vector3::Zero;
@@ -328,5 +298,7 @@ private:
 
     float                        m_transitionTimer = 0.0f;
     const float                  m_transitionTimeMax = 2.0f;
+
+    int m_npcFocusID = 0;
 };
 
