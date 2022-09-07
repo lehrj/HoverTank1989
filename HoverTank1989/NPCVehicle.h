@@ -6,7 +6,6 @@
 
 class NPCController;
 
-
 struct NpcControlInput
 {
     // input control data
@@ -22,32 +21,19 @@ struct NpcControlInput
     const float steeringInputMax = 6.0f;
     const float steeringInputMin = -6.0f;
     const float steeringInputRate = 3.0f;
-    /*
-    const float steeringInputMax = 6.0f;
-    const float steeringInputMin = -6.0f;
-    const float steeringInputRate = 4.0f;
-    */
+
     DirectX::SimpleMath::Vector3 steeringVec;
 
     float       throttleInput;
     const float throttleInputDecayRate = 0.6f;
     const float throttleInputMin = -1.0f;
     const float throttleInputMax = 1.0f;
-    //const float throttleInputRate = 0.4f;
     const float throttleInputRate = 0.1f;
     float baseThrottleInput = 0.0f;
 };
 
 struct HoverData
 {
-    /*
-    const float groundNormalForceRange = 5.0f;
-    const float hoverNeutralBoyantAlt = 0.52f;
-    const float hoverRangeLower = 1.5f;
-    const float hoverRangeMid = 3.0f;
-    const float hoverRangeUpper = 5.0f;
-    */
-
     const float hoverRangeLower = 5.0f;
     const float hoverRangeMid = 8.5f;
     const float hoverRangeUpper = 12.0f;
@@ -56,9 +42,7 @@ struct HoverData
 
 
     float forwardThrust;
-    //const float forwardThrustMax = 100000.0f;
     const float forwardThrustMax = 50000.0f;
-    //const float forwardThrustMax = 500.0f;
     const float reverseThrustMax = forwardThrustMax * 1.0f;
     float omniThrust;
     const float omniThrustMax = 65000.0f;
@@ -371,7 +355,6 @@ struct VehicleData
 
     VehicleHardPoints           hardPoints;
     NPCType                     npcType;
-    //DirectX::BoundingBox        collisionBox;
     DirectX::BoundingOrientedBox        collisionBox;
     bool                        isCollisionTrue;
 
@@ -401,7 +384,6 @@ struct VehicleStruct
     VehicleData                 vehicleData;
     Environment                 const* environment;
     NPCModel                    npcModel;
-
 };
 
 class NPCVehicle
@@ -409,8 +391,6 @@ class NPCVehicle
 public:
     NPCVehicle();
     bool ActivateJump();
-    bool ActivateJump2();
-    bool ActivateJump3();
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce2(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForce3(const VehicleData& aVehicleHit);
@@ -432,14 +412,12 @@ public:
     float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
 
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
-    //DirectX::BoundingBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
     DirectX::BoundingOrientedBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
     bool GetAvoidanceIsTrue() const { return m_npcAI->GetIsAvoidanceTrue(); };
     int GetAvoidanceTargetIndex() const { return m_avoidanceTargetIndex; };
     float GetAvoidanceRadius() const { return m_npcAI->GetAvoidanceRadius(); };
     NPCVehicle const* GetAvoidanceNPCTarget() { return m_npcAI->GetAvoidanceTarget(); };
 
-    //const DirectX::BoundingBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     float GetCollisionDetectionRange() const { return m_vehicleStruct00.vehicleData.maxCollisionDetectionRange; };
     DirectX::SimpleMath::Vector3 GetDimensions() const { return m_vehicleStruct00.vehicleData.dimensions; };
@@ -450,7 +428,6 @@ public:
     bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
     bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
     bool GetIsJumpReady() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpReady; };
-    //bool GetIsJumpImpulseBurnActive() const { return m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive; };
 
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };

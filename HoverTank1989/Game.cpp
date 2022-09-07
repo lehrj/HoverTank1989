@@ -133,7 +133,7 @@ void Game::Initialize(HWND window, int width, int height)
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, 105.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
     //heading = DirectX::SimpleMath::Vector3::Transform(heading, DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(45.0f)));
-    const float low = 3.0f;
+    const float low = 7.0f;
     const float high = 13.0f;
     const float zPosOffSet = 45.0f;
     //for (int i = 0; i < 8; ++i)
@@ -371,7 +371,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     }
     //gridLineOffSetY = 0.03f;
     gridLineOffSetY = 0.22f;
-    const float gridLineOffSetY2 = 1.5f;
+    const float gridLineOffSetY2 = 1.1f;
     for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
     {
         //aTerrain.terrainVertexArray2[i].normal = - DirectX::SimpleMath::Vector3::UnitY;
@@ -609,9 +609,9 @@ void Game::Update(DX::StepTimer const& aTimer)
         //m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         //m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(m_vehicle->GetPos(), m_vehicle->GetVelocity(), m_vehicle->GetAlignment(),aTimer.GetElapsedSeconds());
-        m_camera->UpdateCamera(aTimer);
+        //m_camera->UpdateCamera(aTimer);
     }
-    //m_camera->UpdateCamera(aTimer);
+    m_camera->UpdateCamera(aTimer);
     //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
 
     m_proj = m_camera->GetProjectionMatrix();
@@ -1156,7 +1156,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->StartTrailerCamera4(aTimer);
+            //m_camera->StartTrailerCamera4(aTimer);
             //m_vehicle->TestFire();
         }
     }
@@ -1381,7 +1381,7 @@ void Game::Render()
     m_effect3->Apply(context);
     m_batch3->Begin();
 
-    DrawDebugLinesVector();
+    //DrawDebugLinesVector();
 
     m_batch3->End();
 
@@ -1392,7 +1392,7 @@ void Game::Render()
     {
         DrawUnlockUI();
     }
-    DrawDebugDataUI();
+    //DrawDebugDataUI();
     if (m_isDisplayEndScreenTrue == true)
     {
         DrawEndUI();

@@ -33,7 +33,6 @@ public:
     void DebugToggle();
     bool GetAiToggle() const { return  m_debugToggle; };
     float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);
-    //DirectX::BoundingBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
     DirectX::BoundingOrientedBox GetAiAvoidanceBox() const { return m_avoidanceBox; };
     DirectX::SimpleMath::Matrix GetAiAvoidanceBoxAlignment() const { return m_avoidanceAlignment; };
     AIOutput GetAiControlOutput() const { return m_aiControls.aiOutput; };
@@ -45,8 +44,6 @@ public:
     bool GetIsAvoidanceTrue2() const { return m_isAvoidanceTrueTest2; };
     bool GetIsJumpTriggered() const { return m_isJumpTriggered; };
     NPCVehicle const* GetAvoidanceTarget() { return m_avoidanceTargetNpc; };
-    //NPCVehicle const* m_avoidanceTargetNpc = nullptr;
-
 
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
 
@@ -62,9 +59,6 @@ public:
     void UpdateAI(const float aTimeStep);
 
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
-    void PushAiAvoidanceTarget2(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
-    void PushAiAvoidanceTarget3(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
-    void PushAiAvoidanceTarget4(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
 
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
 
@@ -107,19 +101,8 @@ private:
     Behavior m_behavior;
 
     void AdjustHeadingForVelocity();
-    void AdjustHeadingForVelocity2();
     void AvoidPosCurrent();
-    void AvoidPos();
-    void AvoidPos2();
-    void AvoidPos3();
-    void AvoidPos4();
-    void AvoidPos5();
-    void AvoidPos6();
-    void AvoidPos7();
-    void AvoidPosOld();
-    void AvoidPosOld1();
-    void AvoidPosOld2();
-    void AvoidPosNewAlt1();
+
     void CreateWayPath();
 
     void InitializeControlOutput();
@@ -158,13 +141,12 @@ private:
     float m_desiredVelocity;
 
     DirectX::SimpleMath::Matrix m_avoidanceAlignment = DirectX::SimpleMath::Matrix::Identity;
-    //DirectX::BoundingBox        m_avoidanceBox;
     DirectX::BoundingOrientedBox m_avoidanceBox;
     DirectX::SimpleMath::Vector3 m_avoidanceBoxBase = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_avoidanceBoxRight = - DirectX::SimpleMath::Vector3::UnitZ;
     DirectX::SimpleMath::Vector3 m_avoidaneBoxUp = DirectX::SimpleMath::Vector3::UnitY;
 
-    const float                 m_avoidanceBoxLengthMin = 15.0f;
+    const float                 m_avoidanceBoxLengthMin = 14.0f;
     float                       m_avoidanceBoxLength = m_avoidanceBoxLengthMin;
     float                       m_avoidanceBoxWidth;
     float                       m_avoidanceRadius = m_avoidanceBoxLengthMin;

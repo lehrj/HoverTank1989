@@ -392,7 +392,8 @@ private:
 
     const float m_startTerrainMaxY = 0.347000033f;
     //const float m_gameTerrainMaxY = 2471.24097f;
-    const float m_gameTerrainMaxY = 600.24097f;
+    //const float m_gameTerrainMaxY = 600.24097f;
+    const float m_gameTerrainMaxY = 396.0f;
 
     float m_testTimer1 = 0.0f;
     float m_testTimer2 = 0.0f;

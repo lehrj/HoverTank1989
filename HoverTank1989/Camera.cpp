@@ -1013,8 +1013,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	//m_debugData->DebugPushTestLinePositionIndicator(m_target, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 	//m_debugData->DebugPushTestLinePositionIndicator(m_springTarget.position, 1.0f, 1.0f, DirectX::SimpleMath::Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 	//m_transitionTimer += aTimer.GetElapsedSeconds();
-	m_debugData->DebugPushUILineDecimalNumber("m_transitionTimer = ", m_transitionTimer, "");
-
+	//m_debugData->DebugPushUILineDecimalNumber("m_transitionTimer = ", m_transitionTimer, "");
 }
 
 void Camera::UpdateFirstPersonCamera()
