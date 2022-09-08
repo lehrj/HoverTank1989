@@ -112,9 +112,9 @@ public:
     void SpinClockwise(float aRotation);
     void SpinCounterClockwise(float aRotation);
 
-    void StartTrailerCamera(DX::StepTimer const& aTimer);
-    void StartTrailerCamera3(DX::StepTimer const& aTimer);
-    void StartTrailerCamera4(DX::StepTimer const& aTimer);
+    void StartTrailerCamera();
+    void StartTrailerCamera3();
+    void StartTrailerCamera4();
 
     void TransitionToNpcSpringCamera();
     void TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation); //Chili
@@ -239,7 +239,7 @@ private:
     DirectX::SimpleMath::Matrix m_springCameraMatrix;
     Target m_springTarget;
     void ComputeSpringMatrix();
-    DirectX::SimpleMath::Vector3 GetSpringCameraTarget(DX::StepTimer const& aTimer);
+    DirectX::SimpleMath::Vector3 GetSpringCameraTarget();
     void InitializeSpringCamera(Target aTarget, float aSpringConstant, float ahDist, float aVDist);
     void UpdateSpringCamera(DX::StepTimer const& aTimeDelta);
 

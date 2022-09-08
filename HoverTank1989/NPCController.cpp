@@ -85,6 +85,28 @@ void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceC
     m_environment = aEnvironment;
 }
 
+void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
+{
+    const float xOrgVal = 270.0f;
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, 105.0f);
+    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
+    const float low = 7.0f;
+    const float high = 13.0f;
+    const float zPosOffSet = 45.0f;
+    for (int i = 0; i < 8; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+            pos.y = yOffSet;
+            this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+            pos.x += 25.0f;
+        }
+        pos.x = xOrgVal;
+        pos.z += zPosOffSet;
+    }
+}
+
 void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 {
     m_debugData = aDebugPtr;

@@ -66,10 +66,11 @@ private:
 
     void DrawDebugLinesVector();
     void DrawDebugDataUI();
-    void DrawEndUI();
-    void DrawUnlockUI();
+    void DrawEndUI();   
     void DrawSky();
     void DrawTerrainNew(Terrain& aTerrain);
+    void DrawTestTrack();
+    void DrawUnlockUI();
 
     bool InitializeTerrainArray();
     bool InitializeTerrainArrayNew(Terrain& aTerrain);
@@ -92,7 +93,6 @@ private:
 
     std::unique_ptr<DirectX::CommonStates> m_states;
     std::unique_ptr<DirectX::IEffectFactory> m_fxFactory;
-    std::unique_ptr<DirectX::Model> m_model;
     std::unique_ptr<DirectX::Model> m_modelTank01;
     std::unique_ptr<DirectX::Model> m_modelTankBody01;
     std::unique_ptr<DirectX::Model> m_modelTankTurret01;
