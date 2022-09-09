@@ -65,7 +65,7 @@ unsigned int NPCController::GetUniqueID()
     return idVal;
 }
 
-std::vector<DirectX::SimpleMath::Vector3> NPCController::GetVecOfNpcPos(const int aSelfID)
+std::vector<DirectX::SimpleMath::Vector3> NPCController::GetVecOfNpcPos(const unsigned int aSelfID)
 {
     std::vector<DirectX::SimpleMath::Vector3> posVec;
     for (int i = 0; i < m_npcVec.size(); ++i)
@@ -93,7 +93,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float low = 7.0f;
     const float high = 13.0f;
     const float zPosOffSet = 45.0f;
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         for (int j = 0; j < 4; ++j)
         {
@@ -167,7 +167,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
 
 void NPCController::CheckNpcCollisions()
 {
-    std::vector<std::pair<int, int>> collisionsRecorded;
+    std::vector<std::pair<unsigned int, unsigned int>> collisionsRecorded;
     
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
@@ -216,9 +216,6 @@ void NPCController::CheckNpcCollisions()
                             DirectX::SimpleMath::Vector3 aVelocityvx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
                             DirectX::SimpleMath::Vector3 aVelocityvx2 = testV2.q.velocity; // m_vehicleStruct00.vehicleData.q.velocity;
 
-                            float aLengthVel1 = aVelocityvx1.Length();
-                            float aLengthVel2 = aVelocityvx2.Length();
-
                             DirectX::SimpleMath::Vector3 aNormVelocity1 = aVelocityvx1;
                             aNormVelocity1.Normalize();
                             DirectX::SimpleMath::Vector3 aNormVelocity2 = aVelocityvx2;
@@ -236,14 +233,11 @@ void NPCController::CheckNpcCollisions()
                             DirectX::SimpleMath::Vector3 testVelocityNorm2 = testVelocityPre2;
                             testVelocityNorm2.Normalize();
 
-                            DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp + (1.0 + e) * mass2 * vx2 * tmp;
-                            DirectX::SimpleMath::Vector3 newVx2 = (1.0 + e) * mass1 * vx1 * tmp + (mass2 - e * mass1) * vx2 * tmp;
+                            DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp + (1.0f + e) * mass2 * vx2 * tmp;
+                            DirectX::SimpleMath::Vector3 newVx2 = (1.0f + e) * mass1 * vx1 * tmp + (mass2 - e * mass1) * vx2 * tmp;
 
                             DirectX::SimpleMath::Vector3 testVelocityPost1 = newVx1 - newVx2;
                             DirectX::SimpleMath::Vector3 testVelocityPost2 = newVx2 - newVx1;
-
-                            float newVX1Length = newVx1.Length();
-                            float newVX2Length = newVx2.Length();
 
                             m_npcVec[i]->m_prevImpact = newVx1;
                             m_npcVec[j]->m_prevImpact = newVx2;
@@ -263,7 +257,6 @@ void NPCController::CheckNpcCollisions()
                                 testV2.collisionBox.GetCorners(pCorners2);
                                 pCorners2 = nullptr;
  
-                                int impactCornerCount = 0;
                                 DirectX::SimpleMath::Vector3 testV1ClosestCorner = DirectX::SimpleMath::Vector3::Zero;
                                 float testV1ClosestCornerDistance = 0.0f;
                                 bool isTestV1ClosestCornerFound = false;

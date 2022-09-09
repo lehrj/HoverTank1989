@@ -147,7 +147,7 @@ public:
     DirectX::SimpleMath::Vector3 GetTeePosition() const { return m_currentEnviron.teePosition; };
 
 
-    bool GetIsPosInPlay(const DirectX::XMFLOAT3 aPos, const float aOffset) const;
+    bool GetIsPosInPlay(const DirectX::XMFLOAT3 aPos) const;
     float GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const;
     float GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const;
     DirectX::SimpleMath::Vector3 GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const;

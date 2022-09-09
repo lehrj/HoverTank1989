@@ -207,7 +207,7 @@ public:
     DirectX::SimpleMath::Vector3 GetHoverGravForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
     DirectX::SimpleMath::Vector3 GetAntiMassGravityForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
-    DirectX::SimpleMath::Vector3 GetDamperForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
+    DirectX::SimpleMath::Vector3 GetDamperForce(const float aAltitude, const float aGroundInteractionRange, const float aMass);
 
     DirectX::SimpleMath::Vector3 GetHoverLift(const DirectX::SimpleMath::Vector3 aLiftForce, const float aAltitude);
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
@@ -281,17 +281,17 @@ private:
     float UpdateGroundEffectForce(const float aLiftForce);
 
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
-    void UpdatePhysicsPoints(struct HeliData& aHeli);
+    void UpdatePhysicsPoints(struct HeliData& aVehicle);
     void UpdateResistance();
     DirectX::SimpleMath::Vector3 UpdateRotorForceRunge();
 
     void UpdateRotorData(HeliData& aHeliData, const double aTimer);
-    void UpdateRotorPitch(HeliData& aHeliData, const double aTimer);
+    void UpdateRotorPitch(HeliData& aHeliData);
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
 
     void UpdateTerrainNorm();
 
-    float WindVaningVal(const HeliData& aHeliData, const float aTimeStep);
+    float WindVaningVal(const HeliData& aHeliData);
     
     Environment const*              m_environment;
     HeliData                        m_heli;

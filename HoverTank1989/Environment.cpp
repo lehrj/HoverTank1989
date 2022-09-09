@@ -364,7 +364,7 @@ std::vector<DirectX::VertexPositionColor> Environment::GetTerrainColorVertex()
     return vertPosColor;
 }
 
-bool Environment::GetIsPosInPlay(const DirectX::XMFLOAT3 aPos, const float aOffset) const
+bool Environment::GetIsPosInPlay(const DirectX::XMFLOAT3 aPos) const
 {
     if (aPos.x > m_heightMapGamePlayData.xPosMax || aPos.x < m_heightMapGamePlayData.xPosMin
         || aPos.z > m_heightMapGamePlayData.zPosMax || aPos.z < m_heightMapGamePlayData.zPosMin)
@@ -392,7 +392,7 @@ bool Environment::GetIsPosInPlay(const DirectX::XMFLOAT3 aPos, const float aOffs
 float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
 {
     DirectX::SimpleMath::Vector3 prePos = aPos;
-    bool foundHeightBarry = false;
+
     bool foundHeight = false;
 
     unsigned int i = 0;
@@ -638,7 +638,7 @@ bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, Direct
             testNormal.Normalize();
             aNorm = testNormal;
             //return testNormal;
-            i = m_heightMapGamePlayData.terrainModel.size();
+            i = static_cast<unsigned int>(m_heightMapGamePlayData.terrainModel.size());
         }
     }
 

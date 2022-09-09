@@ -22,7 +22,7 @@ public:
     int GetNpcCount() { return static_cast<int>(m_npcVec.size()); };
     DirectX::SimpleMath::Vector3 GetNpcPos(const int aId) { return m_npcVec[aId]->GetPos(); };
     std::vector<NPCVehicle*>& GetVec() { return m_npcVec; };
-    std::vector<DirectX::SimpleMath::Vector3> GetVecOfNpcPos(const int aSelfID);
+    std::vector<DirectX::SimpleMath::Vector3> GetVecOfNpcPos(const unsigned int aSelfID);
 
     void LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController);
 

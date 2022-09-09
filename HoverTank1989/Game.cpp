@@ -476,17 +476,15 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
     
-    float time = float(aTimer.GetTotalSeconds());
     UpdateInput(aTimer);
     
     if (m_isPauseOn == false)
     {
         m_debugData->DebugClearUI();
         m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
-        //m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
-        //m_npcController->UpdateNPCController(m_vehicle->GetPos(), aTimer.GetElapsedSeconds());
+        m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
+        m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_npcController->UpdateNPCController(m_vehicle->GetPos(), m_vehicle->GetVelocity(), m_vehicle->GetAlignment(),aTimer.GetElapsedSeconds());
-        //m_camera->UpdateCamera(aTimer);
     }
     m_camera->UpdateCamera(aTimer);
     //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
@@ -501,13 +499,10 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_effect2->SetView(viewMatrix);
     m_effect3->SetView(viewMatrix);
 
-    //m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
-
     if (m_isSlowMoOn == true)
     {
         m_isPauseOn = true;
     }
-
 }
 #pragma endregion
 
@@ -1127,12 +1122,15 @@ void Game::Render()
     context->PSSetSamplers(0, 1, &sampler);
     context->IASetInputLayout(m_inputLayout.Get());
 
-    //m_modelController->DrawModel(context, *m_states, DirectX::SimpleMath::Matrix::Identity, m_camera->GetViewMatrix(), m_proj);
-
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+    {
+        m_modelController->DrawModel(context, *m_states, DirectX::SimpleMath::Matrix::Identity, m_camera->GetViewMatrix(), m_proj);
+    }
+    
     m_batch->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
+        m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
         DrawTestTrack();
@@ -1165,7 +1163,7 @@ void Game::Render()
     {
         DrawUnlockUI();
     }
-    //DrawDebugDataUI();
+    DrawDebugDataUI();
     if (m_isDisplayEndScreenTrue == true)
     {
         DrawEndUI();

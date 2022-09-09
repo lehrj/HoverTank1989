@@ -424,66 +424,6 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             m_lightPos2 = light2;
         }
     }
-
-    /*
-    aEffect->EnableDefaultLighting();
-    aEffect->SetLightEnabled(0, true);
-    aEffect->SetLightEnabled(1, true);
-    aEffect->SetLightEnabled(2, true);
-    aEffect->SetFogEnabled(false);
-    */
-    //aEffect->SetEmissiveColor(DirectX::Colors::Red);
-    //aEffect->SetLightDirection(0, DirectX::SimpleMath::Vector3::UnitX);
-    //aEffect->SetLightDirection(1, DirectX::SimpleMath::Vector3::UnitX);
-    //aEffect->SetLightDirection(2, DirectX::SimpleMath::Vector3::UnitX);
-
-    //aEffect->SetFogEnabled(false);
-    if (1 == 0)
-    {
-        auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
-        if (ilights)
-        {
-            ilights->SetLightEnabled(0, true);
-            ilights->SetLightEnabled(1, true);
-            ilights->SetLightEnabled(2, true);
-            auto time = static_cast<float>(aTimer);
-            float yaw = time * 0.4f;
-            float pitch = time * 0.7f;
-            float roll = time * 1.1f;
-
-            yaw = roll;
-            pitch = roll;
-
-            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, -yaw);
-            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, 0.0, -pitch);
-            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, -roll);
-
-
-
-            DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
-            DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
-            DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
-
-            const float lightMod = 0.8;
-            light0.x += lightMod;
-            light1.x += lightMod;
-            light2.x += lightMod;
-            light0.Normalize();
-            light1.Normalize();
-            light2.Normalize();
-
-            light0 *= .3;
-            light1 *= .3;
-            light2 *= .3;
-
-            ilights->SetLightDirection(0, light0);
-            ilights->SetLightDirection(1, light1);
-            ilights->SetLightDirection(2, light2);
-            m_lightPos0 = light0;
-            m_lightPos1 = light1;
-            m_lightPos2 = light2;
-        }
-    }
 }
 
 void Lighting::UpdateLightingNormColorTextureVertex(std::shared_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer)

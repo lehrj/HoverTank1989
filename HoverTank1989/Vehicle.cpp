@@ -9,17 +9,17 @@ Vehicle::~Vehicle()
 
 DirectX::SimpleMath::Vector3 Vehicle::CalcHoverDriveForce(const struct HeliData& aHeli)
 {
-    float zForce = -m_heli.controlInput.cyclicInputRoll;
-    zForce = zForce / m_heli.controlInput.cyclicInputMax;
-    float xForce = m_heli.controlInput.cyclicInputPitch;
-    xForce = xForce / m_heli.controlInput.cyclicInputMax;
+    float zForce = -aHeli.controlInput.cyclicInputRoll;
+    zForce = zForce / aHeli.controlInput.cyclicInputMax;
+    float xForce = aHeli.controlInput.cyclicInputPitch;
+    xForce = xForce / aHeli.controlInput.cyclicInputMax;
     DirectX::SimpleMath::Vector3 driveForce = DirectX::SimpleMath::Vector3::Zero;
     //m_debugData->DebugPushUILineDecimalNumber(std::string("m_heli.controlInput.cyclicInputPitch = "), m_heli.controlInput.cyclicInputPitch, std::string(""));
     //driveForce.x = (xForce * m_heli.hoverDriveMagMax) / m_heli.mass;
     //driveForce.z = zForce * m_heli.hoverDriveMagMax / m_heli.mass;
-    driveForce.x = xForce * m_heli.hoverDriveMagMax;
-    driveForce.z = zForce * m_heli.hoverDriveMagMax;
-    driveForce = DirectX::SimpleMath::Vector3::Transform(driveForce, m_heli.alignment);
+    driveForce.x = xForce * aHeli.hoverDriveMagMax;
+    driveForce.z = zForce * aHeli.hoverDriveMagMax;
+    driveForce = DirectX::SimpleMath::Vector3::Transform(driveForce, aHeli.alignment);
 
     return driveForce;
 }
@@ -651,7 +651,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
 
     velocityUpdate += CalcHoverDriveForce(m_heli);
 
-    DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
+    DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->mass);
     velocityUpdate += damperForce;
     DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
 
@@ -969,7 +969,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetAntiMassGravityForce(const float aAltit
     return gravForce * mass;
 }
 
-DirectX::SimpleMath::Vector3 Vehicle::GetDamperForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass)
+DirectX::SimpleMath::Vector3 Vehicle::GetDamperForce(const float aAltitude, const float aGroundInteractionRange, const float aMass)
 {
     const float lowerCurveBound = m_heli.hoverRangeLower;
     const float midCurveBound = m_heli.hoverNeutralBoyantAlt;
@@ -999,10 +999,6 @@ DirectX::SimpleMath::Vector3 Vehicle::GetDamperForce(const float aAltitude, cons
 DirectX::SimpleMath::Vector3 Vehicle::GetHoverLift(const DirectX::SimpleMath::Vector3 aLiftForce, const float aAltitude)
 {
     DirectX::SimpleMath::Vector3 liftForce = aLiftForce;
-
-    //m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.x = "), liftForce.x, std::string(""));
-    //m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.y = "), liftForce.y, std::string(""));
-    //m_debugData->DebugPushUILineDecimalNumber(std::string("liftForce.z = "), liftForce.z, std::string(""));
 
     const float lowerCurveBound = m_heli.hoverRangeLower;
     const float midCurveBound = m_heli.hoverRangeMid;
@@ -1076,9 +1072,8 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, 
     //mainRotorForce *= ((m_heli.mainRotor.bladeVec[0].liftForcePerSecond + m_heli.mainRotor.bladeVec[1].liftForcePerSecond) / m_heli.mass) * modVal;
     mainRotorForce *= ((m_heli.mainRotor.bladeVec[0].liftForcePerSecond + m_heli.mainRotor.bladeVec[1].liftForcePerSecond) / m_heli.mass) * modVal;
 
-
     //mainRotorForce = DirectX::SimpleMath::Vector3::Transform(mainRotorForce, m_heli.alignment);
-    const float windVaning = WindVaningVal(m_heli, aTimeStep);
+    const float windVaning = WindVaningVal(m_heli);
     DirectX::SimpleMath::Vector3 tailForce = -m_heli.right * (m_heli.controlInput.yawPedalInput + windVaning) * modVal;
     DirectX::SimpleMath::Vector3 gravityForce = (m_heli.gravity) * modVal;
 
@@ -1089,7 +1084,7 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, 
     mainRotorForce.Normalize();
     mainRotorForce = mainRotorForce * rotorMag;
     */
-    float gravMag = (m_heli.gravity.y) * modVal;
+
     gravityForce = m_heli.gravity;
     gravityForce.Normalize();
     gravityForce = gravityForce * (4.8 * modVal);
@@ -1109,7 +1104,6 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, 
     //DirectX::SimpleMath::Vector3 torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude);
     DirectX::SimpleMath::Vector3 torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (tailTorque.axis * tailTorque.magnitude);
     //torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (tailTorque.axis * tailTorque.magnitude) + (aPendulumTorque.axis * aPendulumTorque.magnitude) + (testWindVaning.axis * testWindVaning.magnitude);
-    
     
     //torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (tailTorque.axis * tailTorque.magnitude) + (aPendulumTorque.axis * aPendulumTorque.magnitude);
     torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (tailTorque.axis * tailTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude);
@@ -1146,7 +1140,7 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, 
     return updatedTorque;
 }
 
-float Vehicle::WindVaningVal(const HeliData& aHeliData, const float aTimeStep)
+float Vehicle::WindVaningVal(const HeliData& aHeliData)
 {
     DirectX::SimpleMath::Vector3 localizedAirVelocity = -aHeliData.q.velocity;
     DirectX::SimpleMath::Matrix localizeMat = aHeliData.alignment;
@@ -1234,36 +1228,36 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
     }
 }
 
-void Vehicle::UpdatePhysicsPoints(struct HeliData& aHeli)
+void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle)
 {
-    DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_heli.q.position, -m_heli.right, m_heli.up);
+    DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(aVehicle.q.position, -aVehicle.right, aVehicle.up);
 
-    m_heli.centerOfMass = m_heli.localCenterOfMass;
-    m_heli.centerOfMass = DirectX::SimpleMath::Vector3::Transform(m_heli.localCenterOfMass, updateMat);
-    m_heli.mainRotorPos = m_heli.localMainRotorPos;
-    m_heli.mainRotorPos = DirectX::SimpleMath::Vector3::Transform(m_heli.localMainRotorPos, updateMat);
-    m_heli.tailRotorPos = m_heli.localTailRotorPos;
-    m_heli.tailRotorPos = DirectX::SimpleMath::Vector3::Transform(m_heli.localTailRotorPos, updateMat);
+    aVehicle.centerOfMass = m_heli.localCenterOfMass;
+    aVehicle.centerOfMass = DirectX::SimpleMath::Vector3::Transform(aVehicle.localCenterOfMass, updateMat);
+    aVehicle.mainRotorPos = m_heli.localMainRotorPos;
+    aVehicle.mainRotorPos = DirectX::SimpleMath::Vector3::Transform(aVehicle.localMainRotorPos, updateMat);
+    aVehicle.tailRotorPos = m_heli.localTailRotorPos;
+    aVehicle.tailRotorPos = DirectX::SimpleMath::Vector3::Transform(aVehicle.localTailRotorPos, updateMat);
 
-    m_heli.landingGearPos = m_heli.localLandingGearPos;
-    m_heli.landingGearPos = DirectX::SimpleMath::Vector3::Transform(m_heli.localLandingGearPos, updateMat);
+    aVehicle.landingGearPos = aVehicle.localLandingGearPos;
+    aVehicle.landingGearPos = DirectX::SimpleMath::Vector3::Transform(aVehicle.localLandingGearPos, updateMat);
 
     // update with new model
-    DirectX::SimpleMath::Matrix yawMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_heli.controlInput.turretYaw);
-    DirectX::SimpleMath::Matrix pitchMat = DirectX::SimpleMath::Matrix::CreateRotationZ(m_heli.controlInput.weaponPitch);
+    DirectX::SimpleMath::Matrix yawMat = DirectX::SimpleMath::Matrix::CreateRotationY(aVehicle.controlInput.turretYaw);
+    DirectX::SimpleMath::Matrix pitchMat = DirectX::SimpleMath::Matrix::CreateRotationZ(aVehicle.controlInput.weaponPitch);
     DirectX::SimpleMath::Matrix tempMat = yawMat * pitchMat;
 
-    m_heli.weaponPos = m_heli.localWeaponPos;
-    m_heli.weaponPos = DirectX::SimpleMath::Vector3::Transform(m_heli.localWeaponPos, updateMat);
+    aVehicle.weaponPos = aVehicle.localWeaponPos;
+    aVehicle.weaponPos = DirectX::SimpleMath::Vector3::Transform(aVehicle.localWeaponPos, updateMat);
 
-    DirectX::SimpleMath::Matrix weaponMuzzleMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
-    m_heli.weaponDirection = m_heli.localWeaponDirection;
+    DirectX::SimpleMath::Matrix weaponMuzzleMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicle.right, aVehicle.up);
+    aVehicle.weaponDirection = aVehicle.localWeaponDirection;
 
-    m_heli.weaponDirection = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponDirection, tempMat);
-    m_heli.weaponDirection = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponDirection, weaponMuzzleMat);
+    aVehicle.weaponDirection = DirectX::SimpleMath::Vector3::Transform(aVehicle.weaponDirection, tempMat);
+    aVehicle.weaponDirection = DirectX::SimpleMath::Vector3::Transform(aVehicle.weaponDirection, weaponMuzzleMat);
 
-    m_heli.weaponDirection = m_modelController->GetWeaponDir();
-    m_heli.weaponPos = m_modelController->GetWeaponPos();
+    aVehicle.weaponDirection = m_modelController->GetWeaponDir();
+    aVehicle.weaponPos = m_modelController->GetWeaponPos();
 }
 
 void Vehicle::UpdateResistance()
@@ -1282,10 +1276,10 @@ void Vehicle::UpdateResistance()
 void Vehicle::UpdateRotorData(HeliData& aHeliData, const double aTimer)
 {
     UpdateRotorSpin(aHeliData, aTimer);
-    UpdateRotorPitch(aHeliData, aTimer);
+    UpdateRotorPitch(aHeliData);
 }
 
-void Vehicle::UpdateRotorPitch(HeliData& aHeliData, const double aTimer)
+void Vehicle::UpdateRotorPitch(HeliData& aHeliData)
 {
     float mainRotorPitch = aHeliData.controlInput.collectiveInput * aHeliData.mainRotor.pitchAngleMax;
     for (unsigned int i = 0; i < aHeliData.mainRotor.bladeVec.size(); ++i)
@@ -1371,7 +1365,7 @@ void Vehicle::UpdateRotorSpin(HeliData& aHeliData, const double aTimer)
 
     aHeliData.mainRotor.rpm = rpmUpdate;
 
-    const float mainRotorSpinUpdate = (aHeliData.mainRotor.rpm * 0.10472f) * aTimer; // 0.10472 is conversion of RPM to rads per second
+    const float mainRotorSpinUpdate = (aHeliData.mainRotor.rpm * 0.10472f) * static_cast<float>(aTimer); // 0.10472 is conversion of RPM to rads per second
     aHeliData.mainRotor.rotorRotation += mainRotorSpinUpdate;
     aHeliData.mainRotor.rotorRotation = Utility::WrapAngle(aHeliData.mainRotor.rotorRotation);
 
@@ -1435,7 +1429,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     if (m_heli.landingGearPos.y - m_heli.terrainHightAtPos > 0.1)
     {
         m_heli.isVehicleAirborne = true;
-        m_testTimer += aTimeDelta;
+        m_testTimer += static_cast<float>(aTimeDelta);
     }
     else
     {
@@ -1474,14 +1468,13 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
     UpdateResistance();
 
-    m_rotorTimerTest += aTimeDelta;
+    m_rotorTimerTest += static_cast<float>(aTimeDelta);
 
     UpdateAlignmentTorque();
     UpdateAlignmentCamera();
 
     m_fireControl->UpdateProjectileVec(aTimeDelta);
-    m_isFiredTest = false;
-    
+    m_isFiredTest = false; 
 }
 
 void Vehicle::DebugInputVelocityZero()

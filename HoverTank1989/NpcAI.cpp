@@ -16,7 +16,6 @@ void NpcAI::AdjustHeadingForVelocity()
     DirectX::SimpleMath::Vector3 velocity = m_npcOwner->GetVelocity();
     DirectX::SimpleMath::Vector3 vecToDest = dest - pos;
     float distanceToDest = vecToDest.Length();
-    float velocityDotHeading = vecToDest.Dot(velocity);
     DirectX::SimpleMath::Vector3 velocityNorm = velocity;
     velocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 headingNorm = vecToDest;
@@ -58,12 +57,11 @@ void NpcAI::AvoidPosCurrent()
         //m_debugData->DebugPushTestLine(m_npcOwner->GetPos(), vecToTarget, 15.f, 0.0f, DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f));
         DirectX::SimpleMath::Vector3 testAvoidanceVec = vecToTarget;
         testAvoidanceVec.Normalize();
-        float vecToTargetLength = vecToTarget.Length();
+  
         float distanceRatio = vecToTarget.Length();
         distanceRatio /= m_avoidanceBoxLength;
         const float avoidanceBoxLength = m_avoidanceBoxLength * 2.0f;
         const float frontOffset = 7.0f;
-        float testRatio = abs((avoidanceBoxLength + frontOffset) - vecToTarget.Length()) + 1.0f;
 
         float testRadius = m_avoidanceRadius;
         float distanceBetweenRatio = distanceBetween / testRadius;
@@ -351,19 +349,11 @@ void NpcAI::PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NP
     DirectX::SimpleMath::Vector3 targetLocalPos = DirectX::SimpleMath::Vector3::Transform(targetWorldPos, localizeMat);
     DirectX::SimpleMath::Vector3 targetLocalVelocity = DirectX::SimpleMath::Vector3::Transform(targetWorldVelocity, localizeDirMat);
 
-    float testDot1 = selfWorldVelocity.Dot(targetWorldVelocity);
-    float testDot2 = targetWorldVelocity.Dot(selfWorldVelocity);
-    float testDot3 = selfLocalVelocity.Dot(targetLocalVelocity);
-    float testDot4 = targetLocalVelocity.Dot(selfLocalVelocity);
-
     DirectX::SimpleMath::Vector3 testSelfLocalVelocityNorm = selfLocalVelocity;
     testSelfLocalVelocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 testTargetLocalVelocityNorm = targetLocalVelocity;
     testTargetLocalVelocityNorm.Normalize();
     float testDot5 = testSelfLocalVelocityNorm.Dot(testTargetLocalVelocityNorm);
-    float testDot6 = testTargetLocalVelocityNorm.Dot(testSelfLocalVelocityNorm);
-
-    float testAngle = Utility::ToDegrees(Utility::GetAngleBetweenVectors(testTargetLocalVelocityNorm, testSelfLocalVelocityNorm));
 
     DirectX::SimpleMath::Vector3 approchVelocity = selfLocalVelocity - targetLocalVelocity;
 
@@ -530,7 +520,6 @@ void NpcAI::SetSteeringOutput()
     //const float det = one.x * two.y * aUp.z + two.x * aUp.y * one.z + aUp.x * one.y * two.z - one.z * two.y * aUp.x - two.z * aUp.y * one.x - aUp.z * one.y * two.x;
     const float det = one.x * two.y * up.z + two.x * up.y * one.z + up.x * one.y * two.z - one.z * two.y * up.x - two.z * up.y * one.x - up.z * one.y * two.x;
     const float angle = atan2(det, dot);
-    float angleDegrees = Utility::ToDegrees(angle);
 
     float steeringAngle;
     if (angle > m_npcOwner->GetMaxSteeringAngle())
@@ -659,7 +648,6 @@ void NpcAI::UpdateAvoidanceBox()
     m_avoidanceBox.Orientation = velocityAlignmentQuat;
 
     DirectX::SimpleMath::Vector3 testPos2 = m_npcOwner->GetPos();
-    float testRadius = (m_avoidanceBox.Center - m_npcOwner->GetPos()).Length();
     m_avoidanceRadius = (avoidanceLength + avoidanceLength + (m_avoidanceBoxWidth * 0.5f) + (vehicleDimensions.x * 0.5f));
 }
 
@@ -695,7 +683,7 @@ void NpcAI::UpdateDestinationSmoothing()
     {
         smoothedDest += m_destinationSmoothing[i];
     }
-    m_currentDestination = smoothedDest / m_destinationSmoothingSize;
+    m_currentDestination = smoothedDest / static_cast<float>(m_destinationSmoothingSize);
 }
 
 void NpcAI::UpdateDesiredHeading()
@@ -771,7 +759,7 @@ void NpcAI::UpdateSeparation()
             ratio = 1.0f - ratio;
             testPos += vecToTarg * ratio;
         }
-        testPos /= inDistanceVec.size();
+        testPos /= static_cast<float>(inDistanceVec.size());
         testPos *= -1.0f;
         testPos *= m_destinationTargets.separationMagnitude;
         testPos += m_npcOwner->GetPos();

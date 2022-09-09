@@ -502,7 +502,7 @@ private:
     void UpdateHardPoints();
     void UpdateImpulseForces(const float aTimeDelta);
     void UpdateJumpData(JumpData& aJumpData, const float aTimeDelta);
-    void UpdateNPCModel(const double aTimeDelta);
+    void UpdateNPCModel();
 
     Environment const* m_environment;
 

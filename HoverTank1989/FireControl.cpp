@@ -20,7 +20,7 @@ void FireControl::CheckCollisions()
         {
             m_projectileVec[i].isDeleteTrue = true;
         }
-        else if (m_environment->GetIsPosInPlay(m_projectileVec[i].q.position, 0.0f) == false)
+        else if (m_environment->GetIsPosInPlay(m_projectileVec[i].q.position) == false)
         {
             m_projectileVec[i].isDeleteTrue = true;
         }   
@@ -363,7 +363,7 @@ void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDe
     RightHandSide(aProjectile, &q, &dq1, aTimeDelta, 0.5, &dq2);
     RightHandSide(aProjectile, &q, &dq2, aTimeDelta, 0.5, &dq3);
     RightHandSide(aProjectile, &q, &dq3, aTimeDelta, 1.0, &dq4);
-    aProjectile->time = aProjectile->time + aTimeDelta;
+    aProjectile->time = aProjectile->time + static_cast<float>(aTimeDelta);
 
     DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
