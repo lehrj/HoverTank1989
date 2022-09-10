@@ -21,6 +21,7 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     NPCVehicle* newNPC = new NPCVehicle;
     newNPC->SetDebugData(m_debugData);
     newNPC->InitializeNPCVehicle(aContext, aHeading, aPosition, m_environment, aNpcController, m_player, GetUniqueID());
+    newNPC->SetNpcType(aNPCType);
     m_npcVec.push_back(newNPC);
 }
 

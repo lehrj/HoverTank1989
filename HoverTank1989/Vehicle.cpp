@@ -72,7 +72,6 @@ float Vehicle::CalculateLiftCoefficient(const float aAngle)
     }
     else
     {
-        float leftBound = ClMax;
         float rightBound = 1.3f;
         float downCurve = rightBound - ClMax;
 
@@ -651,9 +650,9 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
 
     velocityUpdate += CalcHoverDriveForce(m_heli);
 
-    DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->mass);
+    DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->mass);
     velocityUpdate += damperForce;
-    DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), aHeli->groundNormalForceRange, aHeli->gravity, aHeli->mass);
+    DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), aHeli->gravity, aHeli->mass);
 
     velocityUpdate += gravForce;
 
@@ -902,7 +901,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetHoverGravForce(const float aAltitude, c
     //return aGravity * aMass;
 }
 
-DirectX::SimpleMath::Vector3 Vehicle::GetAntiGravGravityForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass)
+DirectX::SimpleMath::Vector3 Vehicle::GetAntiGravGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass)
 {
     DirectX::SimpleMath::Vector3 gravForce = aGravity;
     const float lowerCurveBound = m_heli.hoverRangeLower;
@@ -945,7 +944,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetAntiGravGravityForce(const float aAltit
     return gravForce * aMass;
 }
 
-DirectX::SimpleMath::Vector3 Vehicle::GetAntiMassGravityForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass)
+DirectX::SimpleMath::Vector3 Vehicle::GetAntiMassGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass)
 {
     const DirectX::SimpleMath::Vector3 gravForce = aGravity;
     const float lowerCurveBound = m_heli.hoverRangeLower;
@@ -969,7 +968,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetAntiMassGravityForce(const float aAltit
     return gravForce * mass;
 }
 
-DirectX::SimpleMath::Vector3 Vehicle::GetDamperForce(const float aAltitude, const float aGroundInteractionRange, const float aMass)
+DirectX::SimpleMath::Vector3 Vehicle::GetDamperForce(const float aAltitude, const float aMass)
 {
     const float lowerCurveBound = m_heli.hoverRangeLower;
     const float midCurveBound = m_heli.hoverNeutralBoyantAlt;
@@ -1046,6 +1045,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetSlopeForce(const DirectX::SimpleMath::V
 
 Utility::Torque Vehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep)
 {
+    const float timeStepMod = aTimeStep;
     DirectX::SimpleMath::Vector3 centerMassPos = m_heli.localCenterOfMass;
     centerMassPos = DirectX::SimpleMath::Vector3::Transform(centerMassPos, m_heli.alignment);
     centerMassPos = m_heli.centerOfMass;
@@ -1487,7 +1487,7 @@ void Vehicle::TestFire()
     DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
     DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
     DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
-    m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, m_heli.right, velocity);
+    m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, velocity);
 
     m_isFiredTest = true;
     m_fireForceTest = -launchDir;

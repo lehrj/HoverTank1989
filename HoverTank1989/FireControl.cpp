@@ -65,7 +65,7 @@ void FireControl::DrawProjectile(const DirectX::SimpleMath::Matrix aView, const 
     }
 }
 
-void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
+void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
     AmmoData firedAmmo;
     if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
@@ -239,7 +239,7 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
     // 10
 }
 
-void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
+void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
     AmmoData firedAmmo;
     if (aAmmoType == AmmoType::AMMOTYPE_BALL01)

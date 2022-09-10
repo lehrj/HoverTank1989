@@ -205,9 +205,9 @@ public:
     DirectX::SimpleMath::Vector3 GetForward() const { return m_heli.forward; };
     float GetGroundSpeed() { return m_heli.speed; };
     DirectX::SimpleMath::Vector3 GetHoverGravForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
-    DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
-    DirectX::SimpleMath::Vector3 GetAntiMassGravityForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
-    DirectX::SimpleMath::Vector3 GetDamperForce(const float aAltitude, const float aGroundInteractionRange, const float aMass);
+    DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
+    DirectX::SimpleMath::Vector3 GetAntiMassGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
+    DirectX::SimpleMath::Vector3 GetDamperForce(const float aAltitude, const float aMass);
 
     DirectX::SimpleMath::Vector3 GetHoverLift(const DirectX::SimpleMath::Vector3 aLiftForce, const float aAltitude);
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);

@@ -449,7 +449,7 @@ public:
 
     void SetCollisionVal(const bool aIsCollisionTrue);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
-
+    void SetNpcType(NPCType aNPCType);
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
     void TestPositionChange() {
         //m_vehicleStruct00.vehicleData.q.position.y = 45.0f;
@@ -473,7 +473,7 @@ private:
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const VehicleData& aVehicleData);
-    DirectX::SimpleMath::Vector3 GetBuoyancyForce(const VehicleData& aVehicleData, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 GetBuoyancyForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetDamperForce(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetForwardThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetImpactForceSum(const VehicleData& aVehicleData);
@@ -492,10 +492,11 @@ private:
 
     void RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ);
     void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
+
     void TerrainImpactHandling();
 
     void UpdateAlignment();
-    Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
+    Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque);
     void UpdateControlInput();
     void UpdateControlInputFromAi();
     void UpdateForceTorqueVecs();

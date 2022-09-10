@@ -39,10 +39,7 @@ struct Environ
     std::string                         landingFrictionScaleStr;
     float                              landingHardnessScale;
     std::string                         landingHardnessScaleStr;
-    int                                 par;
     float                               scale;
-    float                               teeDirection;       // start direction for first shot
-    DirectX::SimpleMath::Vector3        teePosition;        // start position for first shot
     DirectX::XMVECTORF32                terrainColor;
     DirectX::SimpleMath::Vector3        wind;               // in m/s
     std::string                         windXStr;
@@ -52,19 +49,9 @@ struct Environ
 
 enum class FixtureType
 {
-    FIXTURETYPE_FLAGSTICK,
-    FIXTURETYPE_TEEBOX,
-    FIXTURETYPE_BRIDGE,
     FIXTURETYPE_TREE01,
     FIXTURETYPE_TREE02,
     FIXTURETYPE_TREE03,
-    FIXTURETYPE_TREE04,
-    FIXTURETYPE_TREE05,
-    FIXTURETYPE_TREE06,
-    FIXTURETYPE_TREE07,
-    FIXTURETYPE_TREE08,
-    FIXTURETYPE_TREE09,
-    FIXTURETYPE_TREE10,
 };
 
 struct Fixture
@@ -133,30 +120,16 @@ public:
     DirectX::SimpleMath::Vector3 GetGravityVec() const { return m_currentEnviron.gravityVec; };
     std::string GetGravityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravityStr; };
     float GetGravity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravity; };
-    std::vector<DirectX::VertexPositionColor> GetFlagVertex() const { return m_flagVertex; };
-    DirectX::SimpleMath::Vector3 GetHolePosition() const { return m_currentEnviron.holePosition; };
-    float GetHoleRadius() const { return m_holeRadius * m_currentEnviron.scale; };
-    std::vector<DirectX::VertexPositionColor> GetHoleVertex() const { return m_holeVertex; };
-    float GetLandingHeight() const { return m_landingHeight; };
-    float GetLauchHeight() const { return m_launchHeight; };
     int GetNumerOfEnvirons() const { return m_environsAvailable; };
     int GetNumberOfEnvironSelectDisplayVariables() const { return m_environSelectDisplayDataPoints; };
-    int GetPar() const { return m_currentEnviron.par; };
     float GetScale() const { return m_currentEnviron.scale; };
-    float GetTeeDirectionDegrees() const { return m_currentEnviron.teeDirection; };
-    DirectX::SimpleMath::Vector3 GetTeePosition() const { return m_currentEnviron.teePosition; };
-
-
     bool GetIsPosInPlay(const DirectX::XMFLOAT3 aPos) const;
     float GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const;
     float GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const;
     DirectX::SimpleMath::Vector3 GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const;
-
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
     std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex(EnvironmentType aEnvironType);
-
     bool GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3& aNorm, float& aHeight) const;
-
     float GetWindDirection() const;
     DirectX::SimpleMath::Vector3 GetWindVector() const { return m_currentEnviron.wind; };
     float GetWindX() const { return m_currentEnviron.wind.x; };
@@ -166,18 +139,14 @@ public:
     float GetWindZ() const { return m_currentEnviron.wind.z; };
     std::string GetWindZString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windZStr; };    
 
-    bool InitializeTerrain(HeightMap& aMap, EnvironmentType aEnviron);
+    bool InitializeTerrain(HeightMap& aMap);
 
     void SortFixtureBucketByDistance();
     void UpdateEnvironment(const int aIndex);
-    void UpdateFixtureDistanceToCamera(const DirectX::SimpleMath::Vector3 &aCameraPos);
-    void UpdateFixtures(const DirectX::SimpleMath::Vector3 &aPos);
+
 
 private:
     
-    void BuildFlagVertex(DirectX::SimpleMath::Vector3 aPos);
-    void BuildHoleVertex(DirectX::SimpleMath::Vector3 aPos);
-
     bool BuildTerrainModel(HeightMap& aMap);
     bool CalculateTerrainNormals(HeightMap& aMap);
 
@@ -185,13 +154,8 @@ private:
     void InitializeHeightMapData();
 
     void LoadEnvironmentData();
-    void LoadFixtureBucket();
-    void LoadFixtureBucket12th();
+    bool LoadHeightMap(HeightMap& aMap);
 
-    //bool LoadHeightMap(std::vector<DirectX::VertexPositionNormal>& aMap, EnvironmentType aEnviron);
-    bool LoadHeightMap(HeightMap& aMap, EnvironmentType aEnviron);
-
- 
     void SetLandingHeight(float aLandingHeight);
     void SetLauchHeight(float aLaunchHeight);
 
@@ -204,12 +168,6 @@ private:
 
     std::vector<Fixture>                m_fixtureBucket;
 
-    std::vector<DirectX::VertexPositionColor> m_flagVertex;
-    std::vector<DirectX::VertexPositionColor> m_holeVertex;
-    const int                           m_holeResolution = 30;          // number of vertices used to draw hole circle
-    //const float                        m_holeRadius = 0.10795;              // Radius of the hole, future updates could include addition of "big cup" or "tiny cup" hole sizes
-    const float                        m_holeRadius = .50795;
-
     float                              m_landingHeight = 0.0;     // in meters
     float                              m_launchHeight = 0.0;      // in meters
 
@@ -218,14 +176,6 @@ private:
     float                              m_landingHardness;
     float                              m_landingXslope;
     float                              m_landingZslope;
-
-    // min max consts
-    const float                        m_minAirDensity = 0.0;
-    const float                        m_maxAirDensity = 68.0; // just above the air density of Venus
-    const float                        m_minGravity = 0.1;
-    const float                        m_maxGravity = 28.0;    // approximate value for the mass of the sun
-    const float                        m_minMaxHeight = 450.0; // Launch & Landing min/max heights is just above the largest elevation change (>400 meters) of any real golf course which is the Extreme 19 in Limpopo Province South Africa
-    const float                        m_minMaxWind = 667.0;   // highest know wind speed on Neptune
 
     std::vector<DirectX::VertexPositionNormal> m_heightMap;
     std::vector<DirectX::VertexPositionNormal> m_heightMapStartScreen;
@@ -236,7 +186,6 @@ private:
     std::vector<DirectX::VertexPositionNormal> m_terrainModel;
 
     // scaling variables for different types of heightmaps
-    //const float                         m_heightScale = 0.007f;
     const float                         m_heightScale = 1.009f;
     const float                        m_heightScaleStartScreen = 0.007f;
 
@@ -244,7 +193,6 @@ private:
     const float                        m_mapScaleStartScreen = 0.2f;
     const float                        m_mapXtransformStartScreen = -2.101f;
     const float                        m_mapYtransformStartScreen = -0.01f;
-    //const float                        m_mapZtransformStartScreen = -0.02f;
     const float                        m_mapZtransformStartScreen = -1.6f;
     
     const float                        m_elevationScaleGamePlay = 0.007f;

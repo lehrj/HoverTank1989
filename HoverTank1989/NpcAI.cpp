@@ -161,15 +161,18 @@ void NpcAI::DebugToggle()
     */
 }
 
-float NpcAI::GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest)
+float NpcAI::GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest)
 {
     DirectX::SimpleMath::Vector3 dest = m_currentDestination - m_npcOwner->GetPos();
+    dest = aDest;
+
     dest.Normalize();
     const DirectX::SimpleMath::Vector3 one = m_npcOwner->GetForward();
     const DirectX::SimpleMath::Vector3 two = dest;
+    const DirectX::SimpleMath::Vector3 up = m_npcOwner->GetUp();
     const float dot = one.x * two.x + one.y * two.y + one.z * two.z;
     //det =        x1 * y2    * zn    + x2    * yn    * z1    +   xn  * y1    * z2    - z1    * y2    * xn    - z2    * yn    * x1    - zn    * y1    * x2
-    const float det = one.x * two.y * aUp.z + two.x * aUp.y * one.z + aUp.x * one.y * two.z - one.z * two.y * aUp.x - two.z * aUp.y * one.x - aUp.z * one.y * two.x;
+    const float det = one.x * two.y * up.z + two.x * up.y * one.z + up.x * one.y * two.z - one.z * two.y * up.x - two.z * up.y * one.x - up.z * one.y * two.x;
     const float angle = atan2(det, dot);
 
     return angle;

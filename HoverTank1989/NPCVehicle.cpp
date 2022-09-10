@@ -202,10 +202,10 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     //impulseToVec.torqueArm = aForceVec2;
     //impulseToVec.torqueArm.Normalize();
     impulseToVec.torqueArm *= 1.0f;
-    impulseToVec.totalTime = 0.1f;
     float impactVelocity = (aVehicleHit.q.velocity - m_vehicleStruct00.vehicleData.q.velocity).Length();
     float impactTime = 1.0f / (impactVelocity + 0.00000000001f);
-    //impulseToVec.totalTime = impactTime;
+    impulseToVec.totalTime = impactTime;
+    impulseToVec.totalTime = 0.1f;
 
     impulseToVec.maxMagnitude = aForceVec1.Length() * aVehicleHit.mass;
 
@@ -550,7 +550,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
     return gravForce;
 }
 
-DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVehicleData, const float aTimeStep)
+DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVehicleData)
 {
     const DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();
     float altitude = aVehicleData.q.position.y;
@@ -580,7 +580,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
     else
     {
         float testUpper = upperCurveBound - curveAdjustVal;
-        float testMid = midCurveBound - curveAdjustVal;
         float testLower = lowerCurveBound - curveAdjustVal;
         float testAlt = altitude - curveAdjustVal;
         float testRange = testUpper - testLower;
@@ -1518,6 +1517,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     const DirectX::SimpleMath::Vector3 aPosition,
     const NPCType aNPCType, Environment const* aEnvironment)
 {
+    aVehicleStruct.vehicleData.npcType = aNPCType;
     aVehicleStruct.environment = aEnvironment;
     aVehicleStruct.vehicleData.q.position = aPosition;
     aVehicleStruct.vehicleData.q.velocity = DirectX::SimpleMath::Vector3::Zero;
@@ -1762,7 +1762,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     Utility::Torque pendTorque;
     pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     pendTorque.magnitude = 0.0f;
-    Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
+    Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque);
 
     velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
@@ -1881,6 +1881,11 @@ void NPCVehicle::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
     m_debugData = aDebugPtr;
 }
 
+void NPCVehicle::SetNpcType(NPCType aNPCType)
+{
+    m_vehicleStruct00.vehicleData.npcType = aNPCType;
+}
+
 void NPCVehicle::TerrainImpactHandling()
 {
     DirectX::SimpleMath::Vector3 v = m_vehicleStruct00.vehicleData.q.velocity;
@@ -1921,7 +1926,7 @@ void NPCVehicle::UpdateAlignment()
     m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
 }
 
-Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep)
+Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque)
 {
     Utility::Torque impactTorque = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
     impactTorque.axis.Normalize();
@@ -1993,7 +1998,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorqu
 void NPCVehicle::UpdateControlInput()
 {
     m_vehicleStruct00.vehicleData.controlInput.steeringVec = m_npcAI->GetVecToDestination();
-    m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
+    m_vehicleStruct00.vehicleData.controlInput.angleToDestination = m_npcAI->GetAngleToDestination(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.up, m_vehicleStruct00.vehicleData.playerPos);
 
     const float yawInput = m_vehicleStruct00.vehicleData.controlInput.angleToDestination;
     const float updatedYaw = (yawInput * m_vehicleStruct00.vehicleData.controlInput.steeringInputRate) + m_vehicleStruct00.vehicleData.controlInput.steeringInput;
@@ -2262,7 +2267,6 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
                     aJumpData.impulseBurnForce.directionNorm = DirectX::SimpleMath::Vector3::UnitY;
 
                     Utility::UpdateImpulseForceBellCurve(aJumpData.impulseBurnForce, aTimeDelta);
-                    float jetRotationRatio = aJumpData.impulseBurnForce.currentMagnitude / aJumpData.impulseBurnForce.maxMagnitude;
 
                     const float jetRotation = 225.0f;
                     m_vehicleStruct00.npcModel.jetRotationLeft = Utility::ToRadians(jetRotation);
@@ -2366,7 +2370,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     UpdateImpulseForces(static_cast<float>(aTimeDelta));
 
-    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData, static_cast<float>(aTimeDelta));
+    m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData);
 
     RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
 
@@ -2552,7 +2556,6 @@ void NPCVehicle::UpdateNPCModel()
     float prevBurnLengthRight1 = m_vehicleStruct00.npcModel.afterBurnLengthRightPrev;
     float prevBurnLengthLeft2 = m_vehicleStruct00.npcModel.afterBurnLengthLeftPrev2;
     float prevBurnLengthRight2 = m_vehicleStruct00.npcModel.afterBurnLengthRightPrev2;
-    float prevBurnLengthLeft3 = m_vehicleStruct00.npcModel.afterBurnLengthLeftPrev3;
     m_vehicleStruct00.npcModel.afterBurnLengthLeftPrev = prevBurnLengthLeft;
     m_vehicleStruct00.npcModel.afterBurnLengthRightPrev = prevBurnLengthRight;
     m_vehicleStruct00.npcModel.afterBurnLengthLeftPrev2 = prevBurnLengthLeft1;
