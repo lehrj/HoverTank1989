@@ -35,6 +35,7 @@ public:
     void UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Matrix aPlayerAlignment, const double aTimeDelta);
 
 private:
+    void CheckNpcAvoidance();
     void CheckNpcCollisions();
     unsigned int GetUniqueID();
 

@@ -268,7 +268,7 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
-    aAmmo.ammoData.impactModifier = 2.0f;
+    aAmmo.ammoData.impactModifier = 4.0f;
     aAmmo.ammoData.launchVelocity = 335.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
@@ -381,7 +381,6 @@ void FireControl::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
     m_debugData = aDebugPtr;
 }
 
-//void FireControl::SetNPCController(NPCController* aNPCController)
 void FireControl::SetNPCController(std::shared_ptr<NPCController> aNPCController)
 {
     m_npcController = aNPCController;

@@ -30,14 +30,17 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
     bool isCollisionTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        if (m_npcVec[i]->GetCollisionData().Intersects(aProjectile.collisionSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aProjectile.collisionSphere) == true)
+        if (DirectX::SimpleMath::Vector3::Distance(aProjectile.collisionSphere.Center, m_npcVec[i]->GetPos()) < m_npcVec[i]->GetCollisionDetectionRange())
         {
-            m_npcVec[i]->SetCollisionVal(true);
-            Utility::ImpactForce projectileForce;
-            projectileForce.impactMass = aProjectile.mass;
-            projectileForce.impactVelocity = aProjectile.velocity;
-            m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
-            isCollisionTrue = true;
+            if (m_npcVec[i]->GetCollisionData().Intersects(aProjectile.collisionSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aProjectile.collisionSphere) == true)
+            {
+                m_npcVec[i]->SetCollisionVal(true);
+                Utility::ImpactForce projectileForce;
+                projectileForce.impactMass = aProjectile.mass;
+                projectileForce.impactVelocity = aProjectile.velocity;
+                m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
+                isCollisionTrue = true;
+            }
         }
     }
     return isCollisionTrue;
@@ -88,15 +91,15 @@ void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceC
 
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
-    const float xOrgVal = 270.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, 105.0f);
-    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
+    const float xOrgVal = 70.0f;
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, -40.0f);
+    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 7.0f;
     const float high = 13.0f;
-    const float zPosOffSet = 45.0f;
-    for (int i = 0; i < 4; ++i)
+    const float zPosOffSet = 20.0f;
+    for (int i = 0; i < 5; ++i)
     {
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < 1; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
@@ -144,7 +147,11 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
     CheckNpcCollisions();
-    // Avoidance box checks, 
+    CheckNpcAvoidance();
+}
+
+void NPCController::CheckNpcAvoidance()
+{
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         DirectX::BoundingOrientedBox avoidanceBox = m_npcVec[i]->GetAvoidanceBox();

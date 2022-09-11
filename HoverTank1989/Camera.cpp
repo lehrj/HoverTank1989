@@ -24,6 +24,7 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homeYaw = 0.0f;
 
 	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERANPC;
+	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
 
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;

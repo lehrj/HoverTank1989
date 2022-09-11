@@ -1027,16 +1027,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->StartTrailerCamera4();
-            //m_vehicle->TestFire();
+            //m_camera->StartTrailerCamera4();
+            m_vehicle->TestFire();
         }
     }
     if (m_kbStateTracker.pressed.J)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->StartTrailerCamera3();
-            //m_vehicle->TestFire2();
+            //m_camera->StartTrailerCamera3();
+            m_vehicle->TestFire2();
         }
     }
     if (m_kbStateTracker.pressed.OemOpenBrackets)
@@ -1133,7 +1133,7 @@ void Game::Render()
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
-        DrawTestTrack();
+        //DrawTestTrack();
     }
     m_batch->End();
 
@@ -1155,7 +1155,7 @@ void Game::Render()
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
     m_batch3->Begin();
-    //DrawDebugLinesVector();
+    DrawDebugLinesVector();
     m_batch3->End();
 
     m_spriteBatch->Begin();
