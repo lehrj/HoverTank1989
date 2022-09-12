@@ -268,6 +268,7 @@ void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
+    aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
     aAmmo.ammoData.launchVelocity = 335.0f;
     aAmmo.ammoData.length = 1.0f;

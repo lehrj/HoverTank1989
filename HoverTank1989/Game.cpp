@@ -484,7 +484,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
-        m_npcController->UpdateNPCController(m_vehicle->GetPos(), m_vehicle->GetVelocity(), m_vehicle->GetAlignment(),aTimer.GetElapsedSeconds());
+        m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
     }
     m_camera->UpdateCamera(aTimer);
     //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
@@ -1124,7 +1124,7 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        m_modelController->DrawModel(context, *m_states, DirectX::SimpleMath::Matrix::Identity, m_camera->GetViewMatrix(), m_proj);
+        m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj);
     }
     
     m_batch->Begin();

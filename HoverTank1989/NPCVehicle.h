@@ -496,7 +496,7 @@ private:
     void TerrainImpactHandling();
 
     void UpdateAlignment();
-    Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque);
+    Utility::Torque UpdateBodyTorqueRunge();
     void UpdateControlInput();
     void UpdateControlInputFromAi();
     void UpdateForceTorqueVecs();

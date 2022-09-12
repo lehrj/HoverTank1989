@@ -660,12 +660,8 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     rotorForce = GetHoverLift(rotorForce, GetAltitude());
     velocityUpdate += rotorForce;
     velocityUpdate += GetSlopeForce(aHeli->terrainNormal, GetAltitude(), aHeli->groundNormalForceRange);
-    Utility::Torque pendTorque;
-    pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
-    pendTorque.magnitude = 0.0f;
-    UpdatePendulumMotion(pendTorque, velocityUpdate, static_cast<float>(aTimeDelta));
     velocityUpdate += airResistance;
-    Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque, static_cast<float>(aTimeDelta));
+    Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(static_cast<float>(aTimeDelta));
 
     //  Assign right-hand side values.
     aDQ->airResistance = airResistance;
@@ -1043,7 +1039,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetSlopeForce(const DirectX::SimpleMath::V
     return slopeForceUpdate;
 }
 
-Utility::Torque Vehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep)
+Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
 {
     const float timeStepMod = aTimeStep;
     DirectX::SimpleMath::Vector3 centerMassPos = m_heli.localCenterOfMass;

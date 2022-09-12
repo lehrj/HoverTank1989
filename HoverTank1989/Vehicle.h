@@ -275,7 +275,7 @@ private:
 
     void UpdateBladeLiftForce(const float aTimeStep);
 
-    Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque, const float aTimeStep);
+    Utility::Torque UpdateBodyTorqueRunge(const float aTimeStep);
     void UpdateAlignmentCamera();
     void UpdateCyclicStick(ControlInput& aInput);
     float UpdateGroundEffectForce(const float aLiftForce);

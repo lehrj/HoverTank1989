@@ -36,6 +36,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
             {
                 m_npcVec[i]->SetCollisionVal(true);
                 Utility::ImpactForce projectileForce;
+                projectileForce.impactModifier = aProjectile.collisionModifier;
                 projectileForce.impactMass = aProjectile.mass;
                 projectileForce.impactVelocity = aProjectile.velocity;
                 m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
@@ -134,7 +135,7 @@ void NPCController::UnlockJumpAbility()
     }
 }
 
-void NPCController::UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Matrix aPlayerAlignment, const double aTimeDelta)
+void NPCController::UpdateNPCController(const double aTimeDelta)
 {
     UpdateNPCs(aTimeDelta);
 }

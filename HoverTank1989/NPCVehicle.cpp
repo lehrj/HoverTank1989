@@ -269,7 +269,8 @@ void NPCVehicle::CalculateImpulseForceFromProjectile(const Utility::ImpactForce 
     impulseToVec.maxMagnitude = (0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity).Length();
     impulseToVec.maxMagnitude *= aImpactForce.impactModifier;
     impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
-    impulseToVec.totalTime = 0.1f;
+    //impulseToVec.totalTime = 0.1f;
+    impulseToVec.totalTime = 0.8f;
     PushImpulseForce(impulseToVec);
 
     // test calc kinetic energy
@@ -550,7 +551,8 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
 DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVehicleData)
 {
     const DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();
-    float altitude = aVehicleData.q.position.y;
+    //float altitude = aVehicleData.q.position.y;
+    float altitude = aVehicleData.altitude;
     const float immersedDensityNeutralAtHalfDepth = 1.4286f;
     bool breakToggle = false;
 
@@ -1648,10 +1650,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 impactForceSum = m_vehicleStruct00.vehicleData.impactForceSum;
 
-    Utility::Torque pendTorque;
-    pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
-    pendTorque.magnitude = 0.0f;
-    Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(pendTorque);
+    Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge();
 
     velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
@@ -1789,7 +1788,7 @@ void NPCVehicle::UpdateAlignment()
     m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
 }
 
-Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(Utility::Torque aPendulumTorque)
+Utility::Torque NPCVehicle::UpdateBodyTorqueRunge()
 {
     Utility::Torque impactTorque = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
     impactTorque.axis.Normalize();
@@ -2041,27 +2040,22 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
                 const float distanceToHoverRange = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.hoverData.hoverRangeUpper;
                 const float gravity = m_environment->GetGravity();
                 const float initialVelocity = m_vehicleStruct00.vehicleData.q.velocity.y;
-                float a = gravity;
-                float b = initialVelocity;
-                float c = distanceToHoverRange;
-                float u = b;
-                float s = c;
-                float quad = (-b + sqrt((b * b) - 4.0f * (a * c))) / (2.0f * a);
+
+                float quad = (-initialVelocity + sqrt((initialVelocity * initialVelocity) - 4.0f * (gravity * distanceToHoverRange))) / (2.0f * gravity);
                 if (quad <= 0.0f)
                 {
-                    quad = (-b - sqrt((b * b) - 4.0f * (a * c))) / (2.0f * a);
+                    quad = (-initialVelocity - sqrt((initialVelocity * initialVelocity) - 4.0f * (gravity * distanceToHoverRange))) / (2.0f * gravity);
                 }
                 if (quad <= 0.0f)
                 {
                     quad = 0.0001f;
                 }
-                float t = quad;
 
-                float deceleration = (0.0f - initialVelocity) / t;
+                float deceleration = (0.0f - initialVelocity) / quad;
                 float decelerationForce = deceleration * m_vehicleStruct00.vehicleData.mass;
                 const float decelForceLimit = 26000.0f;
 
-                if (decelerationForce > decelForceLimit || t < 1.0f)
+                if (decelerationForce > decelForceLimit || quad < 1.0f)
                 {
                     aJumpData.isLandImpulseBurnActive = true;
                     aJumpData.isImpulseBurnActive = true;
@@ -2071,7 +2065,7 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
                     aJumpData.impulseBurnForce.isActive = true;
                     aJumpData.impulseBurnForce.maxMagnitude = deceleration + -gravity;
                     aJumpData.impulseBurnForce.torqueArm = m_vehicleStruct00.vehicleData.right;
-                    aJumpData.impulseBurnForce.totalTime = t;
+                    aJumpData.impulseBurnForce.totalTime = quad;
                 }
             }
             if(aJumpData.isLandImpulseBurnActive == true)
@@ -2182,12 +2176,10 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 preThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
 
-    bool testBool = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
-
-    m_altitudeDelta = m_vehicleStruct00.vehicleData.q.position.y - m_launchAltitude;
-    if (m_prevMaxAltitudeDelta < m_altitudeDelta)
+    bool isVehicleInPlayUpdate = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
+    if (isVehicleInPlayUpdate == false)
     {
-        m_prevMaxAltitudeDelta = m_altitudeDelta;
+        // to do: add error handling if out of play
     }
 
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
@@ -2212,7 +2204,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     UpdateNPCModel();
     UpdateHardPoints();
 
-    if (m_vehicleStruct00.vehicleData.q.position.y > 300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)
+    if (m_vehicleStruct00.vehicleData.q.position.y > 1300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)
     {
         JumpData testData = m_vehicleStruct00.vehicleData.jumpData;
 

@@ -32,7 +32,7 @@ public:
     void TestPositionChange();
     void UnlockJumpAbility();
     void UpdateNPCs(const double aTimeDelta);
-    void UpdateNPCController(const DirectX::SimpleMath::Vector3 aPlayerPos, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Matrix aPlayerAlignment, const double aTimeDelta);
+    void UpdateNPCController(const double aTimeDelta);
 
 private:
     void CheckNpcAvoidance();

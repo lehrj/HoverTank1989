@@ -12,7 +12,6 @@ enum class AmmoType
 struct LauncherData
 {
     DirectX::SimpleMath::Vector3 launchDirectionNorm;
-    //float launchVelocity;
     DirectX::SimpleMath::Vector3 launcherPosition;
     float reloadCoolDown;
     float coolDownTimer;
@@ -36,6 +35,7 @@ struct AmmoData
     AmmoType ammoType;
     float   baseDamage;
     float   dragCoefficient;
+    float   impactDurration;
     float   impactModifier;
     float   launchVelocity;
     float   length;
@@ -55,12 +55,9 @@ struct AmmoStruct
 
 struct ProjectileData
 {
-    //AmmoType projectileAmmoType;
     AmmoData ammoData;
-    //AmmoData& const ammo;
     ProjectileMotion q;
     DirectX::BoundingSphere collisionSphere;
-    
     Utility::CollisionData  collisionData;
     bool isCollisionTrue;
     bool isDeleteTrue;
