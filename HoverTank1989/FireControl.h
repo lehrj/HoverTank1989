@@ -7,6 +7,7 @@ enum class AmmoType
 {
     AMMOTYPE_BALL01,
     AMMOTYPE_SHOTGUNBALL01,
+    AMMOTYPE_EXPLOSIVE,
 };
 
 struct LauncherData
@@ -65,9 +66,14 @@ struct ProjectileData
     int liveTimeTick;
 };
 
+
+
 class FireControl
 {
 public:
+
+
+
     void DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         const DirectX::SimpleMath::Vector3 aLaunchPos, 
@@ -82,11 +88,8 @@ public:
 private:
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
-    void InitializeAmmo(AmmoData& aAmmo);
-    void InitializeAmmoStruct(AmmoStruct& aAmmo);
-    void InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoData& aModel);
-    void InitializeProjectileModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
-    void InitializeProjectileData(const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aVelocity);
+    void InitializeAmmo(AmmoStruct& aAmmo);
+    void InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);

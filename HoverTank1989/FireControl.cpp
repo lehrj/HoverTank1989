@@ -263,7 +263,7 @@ void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vect
     m_projectileVec.push_back(firedProjectile);
 }
 
-void FireControl::InitializeAmmoStruct(AmmoStruct& aAmmo)
+void FireControl::InitializeAmmo(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
@@ -288,8 +288,8 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
 {
     m_projectileVec.clear();
     m_environment = aEnvironment;
-    InitializeAmmoStruct(m_ballAmmoStruct);
-    InitializeProjectileModelStruct(aContext, m_ballAmmoStruct);
+    InitializeAmmo(m_ballAmmoStruct);
+    InitializeProjectileModel(aContext, m_ballAmmoStruct);
     InitializeLauncherData(m_launcherData, aLaunchPos, aLaunchDirection);
 }
 
@@ -302,7 +302,7 @@ void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX:
     aLauncher.coolDownTimer = 0.0f;
 }
 
-void FireControl::InitializeProjectileModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
+void FireControl::InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
     const float ammoSize = aAmmo.ammoData.radius;
     const float ammoLength = aAmmo.ammoData.length;

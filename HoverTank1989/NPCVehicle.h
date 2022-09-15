@@ -4,6 +4,7 @@
 #include "NpcAI.h"
 #include "Utility.h"
 
+
 class NPCController;
 
 struct NpcControlInput

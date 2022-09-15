@@ -1,6 +1,7 @@
 #pragma once
 #include "NPCVehicle.h"
 
+
 class Vehicle;
 
 class NPCController
