@@ -1008,14 +1008,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->DebugToggle();
         }
     }
-    if (m_kbStateTracker.pressed.H)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_testTimer1 = 0.0f;
-            m_npcController->TestPositionChange();
-        }
-    }
     if (m_kbStateTracker.pressed.G)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1023,20 +1015,25 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_isDisplayCountdownTrue = true;
         }
     }
+    if (m_kbStateTracker.pressed.H)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->TestFireExplosive();
+        }
+    }
     if (m_kbStateTracker.pressed.K)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_camera->StartTrailerCamera4();
-            m_vehicle->TestFire();
+            m_vehicle->TestFireCannon();
         }
     }
     if (m_kbStateTracker.pressed.J)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_camera->StartTrailerCamera3();
-            m_vehicle->TestFire2();
+            m_vehicle->TestFireShotgun();
         }
     }
     if (m_kbStateTracker.pressed.OemOpenBrackets)

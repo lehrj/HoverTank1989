@@ -96,6 +96,7 @@ void Vehicle::DebugToggle()
 void Vehicle::DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     m_fireControl->DrawProjectile(aView, aProj);
+    m_fireControl->DrawExplosion(aView, aProj);
 }
 
 void Vehicle::InitializeFlightControls(ControlInput& aInput)
@@ -1407,7 +1408,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateAlignmentTorque();
     UpdateAlignmentCamera();
 
-    m_fireControl->UpdateProjectileVec(aTimeDelta);
+    m_fireControl->UpdateFireControl(aTimeDelta);
     m_isFiredTest = false; 
 }
 
@@ -1416,13 +1417,14 @@ void Vehicle::DebugInputVelocityZero()
     m_heli.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
 
-void Vehicle::TestFire()
+void Vehicle::TestFireCannon()
 {
     DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
     DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
     DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
     m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, velocity);
 
+    
     m_isFiredTest = true;
     m_fireForceTest = -launchDir;
     m_fireForceTest.Normalize();
@@ -1438,10 +1440,18 @@ void Vehicle::TestFire()
     m_testImpulseForce.isActive = true;
 }
 
-void Vehicle::TestFire2()
+void Vehicle::TestFireExplosive()
 {
     DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
     DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
     DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
-    m_fireControl->FireProjectileShotGun(AmmoType::AMMOTYPE_BALL01, pos, launchDir, m_heli.right, velocity);
+    m_fireControl->FireProjectileExplosive(pos, launchDir, velocity);
+}
+
+void Vehicle::TestFireShotgun()
+{
+    DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
+    DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+    DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
+    m_fireControl->FireProjectileShotGun(pos, launchDir, m_heli.right, velocity);
 }
