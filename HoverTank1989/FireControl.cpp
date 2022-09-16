@@ -79,18 +79,36 @@ void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::
 
     ProjectileData firedProjectile;
     firedProjectile.ammoData = firedAmmo;
-    //firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
     firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
-    firedProjectile.collisionSphere.Center = aLaunchPos;
-    firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
     firedProjectile.isCollisionTrue = false;
     firedProjectile.isDeleteTrue = false;
     firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
     // collision data
     firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
-    firedProjectile.collisionData.collisionSphere = firedProjectile.collisionSphere;
+    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+    firedProjectile.collisionData.mass = firedAmmo.mass;
+    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+
+    firedProjectile.time = 0.0f;
+    m_projectileVec.push_back(firedProjectile);
+}
+
+void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
+{
+    AmmoData firedAmmo = m_ballAmmoStruct.ammoData;;
+
+    ProjectileData firedProjectile;
+    firedProjectile.ammoData = firedAmmo;
+    firedProjectile.q.position = aLaunchPos;
+    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedProjectile.isCollisionTrue = false;
+    firedProjectile.isDeleteTrue = false;
+    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+
+    // collision data
+    firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
     firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
     firedProjectile.collisionData.mass = firedAmmo.mass;
     firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
@@ -113,7 +131,6 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
 
     ProjectileData firedProjectile;
     firedProjectile.ammoData = firedAmmo;
-    //firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
     firedProjectile.q.position = aLaunchPos;
     firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
 
@@ -123,14 +140,10 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
     firedProjectile.time = 0.0f;
 
     // collision data
-    firedProjectile.collisionData.collisionSphere = firedProjectile.collisionSphere;
     firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
     firedProjectile.collisionData.mass = firedAmmo.mass;
     firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
-
-    firedProjectile.collisionSphere.Center = aLaunchPos;
-    firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
-    
+   
     m_projectileVec.push_back(firedProjectile);
 
     DirectX::SimpleMath::Vector3 up = aLaunchDirectionForward;
@@ -239,30 +252,6 @@ void FireControl::FireProjectileShotGun(AmmoType aAmmoType, const DirectX::Simpl
     // 10
 }
 
-void FireControl::FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
-{
-    AmmoData firedAmmo;
-    if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
-    {
-        firedAmmo = m_ballAmmoStruct.ammoData;
-    }
-    else
-    {
-        firedAmmo = m_ballAmmoStruct.ammoData;
-    }
-
-    ProjectileData firedProjectile;
-    firedProjectile.ammoData = firedAmmo;
-    //firedProjectile.projectileAmmoType = AmmoType::AMMOTYPE_BALL01;
-    firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
-    firedProjectile.collisionSphere.Center = aLaunchPos;
-    firedProjectile.collisionSphere.Radius = firedAmmo.collisionSphere.Radius;
-    firedProjectile.isCollisionTrue = false;
-    firedProjectile.time = 0.0f;
-    m_projectileVec.push_back(firedProjectile);
-}
-
 void FireControl::InitializeAmmo(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
@@ -270,7 +259,7 @@ void FireControl::InitializeAmmo(AmmoStruct& aAmmo)
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
-    aAmmo.ammoData.launchVelocity = 335.0f;
+    aAmmo.ammoData.launchVelocity = 135.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
     
@@ -296,7 +285,6 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
 void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection)
 {
     aLauncher.launchDirectionNorm = aDirection;
-    //aLauncher.launchVelocity = 10.0f;
     aLauncher.launcherPosition = aPosition;
     aLauncher.reloadCoolDown = 3.0f;
     aLauncher.coolDownTimer = 0.0f;
@@ -398,21 +386,6 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
-        /*
-        if (m_projectileVec[i].time > 20.02f)
-        {
-            //DeleteProjectileFromVec(i);
-            m_projectileVec[i].isCollisionTrue == true;
-        }
-
-        //float altitude = m_environment->GetTerrainHeightAtPos(m_projectileVec[i].q.position);
-        if (m_projectileVec[i].q.position.y < m_environment->GetTerrainHeightAtPos(m_projectileVec[i].q.position))
-        {
-            //DeleteProjectileFromVec(i);
-            m_projectileVec[i].isCollisionTrue == true;
-        }
-        */
-        //if (m_projectileVec[i].isCollisionTrue == true)
         if (m_projectileVec[i].isDeleteTrue == true)
         {
             deleteCount++;

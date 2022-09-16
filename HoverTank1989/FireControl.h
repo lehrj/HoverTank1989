@@ -58,7 +58,6 @@ struct ProjectileData
 {
     AmmoData ammoData;
     ProjectileMotion q;
-    DirectX::BoundingSphere collisionSphere;
     Utility::CollisionData  collisionData;
     bool isCollisionTrue;
     bool isDeleteTrue;
@@ -66,22 +65,18 @@ struct ProjectileData
     int liveTimeTick;
 };
 
-
-
 class FireControl
 {
 public:
-
-
-
     void DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         const DirectX::SimpleMath::Vector3 aLaunchPos, 
         const DirectX::SimpleMath::Vector3 aLaunchDirection, 
         Environment const* aEnvironment);
     void FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
-    void FireWeapon(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
     void UpdateProjectileVec(double aTimeDelta);
@@ -101,7 +96,7 @@ private:
 
     LauncherData m_launcherData;
 
-    AmmoData m_ballAmmo;
+    //AmmoData m_ballAmmo;
     AmmoStruct m_ballAmmoStruct;
     const float m_maxProjectileLifeTime = 10.0f;
     std::vector<ProjectileData> m_projectileVec;
