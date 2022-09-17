@@ -13,6 +13,7 @@ public:
         NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, std::shared_ptr<NPCController> aNpcController);
 
+    bool CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere);
     bool CheckProjectileCollisions(Utility::CollisionData& aProjectile);
     void DebugToggleAI();
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);

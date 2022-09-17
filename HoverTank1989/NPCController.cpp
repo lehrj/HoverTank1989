@@ -25,6 +25,22 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     m_npcVec.push_back(newNPC);
 }
 
+bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere)
+{
+    bool isCollisionTrue = false;
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < m_npcVec[i]->GetCollisionDetectionRange())
+        {
+            if (m_npcVec[i]->GetCollisionData().Intersects(aBoundingSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aBoundingSphere) == true)
+            {
+                isCollisionTrue = true;
+            }
+        }
+    }
+    return isCollisionTrue;
+}
+
 bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile)
 {
     bool isCollisionTrue = false;

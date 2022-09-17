@@ -69,20 +69,37 @@ struct ProjectileData
 struct ExplosionData
 {   
     DirectX::BoundingSphere collisionSphere;
-    DirectX::SimpleMath::Vector4 explosionCurrantColor;
+    DirectX::SimpleMath::Vector4 explosionCurrentColor;
     DirectX::SimpleMath::Vector4 explosionEndColor;
     DirectX::SimpleMath::Vector4 explosionStartColor;
-    DirectX::SimpleMath::Matrix explosionMatrix;
+    DirectX::SimpleMath::Vector4 color0;
+    DirectX::SimpleMath::Vector4 color1;
+    DirectX::SimpleMath::Vector4 color2;
+    DirectX::SimpleMath::Vector4 color3;
+    DirectX::SimpleMath::Vector4 color4;
+    DirectX::SimpleMath::Vector4 color5;
+    DirectX::SimpleMath::Vector4 color6;
+    DirectX::SimpleMath::Vector4 color7;
+    DirectX::SimpleMath::Vector4 color8;
+    DirectX::SimpleMath::Matrix explosionMatrix0;
     DirectX::SimpleMath::Matrix explosionMatrix1;
     DirectX::SimpleMath::Matrix explosionMatrix2;
+    DirectX::SimpleMath::Matrix explosionMatrix3;
+    DirectX::SimpleMath::Matrix explosionMatrix4;
+    DirectX::SimpleMath::Matrix explosionMatrix5;
+    DirectX::SimpleMath::Matrix explosionMatrix6;
+    DirectX::SimpleMath::Matrix explosionMatrix7;
+    DirectX::SimpleMath::Matrix explosionMatrix8;
     DirectX::SimpleMath::Matrix localExplosionMatrix;
-    double totalDuration;
+    DirectX::SimpleMath::Matrix rotationVariationMatrix;
     double currentDuration;
     float currentRadius;
     float initialRadius;
+    bool isLifeTimeExpired;
     float maxRadius;
     DirectX::SimpleMath::Vector3 position;
-    bool isLifeTimeExpired;
+    float randomVariation;
+    double totalDuration;
 };
 
 class FireControl
@@ -141,5 +158,7 @@ private:
 
     const float m_maxProjectileLifeTime = 10.0f;
     std::vector<ProjectileData> m_projectileVec;
+
+    float m_testTimer = 0.0f;
 };
 
