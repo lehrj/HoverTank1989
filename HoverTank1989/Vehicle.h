@@ -297,7 +297,9 @@ private:
     Environment const*              m_environment;
     HeliData                        m_heli;
 
-    FireControl*                    m_fireControl;
+    //FireControl*                    m_fireControl;
+    std::shared_ptr<FireControl>    m_fireControl;
+
     std::shared_ptr<DebugData>      m_debugData;
 
     std::shared_ptr<ModelController>      m_modelController;

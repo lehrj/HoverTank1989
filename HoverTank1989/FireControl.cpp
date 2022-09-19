@@ -11,7 +11,7 @@ void FireControl::CheckCollisions()
         {
             if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE)
             {
-                CreateExplosion(m_projectileVec[i].q.position);
+                CreateExplosion(m_projectileVec[i].q.position, false, -1);
             }
             m_projectileVec[i].isCollisionTrue = true;
             m_projectileVec[i].liveTimeTick--;
@@ -28,14 +28,14 @@ void FireControl::CheckCollisions()
         {
             if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE)
             {
-                CreateExplosion(m_projectileVec[i].q.position);
+                CreateExplosion(m_projectileVec[i].q.position, false, -1);
             }
             m_projectileVec[i].isDeleteTrue = true;
         }   
     }
 }
 
-void FireControl::CreateExplosion(DirectX::SimpleMath::Vector3 aPos)
+void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const bool aIsVehicleExplosion, const int aVehicleId)
 {
     ExplosionData createdExplosion;
     createdExplosion.position = aPos;
@@ -77,6 +77,17 @@ void FireControl::CreateExplosion(DirectX::SimpleMath::Vector3 aPos)
 
     createdExplosion.randomVariation = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (Utility::GetPi())));
     createdExplosion.rotationVariationMatrix = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(createdExplosion.randomVariation, createdExplosion.randomVariation, createdExplosion.randomVariation);
+    
+    if (aIsVehicleExplosion == true)
+    {
+        createdExplosion.isVehicleExplosion = true;
+        createdExplosion.vehicleExplosionID = aVehicleId;
+    }
+    else
+    {
+        createdExplosion.isVehicleExplosion = false;
+        createdExplosion.vehicleExplosionID = -1;
+    }
     m_explosionVec.push_back(createdExplosion);
 }
 
@@ -417,7 +428,7 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.maxRadius = 10.f;
     aExplosionData.position = DirectX::SimpleMath::Vector3::Zero;
     //m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), aExplosionData.initialRadius);
-    m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 5.0f);
+    m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 4.0f);
     aExplosionData.localExplosionMatrix = DirectX::SimpleMath::Matrix::Identity;
     aExplosionData.explosionMatrix0 = aExplosionData.localExplosionMatrix;
     aExplosionData.explosionMatrix1 = aExplosionData.localExplosionMatrix;
@@ -440,6 +451,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, 
     Environment const* aEnvironment)
 {
+    m_explosionToPushVec.clear();
     m_projectileVec.clear();
     m_environment = aEnvironment;
     InitializeAmmo(m_ballAmmoStruct);
@@ -467,7 +479,6 @@ void FireControl::InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceC
     const float ammoSize = aAmmo.ammoData.radius;
     const float ammoLength = aAmmo.ammoData.length;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
-    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoSize, ammoLength);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize); 
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
@@ -480,7 +491,6 @@ void FireControl::InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11D
     const float ammoSize = aAmmo.ammoData.radius;
     const float ammoLength = aAmmo.ammoData.length;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
-    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoSize, ammoLength);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
@@ -493,7 +503,6 @@ void FireControl::InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D
     const float ammoSize = aAmmo.ammoData.radius;
     const float ammoLength = aAmmo.ammoData.length;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
-    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoSize, ammoLength);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
@@ -506,12 +515,17 @@ void FireControl::InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11
     const float ammoSize = aAmmo.ammoData.radius;
     const float ammoLength = aAmmo.ammoData.length;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
-    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoSize, ammoLength);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
+}
+
+void FireControl::PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId)
+{
+    std::tuple<DirectX::SimpleMath::Vector3, int> tupleToVec(aPos, aVehicleId);
+    m_explosionToPushVec.push_back(tupleToVec);
 }
 
 void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
@@ -584,7 +598,6 @@ void FireControl::SetNPCController(std::shared_ptr<NPCController> aNPCController
     m_npcController = aNPCController;
 }
 
-
 void FireControl::UpdateFireControl(double aTimeDelta)
 {
     m_testTimer += static_cast<float>(aTimeDelta);
@@ -592,28 +605,35 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     UpdateExplosionVec(aTimeDelta);
 }
 
-
 void FireControl::UpdateExplosionVec(double aTimeDelta)
 {
+    const int vecSizePre1 = m_explosionToPushVec.size();
+    m_explosionToPushVec.clear();
+    const int vecSizePre2 = m_explosionToPushVec.size();
     for (unsigned int i = 0; i < m_explosionVec.size(); ++i)
     {
         m_explosionVec[i].currentDuration += aTimeDelta;
         if (m_explosionVec[i].currentDuration > m_explosionVec[i].totalDuration)
         {
+            if (m_explosionVec[i].isVehicleExplosion == true)
+            {
+                m_npcController->SetVehicleDeath(m_explosionVec[i].vehicleExplosionID);
+            }
             m_explosionVec[i].isLifeTimeExpired = true;
         }
         else
         {
             float ratio = static_cast<float>(m_explosionVec[i].currentDuration / m_explosionVec[i].totalDuration);
             float radius = m_explosionVec[i].initialRadius + (ratio * m_explosionVec[i].maxRadius);
-            radius += 2.0f;
+            radius += 0.0f;
+            //radius *= 10.0f;
             m_explosionVec[i].explosionMatrix0 = DirectX::SimpleMath::Matrix::CreateScale(radius);
             m_explosionVec[i].explosionMatrix0 *= m_explosionVec[i].localExplosionMatrix;
             
-            m_explosionVec[i].collisionSphere.Radius = radius;
+            m_explosionVec[i].collisionSphere.Radius = radius * 2.0f;
 
             //radius *= 0.7f;
-            const float scatterDistanceMod = 2.0f;// +radius;
+            const float scatterDistanceMod = 0.7f * radius;
             float scatterVal1 = cos(m_explosionVec[i].currentDuration * 10.0f);
             m_explosionVec[i].color1 = DirectX::SimpleMath::Vector4((abs(scatterVal1 * 0.5f) + 0.5f), (abs(scatterVal1 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance1 = scatterVal1 * scatterDistanceMod;
@@ -699,6 +719,14 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
         }
     }
 
+    const int vecSizePost1 = m_explosionToPushVec.size();
+    for (unsigned int i = 0; i < m_explosionToPushVec.size(); ++i)
+    {
+        //CreateExplosion(aPos, true, aVehicleId);
+        CreateExplosion(get<0>(m_explosionToPushVec[i]), true, get<1>(m_explosionToPushVec[i]));
+    }
+    m_explosionToPushVec.clear();
+
     for (unsigned int i = 0; i < m_explosionVec.size(); ++i)
     {
         if (m_explosionVec[i].isLifeTimeExpired == true)
@@ -708,6 +736,8 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec.erase(it);
         }
     }
+
+    m_debugData->DebugPushUILineWholeNumber("Explosion vec size = ", m_explosionVec.size(), "");
 }
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)

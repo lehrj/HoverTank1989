@@ -4,7 +4,7 @@
 
 Vehicle::~Vehicle()
 {
-    delete m_fireControl;
+    //delete m_fireControl;
 }
 
 DirectX::SimpleMath::Vector3 Vehicle::CalcHoverDriveForce(const struct HeliData& aHeli)
@@ -293,9 +293,11 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.localLandingGearPos.y -= 1.0f;
     m_heli.landingGearPos = m_heli.localLandingGearPos;
 
-    m_fireControl = new FireControl();
+    //m_fireControl = new FireControl();
+    m_fireControl = std::make_shared<FireControl>();
     m_fireControl->InitializeFireControl(aContext, m_heli.localWeaponPos, m_heli.localWeaponDirection, m_environment);
     m_fireControl->SetNPCController(aNPCController);
+    aNPCController->SetFireControl(m_fireControl);
 }
 
 void Vehicle::InputCollective(const float aCollectiveInput)

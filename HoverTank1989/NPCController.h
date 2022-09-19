@@ -1,8 +1,9 @@
 #pragma once
 #include "NPCVehicle.h"
-
+#include "FireControl.h"
 
 class Vehicle;
+class FireControl;
 
 class NPCController
 {
@@ -29,8 +30,10 @@ public:
     void LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController);
 
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
+    void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
     void SetNPCEnvironment(Environment const* aEnvironment);
     void SetPlayer(Vehicle const* aVehicle);
+    void SetVehicleDeath(const int aVehicleId);
     void TestPositionChange();
     void UnlockJumpAbility();
     void UpdateNPCs(const double aTimeDelta);
@@ -44,7 +47,7 @@ private:
     Environment const* m_environment;
     Vehicle const* m_player;
     std::shared_ptr<DebugData> m_debugData;
-
+    std::shared_ptr<FireControl> m_fireControl;
     std::vector<NPCVehicle*> m_npcVec;
 
     unsigned int m_nextUniqueID = 0;

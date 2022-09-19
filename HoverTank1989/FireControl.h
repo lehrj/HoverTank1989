@@ -96,6 +96,8 @@ struct ExplosionData
     float currentRadius;
     float initialRadius;
     bool isLifeTimeExpired;
+    bool isVehicleExplosion = false;
+    int vehicleExplosionID = -1;
     float maxRadius;
     DirectX::SimpleMath::Vector3 position;
     float randomVariation;
@@ -114,13 +116,13 @@ public:
     void FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
-
+    void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
 
     void UpdateFireControl(double aTimeDelta);
 private:
-    void CreateExplosion(DirectX::SimpleMath::Vector3 aPos);
+    void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const bool aIsVehicleExplosion, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void InitializeAmmo(AmmoStruct& aAmmo);
@@ -156,9 +158,11 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_explosionShape;
     std::vector<ExplosionData> m_explosionVec;
 
+    std::vector<std::tuple<DirectX::SimpleMath::Vector3, int>> m_explosionToPushVec;
+
     const float m_maxProjectileLifeTime = 10.0f;
     std::vector<ProjectileData> m_projectileVec;
-
+   
     float m_testTimer = 0.0f;
 };
 

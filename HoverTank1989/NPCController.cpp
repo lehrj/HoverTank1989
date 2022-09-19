@@ -30,11 +30,20 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
     bool isCollisionTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < m_npcVec[i]->GetCollisionDetectionRange())
+        float detectionRange = m_npcVec[i]->GetCollisionDetectionRange();
+        if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < (m_npcVec[i]->GetCollisionDetectionRange() + aBoundingSphere.Radius) && m_npcVec[i]->GetIsExploding() == false && m_npcVec[i]->GetIsDead() == false)
+        //if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < (m_npcVec[i]->GetCollisionDetectionRange() + aBoundingSphere.Radius))
         {
-            if (m_npcVec[i]->GetCollisionData().Intersects(aBoundingSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aBoundingSphere) == true)
+            //m_npcVec[i]->SetExplosionTrue();
+            if (m_npcVec[i]->GetIsExploding() == false)
             {
-                isCollisionTrue = true;
+                if (m_npcVec[i]->GetCollisionData().Intersects(aBoundingSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aBoundingSphere) == true)
+                {
+                    m_fireControl->PushVehicleExplosion(m_npcVec[i]->GetPos(), m_npcVec[i]->GetID());
+                    m_npcVec[i]->SetExplosionTrue();
+                    //m_npcVec[i]->SetDeadTrue();
+                    isCollisionTrue = true;
+                }
             }
         }
     }
@@ -75,7 +84,10 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        m_npcVec[i]->DrawNPC(aView, aProj);
+        if (m_npcVec[i]->GetIsDead() == false)
+        {
+            m_npcVec[i]->DrawNPC(aView, aProj);
+        }
     }
 }
 
@@ -113,7 +125,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 7.0f;
     const float high = 13.0f;
-    const float zPosOffSet = 20.0f;
+    const float zPosOffSet = 12.0f;
     for (int i = 0; i < 5; ++i)
     {
         for (int j = 0; j < 1; ++j)
@@ -133,6 +145,11 @@ void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
     m_debugData = aDebugPtr;
 }
 
+void NPCController::SetFireControl(std::shared_ptr<FireControl> aFireControlPtr)
+{
+    m_fireControl = aFireControlPtr;
+}
+
 void NPCController::SetNPCEnvironment(Environment const* aEnvironment)
 {
     m_environment = aEnvironment;
@@ -141,6 +158,22 @@ void NPCController::SetNPCEnvironment(Environment const* aEnvironment)
 void NPCController::SetPlayer(Vehicle const* aVehicle)
 {
     m_player = aVehicle;
+}
+
+void NPCController::SetVehicleDeath(const int aVehicleId)
+{
+    if (aVehicleId >= 0 && aVehicleId < m_npcVec.size())
+    {
+        if (m_npcVec[aVehicleId]->GetIsDead() == true)
+        {
+            // to do : add error handling
+        }
+        m_npcVec[aVehicleId]->SetDeadTrue();
+    }
+    else
+    {
+        // to do : add error handling
+    }
 }
 
 void NPCController::UnlockJumpAbility()

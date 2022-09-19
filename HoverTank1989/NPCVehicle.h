@@ -1,6 +1,7 @@
 #pragma once
 #include "DebugData.h"
 #include "Environment.h"
+
 #include "NpcAI.h"
 #include "Utility.h"
 
@@ -358,6 +359,8 @@ struct VehicleData
     NPCType                     npcType;
     DirectX::BoundingOrientedBox        collisionBox;
     bool                        isCollisionTrue;
+    bool                        isExploding = false;
+    bool                        isDead = false;
 
     Utility::ImpactForce        impactForce;
     std::vector<Utility::ImpactForce> impactForceVec;
@@ -421,6 +424,8 @@ public:
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
     unsigned int GetID() const { return m_vehicleStruct00.vehicleData.id; };
 
+    bool GetIsExploding() const { return m_vehicleStruct00.vehicleData.isExploding; };
+    bool GetIsDead() const { return m_vehicleStruct00.vehicleData.isDead; };
     bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
     bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
     bool GetIsJumpReady() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpReady; };
@@ -449,6 +454,8 @@ public:
     void PushImpulseForce(Utility::ImpulseForce aImpulse) { m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); };
 
     void SetCollisionVal(const bool aIsCollisionTrue);
+    void SetExplosionTrue() { m_vehicleStruct00.vehicleData.isExploding = true; };
+    void SetDeadTrue() { m_vehicleStruct00.vehicleData.isDead = true; };
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNpcType(NPCType aNPCType);
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
