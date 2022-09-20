@@ -100,7 +100,7 @@ struct ExplosionData
     int vehicleExplosionID = -1;
     float maxRadius;
     DirectX::SimpleMath::Vector3 position;
-    float randomVariation;
+
     double totalDuration;
 };
 
@@ -148,7 +148,6 @@ private:
 
     LauncherData m_launcherData;
 
-    //AmmoData m_ballAmmo;
     AmmoStruct m_ammoCannon;
     AmmoStruct m_ammoExplosive;
     AmmoStruct m_ammoShotgun;
@@ -157,7 +156,6 @@ private:
     ExplosionData m_explosionData;
     std::unique_ptr<DirectX::GeometricPrimitive> m_explosionShape;
     std::vector<ExplosionData> m_explosionVec;
-
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, int>> m_explosionToPushVec;
 
     const float m_maxProjectileLifeTime = 10.0f;

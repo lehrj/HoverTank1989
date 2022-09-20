@@ -75,9 +75,8 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
     createdExplosion.totalDuration = m_explosionData.totalDuration;
     createdExplosion.isLifeTimeExpired = false;
 
-    createdExplosion.randomVariation = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (Utility::GetPi())));
-    createdExplosion.rotationVariationMatrix = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(createdExplosion.randomVariation, createdExplosion.randomVariation, createdExplosion.randomVariation);
-
+    const float randomRotationVariation = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (Utility::GetPi())));
+    createdExplosion.rotationVariationMatrix = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(randomRotationVariation, randomRotationVariation, randomRotationVariation);
 
     if (aIsVehicleExplosion == true)
     {
@@ -110,7 +109,7 @@ void FireControl::DrawExplosion(const DirectX::SimpleMath::Matrix aView, const D
 {
     for (unsigned int i = 0; i < m_explosionVec.size(); ++i)
     {
-        m_explosionShape->Draw(m_explosionVec[i].explosionMatrix0, aView, aProj, m_explosionVec[i].explosionCurrentColor);        
+        m_explosionShape->Draw(m_explosionVec[i].explosionMatrix0, aView, aProj, m_explosionVec[i].explosionCurrentColor);    
         m_explosionShape->Draw(m_explosionVec[i].explosionMatrix1, aView, aProj, m_explosionVec[i].color1);
         m_explosionShape->Draw(m_explosionVec[i].explosionMatrix2, aView, aProj, m_explosionVec[i].color2);
         m_explosionShape->Draw(m_explosionVec[i].explosionMatrix3, aView, aProj, m_explosionVec[i].color3);
@@ -118,7 +117,7 @@ void FireControl::DrawExplosion(const DirectX::SimpleMath::Matrix aView, const D
         m_explosionShape->Draw(m_explosionVec[i].explosionMatrix5, aView, aProj, m_explosionVec[i].color5);
         m_explosionShape->Draw(m_explosionVec[i].explosionMatrix6, aView, aProj, m_explosionVec[i].color6);
         m_explosionShape->Draw(m_explosionVec[i].explosionMatrix7, aView, aProj, m_explosionVec[i].color7);
-        m_explosionShape->Draw(m_explosionVec[i].explosionMatrix8, aView, aProj, m_explosionVec[i].color8);      
+        m_explosionShape->Draw(m_explosionVec[i].explosionMatrix8, aView, aProj, m_explosionVec[i].color8);     
     }
 }
 
@@ -422,7 +421,7 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.maxRadius = 10.f;
     aExplosionData.position = DirectX::SimpleMath::Vector3::Zero;
     //m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), aExplosionData.initialRadius);
-    m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 1.0f);
+    m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), -1.0f);
     aExplosionData.localExplosionMatrix = DirectX::SimpleMath::Matrix::Identity;
     aExplosionData.explosionMatrix0 = aExplosionData.localExplosionMatrix;
     aExplosionData.explosionMatrix1 = aExplosionData.localExplosionMatrix;
@@ -437,7 +436,7 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.collisionSphere.Center = aExplosionData.position;
     aExplosionData.collisionSphere.Radius = aExplosionData.initialRadius;
     aExplosionData.isLifeTimeExpired = false;
-    aExplosionData.randomVariation = 0.0f;
+
     m_explosionVec.clear();
 }
 
@@ -617,17 +616,30 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             float ratio = static_cast<float>(m_explosionVec[i].currentDuration / m_explosionVec[i].totalDuration);
             float radius = m_explosionVec[i].initialRadius + (ratio * m_explosionVec[i].maxRadius);
 
+            if (m_explosionVec[i].isVehicleExplosion == true)
+            {
+                const DirectX::SimpleMath::Vector3 updatedPos = m_npcController->GetNpcPos(m_explosionVec[i].vehicleExplosionID);
+                m_explosionVec[i].position = updatedPos;
+                m_explosionVec[i].collisionSphere.Center = updatedPos;
+                m_explosionVec[i].localExplosionMatrix = DirectX::SimpleMath::Matrix::CreateWorld(updatedPos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+                radius *= 2.5f;
+            }
+
             m_explosionVec[i].explosionMatrix0 = DirectX::SimpleMath::Matrix::CreateScale(radius);
             m_explosionVec[i].explosionMatrix0 *= m_explosionVec[i].localExplosionMatrix;
             
             m_explosionVec[i].collisionSphere.Radius = radius * 1.0f;
 
+            DirectX::SimpleMath::Vector4 currentColor = m_explosionVec[i].explosionEndColor - m_explosionVec[i].explosionStartColor;
+            currentColor *= ratio;
+            m_explosionVec[i].explosionCurrentColor = currentColor + m_explosionVec[i].explosionStartColor;
+                  
             const float scatterDistanceMod = 0.15f * radius;
             float scatterVal1 = cos(m_explosionVec[i].currentDuration * 10.0f);
             m_explosionVec[i].color1 = DirectX::SimpleMath::Vector4((abs(scatterVal1 * 0.5f) + 0.5f), (abs(scatterVal1 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance1 = scatterVal1 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans1(scatterDistance1, scatterDistance1, scatterDistance1);
-            m_explosionVec[i].explosionMatrix1 = DirectX::SimpleMath::Matrix::CreateScale(radius);           
+            m_explosionVec[i].explosionMatrix1 = DirectX::SimpleMath::Matrix::CreateScale(radius *scatterVal1);
             m_explosionVec[i].explosionMatrix1 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans1);
             m_explosionVec[i].explosionMatrix1 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix1 *= m_explosionVec[i].localExplosionMatrix;
@@ -636,7 +648,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec[i].color2 = DirectX::SimpleMath::Vector4((abs(scatterVal2 * 0.5f) + 0.5f), (abs(scatterVal2 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance2 = scatterVal2 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans2(-scatterDistance2, scatterDistance2, scatterDistance2);
-            m_explosionVec[i].explosionMatrix2 = DirectX::SimpleMath::Matrix::CreateScale(radius );           
+            m_explosionVec[i].explosionMatrix2 = DirectX::SimpleMath::Matrix::CreateScale(radius * scatterVal2);
             m_explosionVec[i].explosionMatrix2 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans2);
             m_explosionVec[i].explosionMatrix2 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix2 *= m_explosionVec[i].localExplosionMatrix;
@@ -645,7 +657,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec[i].color3 = DirectX::SimpleMath::Vector4((abs(scatterVal3 * 0.5f) + 0.5f), (abs(scatterVal3 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance3 = scatterVal3 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans3(scatterDistance3, -scatterDistance3, scatterDistance3);
-            m_explosionVec[i].explosionMatrix3 = DirectX::SimpleMath::Matrix::CreateScale(radius);           
+            m_explosionVec[i].explosionMatrix3 = DirectX::SimpleMath::Matrix::CreateScale(radius * scatterVal3);
             m_explosionVec[i].explosionMatrix3 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans3);
             m_explosionVec[i].explosionMatrix3 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix3 *= m_explosionVec[i].localExplosionMatrix;
@@ -654,7 +666,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec[i].color4 = DirectX::SimpleMath::Vector4((abs(scatterVal4 * 0.5f) + 0.5f), (abs(scatterVal4 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance4 = scatterVal4 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans4(scatterDistance4, scatterDistance4, -scatterDistance4);
-            m_explosionVec[i].explosionMatrix4 = DirectX::SimpleMath::Matrix::CreateScale(radius);           
+            m_explosionVec[i].explosionMatrix4 = DirectX::SimpleMath::Matrix::CreateScale(radius * scatterVal4);
             m_explosionVec[i].explosionMatrix4 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans4);
             m_explosionVec[i].explosionMatrix4 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix4 *= m_explosionVec[i].localExplosionMatrix;
@@ -663,7 +675,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec[i].color5 = DirectX::SimpleMath::Vector4((abs(scatterVal5 * 0.5f) + 0.5f), (abs(scatterVal5 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance5 = scatterVal5 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans5(-scatterDistance5, scatterDistance5, -scatterDistance5);
-            m_explosionVec[i].explosionMatrix5 = DirectX::SimpleMath::Matrix::CreateScale(radius);            
+            m_explosionVec[i].explosionMatrix5 = DirectX::SimpleMath::Matrix::CreateScale(radius * scatterVal5);
             m_explosionVec[i].explosionMatrix5 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans5);
             m_explosionVec[i].explosionMatrix5 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix5 *= m_explosionVec[i].localExplosionMatrix;
@@ -672,7 +684,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec[i].color6 = DirectX::SimpleMath::Vector4((abs(scatterVal6 * 0.5f) + 0.5f), (abs(scatterVal6 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance6 = scatterVal6 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans6(scatterDistance6, -scatterDistance6, -scatterDistance6);
-            m_explosionVec[i].explosionMatrix6 = DirectX::SimpleMath::Matrix::CreateScale(radius);           
+            m_explosionVec[i].explosionMatrix6 = DirectX::SimpleMath::Matrix::CreateScale(radius * scatterVal6);
             m_explosionVec[i].explosionMatrix6 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans6);
             m_explosionVec[i].explosionMatrix6 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix6 *= m_explosionVec[i].localExplosionMatrix;
@@ -681,7 +693,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec[i].color7 = DirectX::SimpleMath::Vector4((abs(scatterVal7 * 0.5f) + 0.5f), (abs(scatterVal7 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance7 = scatterVal7 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans7(-scatterDistance7, -scatterDistance7, scatterDistance7);
-            m_explosionVec[i].explosionMatrix7 = DirectX::SimpleMath::Matrix::CreateScale(radius);            
+            m_explosionVec[i].explosionMatrix7 = DirectX::SimpleMath::Matrix::CreateScale(radius * scatterVal7);
             m_explosionVec[i].explosionMatrix7 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans7);
             m_explosionVec[i].explosionMatrix7 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix7 *= m_explosionVec[i].localExplosionMatrix;
@@ -690,15 +702,10 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionVec[i].color8 = DirectX::SimpleMath::Vector4((abs(scatterVal8 * 0.5f) + 0.5f), (abs(scatterVal8 * 0.5f)), 0.0f, 1.0f);
             float scatterDistance8 = scatterVal8 * scatterDistanceMod;
             DirectX::SimpleMath::Vector3 scatterTrans8(-scatterDistance8, -scatterDistance8, -scatterDistance8);
-            m_explosionVec[i].explosionMatrix8 = DirectX::SimpleMath::Matrix::CreateScale(radius);           
+            m_explosionVec[i].explosionMatrix8 = DirectX::SimpleMath::Matrix::CreateScale(radius * scatterVal8);           
             m_explosionVec[i].explosionMatrix8 *= DirectX::SimpleMath::Matrix::CreateTranslation(scatterTrans8);
             m_explosionVec[i].explosionMatrix8 *= m_explosionVec[i].rotationVariationMatrix;
             m_explosionVec[i].explosionMatrix8 *= m_explosionVec[i].localExplosionMatrix;
-
-            DirectX::SimpleMath::Vector4 currentColor = m_explosionVec[i].explosionEndColor - m_explosionVec[i].explosionStartColor;
-            currentColor *= ratio;
-            m_explosionVec[i].explosionCurrentColor = currentColor + m_explosionVec[i].explosionStartColor;
-
 
             bool isNpcCollisionTrue = m_npcController->CheckExplosionCollisions(m_explosionVec[i].collisionSphere);
             if (isNpcCollisionTrue == true)

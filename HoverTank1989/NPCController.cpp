@@ -32,16 +32,14 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
     {
         float detectionRange = m_npcVec[i]->GetCollisionDetectionRange();
         if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < (m_npcVec[i]->GetCollisionDetectionRange() + aBoundingSphere.Radius) && m_npcVec[i]->GetIsExploding() == false && m_npcVec[i]->GetIsDead() == false)
-        //if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < (m_npcVec[i]->GetCollisionDetectionRange() + aBoundingSphere.Radius))
         {
-            //m_npcVec[i]->SetExplosionTrue();
             if (m_npcVec[i]->GetIsExploding() == false)
             {
                 if (m_npcVec[i]->GetCollisionData().Intersects(aBoundingSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aBoundingSphere) == true)
                 {
                     m_fireControl->PushVehicleExplosion(m_npcVec[i]->GetPos(), m_npcVec[i]->GetID());
                     m_npcVec[i]->SetExplosionTrue();
-                    //m_npcVec[i]->SetDeadTrue();
+
                     isCollisionTrue = true;
                 }
             }
