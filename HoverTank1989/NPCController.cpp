@@ -40,6 +40,25 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     m_fireControl->PushVehicleExplosion(m_npcVec[i]->GetPos(), m_npcVec[i]->GetID());
                     m_npcVec[i]->SetExplosionTrue();
 
+                    const float maxExplosionRange = m_fireControl->GetMaxExplosionImpactRadius();
+                    const float distanceToExplosion = DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos());
+                    float distanceMod = 1.0f - (distanceToExplosion / maxExplosionRange);
+                    const float maxExplosionForce = m_fireControl->GetMaxExplosionForce();
+                    const float explosionForce = maxExplosionForce * distanceMod;
+                    const float impulseTimeTotal = 1.0f;
+                    DirectX::SimpleMath::Vector3 impactNorm = m_npcVec[i]->GetPos() - aBoundingSphere.Center ;
+                    impactNorm.Normalize();
+
+                    Utility::ImpulseForce explosionImpulseForce;
+                    explosionImpulseForce.currentMagnitude = 0.0f;
+                    explosionImpulseForce.currentTime = 0.0f;
+                    explosionImpulseForce.directionNorm = impactNorm;
+                    explosionImpulseForce.isActive = true;
+                    explosionImpulseForce.maxMagnitude = explosionForce;
+                    explosionImpulseForce.torqueArm = impactNorm;
+                    explosionImpulseForce.totalTime = impulseTimeTotal;
+                    m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
+
                     isCollisionTrue = true;
                 }
             }
@@ -48,7 +67,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
     return isCollisionTrue;
 }
 
-bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile)
+bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId)
 {
     bool isCollisionTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
@@ -64,6 +83,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                 projectileForce.impactVelocity = aProjectile.velocity;
                 m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
                 isCollisionTrue = true;
+                aVehicleHitId = m_npcVec[i]->GetID();
             }
         }
     }

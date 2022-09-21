@@ -96,12 +96,27 @@ struct ExplosionData
     float currentRadius;
     float initialRadius;
     bool isLifeTimeExpired;
-    bool isVehicleExplosion = false;
+    bool isVehicleInternalExplosion = false;
+    bool isVehicleSurfaceExplosion = false;
+    DirectX::SimpleMath::Vector3 localizedSurfaceExplosionPos = DirectX::SimpleMath::Vector3::Zero;
     int vehicleExplosionID = -1;
     float maxRadius;
     DirectX::SimpleMath::Vector3 position;
 
     double totalDuration;
+};
+
+struct ExplosionStruct
+{
+    ExplosionData explosionRefData;
+    std::unique_ptr<DirectX::GeometricPrimitive> explosionShape;
+    std::vector<ExplosionData> explosionVec;
+    std::vector<std::tuple<DirectX::SimpleMath::Vector3, int>> explosionToPushVec;
+
+    const float internalVehicleExplosionRadiusMod = 2.5f;
+    float maxExplosionForce;
+    float maxExplosionImpactRadius;
+
 };
 
 class FireControl
@@ -122,7 +137,7 @@ public:
 
     void UpdateFireControl(double aTimeDelta);
 private:
-    void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const bool aIsVehicleExplosion, const int aVehicleId);
+    void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const bool aIsVehicleSurfaceExplosion, const bool aIsVehicleInternalExplosion, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void InitializeAmmo(AmmoStruct& aAmmo);
@@ -153,14 +168,16 @@ private:
     AmmoStruct m_ammoShotgun;
     AmmoStruct m_ballAmmoStruct;
 
-    ExplosionData m_explosionData;
-    std::unique_ptr<DirectX::GeometricPrimitive> m_explosionShape;
-    std::vector<ExplosionData> m_explosionVec;
-    std::vector<std::tuple<DirectX::SimpleMath::Vector3, int>> m_explosionToPushVec;
+    ExplosionStruct m_explosionStruct;
 
     const float m_maxProjectileLifeTime = 10.0f;
     std::vector<ProjectileData> m_projectileVec;
    
     float m_testTimer = 0.0f;
+
+public:
+    float GetMaxExplosionForce() const { return m_explosionStruct.maxExplosionForce; };
+    float GetMaxExplosionImpactRadius() const { return m_explosionStruct.maxExplosionImpactRadius; };
+
 };
 
