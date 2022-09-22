@@ -12,8 +12,7 @@ void FireControl::CheckCollisions()
         {
             if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE)
             {
-                //CreateExplosion(m_projectileVec[i].q.position, false, -1);
-                CreateExplosion(m_projectileVec[i].q.position, true, false, static_cast<unsigned int>(vehicleHitId));
+                CreateExplosion(m_projectileVec[i].q.position, ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE, static_cast<unsigned int>(vehicleHitId));
             }
             m_projectileVec[i].isCollisionTrue = true;
             m_projectileVec[i].liveTimeTick--;
@@ -30,15 +29,14 @@ void FireControl::CheckCollisions()
         {
             if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE)
             {
-                //CreateExplosion(m_projectileVec[i].q.position, false, -1);
-                CreateExplosion(m_projectileVec[i].q.position, false, false, -1);
+                CreateExplosion(m_projectileVec[i].q.position, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
             }
             m_projectileVec[i].isDeleteTrue = true;
         }   
     }
 }
 
-void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const bool aIsVehicleSurfaceExplosion, const bool aIsVehicleInternalExplosion, const int aVehicleId)
+void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId)
 {
     ExplosionData createdExplosion;
     createdExplosion.position = aPos;
@@ -81,14 +79,14 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
     const float randomRotationVariation = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (Utility::GetPi())));
     createdExplosion.rotationVariationMatrix = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(randomRotationVariation, randomRotationVariation, randomRotationVariation);
 
-    if (aIsVehicleInternalExplosion == true)
+    if (aExplosionType == ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL)
     {
-        createdExplosion.isVehicleInternalExplosion = true;
+        createdExplosion.explosionType = ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL;
         createdExplosion.vehicleExplosionID = aVehicleId;
     }
-    else if (aIsVehicleSurfaceExplosion == true)
+    else if (aExplosionType == ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE)
     {
-        createdExplosion.isVehicleSurfaceExplosion = true;
+        createdExplosion.explosionType = ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE;
         createdExplosion.vehicleExplosionID = aVehicleId;
         DirectX::SimpleMath::Matrix vehicleAlignment = m_npcController->GetNpcAlignment(aVehicleId);
         vehicleAlignment = vehicleAlignment.Invert();
@@ -98,7 +96,7 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
     }
     else
     {
-        createdExplosion.isVehicleInternalExplosion = false;
+        createdExplosion.explosionType = ExplosionType::EXPLOSIONTYPE_NONVEHICLE;
         createdExplosion.vehicleExplosionID = -1;
     }
     m_explosionStruct.explosionVec.push_back(createdExplosion);
@@ -415,6 +413,7 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
 
 void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData)
 {
+    aExplosionData.explosionType = ExplosionType::EXPLOSIONTYPE_NONVEHICLE;
     aExplosionData.explosionStartColor = DirectX::Colors::DarkRed;
     aExplosionData.explosionEndColor = DirectX::Colors::OrangeRed;
     aExplosionData.explosionCurrentColor = aExplosionData.explosionStartColor;
@@ -430,7 +429,7 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.initialRadius = m_ammoExplosive.ammoData.radius;
     aExplosionData.currentRadius = aExplosionData.initialRadius;
     aExplosionData.currentDuration = 0.0f;
-    aExplosionData.totalDuration = 5.0f;
+    aExplosionData.totalDuration = 3.0f;
     aExplosionData.maxRadius = 10.f;
     aExplosionData.position = DirectX::SimpleMath::Vector3::Zero;
     //m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), aExplosionData.initialRadius);
@@ -450,7 +449,7 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.collisionSphere.Radius = aExplosionData.initialRadius;
     aExplosionData.isLifeTimeExpired = false;
 
-    m_explosionStruct.maxExplosionForce = 1000000.0f;
+    m_explosionStruct.maxExplosionForce = 10000000.0f;
     m_explosionStruct.maxExplosionImpactRadius = aExplosionData.maxRadius * 2.0f;
 
     m_explosionStruct.explosionVec.clear();
@@ -621,7 +620,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
         m_explosionStruct.explosionVec[i].currentDuration += aTimeDelta;
         if (m_explosionStruct.explosionVec[i].currentDuration > m_explosionStruct.explosionVec[i].totalDuration)
         {
-            if (m_explosionStruct.explosionVec[i].isVehicleInternalExplosion == true)
+            if (m_explosionStruct.explosionVec[i].explosionType == ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL)
             {
                 m_npcController->SetVehicleDeath(m_explosionStruct.explosionVec[i].vehicleExplosionID);
             }
@@ -632,7 +631,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             float ratio = static_cast<float>(m_explosionStruct.explosionVec[i].currentDuration / m_explosionStruct.explosionVec[i].totalDuration);
             float radius = m_explosionStruct.explosionVec[i].initialRadius + (ratio * m_explosionStruct.explosionVec[i].maxRadius);
 
-            if (m_explosionStruct.explosionVec[i].isVehicleInternalExplosion == true)
+            if (m_explosionStruct.explosionVec[i].explosionType == ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL)
             {
                 const DirectX::SimpleMath::Vector3 updatedPos = m_npcController->GetNpcPos(m_explosionStruct.explosionVec[i].vehicleExplosionID);
                 m_explosionStruct.explosionVec[i].position = updatedPos;
@@ -640,7 +639,8 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
                 m_explosionStruct.explosionVec[i].localExplosionMatrix = DirectX::SimpleMath::Matrix::CreateWorld(updatedPos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
                 radius *= m_explosionStruct.internalVehicleExplosionRadiusMod;
             }
-            if(m_explosionStruct.explosionVec[i].isVehicleSurfaceExplosion == true)
+
+            if(m_explosionStruct.explosionVec[i].explosionType == ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE)
             {
                 const DirectX::SimpleMath::Vector3 updatedVehiclePos = m_npcController->GetNpcPos(m_explosionStruct.explosionVec[i].vehicleExplosionID);
                 const DirectX::SimpleMath::Matrix updatedVehicleAlignment = m_npcController->GetNpcAlignment(m_explosionStruct.explosionVec[i].vehicleExplosionID);
@@ -744,7 +744,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
     for (unsigned int i = 0; i < m_explosionStruct.explosionToPushVec.size(); ++i)
     {
-        CreateExplosion(get<0>(m_explosionStruct.explosionToPushVec[i]), false, true, get<1>(m_explosionStruct.explosionToPushVec[i]));
+        CreateExplosion(get<0>(m_explosionStruct.explosionToPushVec[i]), ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL, get<1>(m_explosionStruct.explosionToPushVec[i]));
     }
     m_explosionStruct.explosionToPushVec.clear();
 

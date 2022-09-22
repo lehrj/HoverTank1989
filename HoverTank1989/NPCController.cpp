@@ -146,7 +146,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float zPosOffSet = 12.0f;
     for (int i = 0; i < 5; ++i)
     {
-        for (int j = 0; j < 1; ++j)
+        for (int j = 0; j < 4; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;

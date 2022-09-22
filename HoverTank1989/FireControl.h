@@ -66,6 +66,13 @@ struct ProjectileData
     int liveTimeTick;
 };
 
+enum class ExplosionType
+{
+    EXPLOSIONTYPE_NONVEHICLE,
+    EXPLOSIONTYPE_VEHICLESURFACE,
+    EXPLOSIONTYPE_VEHICLEINTERNAL,
+};
+
 struct ExplosionData
 {   
     DirectX::BoundingSphere collisionSphere;
@@ -96,12 +103,12 @@ struct ExplosionData
     float currentRadius;
     float initialRadius;
     bool isLifeTimeExpired;
-    bool isVehicleInternalExplosion = false;
-    bool isVehicleSurfaceExplosion = false;
     DirectX::SimpleMath::Vector3 localizedSurfaceExplosionPos = DirectX::SimpleMath::Vector3::Zero;
     int vehicleExplosionID = -1;
     float maxRadius;
     DirectX::SimpleMath::Vector3 position;
+
+    ExplosionType explosionType;
 
     double totalDuration;
 };
@@ -137,7 +144,7 @@ public:
 
     void UpdateFireControl(double aTimeDelta);
 private:
-    void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const bool aIsVehicleSurfaceExplosion, const bool aIsVehicleInternalExplosion, const int aVehicleId);
+    void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void InitializeAmmo(AmmoStruct& aAmmo);
