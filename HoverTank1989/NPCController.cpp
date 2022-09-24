@@ -46,7 +46,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     const float maxExplosionForce = m_fireControl->GetMaxExplosionForce();
                     const float explosionForce = maxExplosionForce * distanceMod;
                     const float impulseTimeTotal = 1.0f;
-                    DirectX::SimpleMath::Vector3 impactNorm = m_npcVec[i]->GetPos() - aBoundingSphere.Center ;
+                    DirectX::SimpleMath::Vector3 impactNorm = m_npcVec[i]->GetPos() - aBoundingSphere.Center;
                     impactNorm.Normalize();
 
                     Utility::ImpulseForce explosionImpulseForce;
@@ -56,7 +56,67 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.isActive = true;
                     explosionImpulseForce.maxMagnitude = explosionForce;
                     explosionImpulseForce.torqueArm = impactNorm;
+
+                    DirectX::SimpleMath::Matrix localizationMatrix = DirectX::SimpleMath::Matrix::CreateWorld(m_npcVec[i]->GetPos(), -m_npcVec[i]->GetRight(), m_npcVec[i]->GetUp());
+                    DirectX::SimpleMath::Matrix worldMatrix = localizationMatrix;
+                    localizationMatrix = localizationMatrix.Invert();
+                    DirectX::SimpleMath::Vector3 localizedExplosionCenter = aBoundingSphere.Center;
+                    localizedExplosionCenter = DirectX::SimpleMath::Vector3::Transform(localizedExplosionCenter, localizationMatrix);
+
+                    DirectX::BoundingOrientedBox localizedBox = m_npcVec[i]->GetCollisionData();
+             
+                    DirectX::SimpleMath::Vector3 localImpactPos = DirectX::SimpleMath::Vector3::Zero;
+                    // X
+                    if (localizedExplosionCenter.x > localizedBox.Extents.x)
+                    {
+                        localImpactPos.x = localizedBox.Extents.x;
+                    }
+                    else if (localizedExplosionCenter.x < -localizedBox.Extents.x)
+                    {
+                        localImpactPos.x = -localizedBox.Extents.x;
+                    }
+                    else
+                    {
+                        localImpactPos.x = localizedExplosionCenter.x;
+                    }
+                    // Y
+                    if (localizedExplosionCenter.y > localizedBox.Extents.y)
+                    {
+                        localImpactPos.y = localizedBox.Extents.y;
+                    }
+                    else if (localizedExplosionCenter.y < -localizedBox.Extents.y)
+                    {
+                        localImpactPos.y = -localizedBox.Extents.y;
+                    }
+                    else
+                    {
+                        localImpactPos.y = localizedExplosionCenter.y;
+                    }
+                    // Z
+                    if (localizedExplosionCenter.z > localizedBox.Extents.z)
+                    {
+                        localImpactPos.z = localizedBox.Extents.z;
+                    }
+                    else if (localizedExplosionCenter.z < -localizedBox.Extents.z)
+                    {
+                        localImpactPos.z = -localizedBox.Extents.z;
+                    }
+                    else
+                    {
+                        localImpactPos.z = localizedExplosionCenter.z;
+                    }
+
+                    DirectX::SimpleMath::Vector3 impactPos = localImpactPos;
+                    impactPos = DirectX::SimpleMath::Vector3::Transform(impactPos, worldMatrix);
+
+                    impactNorm = impactPos - aBoundingSphere.Center;
+                    impactNorm.Normalize();
+                    explosionImpulseForce.directionNorm = impactNorm;
+
+                    explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
+                    explosionImpulseForce.torqueArm *= 5.0f;
                     explosionImpulseForce.totalTime = impulseTimeTotal;
+
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
 
                     isCollisionTrue = true;
@@ -102,9 +162,10 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
+        m_npcVec[i]->DrawNPC(aView, aProj);
         if (m_npcVec[i]->GetIsDead() == false)
         {
-            m_npcVec[i]->DrawNPC(aView, aProj);
+            //m_npcVec[i]->DrawNPC(aView, aProj);
         }
     }
 }
@@ -327,7 +388,6 @@ void NPCController::CheckNpcCollisions()
                                 pCorners1 = testV1Corners;
                                 testV1.collisionBox.GetCorners(pCorners1);
                                 
-
                                 DirectX::XMFLOAT3 testV2Corners[8];         
                                 DirectX::XMFLOAT3* pCorners2 = testV2Corners;
                                 testV2.collisionBox.GetCorners(pCorners2);
@@ -422,7 +482,6 @@ void NPCController::CheckNpcCollisions()
                                             testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
                                             testV1ClosestCorner = cornerPos;
                                             testV1ClosestCornerDistance = distanceToCenter;
-
                                         }
                                         else if (distanceToCenter < testV1ClosestSecondCornerDistance)
                                         {
