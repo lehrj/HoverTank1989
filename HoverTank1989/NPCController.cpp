@@ -162,10 +162,10 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        m_npcVec[i]->DrawNPC(aView, aProj);
+        //m_npcVec[i]->DrawNPC(aView, aProj);
         if (m_npcVec[i]->GetIsDead() == false)
         {
-            //m_npcVec[i]->DrawNPC(aView, aProj);
+            m_npcVec[i]->DrawNPC(aView, aProj);
         }
     }
 }

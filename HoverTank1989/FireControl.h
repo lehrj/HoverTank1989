@@ -74,7 +74,7 @@ enum class ExplosionType
 };
 
 struct ExplosionData
-{   
+{
     DirectX::BoundingSphere collisionSphere;
     DirectX::SimpleMath::Vector4 explosionCurrentColor;
     DirectX::SimpleMath::Vector4 explosionEndColor;
@@ -123,8 +123,8 @@ struct ExplosionStruct
     const float internalVehicleExplosionRadiusMod = 2.5f;
     float maxExplosionForce;
     float maxExplosionImpactRadius;
-
 };
+
 
 class FireControl
 {

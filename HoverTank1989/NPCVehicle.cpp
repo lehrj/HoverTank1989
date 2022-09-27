@@ -1635,6 +1635,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     MotionNPC newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+    //newQ.bodyTorqueForce.axis = aQ->bodyTorqueForce.axis;
+    //newQ.bodyTorqueForce.magnitude = aQ->bodyTorqueForce.magnitude + static_cast<float>(aQScale) * aDeltaQ->bodyTorqueForce.magnitude;
 
     //  Compute the total drag force
     const float v = newQ.velocity.Length();
@@ -1786,6 +1788,44 @@ void NPCVehicle::UpdateAlignment()
     m_vehicleStruct00.vehicleData.forward = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, m_vehicleStruct00.vehicleData.alignment);
 
     m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
+
+    /*
+    DirectX::SimpleMath::Vector3 torqueAxis = m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis;
+    //torqueAxis = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 testVec1 = torqueAxis;
+    testVec1 = DirectX::SimpleMath::Vector3::Transform(testVec1, torqueMat);
+    //testVec1.y += 0.0001f;
+    //testVec1.Normalize();
+
+    //DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 testVec = torqueAxis.Cross(testVec1);
+    testVec.Normalize();
+
+    DirectX::SimpleMath::Vector3 preAngVec = testVec;
+    //preAngVec = DirectX::SimpleMath::Vector3::Transform(preAngVec, torqueMat);
+    DirectX::SimpleMath::Vector3 postAngVec = testVec;
+    postAngVec = DirectX::SimpleMath::Vector3::Transform(postAngVec, torqueMat);
+    //float angularVelocity = Utility::GetAngleBetweenVectors(preAngVec, postAngVec);
+    float angularVelocity = 0.0f;
+
+    if (abs(m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude) < tol || m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis.Length() < tol)
+    {
+        angularVelocity = 0.0f;
+    }
+    else
+    {
+
+    }
+
+    if (angularVelocity > 1.5f)
+    {
+
+        //float angularVelocity2 = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, postAngVec);
+    }
+
+    m_debugData->DebugPushUILineDecimalNumber("Angular Velocity = ", angularVelocity, "");
+    */
 }
 
 Utility::Torque NPCVehicle::UpdateBodyTorqueRunge()
@@ -1810,6 +1850,24 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge()
 
     DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude);
     float torqueMag = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude;
+
+    if (m_vehicleStruct00.vehicleData.isExploding == true)
+    {
+        //torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude);
+        //torqueMag = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude;
+        torqueAxis = (impactTorque.axis * impactTorque.magnitude) ;
+        torqueMag = impactTorque.magnitude;
+    }
+    Utility::Torque testPrevTorque = m_vehicleStruct00.vehicleData.q.bodyTorqueForce;
+    testPrevTorque.magnitude *= 0.0000001f;
+    if (testPrevTorque.magnitude > 0.1f)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    //torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude) + (testPrevTorque.axis * testPrevTorque.magnitude);
+    //torqueMag = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude + testPrevTorque.magnitude;
 
     if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
     {
