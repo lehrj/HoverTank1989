@@ -437,12 +437,12 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         //testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
         testColor.x -= 1.0f;
     }
-    if (m_npcAI->GetIsAvoidanceTrue1() == true)
+    if (m_npcAI->GetIsAvoidanceImpactChanceHigh() == true)
     {
         //testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         testColor.y -= 1.0f;
     }
-    if (m_npcAI->GetIsAvoidanceTrue2() == true)
+    if (m_npcAI->GetIsAvoidanceImpactChanceLow() == true)
     {
         //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         testColor.z -= 1.0f;

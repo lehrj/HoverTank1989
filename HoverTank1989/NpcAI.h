@@ -41,8 +41,8 @@ public:
     Utility::Waypoint GetCurrentWayPoint() { return m_currentWaypoint; }
     bool GetEmergencyToggle() const { return m_emergencyToggle; };
     bool GetIsAvoidanceTrue() const { return m_isAvoidanceTrue; };
-    bool GetIsAvoidanceTrue1() const { return m_isAvoidanceTrueTest1; };
-    bool GetIsAvoidanceTrue2() const { return m_isAvoidanceTrueTest2; };
+    bool GetIsAvoidanceImpactChanceHigh() const { return m_isAvoidanceImpactChanceHigh; };
+    bool GetIsAvoidanceImpactChanceLow() const { return m_isAvoidanceImpactChanceLow; };
     bool GetIsJumpTriggered() const { return m_isJumpTriggered; };
     int GetNodesReachCount() const { return m_lapCounter; };
     float GetThrottleInput();
@@ -140,9 +140,8 @@ private:
     DirectX::SimpleMath::Vector3 m_avoidanceTargetPos = DirectX::SimpleMath::Vector3::Zero;
     NPCVehicle const*           m_avoidanceTargetNpc = nullptr;
     bool                        m_isAvoidanceTrue = false;
-    bool                        m_isAvoidanceTrueTest1 = false;
-    bool                        m_isAvoidanceTrueTest2 = false;
-
+    bool                        m_isAvoidanceImpactChanceHigh = false;
+    bool                        m_isAvoidanceImpactChanceLow = false;
     AIControls                  m_aiControls;
 
     std::shared_ptr<DebugData> m_debugData;
@@ -152,8 +151,6 @@ private:
 
     int m_lapCounter = 0;
 
-    bool m_isStartTrue = false;
-    float m_startOffsetTime = 0.0f;
     float m_startTimer = 0.0f;
 };
 

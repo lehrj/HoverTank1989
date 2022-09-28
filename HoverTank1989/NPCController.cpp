@@ -30,7 +30,6 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
     bool isCollisionTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        float detectionRange = m_npcVec[i]->GetCollisionDetectionRange();
         if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < (m_npcVec[i]->GetCollisionDetectionRange() + aBoundingSphere.Radius) && m_npcVec[i]->GetIsExploding() == false && m_npcVec[i]->GetIsDead() == false)
         {
             if (m_npcVec[i]->GetIsExploding() == false)
@@ -205,9 +204,11 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float low = 7.0f;
     const float high = 13.0f;
     const float zPosOffSet = 12.0f;
-    for (int i = 0; i < 5; ++i)
+    const int rows = 4;
+    const int columns = 5;
+    for (int i = 0; i < columns; ++i)
     {
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < rows; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
