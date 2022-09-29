@@ -1670,8 +1670,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
 
     DirectX::SimpleMath::Vector3 forwardThrustUpdate = GetForwardThrust(m_vehicleStruct00.vehicleData);
     forwardThrustUpdate.y = 0.0f;
-
     velocityUpdate += forwardThrustUpdate;
+
     airResistance = velocityNorm * (-frontDragResistance);
     airResistance.y = 0.0f;
     velocityUpdate += airResistance;

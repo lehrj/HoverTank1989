@@ -137,7 +137,6 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
     Utility::PushWaypointToPath(m_currentWayPath, wp7);
-
     m_currentWayPath.targetNode = 0;
 }
 
@@ -455,6 +454,19 @@ void NpcAI::SetSteeringOutput()
     m_aiControls.aiOutput.angleToDestination = angle;
 }
 
+void NpcAI::StopVehicleVelocity()
+{
+    const DirectX::SimpleMath::Vector3 currentVelocity = m_npcOwner->GetVelocity();
+    const float speed = currentVelocity.Length();
+    const DirectX::SimpleMath::Vector3 antiVelocity = currentVelocity * -1.0f;
+    m_currentDestination = antiVelocity + m_npcOwner->GetPos();
+    const float distanceToWaypoint = DirectX::SimpleMath::Vector3::Distance(m_currentDestination, m_npcOwner->GetPos());
+    if (distanceToWaypoint < 5.0f && speed < 5.0f)
+    {
+        m_currentDestination = m_npcOwner->GetPos();
+    }
+}
+
 void NpcAI::UpdateAI(const float aTimeStep)
 {
     UpdateAvoidanceBox();
@@ -468,6 +480,12 @@ void NpcAI::UpdateAI(const float aTimeStep)
     m_currentDestination = m_currentWaypoint.waypointPos;
 
     AdjustHeadingForVelocity();
+
+    const float distanceToWaypoint = DirectX::SimpleMath::Vector3::Distance(m_currentWaypoint.waypointPos, m_npcOwner->GetPos());
+    if (distanceToWaypoint < m_currentWaypoint.waypointRadius)
+    {
+        StopVehicleVelocity();
+    }
 
     if (m_isAvoidanceTrue == true && m_isJumpTriggered == false)
     {
@@ -483,6 +501,7 @@ void NpcAI::UpdateAI(const float aTimeStep)
     }
 
     UpdateDestinationSmoothing();
+
     if (m_debugToggle == true)
     {
         UpdateControlOutput();

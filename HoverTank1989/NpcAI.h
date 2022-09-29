@@ -100,6 +100,7 @@ private:
     void SetForwardThrustOutput();
     void SetOmniOutput();
     void SetSteeringOutput();
+    void StopVehicleVelocity();
     void UpdateAvoidanceBox();
     void UpdateControlOutput();
     void UpdateDesiredHeading();
