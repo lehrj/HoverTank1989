@@ -63,7 +63,7 @@ void NPCVehicle::ActivateJumpLanding()
     float rawTimeToDistance = (-verticalVelocity - sqrt((verticalVelocity * verticalVelocity) - (4.0f * halfGravity * distanceToCutOff))) / (2.0f * halfGravity);
 
     float burnTime = rawTimeToDistance * 2.0f;
-    float burnMagMax = (-gravity * 1.5f);// *m_vehicleStruct00.vehicleData.mass;
+    float burnMagMax = (-gravity * 1.5f);
 
     m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude = 0.0f;
     m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentTime = 0.0f;
@@ -79,21 +79,19 @@ void NPCVehicle::ActivateJumpLanding()
 
 void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
-    float mass1 = aImpactForce.impactMass;
-    float mass2 = m_vehicleStruct00.vehicleData.mass;
-    float e = 0.9f;
+    const float mass1 = aImpactForce.impactMass;
+    const float mass2 = m_vehicleStruct00.vehicleData.mass;
+    const float coefficientOfRestitution = 0.9f;
 
     float tmp = 1.0f / (mass1 + mass2);
     DirectX::SimpleMath::Vector3 vx1 = aImpactForce.impactVelocity;
     DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
-    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-        (1.0f + e) * mass2 * vx2 * tmp;
-    DirectX::SimpleMath::Vector3 newVx2 = (1.0f + e) * mass1 * vx1 * tmp +
-        (mass2 - e * mass1) * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - coefficientOfRestitution * mass2) * vx1 * tmp +
+        (1.0f + coefficientOfRestitution) * mass2 * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx2 = (1.0f + coefficientOfRestitution) * mass1 * vx1 * tmp +
+        (mass2 - coefficientOfRestitution * mass1) * vx2 * tmp;
 
     m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
-
-    m_debugData->DebugPushTestLinePositionIndicator(aImpactPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 
     // test calc kinetic energy
     DirectX::SimpleMath::Vector3 kE = 0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity;
@@ -119,20 +117,18 @@ void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, c
 
 void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
-    //float mass1 = aVehicleHit.mass;
-    float mass1 = aImpactForce.impactMass;
-    //mass1 = 1.05f;
-    float mass2 = m_vehicleStruct00.vehicleData.mass;
-    float e = 0.9f;
+    const float mass1 = aImpactForce.impactMass;
+    const float mass2 = m_vehicleStruct00.vehicleData.mass;
+    const float coefficientOfRestitution = 0.9f;
 
     float tmp = 1.0f / (mass1 + mass2);
     //DirectX::SimpleMath::Vector3 vx1 = aVehicleHit.q.velocity;
     DirectX::SimpleMath::Vector3 vx1 = aImpactForce.impactVelocity;
     DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
-    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-        (1.0f + e) * mass2 * vx2 * tmp;
-    DirectX::SimpleMath::Vector3 newVx2 = (1.0f + e) * mass1 * vx1 * tmp +
-        (mass2 - e * mass1) * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - coefficientOfRestitution * mass2) * vx1 * tmp +
+        (1.0f + coefficientOfRestitution) * mass2 * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx2 = (1.0f + coefficientOfRestitution) * mass1 * vx1 * tmp +
+        (mass2 - coefficientOfRestitution * mass1) * vx2 * tmp;
 
     //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
     //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
@@ -241,17 +237,17 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
 
 void NPCVehicle::CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
-    float mass1 = aImpactForce.impactMass;
-    float mass2 = m_vehicleStruct00.vehicleData.mass;
-    float e = 0.9f;
+    const float mass1 = aImpactForce.impactMass;
+    const float mass2 = m_vehicleStruct00.vehicleData.mass;
+    const float coefficientOfRestitution = 0.9f;
 
     float tmp = 1.0f / (mass1 + mass2);
     DirectX::SimpleMath::Vector3 vx1 = aImpactForce.impactVelocity;
     DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
-    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-        (1.0f + e) * mass2 * vx2 * tmp;
-    DirectX::SimpleMath::Vector3 newVx2 = (1.0f + e) * mass1 * vx1 * tmp +
-        (mass2 - e * mass1) * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx1 = (mass1 - coefficientOfRestitution * mass2) * vx1 * tmp +
+        (1.0f + coefficientOfRestitution) * mass2 * vx2 * tmp;
+    DirectX::SimpleMath::Vector3 newVx2 = (1.0f + coefficientOfRestitution) * mass1 * vx1 * tmp +
+        (mass2 - coefficientOfRestitution * mass1) * vx2 * tmp;
 
     Utility::ImpactForce impactForceToVec;
     impactForceToVec.impactVelocity = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
@@ -429,53 +425,10 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix7, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix8, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix9, aView, aProj, ventColor);
-
-
-    DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    if (m_npcAI->GetIsAvoidanceTrue() == true)
-    {
-        //testColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-        testColor.x -= 1.0f;
-    }
-    if (m_npcAI->GetIsAvoidanceImpactChanceHigh() == true)
-    {
-        //testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-        testColor.y -= 1.0f;
-    }
-    if (m_npcAI->GetIsAvoidanceImpactChanceLow() == true)
-    {
-        //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-        testColor.z -= 1.0f;
-    }
-    
-    /*
-    //DirectX::BoundingBox avoidBox = m_npcAI->GetAiAvoidanceBox();
-    DirectX::BoundingOrientedBox avoidBox = m_npcAI->GetAiAvoidanceBox();
-    //DirectX::BoundingBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
-    //DirectX::BoundingOrientedBox avoidBox = m_vehicleStruct00.vehicleData.collisionBox;
-    DirectX::SimpleMath::Vector3 testSize = avoidBox.Extents;
-    testSize *= 2.0f;
-
-    DirectX::SimpleMath::Matrix collisionMat = DirectX::SimpleMath::Matrix::Identity;
-    //collisionMat = m_vehicleStruct00.vehicleData.alignment;
-    collisionMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(avoidBox.Orientation);
-    collisionMat *= DirectX::SimpleMath::Matrix::CreateTranslation(avoidBox.Center);
-
-    m_vehicleStruct00.npcModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(m_context.Get(), testSize);
-    //m_vehicleStruct00.npcModel.avoidanceShape->Draw(m_npcAI->GetAiAvoidanceBoxAlignment(), aView, aProj, testColor, nullptr, true);
-    //m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
-    
-    if (m_vehicleStruct00.vehicleData.id == 0)
-    {
-        
-    }
-    m_vehicleStruct00.npcModel.avoidanceShape->Draw(collisionMat, aView, aProj, testColor, nullptr, true);
-    */
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
 {
-    //DirectX::BoundingBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
     DirectX::BoundingOrientedBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
     updatedCollision.Center = aPos;
 
@@ -525,7 +478,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
         const float currentCurvePos = (aVehicleData.altitude / upperCurveBound);
         gravForce = gravForce * currentCurvePos;
         mainThrustMod = 1.0f + currentCurvePos;
-        //mainThrustMod = 1.0f;
         DirectX::SimpleMath::Vector3 stockGravForce = m_environment->GetGravityVec();
         DirectX::SimpleMath::Vector3 moddedGravForce = gravForce - stockGravForce;
         m_vehicleStruct00.npcModel.mainThrustLengthMod = moddedGravForce.y;
@@ -534,24 +486,18 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetAntiGravGravityForce(const VehicleDa
         float verticalVelocity = aVehicleData.q.velocity.y;
         float t = 1.0f;
         float neededAccel = ((2.0f * distanceToLowerBound) / (t * t)) - ((2.0f * verticalVelocity) / t);
-
-        //neededAccel += 9.8 * 1.0f;
         gravForce = DirectX::SimpleMath::Vector3(0.0f, neededAccel, 0.0f);
     }
 
     DirectX::SimpleMath::Vector3 stockGravForce = m_environment->GetGravityVec();
     DirectX::SimpleMath::Vector3 moddedGravForce = gravForce - stockGravForce;
     m_vehicleStruct00.npcModel.mainThrustLengthMod *= 0.2f;
-    //m_vehicleStruct00.npcModel.mainThrustLengthMod = moddedGravForce.y;
-    //return gravForce * aVehicleData.mass;
-    //gravForce = DirectX::SimpleMath::Vector3(0.0f, 9.8, 0.0f);
     return gravForce;
 }
 
 DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVehicleData)
 {
     const DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();
-    //float altitude = aVehicleData.q.position.y;
     float altitude = aVehicleData.altitude;
     const float immersedDensityNeutralAtHalfDepth = 1.4286f;
     bool breakToggle = false;
@@ -725,8 +671,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetForwardThrust(const VehicleData& aVe
 
 DirectX::SimpleMath::Vector3 NPCVehicle::GetHoverLift(const VehicleData& aVehicleData)
 {
-    //DirectX::SimpleMath::Vector3 liftForce = aVehicleData.hoverData.hoverLiftNeutralWithGrav;
-    DirectX::SimpleMath::Vector3 liftForce = aVehicleData.up * 9.8f;
+    DirectX::SimpleMath::Vector3 liftForce = aVehicleData.up * -m_environment->GetGravity();
     const float lowerCurveBound = aVehicleData.hoverData.hoverRangeLower;
     const float midCurveBound = aVehicleData.hoverData.hoverRangeMid;
     const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
@@ -767,23 +712,21 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetImpactForceSum(const VehicleData& aV
         //float testTwMass = newtonForce / m_vehicleStruct00.vehicleData.mass;
         // end kinetic energy test
 
-        float mass1 = aVehicleData.impactForceVec[i].impactMass;
-        //mass1 = 1.05f;
-        float mass2 = m_vehicleStruct00.vehicleData.mass;
-        float e = 0.1f;
+        const float mass1 = aVehicleData.impactForceVec[i].impactMass;
+        const float mass2 = m_vehicleStruct00.vehicleData.mass;
+        const float coefficientOfRestitution = 0.1f;
 
         float tmp = 1.0f / (mass1 + mass2);
         DirectX::SimpleMath::Vector3 vx1 = aVehicleData.impactForceVec[i].impactVelocity;
         DirectX::SimpleMath::Vector3 vx2 = m_vehicleStruct00.vehicleData.q.velocity;
-        DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp +
-            (1.0f + e) * mass2 * vx2 * tmp;
-        DirectX::SimpleMath::Vector3 newVx2 = (1.0f + e) * mass1 * vx1 * tmp +
-            (mass2 - e * mass1) * vx2 * tmp;
+        DirectX::SimpleMath::Vector3 newVx1 = (mass1 - coefficientOfRestitution * mass2) * vx1 * tmp +
+            (1.0f + coefficientOfRestitution) * mass2 * vx2 * tmp;
+        DirectX::SimpleMath::Vector3 newVx2 = (1.0f + coefficientOfRestitution) * mass1 * vx1 * tmp +
+            (mass2 - coefficientOfRestitution * mass1) * vx2 * tmp;
 
         //m_vehicleStruct00.vehicleData.impactForce.impactVelocity = newVx1 - m_vehicleStruct00.vehicleData.q.velocity;
         force = newVx2 - m_vehicleStruct00.vehicleData.q.velocity;
         //m_vehicleStruct00.vehicleData.impactForce.impactMass = aImpactForce.impactMass;
-        //m_debugData->DebugPushTestLinePositionIndicator(aImpactPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 
         //impactForce += force;
         //impactForce += aVehicleData.impactForceVec[i].impactVelocity;
@@ -799,11 +742,6 @@ Utility::Torque NPCVehicle::GetImpactTorqueSum(const VehicleData& aVehicleData)
     impactTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     impactTorque.magnitude = 0.0f;
 
-    if (aVehicleData.impactTorqueVec.size() > 0)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
     for (int i = 0; i < aVehicleData.impactTorqueVec.size(); ++i)
     {
         impactTorque.axis += aVehicleData.impactTorqueVec[i].axis * aVehicleData.impactTorqueVec[i].magnitude;
@@ -2529,8 +2467,7 @@ void NPCVehicle::UpdateNPCModel()
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= jetRotationMatRight;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= m_vehicleStruct00.npcModel.jetHousingTranslationRightMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= updateMat;
-    
-    
+     
     // base burner
     float baseBurnLength = ((10.0f) + (m_vehicleStruct00.vehicleData.controlInput.baseThrottleInput * 60.0f)) + ((1.0f + m_vehicleStruct00.npcModel.mainThrustLengthMod) * 10.0f);
     if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
