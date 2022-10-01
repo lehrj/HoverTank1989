@@ -255,8 +255,10 @@ public:
     void UpdateVehicle(const double aTimeDelta);
 
     void TestFireCannon();
-    void TestFireShotgun();
     void TestFireExplosive();
+    void TestFireMirv();
+    void TestFireShotgun();
+
 private:
 
     DirectX::SimpleMath::Vector3 CalcHoverDriveForce(const struct HeliData& aHeli);

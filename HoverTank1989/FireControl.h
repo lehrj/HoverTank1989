@@ -8,6 +8,7 @@ enum class AmmoType
     AMMOTYPE_BALL01,
     AMMOTYPE_CANNON,
     AMMOTYPE_EXPLOSIVE,
+    AMMOTYPE_MIRV,
     AMMOTYPE_SHOTGUN,
 };
 
@@ -64,6 +65,9 @@ struct ProjectileData
     bool isDeleteTrue;
     float time;
     int liveTimeTick;
+    bool testIsMidAirDeployAvailable = false;
+    bool testIsFuseTriggered = false;
+    float testFuseTimer = 0.0f;
 };
 
 enum class ExplosionType
@@ -137,7 +141,9 @@ public:
         Environment const* aEnvironment);
     void FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    void FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
@@ -147,14 +153,17 @@ private:
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
+    void DeployMirv(ProjectileData& aProjectile);
     void InitializeAmmo(AmmoStruct& aAmmo);
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
+    void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
+    void InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     
@@ -162,6 +171,7 @@ private:
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
    
     void UpdateExplosionVec(double aTimeDelta);
+    void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
 
     Environment const* m_environment;
@@ -172,6 +182,7 @@ private:
 
     AmmoStruct m_ammoCannon;
     AmmoStruct m_ammoExplosive;
+    AmmoStruct m_ammoMirv;
     AmmoStruct m_ammoShotgun;
     AmmoStruct m_ballAmmoStruct;
 

@@ -1450,6 +1450,14 @@ void Vehicle::TestFireExplosive()
     m_fireControl->FireProjectileExplosive(pos, launchDir, velocity);
 }
 
+void Vehicle::TestFireMirv()
+{
+    DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
+    DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+    DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
+    m_fireControl->FireProjectileMirv(pos, launchDir, velocity);
+}
+
 void Vehicle::TestFireShotgun()
 {
     DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
