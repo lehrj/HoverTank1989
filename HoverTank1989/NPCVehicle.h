@@ -361,7 +361,8 @@ struct VehicleData
     bool                        isCollisionTrue;
     bool                        isExploding = false;
     bool                        isDead = false;
-
+    bool                        isReadyToDelete = false;
+    float                       deleteCountDownTimer = 1.0f;
     Utility::ImpactForce        impactForce;
     std::vector<Utility::ImpactForce> impactForceVec;
     DirectX::SimpleMath::Vector3 impactForceSum = DirectX::SimpleMath::Vector3::Zero;
@@ -429,7 +430,7 @@ public:
     bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
     bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
     bool GetIsJumpReady() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpReady; };
-
+    bool GetIsReadyToDelete() const { return m_vehicleStruct00.vehicleData.isReadyToDelete; };
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
 
@@ -460,8 +461,6 @@ public:
     void SetNpcType(NPCType aNPCType);
     void TestCollisionVelocityUpdate(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
     void TestPositionChange() {
-        //m_vehicleStruct00.vehicleData.q.position.y = 45.0f;
-        //m_vehicleStruct00.vehicleData.q.velocity.y = -10.2f;
         ActivateJump();
     };
 

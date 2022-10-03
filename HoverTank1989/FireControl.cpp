@@ -546,7 +546,6 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.totalDuration = 3.0f;
     aExplosionData.maxRadius = 10.f;
     aExplosionData.position = DirectX::SimpleMath::Vector3::Zero;
-    //m_explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), aExplosionData.initialRadius);
     m_explosionStruct.explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), -1.0f);
     aExplosionData.localExplosionMatrix = DirectX::SimpleMath::Matrix::Identity;
     aExplosionData.explosionMatrix0 = aExplosionData.localExplosionMatrix;
@@ -863,7 +862,6 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionStruct.explosionVec[i].explosionMatrix8 *= m_explosionStruct.explosionVec[i].localExplosionMatrix;
 
             bool isNpcCollisionTrue = m_npcController->CheckExplosionCollisions(m_explosionStruct.explosionVec[i].collisionSphere);
-            //bool isNpcCollisionTrue = m_npcController->CheckExplosionCollisions(m_explosionStruct.explosionVec[i].collisionSphere, m_explosionStruct.explosionVec[i].explosionType);
             if (isNpcCollisionTrue == true)
             {
                 // to do : add collision detonation to vehicle

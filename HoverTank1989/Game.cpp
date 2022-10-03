@@ -481,7 +481,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     if (m_isPauseOn == false)
     {
         m_debugData->DebugClearUI();
-        m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
+        m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());   
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());

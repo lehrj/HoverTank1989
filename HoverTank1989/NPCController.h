@@ -21,10 +21,10 @@ public:
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment);
 
-    DirectX::SimpleMath::Vector3 GetNpcAccelVecTest(const int aId) { return m_npcVec[aId]->GetTestAccelVec(); };
-    DirectX::SimpleMath::Matrix GetNpcAlignment(const int aId) { return m_npcVec[aId]->GetAlignment(); };
+    DirectX::SimpleMath::Vector3 GetNpcAccelVecTest(const unsigned int aId);
+    DirectX::SimpleMath::Matrix GetNpcAlignment(const unsigned int aId);
     int GetNpcCount() { return static_cast<int>(m_npcVec.size()); };
-    DirectX::SimpleMath::Vector3 GetNpcPos(const int aId) { return m_npcVec[aId]->GetPos(); };
+    DirectX::SimpleMath::Vector3 GetNpcPos(const unsigned int aId);
     std::vector<NPCVehicle*>& GetVec() { return m_npcVec; };
     std::vector<DirectX::SimpleMath::Vector3> GetVecOfNpcPos(const unsigned int aSelfID);
 
@@ -34,7 +34,7 @@ public:
     void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
     void SetNPCEnvironment(Environment const* aEnvironment);
     void SetPlayer(Vehicle const* aVehicle);
-    void SetVehicleDeath(const int aVehicleId);
+    void SetVehicleDeath(const unsigned int aVehicleId);
     void TestPositionChange();
     void UnlockJumpAbility();
     void UpdateNPCs(const double aTimeDelta);

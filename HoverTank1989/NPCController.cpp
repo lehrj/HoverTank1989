@@ -161,12 +161,50 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        //m_npcVec[i]->DrawNPC(aView, aProj);
         if (m_npcVec[i]->GetIsDead() == false)
         {
             m_npcVec[i]->DrawNPC(aView, aProj);
         }
     }
+}
+
+DirectX::SimpleMath::Vector3 NPCController::GetNpcAccelVecTest(const unsigned int aId)
+{
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            return m_npcVec[i]->GetTestAccelVec();
+        }
+    }
+    // to do : add error handling for id out of scope
+    return DirectX::SimpleMath::Vector3::Zero;
+}
+
+DirectX::SimpleMath::Matrix NPCController::GetNpcAlignment(const unsigned int aId)
+{
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            return m_npcVec[i]->GetAlignment();
+        }
+    }
+    // to do : add error handling for id out of scope
+    return DirectX::SimpleMath::Matrix::Identity;
+}
+
+DirectX::SimpleMath::Vector3 NPCController::GetNpcPos(const unsigned int aId)
+{
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            return m_npcVec[i]->GetPos();
+        }
+    }
+    // to do : add error handling for id out of scope
+    return DirectX::SimpleMath::Vector3::Zero;
 }
 
 unsigned int NPCController::GetUniqueID()
@@ -240,19 +278,14 @@ void NPCController::SetPlayer(Vehicle const* aVehicle)
     m_player = aVehicle;
 }
 
-void NPCController::SetVehicleDeath(const int aVehicleId)
+void NPCController::SetVehicleDeath(const unsigned int aVehicleId)
 {
-    if (aVehicleId >= 0 && aVehicleId < m_npcVec.size())
+    for (int i = 0; i < m_npcVec.size(); ++i)
     {
-        if (m_npcVec[aVehicleId]->GetIsDead() == true)
+        if (m_npcVec[i]->GetID() == aVehicleId)
         {
-            // to do : add error handling
+            m_npcVec[i]->SetDeadTrue();
         }
-        m_npcVec[aVehicleId]->SetDeadTrue();
-    }
-    else
-    {
-        // to do : add error handling
     }
 }
 
@@ -276,6 +309,17 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
     {
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetIsReadyToDelete() == true)
+        {
+            std::vector<NPCVehicle*>::iterator it;
+            it = m_npcVec.begin() + i;
+            m_npcVec.erase(it);
+        }
+    }
+
     CheckNpcCollisions();
     CheckNpcAvoidance();
 }

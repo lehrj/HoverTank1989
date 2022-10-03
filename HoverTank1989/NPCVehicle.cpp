@@ -2165,6 +2165,14 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
 
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
 {
+    if (m_vehicleStruct00.vehicleData.isDead == true)
+    {
+        m_vehicleStruct00.vehicleData.deleteCountDownTimer -= static_cast<float>(aTimeDelta);
+        if (m_vehicleStruct00.vehicleData.deleteCountDownTimer <= 0.0f)
+        {
+            m_vehicleStruct00.vehicleData.isReadyToDelete = true;
+        }
+    }
     m_testTimer += aTimeDelta;
     m_avoidanceTargetIndex = -1;
    
