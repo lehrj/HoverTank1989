@@ -141,15 +141,25 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     DirectX::SimpleMath::Vector3 up = velocityNorm.Cross(-right);
     right = velocityNorm.Cross(up);
 
-    const int mirvCount = 4;
+    const int mirvCount = 12;
     const float chokeAngle = 35.0f;
+    const float deployAnglePitch = 35.0f;
+    const float deployAngleYaw = 35.0f;
+
+    const float deployAnglePitchMin = -30.0f;
+    const float deployAnglePitchMax = 3.0f;
+    const float deployAngleYawMin = -20.0f;    
+    const float deployAngleYawMax = 20.0f;
+
     const float velocityBoostMod = 2.0f;
     const float redirectVelocityDownAngle = 10.0f;
     for (int i = 0; i < mirvCount; i++)
     {
         ProjectileData mirv = firedProjectile;
-        float upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-        float rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle)) - redirectVelocityDownAngle;
+
+        float upAxisRot = deployAngleYawMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (deployAngleYawMax - deployAngleYawMin)));
+        float rightAxisRot = deployAnglePitchMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (deployAnglePitchMax - deployAnglePitchMin)));
+
         DirectX::SimpleMath::Matrix upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
         DirectX::SimpleMath::Matrix rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(right, Utility::ToRadians(rightAxisRot));
 
@@ -488,7 +498,7 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
-    aAmmo.ammoData.launchVelocity = 35.0f;
+    aAmmo.ammoData.launchVelocity = 55.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
     aAmmo.ammoData.radius = 0.2f;
