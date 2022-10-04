@@ -143,9 +143,7 @@ public:
     void SortFixtureBucketByDistance();
     void UpdateEnvironment(const int aIndex);
 
-
-private:
-    
+private:    
     bool BuildTerrainModel(HeightMap& aMap);
     bool CalculateTerrainNormals(HeightMap& aMap);
 
@@ -154,9 +152,6 @@ private:
 
     void LoadEnvironmentData();
     bool LoadHeightMap(HeightMap& aMap);
-
-    void SetLandingHeight(float aLandingHeight);
-    void SetLauchHeight(float aLaunchHeight);
 
     void ScaleTerrain(HeightMap& aMap);
     
@@ -167,14 +162,9 @@ private:
 
     std::vector<Fixture>                m_fixtureBucket;
 
-    float                              m_landingHeight = 0.0;     // in meters
-    float                              m_launchHeight = 0.0;      // in meters
-
     // variables for bounce and roll functionality not yet implemented
     float                              m_landingFriction;
     float                              m_landingHardness;
-    float                              m_landingXslope;
-    float                              m_landingZslope;
 
     std::vector<DirectX::VertexPositionNormal> m_heightMap;
     std::vector<DirectX::VertexPositionNormal> m_heightMapStartScreen;
