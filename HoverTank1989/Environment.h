@@ -125,7 +125,6 @@ public:
     float GetScale() const { return m_currentEnviron.scale; };
     bool GetIsPosInPlay(const DirectX::XMFLOAT3 aPos) const;
     float GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const;
-    float GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const;
     DirectX::SimpleMath::Vector3 GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const;
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
     std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex(EnvironmentType aEnvironType);

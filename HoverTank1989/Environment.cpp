@@ -348,112 +348,36 @@ float Environment::GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const
 
     bool foundHeight = false;
 
-    unsigned int i = 0;
-
-    //m_heightMapGamePlayData.terrainModel.size();
-    for (i; i < m_heightMapGamePlayData.terrainModel.size(); ++i)
+    for (unsigned int i = 0; i < m_heightMapGamePlayData.terrainModel.size(); ++i)
     {
         DirectX::XMFLOAT3 vertex1 = m_heightMapGamePlayData.terrainModel[i].position;
         ++i;
         DirectX::XMFLOAT3 vertex2 = m_heightMapGamePlayData.terrainModel[i].position;
         ++i;
         DirectX::XMFLOAT3 vertex3 = m_heightMapGamePlayData.terrainModel[i].position;
-
-        foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
-        if (foundHeight == true)
-        {
-            return aPos.y;
-        }
-        /*
-        float f = prePos.x;
-        float g = prePos.z;
-        DirectX::SimpleMath::Vector3 baryPos = DirectX::SimpleMath::Vector3::Barycentric(vertex1, vertex2, vertex3, f, g);
-
-        if (baryPos.x <= 1.0f && baryPos.x >= 0.0f && baryPos.y <= 1.0f && baryPos.y >= 0.0f && baryPos.z <= 1.0f && baryPos.z >= 0.0f)
-        {
-            foundHeightBarry = true;
-        }
-        else
-        {
-            foundHeightBarry = false;
-        }
-
-        if (foundHeight)
-        {
-            f = prePos.x;
-            g = prePos.z;
-            baryPos = DirectX::SimpleMath::Vector3::Barycentric(vertex1, vertex2, vertex3, f, g);
-
-            return aPos.y;
-        }
-        */
-    }
-    float errorHeight = aPos.y;
-    return errorHeight;
-}
-
-float Environment::GetTerrainHeightAtPos2(DirectX::XMFLOAT3 aPos) const
-{
-    DirectX::SimpleMath::Vector3 prePos = aPos;
-    bool foundHeightBarry = false;
-    bool foundHeight = false;
-
-    unsigned int i = 0;
-
-    for (i; i < m_terrainModel.size(); ++i)
-    {
-        DirectX::XMFLOAT3 vertex1 = m_terrainModel[i].position;
         ++i;
-        DirectX::XMFLOAT3 vertex2 = m_terrainModel[i].position;
+        DirectX::XMFLOAT3 vertex4 = m_heightMapGamePlayData.terrainModel[i].position;
         ++i;
-        DirectX::XMFLOAT3 vertex3 = m_terrainModel[i].position;
-
-        if (abs(aPos.x - vertex2.x) < .3 && abs(aPos.z - vertex2.z) < .3)
+        DirectX::XMFLOAT3 vertex5 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex6 = m_heightMapGamePlayData.terrainModel[i].position;
+        
+        if (aPos.x <= vertex2.x && aPos.x >= vertex4.x && aPos.z <= vertex2.z && aPos.z >= vertex4.z)
         {
             foundHeight = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
-        }
-        float f = prePos.x;
-        float g = prePos.z;
-        DirectX::SimpleMath::Vector3 baryPos = DirectX::SimpleMath::Vector3::Barycentric(vertex1, vertex2, vertex3, f, g);
-
-        if (baryPos.x <= 1.0f && baryPos.x >= 0.0f && baryPos.y <= 1.0f && baryPos.y >= 0.0f && baryPos.z <= 1.0f && baryPos.z >= 0.0f)
-        {
-            foundHeightBarry = true;
-        }
-        else
-        {
-            foundHeightBarry = false;
-        }
-
-
-        if (foundHeight == true && foundHeightBarry == false)
-        {
-            int testBreak2 = 0;
-            testBreak2++;
-        }
-
-        if (foundHeight == false && foundHeightBarry == true)
-        {
-            int testBreak2 = 0;
-            testBreak2++;
-        }
-
-        if (foundHeight != foundHeightBarry)
-        {
-            int testBreak2 = 0;
-            testBreak2++;
-        }
-
-        int testBreak = 0;
-
-        if (foundHeight)
-        {
-            f = prePos.x;
-            g = prePos.z;
-            baryPos = DirectX::SimpleMath::Vector3::Barycentric(vertex1, vertex2, vertex3, f, g);
-
-            testBreak = 0;
-            return aPos.y;
+            if (foundHeight == true)
+            {
+                return aPos.y;
+            }
+            foundHeight = CheckTerrainTriangleHeight(aPos, vertex6, vertex5, vertex4);
+            if (foundHeight == true)
+            {
+                return aPos.y;
+            }
+            else
+            {
+                // to do : height check failure, add error checking
+            }
         }
     }
     float errorHeight = aPos.y;
