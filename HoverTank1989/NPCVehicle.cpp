@@ -499,17 +499,14 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
 {
     const DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();
     float altitude = aVehicleData.altitude;
-    const float immersedDensityNeutralAtHalfDepth = 1.4286f;
     bool breakToggle = false;
 
     float midCurveBound = aVehicleData.hoverData.hoverRangeMid;
     const float lowerCurveBound = aVehicleData.hoverData.hoverRangeLower;
     const float upperCurveBound = aVehicleData.hoverData.hoverRangeUpper;
-    const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
     const float curveAdjustVal = lowerCurveBound;
-
-    DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
-
+    const float vehicleVolumeMax = aVehicleData.dimensions.x * aVehicleData.dimensions.y * aVehicleData.dimensions.z;
+    const float immersedDensityNeutralAtHalfDepth = aVehicleData.mass / (vehicleVolumeMax * 0.5f);
     float immersedRange = upperCurveBound - lowerCurveBound;
     float immersedPos = altitude - curveAdjustVal;
     float immersedRatio;
@@ -630,8 +627,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetBuoyancyForce(const VehicleData& aVe
         stateVal = 4;
     }
 
-    buoyancyForce = testDensity * immersedVolume * gravForce;
-
+    DirectX::SimpleMath::Vector3 buoyancyForce = testDensity * immersedVolume * gravForce;
     return buoyancyForce;
 }
 

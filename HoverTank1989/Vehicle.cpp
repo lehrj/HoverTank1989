@@ -7,7 +7,7 @@ Vehicle::~Vehicle()
     //delete m_fireControl;
 }
 
-DirectX::SimpleMath::Vector3 Vehicle::CalcHoverDriveForce(const struct HeliData& aHeli)
+DirectX::SimpleMath::Vector3 Vehicle::CalculateHoverDriveForce(const struct HeliData& aHeli)
 {
     float zForce = -aHeli.controlInput.cyclicInputRoll;
     zForce = zForce / aHeli.controlInput.cyclicInputMax;
@@ -644,17 +644,18 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
         velocityUpdate += m_testImpulseForce.directionNorm * m_testImpulseForce.currentMagnitude;
     }
 
-    velocityUpdate += CalcHoverDriveForce(m_heli);
+    velocityUpdate += CalculateHoverDriveForce(m_heli);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->mass);
     velocityUpdate += damperForce;
     DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), aHeli->gravity, aHeli->mass);
-
+    //gravForce = aHeli->gravity * aHeli->mass;
     velocityUpdate += gravForce;
 
     velocityUpdate += GetJetThrust(aHeli->forward, aHeli->controlInput.jetInput, aHeli->jetThrustMax);
     rotorForce = GetHoverLift(rotorForce, GetAltitude());
     velocityUpdate += rotorForce;
+
     velocityUpdate += GetSlopeForce(aHeli->terrainNormal, GetAltitude(), aHeli->groundNormalForceRange);
     velocityUpdate += airResistance;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(static_cast<float>(aTimeDelta));
@@ -720,16 +721,12 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.bodyTorqueForce.axis += bodyTorqueUpdate.axis;
     q.bodyTorqueForce.magnitude += bodyTorqueUpdate.magnitude;
     q.position += posUpdate;
-
-    
+   
     aHeli->q.velocity = q.velocity;
     aHeli->q.position = q.position;
     aHeli->q.engineForce = q.engineForce;
     aHeli->q.bodyTorqueForce = q.bodyTorqueForce;
     
-    aHeli->q.position.y = 8.0f;
-    aHeli->q.velocity.y = 0.0f;
-
     if (aHeli->q.position.y < aHeli->terrainHightAtPos)
     {
         //aHeli->q.position.y = aHeli->terrainHightAtPos + 1.9f;
@@ -1032,7 +1029,7 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
     mainRotorForce = UpdateRotorForceRunge();
     mainRotorForce *= ((m_heli.mainRotor.bladeVec[0].liftForcePerSecond + m_heli.mainRotor.bladeVec[1].liftForcePerSecond) / m_heli.mass) * modVal;
 
-    const float windVaning = WindVaningVal(m_heli);
+    const float windVaning = CalculateWindVaningVal(m_heli);
     DirectX::SimpleMath::Vector3 tailForce = -m_heli.right * (m_heli.controlInput.yawPedalInput + windVaning) * modVal;
     DirectX::SimpleMath::Vector3 gravityForce = (m_heli.gravity) * modVal;
 
@@ -1079,7 +1076,7 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
     return updatedTorque;
 }
 
-float Vehicle::WindVaningVal(const HeliData& aHeliData)
+float Vehicle::CalculateWindVaningVal(const HeliData& aHeliData)
 {
     DirectX::SimpleMath::Vector3 localizedAirVelocity = -aHeliData.q.velocity;
     DirectX::SimpleMath::Matrix localizeMat = aHeliData.alignment;
@@ -1362,7 +1359,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
     m_heli.isVehicleLanding = false;
     m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
-
+    m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
+    m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
     if (m_heli.landingGearPos.y - m_heli.terrainHightAtPos > 0.1)
     {
         m_heli.isVehicleAirborne = true;
@@ -1372,7 +1370,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     {
         if (m_heli.isVehicleAirborne == true)
         {
-            LandVehicle();
+            //LandVehicle();
             m_heli.isVehicleLanding = true;
             m_testTimer2 = m_testTimer;
             m_testTimer = 0.0f;

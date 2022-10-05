@@ -42,7 +42,6 @@ struct HoverData
     const float groundNormalForceRange = hoverRangeUpper;
     const float hoverNeutralBoyantAlt = hoverRangeMid;
 
-
     float forwardThrust;
     const float forwardThrustMax = 50000.0f;
     const float reverseThrustMax = forwardThrustMax * 1.0f;

@@ -117,7 +117,8 @@ struct Rotor
 
 struct HeliData
 {
-    // test data for new controls
+    float altitude = 0.0f;
+    //DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
     const DirectX::SimpleMath::Vector3 hoverFloat = DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f);
     DirectX::SimpleMath::Vector3 hoverDriveNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     float hoverDriveMag = 0.0f;
@@ -128,6 +129,7 @@ struct HeliData
     const float hoverRangeLower = 0.5f;
     const float hoverRangeMid = 1.0f;
     const float hoverRangeUpper = 3.0f;
+    
     const float jetThrustMax = 5000.0f;
     // rotor data
     const float mainRotorForceMagMax = 15.0f;
@@ -229,8 +231,6 @@ public:
     DirectX::SimpleMath::Vector3 GetWeaponLocalPos() const { return m_heli.localWeaponPos; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_heli.weaponPos; };
     
-
-    //void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCController* aNPCController);
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController);
 
     // helicopter functions
@@ -260,13 +260,11 @@ public:
     void TestFireShotgun();
 
 private:
-
-    DirectX::SimpleMath::Vector3 CalcHoverDriveForce(const struct HeliData& aHeli);
-
+    DirectX::SimpleMath::Vector3 CalculateHoverDriveForce(const struct HeliData& aHeli);
     float CalculateLiftCoefficient(const float aAngle);
+    float CalculateWindVaningVal(const HeliData& aHeliData);
 
     void InitializeFlightControls(ControlInput& aInput);
-
     void InitializeRotorBlades(HeliData& aHeliData);
 
     void LandVehicle();
@@ -275,36 +273,26 @@ private:
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
     
     void UpdateAlignmentTorque();
-
     void UpdateBladeLiftForce(const float aTimeStep);
-
     Utility::Torque UpdateBodyTorqueRunge(const float aTimeStep);
     void UpdateAlignmentCamera();
     void UpdateCyclicStick(ControlInput& aInput);
     float UpdateGroundEffectForce(const float aLiftForce);
-
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle);
     void UpdateResistance();
     DirectX::SimpleMath::Vector3 UpdateRotorForceRunge();
-
     void UpdateRotorData(HeliData& aHeliData, const double aTimer);
     void UpdateRotorPitch(HeliData& aHeliData);
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
-
     void UpdateTerrainNorm();
-
-    float WindVaningVal(const HeliData& aHeliData);
-    
-    Environment const*              m_environment;
-    HeliData                        m_heli;
-
-    //FireControl*                    m_fireControl;
-    std::shared_ptr<FireControl>    m_fireControl;
-
+  
     std::shared_ptr<DebugData>      m_debugData;
-
+    Environment const*              m_environment;
+    std::shared_ptr<FireControl>    m_fireControl;
     std::shared_ptr<ModelController>      m_modelController;
+
+    HeliData                        m_heli;
 
     DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);

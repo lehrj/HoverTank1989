@@ -812,7 +812,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos0.y -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputCollective(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
@@ -820,7 +819,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.x -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputCyclicPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
@@ -828,7 +826,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos0.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputCollective(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
@@ -836,7 +833,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.z -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputCyclicRoll(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
@@ -851,7 +847,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.z += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputCyclicRoll(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
@@ -859,7 +854,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.y -= static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputYawPedal(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
@@ -867,7 +861,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.x += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputCyclicPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
@@ -875,7 +868,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_lightPos1.y += static_cast<float>(aTimer.GetElapsedSeconds()) * m_lightMovementSpeed;
             m_vehicle->InputYawPedal(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
