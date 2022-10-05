@@ -7,6 +7,143 @@ Vehicle::~Vehicle()
     //delete m_fireControl;
 }
 
+DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVehicleData)
+{
+    const DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();
+    float altitude = aVehicleData.altitude;
+    bool breakToggle = false;
+
+    float midCurveBound = aVehicleData.hoverRangeMid;
+    const float lowerCurveBound = aVehicleData.hoverRangeLower;
+    const float upperCurveBound = aVehicleData.hoverRangeUpper;
+    const float curveAdjustVal = lowerCurveBound;
+    DirectX::SimpleMath::Vector3 testDimensions = DirectX::SimpleMath::Vector3(8.0f, 4.0f, 4.0f);
+    const float vehicleVolumeMax = testDimensions.x * testDimensions.y * testDimensions.z;
+    const float immersedDensityNeutralAtHalfDepth = aVehicleData.mass / (vehicleVolumeMax * 0.5f);
+    float immersedRange = upperCurveBound - lowerCurveBound;
+    float immersedPos = altitude - curveAdjustVal;
+    float immersedRatio;
+
+    if (altitude >= upperCurveBound)
+    {
+        immersedRatio = 0.0f;
+    }
+    else if (altitude <= lowerCurveBound)
+    {
+        immersedRatio = 1.0f;
+    }
+    else
+    {
+        float testUpper = upperCurveBound - curveAdjustVal;
+        float testLower = lowerCurveBound - curveAdjustVal;
+        float testAlt = altitude - curveAdjustVal;
+        float testRange = testUpper - testLower;
+
+        float testRatio2 = testAlt / testRange;
+        float immersedRatio2 = 1.0f - testRatio2;
+
+        float testRatio = immersedPos / immersedRange;
+        immersedRatio = 1.0f - testRatio;
+
+        if (immersedRatio != immersedRatio2)
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
+    }
+
+    float immersedVolume = abs(immersedRatio * vehicleVolumeMax);
+
+    if (immersedPos > upperCurveBound)
+    {
+        //immersedVolume = 0.0f;
+    }
+    if (immersedVolume > vehicleVolumeMax)
+    {
+        //immersedVolume = vehicleVolumeMax;
+    }
+    else if (immersedVolume < 0.0f)
+    {
+        immersedVolume *= -1.0f;
+    }
+    float immersedVolumeRatio = immersedVolume / vehicleVolumeMax;
+
+    const float penetrationVelocity = -10.0f;
+    int stateVal = -1;
+    if (aVehicleData.q.position.y > upperCurveBound)
+    {
+        stateVal = 0;
+    }
+    float testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + immersedVolumeRatio);
+    if (aVehicleData.q.velocity.y >= 0.0f && altitude > (lowerCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
+        stateVal = 1;
+    }
+    if (aVehicleData.q.velocity.y <= 0.0f && altitude < (upperCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio));
+        stateVal = 2;
+        if (aVehicleData.q.velocity.y <= penetrationVelocity && altitude > midCurveBound)
+        {
+            const float overPen = aVehicleData.q.velocity.y / penetrationVelocity;
+
+            testDensity = 90.0f * immersedVolumeRatio;
+            testDensity = (immersedDensityNeutralAtHalfDepth * (3.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio))) * overPen;
+            stateVal = 6;
+        }
+        else if (altitude > midCurveBound)
+        {
+            breakToggle = true;
+            stateVal = 9;
+        }
+        else if (aVehicleData.q.velocity.y >= penetrationVelocity)
+        {
+            stateVal = 10;
+        }
+        else
+        {
+            breakToggle = true;
+            stateVal = 7;
+        }
+    }
+    if (aVehicleData.q.velocity.y <= 0.0f && altitude < (midCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+        stateVal = 5;
+        if (aVehicleData.q.velocity.y <= penetrationVelocity && altitude > (lowerCurveBound))
+        {
+            const float overPen = aVehicleData.q.velocity.y / penetrationVelocity;
+            stateVal = 8;
+            testDensity = immersedDensityNeutralAtHalfDepth * (4.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+            testDensity *= overPen;
+        }
+    }
+    if (aVehicleData.q.velocity.y <= 0.0f && altitude < (lowerCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+        stateVal = 3;
+        if (aVehicleData.q.velocity.y <= penetrationVelocity && altitude < (lowerCurveBound))
+        {
+            stateVal = 11;
+            const float overPen = aVehicleData.q.velocity.y / penetrationVelocity;
+
+            testDensity = immersedDensityNeutralAtHalfDepth * (5.0f + (immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio + immersedVolumeRatio));
+            testDensity *= overPen;
+            float penetrationDistance = lowerCurveBound - altitude;
+            testDensity *= (1.0f + (penetrationDistance * 0.1f));
+        }
+    }
+    if (aVehicleData.q.velocity.y >= 0.0f && altitude < (lowerCurveBound))
+    {
+        testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
+        stateVal = 4;
+    }
+
+    DirectX::SimpleMath::Vector3 buoyancyForce = testDensity * immersedVolume * gravForce;
+    return buoyancyForce;
+}
+
 DirectX::SimpleMath::Vector3 Vehicle::CalculateHoverDriveForce(const struct HeliData& aHeli)
 {
     float zForce = -aHeli.controlInput.cyclicInputRoll;
@@ -644,17 +781,19 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
         velocityUpdate += m_testImpulseForce.directionNorm * m_testImpulseForce.currentMagnitude;
     }
 
-    velocityUpdate += CalculateHoverDriveForce(m_heli);
+    //velocityUpdate += CalculateHoverDriveForce(m_heli);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->mass);
-    velocityUpdate += damperForce;
+    //velocityUpdate += damperForce;
     DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), aHeli->gravity, aHeli->mass);
-    //gravForce = aHeli->gravity * aHeli->mass;
+    gravForce = aHeli->gravity * aHeli->mass;
     velocityUpdate += gravForce;
 
     velocityUpdate += GetJetThrust(aHeli->forward, aHeli->controlInput.jetInput, aHeli->jetThrustMax);
     rotorForce = GetHoverLift(rotorForce, GetAltitude());
-    velocityUpdate += rotorForce;
+    //velocityUpdate += rotorForce;
+
+    velocityUpdate += m_heli.buoyancyForce;
 
     velocityUpdate += GetSlopeForce(aHeli->terrainNormal, GetAltitude(), aHeli->groundNormalForceRange);
     velocityUpdate += airResistance;
@@ -721,12 +860,12 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.bodyTorqueForce.axis += bodyTorqueUpdate.axis;
     q.bodyTorqueForce.magnitude += bodyTorqueUpdate.magnitude;
     q.position += posUpdate;
-   
+
     aHeli->q.velocity = q.velocity;
     aHeli->q.position = q.position;
     aHeli->q.engineForce = q.engineForce;
     aHeli->q.bodyTorqueForce = q.bodyTorqueForce;
-    
+
     if (aHeli->q.position.y < aHeli->terrainHightAtPos)
     {
         //aHeli->q.position.y = aHeli->terrainHightAtPos + 1.9f;
@@ -1379,6 +1518,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     }
 
     UpdateTerrainNorm();
+    m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
     UpdateRotorData(m_heli, aTimeDelta);
@@ -1409,7 +1549,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateAlignmentCamera();
 
     m_fireControl->UpdateFireControl(aTimeDelta);
-    m_isFiredTest = false; 
+    m_isFiredTest = false;
 }
 
 void Vehicle::DebugInputVelocityZero()
@@ -1424,7 +1564,7 @@ void Vehicle::TestFireCannon()
     DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
     m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, velocity);
 
-    
+
     m_isFiredTest = true;
     m_fireForceTest = -launchDir;
     m_fireForceTest.Normalize();
