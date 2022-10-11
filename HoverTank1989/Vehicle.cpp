@@ -24,6 +24,12 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     float immersedPos = altitude - curveAdjustVal;
     float immersedRatio;
 
+    if (m_heli.buoyancyForce.y >= 33319.0f)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
     if (altitude >= upperCurveBound)
     {
         immersedRatio = 0.0f;
@@ -136,11 +142,20 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     }
     if (aVehicleData.q.velocity.y >= 0.0f && altitude < (lowerCurveBound))
     {
-        testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
+        //testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
         stateVal = 4;
     }
 
     DirectX::SimpleMath::Vector3 buoyancyForce = testDensity * immersedVolume * gravForce;
+
+    /*
+    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.x = ", buoyancyForce.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.z = ", buoyancyForce.z, "");
+    */
+    m_debugData->DebugPushUILineWholeNumber("buoyancyForce.x = ", static_cast<int>(buoyancyForce.x), "");
+    m_debugData->DebugPushUILineWholeNumber("buoyancyForce.y = ", static_cast<int>(buoyancyForce.y), "");
+    m_debugData->DebugPushUILineWholeNumber("buoyancyForce.z = ", static_cast<int>(buoyancyForce.z), "");
     return buoyancyForce;
 }
 
@@ -430,7 +445,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.localLandingGearPos.y -= 1.0f;
     m_heli.landingGearPos = m_heli.localLandingGearPos;
 
-    //m_fireControl = new FireControl();
+    m_testTerrainNormTorque.axis = DirectX::SimpleMath::Vector3::UnitY;
+    m_testTerrainNormTorque.magnitude = 0.0f;
+    
     m_fireControl = std::make_shared<FireControl>();
     m_fireControl->InitializeFireControl(aContext, m_heli.localWeaponPos, m_heli.localWeaponDirection, m_environment);
     m_fireControl->SetNPCController(aNPCController);
@@ -781,7 +798,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
         velocityUpdate += m_testImpulseForce.directionNorm * m_testImpulseForce.currentMagnitude;
     }
 
-    //velocityUpdate += CalculateHoverDriveForce(m_heli);
+    velocityUpdate += CalculateHoverDriveForce(m_heli);
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), aHeli->mass);
     //velocityUpdate += damperForce;
@@ -919,7 +936,7 @@ void Vehicle::UpdateAlignmentTorque()
 {
     m_heli.cameraOrientationPrevious = m_heli.cameraOrientation;
 
-    if (m_heli.isVehicleAirborne == false)
+    if (m_heli.isVehicleAirborne == false && 1 == 0)
     {
         DirectX::SimpleMath::Vector3 newUp = m_heli.terrainNormal;
         DirectX::SimpleMath::Vector3 oldUp = m_heli.up;
@@ -1188,9 +1205,11 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
 
     DirectX::SimpleMath::Vector3 torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (tailTorque.axis * tailTorque.magnitude);
     torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (tailTorque.axis * tailTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude);
+    torqueAxis = (rotorTorque.axis * rotorTorque.magnitude) + (tailTorque.axis * tailTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (m_testTerrainNormTorque.axis * m_testTerrainNormTorque.magnitude);
     torqueAxis.Normalize();
     float torqueMag = rotorTorque.magnitude + tailTorque.magnitude;
     torqueMag = rotorTorque.magnitude + tailTorque.magnitude + gravTorque.magnitude;
+    torqueMag = rotorTorque.magnitude + tailTorque.magnitude + gravTorque.magnitude + m_testTerrainNormTorque.magnitude;
 
     if (m_testImpulseForce.isActive == true)
     {
@@ -1482,6 +1501,42 @@ void Vehicle::UpdateTerrainNorm()
     m_heli.terrainNormal = m_environment->GetTerrainNormal(m_heli.q.position);
 }
 
+void Vehicle::UpdateTerrainNormTorque(const float aTimeDelta)
+{
+    DirectX::SimpleMath::Vector3 slopeForceUpdate;
+    Utility::Torque prevTorque = m_testTerrainNormTorque;
+    Utility::Torque updateTorque;
+    if (m_heli.altitude > m_heli.groundNormalForceRange)
+    {
+        slopeForceUpdate = DirectX::SimpleMath::Vector3::Zero;
+        const float forcePercentage = 1.0f;
+        const DirectX::SimpleMath::Vector3 terrrainForce = DirectX::SimpleMath::Vector3::UnitY * (-m_heli.gravity.y);
+        slopeForceUpdate = (terrrainForce * forcePercentage) * m_heli.mass;
+        DirectX::SimpleMath::Vector3 torqueArm = m_heli.centerOfMass - m_heli.mainRotorPos;
+        updateTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
+        updateTorque.magnitude *= 0.00001f;
+        updateTorque.axis = DirectX::SimpleMath::Vector3::Zero;
+        updateTorque.magnitude = 0.0f;
+    }
+    else
+    {
+        const float forcePercentage = 1.0f - (m_heli.altitude / m_heli.groundNormalForceRange);
+        const DirectX::SimpleMath::Vector3 terrrainForce = m_heli.terrainNormal * (-m_heli.gravity.y);
+        slopeForceUpdate = (terrrainForce * forcePercentage) * m_heli.mass;
+        DirectX::SimpleMath::Vector3 torqueArm = m_heli.centerOfMass - m_heli.mainRotorPos;
+        m_debugData->DebugPushTestLine(m_heli.q.position, torqueArm, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+        updateTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
+        updateTorque.magnitude *= 0.00001f;
+        //m_testTerrainNormTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
+        //m_testTerrainNormTorque.magnitude *= 0.00001f;
+        int testBreak = 0;
+    }
+    //m_testTerrainNormTorque.axis = DirectX::SimpleMath::Vector3::SmoothStep(prevTorque.axis, updateTorque.axis, 0.01f);
+    //m_testTerrainNormTorque.magnitude = (prevTorque.magnitude + updateTorque.magnitude) / 2.0f;
+    m_testTerrainNormTorque.axis = updateTorque.axis;
+    m_testTerrainNormTorque.magnitude = updateTorque.magnitude;
+}
+
 void Vehicle::UpdateVehicle(const double aTimeDelta)
 {
     UpdatePhysicsPoints(m_heli);
@@ -1519,6 +1574,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
     UpdateTerrainNorm();
     m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
+    UpdateTerrainNormTorque(static_cast<float>(aTimeDelta));
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
     UpdateRotorData(m_heli, aTimeDelta);

@@ -295,6 +295,7 @@ private:
     void UpdateRotorPitch(HeliData& aHeliData);
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
     void UpdateTerrainNorm();
+    void UpdateTerrainNormTorque(const float aTimeDelta);
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const* m_environment;
@@ -327,5 +328,6 @@ private:
     DirectX::SimpleMath::Vector3 m_fireForceTest = DirectX::SimpleMath::Vector3::Zero;
 
     Utility::ImpulseForce m_testImpulseForce;
+    Utility::Torque m_testTerrainNormTorque;
 };
 
