@@ -1193,12 +1193,10 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
     gravityForce.Normalize();
     gravityForce = gravityForce * (4.8 * modVal);
 
-
     if (m_debugToggle == true)
     {
         m_debugToggle = false;
     }
-
     Utility::Torque rotorTorque = Utility::GetTorqueForce(mainRotorTorqueArm, mainRotorForce);
     Utility::Torque tailTorque = Utility::GetTorqueForce(tailRotorTorqueArm, tailForce);
     Utility::Torque gravTorque = Utility::GetTorqueForce(gravityTorqueArm, gravityForce);
@@ -1226,7 +1224,6 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
         torqueAxis.Normalize();
         torqueMag = rotorTorque.magnitude + tailTorque.magnitude + gravTorque.magnitude + weaponTorque.magnitude;
     }
-
     Utility::Torque updatedTorque;
     updatedTorque.axis = torqueAxis;
     updatedTorque.magnitude = torqueMag;
