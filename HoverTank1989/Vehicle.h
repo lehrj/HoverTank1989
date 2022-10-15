@@ -295,7 +295,7 @@ private:
     void UpdateRotorPitch(HeliData& aHeliData);
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
     void UpdateTerrainNorm();
-    void UpdateTerrainNormTorque(const float aTimeDelta);
+    void UpdateTerrainNormTorque();
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const* m_environment;

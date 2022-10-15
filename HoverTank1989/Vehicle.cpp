@@ -1498,7 +1498,7 @@ void Vehicle::UpdateTerrainNorm()
     m_heli.terrainNormal = m_environment->GetTerrainNormal(m_heli.q.position);
 }
 
-void Vehicle::UpdateTerrainNormTorque(const float aTimeDelta)
+void Vehicle::UpdateTerrainNormTorque()
 {
     DirectX::SimpleMath::Vector3 slopeForceUpdate;
     Utility::Torque prevTorque = m_testTerrainNormTorque;
@@ -1571,7 +1571,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
     UpdateTerrainNorm();
     m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
-    UpdateTerrainNormTorque(static_cast<float>(aTimeDelta));
+    UpdateTerrainNormTorque();
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
     UpdateRotorData(m_heli, aTimeDelta);
