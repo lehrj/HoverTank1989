@@ -1521,15 +1521,9 @@ void Vehicle::UpdateTerrainNormTorque()
         const DirectX::SimpleMath::Vector3 terrrainForce = m_heli.terrainNormal * (-m_heli.gravity.y);
         slopeForceUpdate = (terrrainForce * forcePercentage) * m_heli.mass;
         DirectX::SimpleMath::Vector3 torqueArm = m_heli.centerOfMass - m_heli.mainRotorPos;
-        m_debugData->DebugPushTestLine(m_heli.q.position, torqueArm, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
         updateTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
         updateTorque.magnitude *= 0.00001f;
-        //m_testTerrainNormTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
-        //m_testTerrainNormTorque.magnitude *= 0.00001f;
-        int testBreak = 0;
     }
-    //m_testTerrainNormTorque.axis = DirectX::SimpleMath::Vector3::SmoothStep(prevTorque.axis, updateTorque.axis, 0.01f);
-    //m_testTerrainNormTorque.magnitude = (prevTorque.magnitude + updateTorque.magnitude) / 2.0f;
     m_testTerrainNormTorque.axis = updateTorque.axis;
     m_testTerrainNormTorque.magnitude = updateTorque.magnitude;
 }
