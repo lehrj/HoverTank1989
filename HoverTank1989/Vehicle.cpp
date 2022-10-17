@@ -153,9 +153,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
     m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.z = ", buoyancyForce.z, "");
     */
-    m_debugData->DebugPushUILineWholeNumber("buoyancyForce.x = ", static_cast<int>(buoyancyForce.x), "");
-    m_debugData->DebugPushUILineWholeNumber("buoyancyForce.y = ", static_cast<int>(buoyancyForce.y), "");
-    m_debugData->DebugPushUILineWholeNumber("buoyancyForce.z = ", static_cast<int>(buoyancyForce.z), "");
+
     return buoyancyForce;
 }
 
@@ -1185,10 +1183,11 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
     mainRotorForce = UpdateRotorForceRunge();
     mainRotorForce *= ((m_heli.mainRotor.bladeVec[0].liftForcePerSecond + m_heli.mainRotor.bladeVec[1].liftForcePerSecond) / m_heli.mass) * modVal;
 
-    const float windVaning = CalculateWindVaningVal(m_heli);
-    DirectX::SimpleMath::Vector3 tailForce = -m_heli.right * (m_heli.controlInput.yawPedalInput + windVaning) * modVal;
-    DirectX::SimpleMath::Vector3 gravityForce = (m_heli.gravity) * modVal;
+    //const float windVaning = CalculateWindVaningVal(m_heli);
+    //DirectX::SimpleMath::Vector3 tailForce = -m_heli.right * (m_heli.controlInput.yawPedalInput + windVaning) * modVal;
+    DirectX::SimpleMath::Vector3 tailForce = -m_heli.right * (m_heli.controlInput.yawPedalInput) * modVal;
 
+    DirectX::SimpleMath::Vector3 gravityForce = (m_heli.gravity) * modVal;
     gravityForce = m_heli.gravity;
     gravityForce.Normalize();
     gravityForce = gravityForce * (4.8 * modVal);
@@ -1532,7 +1531,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 {
     UpdatePhysicsPoints(m_heli);
 
-    UpdateBladeLiftForce(static_cast<float>(aTimeDelta));
+    //UpdateBladeLiftForce(static_cast<float>(aTimeDelta));
 
     m_heli.q.bodyTorqueForce.axis = DirectX::SimpleMath::Vector3::Zero;
     m_heli.q.bodyTorqueForce.magnitude = 0.0f;
@@ -1540,7 +1539,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 prevVelocity = m_heli.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_heli.q.position;
 
-    UpdateCyclicStick(m_heli.controlInput);
+    //UpdateCyclicStick(m_heli.controlInput);
 
     m_heli.isVehicleLanding = false;
     m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
@@ -1562,13 +1561,13 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
         }
         m_heli.isVehicleAirborne = false;
     }
-
+    
     UpdateTerrainNorm();
     m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
     UpdateTerrainNormTorque();
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
-    UpdateRotorData(m_heli, aTimeDelta);
+    //UpdateRotorData(m_heli, aTimeDelta);
 
     if (m_heli.forward.Dot(m_heli.q.velocity) < 0.0)
     {

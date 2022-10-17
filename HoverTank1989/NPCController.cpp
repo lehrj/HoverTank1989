@@ -256,6 +256,30 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
+
+    const float xLine = 185.0f;
+    const float yLine = 10.0f;
+    const float zSpacing = 90.0f;
+    // target 1
+    pos.x = xLine;
+    pos.y = yLine;
+    pos.z = -600.0f;
+    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+
+    pos.z += zSpacing;
+    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+
+    pos.z += zSpacing;
+    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+
+    pos.z += zSpacing;
+    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+
+    pos.z += zSpacing;
+    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+
+    pos.z += zSpacing;
+    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 }
 
 void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)

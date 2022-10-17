@@ -24,8 +24,9 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homeYaw = 0.0f;
 
 	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERANPC;
-	m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
-
+	//m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
+	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
+	
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
@@ -787,14 +788,15 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
 	{
+		/*
 		m_springTarget.position = m_vehicleFocus->GetPos();
 		DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
 		DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetVehicleOrientation();
 		testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
 		m_springTarget.forward = testHeading;
-
-		UpdateSpringCamera(aTimer);
-		m_viewMatrix = m_springCameraMatrix;
+		*/
+		UpdateSpringCameraPlayer(aTimer);
+		//m_viewMatrix = m_springCameraMatrix;
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERANPC)
 	{
@@ -837,6 +839,9 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	{
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
+	m_debugData->DebugPushUILineDecimalNumber("Camera loc x = ", m_position.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("Camera loc y = ", m_position.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("Camera loc z = ", m_position.z, "");
 
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
@@ -1105,6 +1110,41 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 	}
 	
 	DirectX::SimpleMath::Matrix rotMat = m_npcController->GetNpcAlignment(m_npcFocusID);
+	DirectX::SimpleMath::Matrix testRotMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_target, m_up);
+	DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+	DirectX::SimpleMath::Quaternion testRotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_viewMatrix);
+	DirectX::SimpleMath::Quaternion rotQuat2 = DirectX::SimpleMath::Quaternion::Slerp(rotQuat, testRotQuat, 0.1f);
+	testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
+	m_springTarget.forward = testHeading;
+
+	DirectX::SimpleMath::Vector3 idealPosition = m_springTarget.position - m_springTarget.forward * m_hDistance + m_springTarget.up * m_vDistance;
+	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
+	DirectX::SimpleMath::Vector3 springAccel = (-m_springConstant * displacement) - (m_dampConstant * m_velocity);
+	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
+	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
+
+	m_position = m_actualPosition;
+	m_target = m_springTarget.position;
+	ComputeSpringMatrix();
+
+	m_viewMatrix = m_springCameraMatrix;
+	m_transitionTimer += static_cast<float>(aTimeDelta.GetElapsedSeconds());
+}
+
+void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
+{
+	m_transitionTimer += static_cast<float>(aTimeDelta.GetElapsedSeconds());
+	//DirectX::SimpleMath::Vector3 vehiclePos = GetSpringCameraTarget();
+	DirectX::SimpleMath::Vector3 vehiclePos = m_vehicleFocus->GetPos();
+	m_springTarget.position = vehiclePos;
+	DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
+	if (m_transitionTimer < m_transitionTimeMax)
+	{
+		//testHeading *= m_transitionTimer / m_transitionTimeMax;
+	}
+
+	//DirectX::SimpleMath::Matrix rotMat = m_npcController->GetNpcAlignment(m_npcFocusID);
+	DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetAlignment();
 	DirectX::SimpleMath::Matrix testRotMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_target, m_up);
 	DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
 	DirectX::SimpleMath::Quaternion testRotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_viewMatrix);
