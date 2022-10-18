@@ -397,7 +397,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_heli.q.mainRotorForceNormal = DirectX::SimpleMath::Vector3::UnitY;
     m_heli.q.mainRotorForceMagnitude = 15.0f;
-    m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 4.5f, 0.0f);
+    m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.5f, 0.0f);
 
     m_heli.q.tailRotorForceNormal = -m_heli.right;
     m_heli.q.tailRotorForceMagnitude = 0.0f;

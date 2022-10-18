@@ -1136,12 +1136,19 @@ void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
 	m_transitionTimer += static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	DirectX::SimpleMath::Vector3 vehiclePos = m_vehicleFocus->GetPos();
 	m_springTarget.position = vehiclePos;
+	//m_springTarget.position = vehiclePos + (m_vehicleFocus->GetWeaponDirection() * 10.0f);
 
+	DirectX::SimpleMath::Vector3 weaponRight = m_vehicleFocus->GetWeaponDirection().Cross(m_vehicleFocus->GetVehicleUp());
+	DirectX::SimpleMath::Matrix pitchRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(weaponRight, m_vehicleFocus->GetWeaponPitch());
+	DirectX::SimpleMath::Matrix yawRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleFocus->GetVehicleUp(), m_vehicleFocus->GetTurretYaw());
 	DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetAlignment();
+	
+	rotMat *= yawRotMat;
+	rotMat *= pitchRotMat;
 	DirectX::SimpleMath::Matrix testRotMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_target, m_up);
 	DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
 	DirectX::SimpleMath::Quaternion testRotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_viewMatrix);
-	DirectX::SimpleMath::Quaternion rotQuat2 = DirectX::SimpleMath::Quaternion::Slerp(rotQuat, testRotQuat, 0.1f);
+	//DirectX::SimpleMath::Quaternion rotQuat2 = DirectX::SimpleMath::Quaternion::Slerp(rotQuat, testRotQuat, 0.1f);
 	DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
 	testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
 	m_springTarget.forward = testHeading;
@@ -1152,12 +1159,12 @@ void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
 	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 
+	//m_actualPosition = DirectX::SimpleMath::Vector3::Transform(m_actualPosition, yawRotMat);
 	m_position = m_actualPosition;
 	m_target = m_springTarget.position;
 	ComputeSpringMatrix();
 
 	m_viewMatrix = m_springCameraMatrix;
-	m_transitionTimer += static_cast<float>(aTimeDelta.GetElapsedSeconds());
 }
 
 void Camera::UpdateChaseCameraNPC()
