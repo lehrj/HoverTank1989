@@ -226,6 +226,7 @@ public:
     DirectX::SimpleMath::Vector3 GetSlopeForce(const DirectX::SimpleMath::Vector3 aTerrainNorm, const float aAltitude, const float aGroundInteractionRange);
     float GetThrottle() { return m_heli.controlInput.throttleInput; };
     double GetTime() { return m_heli.time; };
+    DirectX::SimpleMath::Vector3 GetVehicleRight() const { return m_heli.right; };
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_heli.up; };
     DirectX::SimpleMath::Matrix GetVehicleOrientation() const { return m_heli.cameraOrientation; };
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_heli.alignment; };

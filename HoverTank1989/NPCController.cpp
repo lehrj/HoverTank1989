@@ -56,8 +56,8 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.maxMagnitude = explosionForce;
                     explosionImpulseForce.torqueArm = impactNorm;
 
-                    DirectX::SimpleMath::Matrix localizationMatrix = DirectX::SimpleMath::Matrix::CreateWorld(m_npcVec[i]->GetPos(), -m_npcVec[i]->GetRight(), m_npcVec[i]->GetUp());
-                    DirectX::SimpleMath::Matrix worldMatrix = localizationMatrix;
+                    DirectX::SimpleMath::Matrix worldMatrix = DirectX::SimpleMath::Matrix::CreateWorld(m_npcVec[i]->GetPos(), -m_npcVec[i]->GetRight(), m_npcVec[i]->GetUp());
+                    DirectX::SimpleMath::Matrix localizationMatrix = worldMatrix;
                     localizationMatrix = localizationMatrix.Invert();
                     DirectX::SimpleMath::Vector3 localizedExplosionCenter = aBoundingSphere.Center;
                     localizedExplosionCenter = DirectX::SimpleMath::Vector3::Transform(localizedExplosionCenter, localizationMatrix);
@@ -250,7 +250,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
-            this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+            //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
             pos.x += 25.0f;
         }
         pos.x = xOrgVal;
