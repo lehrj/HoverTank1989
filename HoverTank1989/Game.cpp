@@ -812,21 +812,21 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCollective(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad2)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCyclicPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad3)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCollective(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad4)
@@ -840,7 +840,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            m_vehicle->InputCyclicPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));          
         }
     }
     if (kb.NumPad6)
@@ -875,14 +875,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputThrottle(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Decimal)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputThrottle(static_cast<float>(aTimer.GetElapsedSeconds()));
+
         }
     }
     if (m_kbStateTracker.pressed.R)
@@ -990,7 +990,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->Jump();
+            m_vehicle->TestFireCannon();
         }
     }
     if (m_kbStateTracker.released.Q)

@@ -217,7 +217,7 @@ private:
     float                       m_followCamDistance = 1.0;
     //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-45.0, 22.0f, 0.0f);
     //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 12.0f, 20.0f);
-    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 2.0f, 20.0f);
+    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
 
     Environment const* m_environment;
     Vehicle const* m_vehicleFocus;
@@ -246,6 +246,7 @@ private:
     void UpdateSpringCamera(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer2(DX::StepTimer const& aTimeDelta);
+    void UpdateSpringCameraPlayer3(DX::StepTimer const& aTimeDelta);
 
     // SpinCamera
     float m_cameraSpin = 0.0;
