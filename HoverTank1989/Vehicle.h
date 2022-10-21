@@ -10,6 +10,13 @@ struct ControlInput
     // input control data
     const float inputDeadZone = 0.001;  // small deadzone to ignore nominal control input
 
+    float       brakeInput = 0.0f;
+    const float breakInputMax = 1.0f;
+    const float breakInputMin = 0.0f;
+    const float breakInputRate = 1.9f;
+    bool        brakeIsPressed = false;
+    DirectX::SimpleMath::Vector3 brakeForce = DirectX::SimpleMath::Vector3::Zero;
+
     float       collectiveInput;
     const float collectiveInputMax = 1.0f;
     const float collectiveInputMin = 0.0f;
@@ -123,6 +130,7 @@ struct HeliData
     DirectX::SimpleMath::Vector3 hoverDriveNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     float hoverDriveMag = 0.0f;
     const float hoverDriveMagMax = 100000.0f;
+    const float brakeMagMax = 3000.0f;
 
     /*
     const float groundNormalForceRange = 5.0f;
@@ -283,9 +291,10 @@ private:
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
     void UpdateAlignmentTorque();
-    void UpdateBladeLiftForce(const float aTimeStep);
-    Utility::Torque UpdateBodyTorqueRunge(const float aTimeStep);
     void UpdateAlignmentCamera();
+    void UpdateBladeLiftForce(const float aTimeStep);
+    Utility::Torque UpdateBodyTorqueRunge(const float aTimeStep);  
+    void UpdateBrakeForce(const float aTimeStep);
     void UpdateCyclicStick(ControlInput& aInput);
     float UpdateGroundEffectForce(const float aLiftForce);
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);

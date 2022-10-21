@@ -812,6 +812,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
 
     velocityUpdate += GetSlopeForce(aHeli->terrainNormal, GetAltitude(), aHeli->groundNormalForceRange);
     velocityUpdate += airResistance;
+    velocityUpdate += aHeli->controlInput.brakeForce;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(static_cast<float>(aTimeDelta));
 
     //  Assign right-hand side values.
@@ -1230,6 +1231,43 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(const float aTimeStep)
     return updatedTorque;
 }
 
+void Vehicle::UpdateBrakeForce(const float aTimeStep)
+{
+    if (m_heli.controlInput.brakeIsPressed == true)
+    {
+        m_heli.controlInput.brakeInput += m_heli.controlInput.breakInputRate * aTimeStep;
+        if (m_heli.controlInput.brakeInput > m_heli.controlInput.breakInputMax)
+        {
+            m_heli.controlInput.brakeInput = m_heli.controlInput.breakInputMax;
+        }
+    }
+    else if (m_heli.controlInput.brakeIsPressed == false)
+    {
+        m_heli.controlInput.brakeInput -= m_heli.controlInput.breakInputRate * aTimeStep;
+        if (m_heli.controlInput.brakeInput < m_heli.controlInput.breakInputMin)
+        {
+            m_heli.controlInput.brakeInput = m_heli.controlInput.breakInputMin;
+        }
+    }
+    m_heli.controlInput.brakeIsPressed = false;
+
+    if (m_heli.controlInput.brakeInput > m_heli.controlInput.breakInputMin)
+    {
+        DirectX::SimpleMath::Vector3 antiVelocity = m_heli.q.velocity * -1.0f;
+        DirectX::SimpleMath::Vector3 brakeNorm = antiVelocity;
+        brakeNorm.y = 0.0f;
+        const float brakableVelocity = brakeNorm.Length();
+        brakeNorm.Normalize();
+        DirectX::SimpleMath::Vector3 brakeForce = brakeNorm * ((m_heli.controlInput.brakeInput * m_heli.brakeMagMax) * brakableVelocity);
+        m_heli.controlInput.brakeForce = brakeForce;
+    }
+    else
+    {
+        m_heli.controlInput.brakeForce = DirectX::SimpleMath::Vector3::Zero;
+    }
+
+}
+
 float Vehicle::CalculateWindVaningVal(const HeliData& aHeliData)
 {
     DirectX::SimpleMath::Vector3 localizedAirVelocity = -aHeliData.q.velocity;
@@ -1564,6 +1602,9 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     
     UpdateTerrainNorm();
     m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
+    UpdateBrakeForce(static_cast<float>(aTimeDelta));
+    m_debugData->DebugPushUILineDecimalNumber("Brake Input = ", m_heli.controlInput.brakeInput, "");
+    m_debugData->DebugPushUILineDecimalNumber("Brake Force = ", m_heli.controlInput.brakeForce.Length(), "");
     UpdateTerrainNormTorque();
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
@@ -1581,6 +1622,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 speed = m_heli.q.velocity;
     speed.y = 0.0f;
     m_heli.speed = speed.Length();
+    m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
 
     InputDecay(aTimeDelta);
 
@@ -1600,7 +1642,16 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
 void Vehicle::DebugInputVelocityZero()
 {
-    m_heli.q.velocity = DirectX::SimpleMath::Vector3::Zero;
+    //m_heli.q.velocity = DirectX::SimpleMath::Vector3::Zero;
+    const float speed = m_heli.q.velocity.Length();
+    DirectX::SimpleMath::Vector3 antiVelocity = m_heli.q.velocity * -1.0f;
+    DirectX::SimpleMath::Vector3 brakeNorm = antiVelocity;
+    brakeNorm.Normalize();
+    const float brakeVal = 0.02f;
+
+    DirectX::SimpleMath::Vector3 brakeForce = antiVelocity  * brakeVal;
+    //m_heli.q.velocity += brakeForce;
+    m_heli.controlInput.brakeIsPressed = true;
 }
 
 void Vehicle::TestFireCannon()

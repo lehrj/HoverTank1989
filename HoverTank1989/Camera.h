@@ -247,6 +247,7 @@ private:
     void UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer2(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer3(DX::StepTimer const& aTimeDelta);
+    void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
 
     // SpinCamera
     float m_cameraSpin = 0.0;

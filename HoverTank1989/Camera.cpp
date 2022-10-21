@@ -1133,28 +1133,19 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 
 void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
 {
-	DirectX::SimpleMath::Matrix worldMatrix = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleFocus->GetPos(), -m_vehicleFocus->GetVehicleRight(), m_vehicleFocus->GetVehicleUp());
-	DirectX::SimpleMath::Matrix localizationMatrix = worldMatrix;
-	localizationMatrix = localizationMatrix.Invert();
-
-	DirectX::SimpleMath::Vector3 vehiclePos = m_vehicleFocus->GetPos();
-	vehiclePos += (m_vehicleFocus->GetForward() * 5.0f);
-	m_springTarget.position = vehiclePos;
-	//m_springTarget.position = vehiclePos + (m_vehicleFocus->GetWeaponDirection() * 10.0f);
-	m_springTarget.position.y += m_vehicleFocus->GetWeaponPitch() * 10.0f;
+	m_springTarget.position = m_vehicleFocus->GetPos();
 	
-
 	DirectX::SimpleMath::Vector3 weaponRight = m_vehicleFocus->GetWeaponDirection().Cross(m_vehicleFocus->GetVehicleUp());
-	DirectX::SimpleMath::Matrix pitchRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(weaponRight, m_vehicleFocus->GetWeaponPitch());
+	const float pitchDampening = 0.5f;
+	DirectX::SimpleMath::Matrix pitchRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(weaponRight, m_vehicleFocus->GetWeaponPitch() * pitchDampening);
 	DirectX::SimpleMath::Matrix yawRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleFocus->GetVehicleUp(), m_vehicleFocus->GetTurretYaw());
 	DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetAlignment();
 	
 	rotMat *= yawRotMat;
 	rotMat *= pitchRotMat;
 	DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
-	//testHeading = m_vehicleFocus->GetWeaponDirection();
 	testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
-	//testHeading = m_vehicleFocus->GetWeaponDirection();
+	testHeading = m_vehicleFocus->GetWeaponDirection();
 	m_springTarget.forward = testHeading;
 
 	DirectX::SimpleMath::Vector3 idealPosition = m_springTarget.position - m_springTarget.forward * m_hDistance + m_springTarget.up * m_vDistance;
@@ -1163,23 +1154,8 @@ void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
 	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 
-	DirectX::SimpleMath::Vector3 testTarget = m_springTarget.position - m_actualPosition;
-	testTarget = DirectX::SimpleMath::Vector3::Transform(testTarget, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw() * 0.1f));
-	testTarget += m_actualPosition;
-	m_springTarget.position = testTarget;
-	//m_debugData->DebugPushTestLinePositionIndicator(m_springTarget.position, 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	//m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetPos(), 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetWeaponPos(), 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	m_debugData->DebugPushUILineDecimalNumber("Yaw = ", m_vehicleFocus->GetTurretYaw(), "");
-	DirectX::SimpleMath::Vector3 testActual =  m_actualPosition - m_springTarget.position;
-	testActual = DirectX::SimpleMath::Vector3::Transform(testActual, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
-	testActual += m_springTarget.position;
-	//m_actualPosition = testActual;
-
-	//m_actualPosition = DirectX::SimpleMath::Vector3::Transform(m_actualPosition, yawRotMat);
 	m_position = m_actualPosition;
 	m_target = m_springTarget.position;
-	//ComputeSpringMatrix();
 	DirectX::SimpleMath::Vector3 cameraForward = m_springTarget.position - m_actualPosition;
 	cameraForward.Normalize();
 	DirectX::SimpleMath::Vector3 cameraLeft = m_springTarget.up.Cross(cameraForward);
@@ -1187,23 +1163,6 @@ void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
 	DirectX::SimpleMath::Vector3 cameraUp = cameraForward.Cross(cameraLeft);
 	cameraUp.Normalize();
 	m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_actualPosition, m_springTarget.position, cameraUp);
-
-	DirectX::SimpleMath::Vector3 localActualPosition = DirectX::SimpleMath::Vector3::Transform(m_actualPosition, localizationMatrix);
-	//localActualPosition = DirectX::SimpleMath::Vector3(-19.0f, 7.0f, 0.0f);
-	DirectX::SimpleMath::Matrix weaponRotMat = DirectX::SimpleMath::Matrix::Identity;
-	weaponRotMat *= yawRotMat;
-	weaponRotMat *= pitchRotMat;
-	localActualPosition = DirectX::SimpleMath::Vector3::Transform(localActualPosition, weaponRotMat);
-	DirectX::SimpleMath::Vector3 worldActualPosition = DirectX::SimpleMath::Vector3::Transform(localActualPosition, worldMatrix);
-
-	cameraForward = m_springTarget.position - worldActualPosition;
-	cameraForward.Normalize();
-	cameraLeft = m_springTarget.up.Cross(cameraForward);
-	cameraLeft.Normalize();
-	cameraUp = cameraForward.Cross(cameraLeft);
-	cameraUp.Normalize();
-	//m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(worldActualPosition, m_springTarget.position, cameraUp);
-
 	m_viewMatrix = m_springCameraMatrix;
 }
 
@@ -1307,6 +1266,94 @@ void Camera::UpdateSpringCameraPlayer3(DX::StepTimer const& aTimeDelta)
 	cameraUp = cameraForward.Cross(cameraLeft);
 	cameraUp.Normalize();
 	m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(worldActualPosition, m_springTarget.position, cameraUp);
+
+	m_viewMatrix = m_springCameraMatrix;
+}
+
+void Camera::UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta)
+{
+	DirectX::SimpleMath::Matrix worldMatrix = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleFocus->GetPos(), -m_vehicleFocus->GetVehicleRight(), m_vehicleFocus->GetVehicleUp());
+	DirectX::SimpleMath::Matrix localizationMatrix = worldMatrix;
+	localizationMatrix = localizationMatrix.Invert();
+
+	DirectX::SimpleMath::Vector3 vehiclePos = m_vehicleFocus->GetPos();
+	//vehiclePos += (m_vehicleFocus->GetForward() * 5.0f);
+	m_springTarget.position = vehiclePos;
+	//m_springTarget.position = vehiclePos + (m_vehicleFocus->GetWeaponDirection() * 10.0f);
+	//m_springTarget.position.y += m_vehicleFocus->GetWeaponPitch() * 10.0f;
+
+
+	DirectX::SimpleMath::Vector3 weaponRight = m_vehicleFocus->GetWeaponDirection().Cross(m_vehicleFocus->GetVehicleUp());
+	const float pitchDampening = 0.5f;
+	DirectX::SimpleMath::Matrix pitchRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(weaponRight, m_vehicleFocus->GetWeaponPitch() * pitchDampening);
+	DirectX::SimpleMath::Matrix yawRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleFocus->GetVehicleUp(), m_vehicleFocus->GetTurretYaw());
+	DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetAlignment();
+
+	rotMat *= yawRotMat;
+	rotMat *= pitchRotMat;
+	DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
+	//testHeading = m_vehicleFocus->GetWeaponDirection();
+	testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
+	//testHeading = m_vehicleFocus->GetWeaponDirection();
+	m_springTarget.forward = testHeading;
+	DirectX::SimpleMath::Vector3 testForword1 = testHeading;
+	DirectX::SimpleMath::Vector3 testForword2 = m_vehicleFocus->GetWeaponDirection();
+	m_debugData->DebugPushTestLine(m_vehicleFocus->GetPos(), testForword1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	m_debugData->DebugPushTestLine(m_vehicleFocus->GetPos(), testForword2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::SimpleMath::Vector3 testTarget = m_springTarget.position - m_actualPosition;
+	testTarget = DirectX::SimpleMath::Vector3::Transform(testTarget, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw() * 0.1f));
+	testTarget += m_actualPosition;
+	//m_springTarget.position = testTarget;
+
+
+
+	DirectX::SimpleMath::Vector3 idealPosition = m_springTarget.position - m_springTarget.forward * m_hDistance + m_springTarget.up * m_vDistance;
+	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
+	DirectX::SimpleMath::Vector3 springAccel = (-m_springConstant * displacement) - (m_dampConstant * m_velocity);
+	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
+	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
+
+
+
+
+
+	m_debugData->DebugPushTestLinePositionIndicator(m_springTarget.position, 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetPos(), 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetWeaponPos(), 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	m_debugData->DebugPushUILineDecimalNumber("Yaw = ", m_vehicleFocus->GetTurretYaw(), "");
+	DirectX::SimpleMath::Vector3 testActual = m_actualPosition - m_springTarget.position;
+	testActual = DirectX::SimpleMath::Vector3::Transform(testActual, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
+	testActual += m_springTarget.position;
+	//m_actualPosition = testActual;
+
+	//m_actualPosition = DirectX::SimpleMath::Vector3::Transform(m_actualPosition, yawRotMat);
+	m_position = m_actualPosition;
+	m_target = m_springTarget.position;
+	//ComputeSpringMatrix();
+	DirectX::SimpleMath::Vector3 cameraForward = m_springTarget.position - m_actualPosition;
+	cameraForward.Normalize();
+	DirectX::SimpleMath::Vector3 cameraLeft = m_springTarget.up.Cross(cameraForward);
+	cameraLeft.Normalize();
+	DirectX::SimpleMath::Vector3 cameraUp = cameraForward.Cross(cameraLeft);
+	cameraUp.Normalize();
+	m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_actualPosition, m_springTarget.position, cameraUp);
+
+	DirectX::SimpleMath::Vector3 localActualPosition = DirectX::SimpleMath::Vector3::Transform(m_actualPosition, localizationMatrix);
+	//localActualPosition = DirectX::SimpleMath::Vector3(-19.0f, 7.0f, 0.0f);
+	DirectX::SimpleMath::Matrix weaponRotMat = DirectX::SimpleMath::Matrix::Identity;
+	weaponRotMat *= yawRotMat;
+	weaponRotMat *= pitchRotMat;
+	localActualPosition = DirectX::SimpleMath::Vector3::Transform(localActualPosition, weaponRotMat);
+	DirectX::SimpleMath::Vector3 worldActualPosition = DirectX::SimpleMath::Vector3::Transform(localActualPosition, worldMatrix);
+
+	cameraForward = m_springTarget.position - worldActualPosition;
+	cameraForward.Normalize();
+	cameraLeft = m_springTarget.up.Cross(cameraForward);
+	cameraLeft.Normalize();
+	cameraUp = cameraForward.Cross(cameraLeft);
+	cameraUp.Normalize();
+	//m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(worldActualPosition, m_springTarget.position, cameraUp);
 
 	m_viewMatrix = m_springCameraMatrix;
 }
