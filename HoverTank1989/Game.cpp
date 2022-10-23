@@ -1068,6 +1068,35 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_isDisplayEndScreenTrue = true;
         }
     }
+    if (m_kbStateTracker.pressed.D1)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            SetUiDisplay("Kinetic Cannon Ammo Loaded");
+        }
+    }
+    if (m_kbStateTracker.pressed.D2)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            SetUiDisplay("Shotgun Ammo Loaded");
+        }
+    }
+    if (m_kbStateTracker.pressed.D3)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            SetUiDisplay("Explosive Cannon Ammo Loaded");
+        }
+    }
+    if (m_kbStateTracker.pressed.D4)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            SetUiDisplay("Explosive MIRV Ammo Loaded");
+        }
+    }
+
     auto mouse = m_mouse->GetState();
 
     if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
@@ -1156,6 +1185,10 @@ void Game::Render()
     if (m_isDisplayEndScreenTrue == true)
     {
         DrawEndUI();
+    }
+    if (m_isUiDisplayTrue == true)
+    {
+        DrawUIDisplay();
     }
     m_spriteBatch->End();
 
@@ -1453,6 +1486,54 @@ void Game::DrawEndUI()
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, fontScale);
 }
 
+void Game::DrawUIDisplay()
+{
+    m_uiDisplayTimer += static_cast<float>(m_timer.GetElapsedSeconds());
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
+    textLinePos.x = 960;
+    textLinePos.y = 540;
+    const float maxScale = 3.0f;
+
+    float fontScale = m_endScreenTimer * 0.5f;
+    //fontScale *= 3.0f;
+    fontScale = 3.0f;
+    if (fontScale > maxScale)
+    {
+        fontScale = maxScale;
+    }
+    std::string textLine = m_uiDisplayString;
+    
+    if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
+    {
+        int textSize = textLine.size();
+        float ratio = m_uiDisplayTimer / m_uiDisplayTypeDuration;
+        int displaySize = static_cast<int>(ratio * static_cast<float>(textSize));
+        textLine.resize(displaySize);
+    }
+    
+
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, fontScale);
+    const float shiftMod = -2.0f;
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::DimGray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, fontScale);
+
+    if (m_uiDisplayTimer > m_uiDisplayDuration)
+    {
+        m_isUiDisplayTrue = false;
+    }
+}
+
 void Game::DrawUnlockUI()
 {
     m_unlockTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
@@ -1723,4 +1804,14 @@ void Game::OnDeviceRestored()
 
     CreateWindowSizeDependentResources();
 }
+
+
+void Game::SetUiDisplay(std::string aString)
+{
+    m_uiDisplayString = aString;
+    m_uiDisplayTimer = 0.0f;
+    m_isUiDisplayTrue = true;
+}
+
+
 #pragma endregion

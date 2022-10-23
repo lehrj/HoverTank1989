@@ -70,6 +70,7 @@ private:
     void DrawSky();
     void DrawTerrainNew(Terrain& aTerrain);
     void DrawTestTrack();
+    void DrawUIDisplay();
     void DrawUnlockUI();
 
     bool InitializeTerrainArray();
@@ -348,9 +349,9 @@ private:
     const float m_startTerrainMaxY = 0.347000033f;
     const float m_gameTerrainMaxY = 396.0f;
 
-    float m_testTimer1 = 0.0f;
-    float m_testTimer2 = 0.0f;
     float m_skyRotation = 0.0f;
+    float m_testTimer1 = 0.0f;
+    float m_testTimer2 = 0.0f; 
     float m_unlockTimer1 = 0.0f;
     float m_unlockTimer2 = 0.0f;
     const int m_unlockCountDownTicks = 5;
@@ -359,6 +360,14 @@ private:
 
     float m_endScreenTimer = 0.0f;
     bool m_isDisplayEndScreenTrue = false;
+
+    const float m_uiDisplayDuration = 4.0f;
+    const float m_uiDisplayTypeDuration = 2.0f;
+    float m_uiDisplayTimer = 0.0f;
+    bool m_isUiDisplayTrue = false;
+    std::string m_uiDisplayString = "";
+    void SetUiDisplay(std::string aString);
+
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
