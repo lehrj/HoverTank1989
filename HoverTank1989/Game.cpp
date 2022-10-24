@@ -81,6 +81,9 @@ void Game::Initialize(HWND window, int width, int height)
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"Art/Audio/audioBank.xwb");
 
+    // Game Pad
+    m_gamePad = std::make_unique<GamePad>();
+
     // height map intit
     bool result;
     bool isInitSuccessTrue = true;
@@ -840,7 +843,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCyclicPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));          
+            m_vehicle->InputCyclicPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad6)
@@ -1114,6 +1117,83 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
         m_mouse->SetMode(mouse.leftButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
     }
+
+    auto pad = m_gamePad->GetState(0);
+    const float inputMod1 = 0.05f;
+    const float inputMod2 = 0.05f;
+    if (pad.IsConnected())
+    {
+        m_buttons.Update(pad);
+
+        if (pad.IsViewPressed())
+        {
+            ExitGame();
+        }
+        if (pad.IsLeftThumbStickLeft() == true)
+        {
+            m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
+        }
+        if (pad.IsLeftThumbStickRight() == true)
+        {
+            m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
+        }
+        if (pad.IsLeftThumbStickUp() == true)
+        {
+            m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
+        }
+        if (pad.IsLeftThumbStickDown() == true)
+        {
+            m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
+        }
+        if (pad.IsRightThumbStickLeft() == true)
+        {
+            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod1);
+        }
+        if (pad.IsRightThumbStickRight() == true)
+        {
+            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod1);
+        }
+        if (pad.IsRightThumbStickUp() == true)
+        {
+            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod1);
+        }
+        if (pad.IsRightThumbStickDown() == true)
+        {
+            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod1);
+        }
+        if (pad.IsLeftTriggerPressed() == true)
+        {
+            m_vehicle->InputYawPedal(-pad.triggers.left * inputMod2);
+        }
+        if (pad.IsRightTriggerPressed() == true)
+        {
+            m_vehicle->InputYawPedal(pad.triggers.right * inputMod2);
+        }
+        if (pad.IsRightShoulderPressed() == true)
+        {
+            //m_vehicle->TestFireCannon();
+            //m_vehicle->TestFireShotgun();
+            //m_vehicle->TestFireExplosive();
+            //m_vehicle->TestFireMirv();
+        }
+        if (pad.IsLeftStickPressed() == true)
+        {
+            m_vehicle->DebugInputVelocityZero();
+        }
+    }
+    else
+    {
+        m_buttons.Reset();
+    }
+
+    if (m_buttons.a == GamePad::ButtonStateTracker::PRESSED)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->TestFireCannon();
+        }
+    }
+
 }
 
 #pragma region Frame Render
@@ -1225,17 +1305,21 @@ void Game::Clear()
 void Game::OnActivated()
 {
     // TODO: Game is becoming active window.
+    m_gamePad->Resume();
+    m_buttons.Reset();
 }
 
 void Game::OnDeactivated()
 {
     // TODO: Game is becoming background window.
+    m_gamePad->Suspend();
 }
 
 void Game::OnSuspending()
 {
     // TODO: Game is being power-suspended (or minimized).
     m_audioEngine->Suspend();
+    m_gamePad->Suspend();
 }
 
 void Game::OnResuming()
@@ -1243,6 +1327,8 @@ void Game::OnResuming()
     m_timer.ResetElapsedTime();
 
     // TODO: Game is being power-resumed (or returning from minimize).
+    m_gamePad->Resume();
+    m_buttons.Reset();
     m_kbStateTracker.Reset();
     m_audioEngine->Resume();
 }
@@ -1501,7 +1587,7 @@ void Game::DrawUIDisplay()
     
     if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
     {
-        int textSize = textLine.size();
+        int textSize = static_cast<int>(textLine.size());
         float ratio = m_uiDisplayTimer / m_uiDisplayTypeDuration;
         int displaySize = static_cast<int>(ratio * static_cast<float>(textSize));
         textLine.resize(displaySize);

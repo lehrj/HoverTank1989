@@ -169,6 +169,8 @@ private:
     std::unique_ptr<DirectX::Keyboard>              m_keyboard;
     std::unique_ptr<DirectX::Mouse>                 m_mouse;
     DirectX::Keyboard::KeyboardStateTracker         m_kbStateTracker;
+    std::unique_ptr<DirectX::GamePad>               m_gamePad;
+    DirectX::GamePad::ButtonStateTracker            m_buttons;
 
     std::unique_ptr<DirectX::SpriteFont>            m_font;
     std::unique_ptr<DirectX::SpriteFont>            m_titleFont;
@@ -367,7 +369,6 @@ private:
     bool m_isUiDisplayTrue = false;
     std::string m_uiDisplayString = "";
     void SetUiDisplay(std::string aString);
-
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
