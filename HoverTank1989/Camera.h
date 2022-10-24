@@ -61,13 +61,16 @@ public:
     DirectX::SimpleMath::Vector3 GetPreSwingTargPos(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
     DirectX::SimpleMath::Matrix GetProjectionMatrix() const { return m_projectionMatrix; };
     DirectX::SimpleMath::Vector3 GetSwingCamPos(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
-    DirectX::SimpleMath::Vector3 GetSwingTargPos(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
-    DirectX::SimpleMath::Matrix GetViewMatrix() const { return m_viewMatrix; };
+    DirectX::SimpleMath::Vector3 GetSwingTargPos(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);    
     DirectX::SimpleMath::Vector3 GetTargetPos() const { return m_target; };
     DirectX::SimpleMath::Vector3 GetUp() const { return m_up; };
+    DirectX::SimpleMath::Matrix GetViewMatrix() const { return m_viewMatrix; };
     float GetViewPlaneNear() const { return m_nearPlane; };
     float GetViewPlaneFar() const { return m_farPlane; };
+    int GetWindowHeight() const { return m_clientHeight; };
+    int GetWindowWidth() const { return m_clientWidth; };
     float GetYaw() const { return m_yaw; };
+
     void InintializePreSwingCamera(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
     bool IsCameraAtDestination();
     void OnResize(uint32_t aWidth, uint32_t aHeight);

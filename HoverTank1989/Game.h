@@ -362,7 +362,7 @@ private:
     bool m_isDisplayEndScreenTrue = false;
 
     const float m_uiDisplayDuration = 4.0f;
-    const float m_uiDisplayTypeDuration = 2.0f;
+    const float m_uiDisplayTypeDuration = 1.2f;
     float m_uiDisplayTimer = 0.0f;
     bool m_isUiDisplayTrue = false;
     std::string m_uiDisplayString = "";

@@ -1492,15 +1492,11 @@ void Game::DrawUIDisplay()
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
     textLinePos.x = 960;
     textLinePos.y = 540;
-    const float maxScale = 3.0f;
 
-    float fontScale = m_endScreenTimer * 0.5f;
-    //fontScale *= 3.0f;
-    fontScale = 3.0f;
-    if (fontScale > maxScale)
-    {
-        fontScale = maxScale;
-    }
+    textLinePos.x = static_cast<float>(m_camera->GetWindowWidth() * 0.02f);
+    textLinePos.y = static_cast<float>(m_camera->GetWindowHeight() * 0.9f);
+    float fontScale = 3.0f;
+
     std::string textLine = m_uiDisplayString;
     
     if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
@@ -1509,10 +1505,10 @@ void Game::DrawUIDisplay()
         float ratio = m_uiDisplayTimer / m_uiDisplayTypeDuration;
         int displaySize = static_cast<int>(ratio * static_cast<float>(textSize));
         textLine.resize(displaySize);
-    }
-    
+    }   
 
-    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.0f;
+    textLineOrigin.x = 0.0f;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, fontScale);
     const float shiftMod = -2.0f;
     textLinePos.x += shiftMod;
