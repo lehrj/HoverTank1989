@@ -479,7 +479,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
     
-    UpdateInput(aTimer);
+    //UpdateInput(aTimer);
     
     if (m_isPauseOn == false)
     {
@@ -489,6 +489,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
     }
+    UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
     //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
 
@@ -1124,26 +1125,30 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     if (pad.IsConnected())
     {
         m_buttons.Update(pad);
-
+        m_debugData->DebugPushUILineDecimalNumber("pad.thumbSticks.leftX = ", pad.thumbSticks.leftX,"");
         if (pad.IsViewPressed())
         {
             ExitGame();
         }
         if (pad.IsLeftThumbStickLeft() == true)
         {
-            m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
+            //m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
+            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
         }
         if (pad.IsLeftThumbStickRight() == true)
         {
-            m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
+            //m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
+            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
         }
         if (pad.IsLeftThumbStickUp() == true)
         {
-            m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
+            //m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
+            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY);
         }
         if (pad.IsLeftThumbStickDown() == true)
         {
-            m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
+            //m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
+            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY);
         }
         if (pad.IsRightThumbStickLeft() == true)
         {

@@ -505,6 +505,22 @@ void Vehicle::InputCyclicRoll(const float aRollInput)
     }
 }
 
+void Vehicle::InputGamePadForward(const float aForwardInput)
+{
+    m_heli.controlInput.cyclicInputRollIsPressed = true;
+    const float updatedRoll = aForwardInput * m_heli.controlInput.cyclicInputMax;
+
+    m_heli.controlInput.cyclicInputPitch = updatedRoll;
+}
+
+void Vehicle::InputGamePadStrafe(const float aStrafeInput)
+{
+    m_heli.controlInput.cyclicInputRollIsPressed = true;
+    const float updatedRoll = aStrafeInput * m_heli.controlInput.cyclicInputMax;
+
+    m_heli.controlInput.cyclicInputRoll = updatedRoll;
+}
+
 void Vehicle::InputDecay(const double aTimeDelta)
 {
     const float timeDelta = static_cast<float>(aTimeDelta);
@@ -1603,8 +1619,6 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateTerrainNorm();
     m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
     UpdateBrakeForce(static_cast<float>(aTimeDelta));
-    m_debugData->DebugPushUILineDecimalNumber("Brake Input = ", m_heli.controlInput.brakeInput, "");
-    m_debugData->DebugPushUILineDecimalNumber("Brake Force = ", m_heli.controlInput.brakeForce.Length(), "");
     UpdateTerrainNormTorque();
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);

@@ -261,6 +261,9 @@ public:
     void InputYawPedal(const float aYawInput);
     void InputWeaponPitch(const float aPitchInput);
 
+    void InputGamePadForward(const float aForwardInput);
+    void InputGamePadStrafe(const float aStrafeInput);
+
     void Jump();
 
     void ResetVehicle();
