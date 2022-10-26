@@ -263,6 +263,7 @@ public:
 
     void InputGamePadForward(const float aForwardInput);
     void InputGamePadStrafe(const float aStrafeInput);
+    void InputGamePadTurn(const float aTurnInput);
 
     void Jump();
 

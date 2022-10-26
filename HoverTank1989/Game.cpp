@@ -1120,12 +1120,11 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
 
     auto pad = m_gamePad->GetState(0);
-    const float inputMod1 = 0.05f;
-    const float inputMod2 = 0.05f;
+
     if (pad.IsConnected())
     {
         m_buttons.Update(pad);
-        m_debugData->DebugPushUILineDecimalNumber("pad.thumbSticks.leftX = ", pad.thumbSticks.leftX,"");
+
         if (pad.IsViewPressed())
         {
             ExitGame();
@@ -1152,27 +1151,36 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (pad.IsRightThumbStickLeft() == true)
         {
-            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod1);
+            const float inputMod = 0.05f;
+            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
         }
         if (pad.IsRightThumbStickRight() == true)
         {
-            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod1);
+            const float inputMod = 0.05f;
+            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
         }
         if (pad.IsRightThumbStickUp() == true)
         {
-            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod1);
+            const float inputMod = 0.05f;
+            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod);
         }
         if (pad.IsRightThumbStickDown() == true)
         {
-            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod1);
+            const float inputMod = 0.05f;
+            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod);
         }
         if (pad.IsLeftTriggerPressed() == true)
         {
-            m_vehicle->InputYawPedal(-pad.triggers.left * inputMod2);
+            //m_vehicle->InputYawPedal(-pad.triggers.left * inputMod2);
         }
         if (pad.IsRightTriggerPressed() == true)
         {
-            m_vehicle->InputYawPedal(pad.triggers.right * inputMod2);
+           // m_vehicle->InputYawPedal(pad.triggers.right * inputMod2);
+        }
+        if (pad.IsLeftTriggerPressed() == true || pad.IsRightTriggerPressed() == true)
+        {
+            const float turnMod = 0.1f;
+            m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right) * turnMod);
         }
         if (pad.IsRightShoulderPressed() == true)
         {
@@ -1198,7 +1206,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->TestFireCannon();
         }
     }
-
 }
 
 #pragma region Frame Render

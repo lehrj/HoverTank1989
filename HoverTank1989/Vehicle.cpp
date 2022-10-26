@@ -507,10 +507,10 @@ void Vehicle::InputCyclicRoll(const float aRollInput)
 
 void Vehicle::InputGamePadForward(const float aForwardInput)
 {
-    m_heli.controlInput.cyclicInputRollIsPressed = true;
-    const float updatedRoll = aForwardInput * m_heli.controlInput.cyclicInputMax;
+    m_heli.controlInput.cyclicInputPitchIsPressed = true;
+    const float updatedForward = aForwardInput * m_heli.controlInput.cyclicInputMax;
 
-    m_heli.controlInput.cyclicInputPitch = updatedRoll;
+    m_heli.controlInput.cyclicInputPitch = updatedForward;
 }
 
 void Vehicle::InputGamePadStrafe(const float aStrafeInput)
@@ -519,6 +519,14 @@ void Vehicle::InputGamePadStrafe(const float aStrafeInput)
     const float updatedRoll = aStrafeInput * m_heli.controlInput.cyclicInputMax;
 
     m_heli.controlInput.cyclicInputRoll = updatedRoll;
+}
+
+void Vehicle::InputGamePadTurn(const float aTurnInput)
+{
+    m_heli.controlInput.yawPedalIsPressed = true;
+    const float updatedYaw = aTurnInput * m_heli.controlInput.yawPedalInputMax;
+
+    m_heli.controlInput.yawPedalInput = updatedYaw;
 }
 
 void Vehicle::InputDecay(const double aTimeDelta)
