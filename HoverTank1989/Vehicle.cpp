@@ -1645,7 +1645,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     speed.y = 0.0f;
     m_heli.speed = speed.Length();
     m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
-
+    m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
     InputDecay(aTimeDelta);
 
     m_heli.testAccel = (m_heli.q.velocity.Length() - prevVelocity.Length()) / static_cast<float>(aTimeDelta);
@@ -1678,25 +1678,27 @@ void Vehicle::DebugInputVelocityZero()
 
 void Vehicle::TestFireCannon()
 {
-    DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
-    DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
-    DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
-    m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, velocity);
+    if (m_fireControl->GetIsCoolDownActive() == false)
+    {
+        DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
+        DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+        DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
+        m_fireControl->FireProjectile(AmmoType::AMMOTYPE_BALL01, pos, launchDir, velocity);
+        
+        m_isFiredTest = true;
+        m_fireForceTest = -launchDir;
+        m_fireForceTest.Normalize();
+        const float fireForceMag = 1000000.0f;
+        m_fireForceTest *= fireForceMag;
 
-
-    m_isFiredTest = true;
-    m_fireForceTest = -launchDir;
-    m_fireForceTest.Normalize();
-    const float fireForceMag = 1000000.0f;
-    m_fireForceTest *= fireForceMag;
-
-    m_testImpulseForce.currentTime = 0.0f;
-    m_testImpulseForce.totalTime = 0.1f;
-    m_testImpulseForce.currentMagnitude = 0.0f;
-    m_testImpulseForce.maxMagnitude = 50000.0f;
-    m_testImpulseForce.directionNorm = -launchDir;
-    m_testImpulseForce.directionNorm.Normalize();
-    m_testImpulseForce.isActive = true;
+        m_testImpulseForce.currentTime = 0.0f;
+        m_testImpulseForce.totalTime = 0.1f;
+        m_testImpulseForce.currentMagnitude = 0.0f;
+        m_testImpulseForce.maxMagnitude = 50000.0f;
+        m_testImpulseForce.directionNorm = -launchDir;
+        m_testImpulseForce.directionNorm.Normalize();
+        m_testImpulseForce.isActive = true;        
+    }
 }
 
 void Vehicle::TestFireExplosive()

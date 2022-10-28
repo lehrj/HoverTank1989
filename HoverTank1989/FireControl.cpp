@@ -234,32 +234,37 @@ void FireControl::DrawProjectile(const DirectX::SimpleMath::Matrix aView, const 
 
 void FireControl::FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
-    AmmoData firedAmmo;
-    if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
+    if (m_isCoolDownActive == false)
     {
-        firedAmmo = m_ballAmmoStruct.ammoData;
+        m_isCoolDownActive = true;
+        AmmoData firedAmmo;
+        if (aAmmoType == AmmoType::AMMOTYPE_BALL01)
+        {
+            firedAmmo = m_ballAmmoStruct.ammoData;
+        }
+        else
+        {
+            firedAmmo = m_ballAmmoStruct.ammoData;
+        }
+
+        ProjectileData firedProjectile;
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+
+        // collision data
+        firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+
+        firedProjectile.time = 0.0f;
+        m_projectileVec.push_back(firedProjectile);
     }
-    else
-    {
-        firedAmmo = m_ballAmmoStruct.ammoData;
-    }
 
-    ProjectileData firedProjectile;
-    firedProjectile.ammoData = firedAmmo;
-    firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ballAmmoStruct.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
-    firedProjectile.isCollisionTrue = false;
-    firedProjectile.isDeleteTrue = false;
-    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
-
-    // collision data
-    firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
-    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
-    firedProjectile.collisionData.mass = firedAmmo.mass;
-    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
-
-    firedProjectile.time = 0.0f;
-    m_projectileVec.push_back(firedProjectile);
 }
 
 void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
@@ -282,7 +287,7 @@ void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLa
 
     firedProjectile.time = 0.0f;
 
-    firedProjectile.testIsMidAirDeployAvailable = false;
+    firedProjectile.isMidAirDeployAvailable = false;
 
     m_projectileVec.push_back(firedProjectile);
 }
@@ -307,8 +312,8 @@ void FireControl::FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchP
 
     firedProjectile.time = 0.0f;
 
-    firedProjectile.testIsMidAirDeployAvailable = true;
-    firedProjectile.testIsFuseTriggered = false;
+    firedProjectile.isMidAirDeployAvailable = true;
+    firedProjectile.isFuseTriggered = false;
 
     m_projectileVec.push_back(firedProjectile);
 }
@@ -735,6 +740,17 @@ void FireControl::SetNPCController(std::shared_ptr<NPCController> aNPCController
 
 void FireControl::UpdateFireControl(double aTimeDelta)
 {
+    if (m_isCoolDownActive == true)
+    {
+        m_testCoolDownTimer += static_cast<float>(aTimeDelta);
+        if (m_testCoolDownTimer >= m_testCoolDown)
+        {
+            m_testCoolDownTimer = 0.0f;
+            m_isCoolDownActive = false;
+        }
+    }
+
+
     m_testTimer += static_cast<float>(aTimeDelta);
     UpdateProjectileVec(aTimeDelta);
     UpdateExplosionVec(aTimeDelta);
@@ -888,20 +904,20 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
 void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta)
 {  
-    if (aProjectile.testIsFuseTriggered == true)
+    if (aProjectile.isFuseTriggered == true)
     {
-        aProjectile.testFuseTimer -= static_cast<float>(aTimeDelta);
-        if (aProjectile.testFuseTimer < 0.0f)
+        aProjectile.fuseTimer -= static_cast<float>(aTimeDelta);
+        if (aProjectile.fuseTimer < 0.0f)
         {
             DeployMirv(aProjectile);
         }
     }
 
-    if (aProjectile.testIsFuseTriggered == false && aProjectile.q.velocity.y < 0.0f)
+    if (aProjectile.isFuseTriggered == false && aProjectile.q.velocity.y < 0.0f)
     {
-        aProjectile.testIsFuseTriggered = true;
+        aProjectile.isFuseTriggered = true;
         const float fuseDelay = 0.7f;
-        aProjectile.testFuseTimer = fuseDelay;
+        aProjectile.fuseTimer = fuseDelay;
     }
 }
 

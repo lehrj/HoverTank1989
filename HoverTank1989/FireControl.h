@@ -65,9 +65,9 @@ struct ProjectileData
     bool isDeleteTrue;
     float time;
     int liveTimeTick;
-    bool testIsMidAirDeployAvailable = false;
-    bool testIsFuseTriggered = false;
-    float testFuseTimer = 0.0f;
+    bool isMidAirDeployAvailable = false;
+    bool isFuseTriggered = false;
+    float fuseTimer = 0.0f;
 };
 
 enum class ExplosionType
@@ -193,7 +193,12 @@ private:
    
     float m_testTimer = 0.0f;
 
+    const float m_testCoolDown = 0.00016f;
+    float m_testCoolDownTimer = 0.0f;
+    bool m_isCoolDownActive = false;
+    
 public:
+    bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
     float GetMaxExplosionForce() const { return m_explosionStruct.maxExplosionForce; };
     float GetMaxExplosionImpactRadius() const { return m_explosionStruct.maxExplosionImpactRadius; };
 

@@ -997,6 +997,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->TestFireCannon();
         }
     }
+    if (kb.Space)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            //m_vehicle->TestFireCannon();
+        }
+    }
     if (m_kbStateTracker.released.Q)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1132,12 +1139,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (pad.IsLeftThumbStickLeft() == true)
         {
             //m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
-            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
+            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
+            const float inputMod = 0.2f;
+            m_vehicle->InputGamePadTurn(pad.thumbSticks.leftX * inputMod);
         }
         if (pad.IsLeftThumbStickRight() == true)
         {
+            const float inputMod = 0.2f;
             //m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
-            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
+            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
+            m_vehicle->InputGamePadTurn(pad.thumbSticks.leftX * inputMod);
         }
         if (pad.IsLeftThumbStickUp() == true)
         {
@@ -1153,11 +1164,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             const float inputMod = 0.05f;
             m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
+            const float inputMod2 = 0.3f;
+            //m_vehicle->InputGamePadTurn(pad.thumbSticks.rightX * inputMod2);
         }
         if (pad.IsRightThumbStickRight() == true)
         {
             const float inputMod = 0.05f;
             m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
+            const float inputMod2 = 0.3f;
+            //m_vehicle->InputGamePadTurn(pad.thumbSticks.rightX * inputMod2);
         }
         if (pad.IsRightThumbStickUp() == true)
         {
@@ -1175,16 +1190,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (pad.IsRightTriggerPressed() == true)
         {
-           // m_vehicle->InputYawPedal(pad.triggers.right * inputMod2);
+            //m_vehicle->InputYawPedal(pad.triggers.right * inputMod2);
         }
         if (pad.IsLeftTriggerPressed() == true || pad.IsRightTriggerPressed() == true)
         {
-            const float turnMod = 0.1f;
+            const float turnMod = 0.3f;
             m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right) * turnMod);
         }
         if (pad.IsRightShoulderPressed() == true)
         {
-            //m_vehicle->TestFireCannon();
+            m_vehicle->TestFireCannon();
             //m_vehicle->TestFireShotgun();
             //m_vehicle->TestFireExplosive();
             //m_vehicle->TestFireMirv();
