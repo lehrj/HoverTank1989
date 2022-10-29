@@ -9,6 +9,7 @@ enum class AmmoType
     AMMOTYPE_CANNON,
     AMMOTYPE_EXPLOSIVE,
     AMMOTYPE_MIRV,
+    AMMOTYPE_MACHINEGUN,
     AMMOTYPE_SHOTGUN,
 };
 
@@ -149,6 +150,7 @@ public:
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
 
     void UpdateFireControl(double aTimeDelta);
+
 private:
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
@@ -157,12 +159,14 @@ private:
     void InitializeAmmo(AmmoStruct& aAmmo);
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
+    void InitializeAmmoMachineGun(AmmoStruct& aAmmo);
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
+    void InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
@@ -182,6 +186,7 @@ private:
 
     AmmoStruct m_ammoCannon;
     AmmoStruct m_ammoExplosive;
+    AmmoStruct m_ammoMachineGun;
     AmmoStruct m_ammoMirv;
     AmmoStruct m_ammoShotgun;
     AmmoStruct m_ballAmmoStruct;

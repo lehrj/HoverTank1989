@@ -1697,7 +1697,7 @@ void Vehicle::TestFireCannon()
         m_testImpulseForce.maxMagnitude = 50000.0f;
         m_testImpulseForce.directionNorm = -launchDir;
         m_testImpulseForce.directionNorm.Normalize();
-        m_testImpulseForce.isActive = true;        
+        m_testImpulseForce.isActive = true;     
     }
 }
 
