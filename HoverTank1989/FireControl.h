@@ -5,7 +5,6 @@
 
 enum class AmmoType
 {
-    AMMOTYPE_BALL01,
     AMMOTYPE_CANNON,
     AMMOTYPE_EXPLOSIVE,
     AMMOTYPE_MIRV,
@@ -141,7 +140,7 @@ public:
         const DirectX::SimpleMath::Vector3 aLaunchPos, 
         const DirectX::SimpleMath::Vector3 aLaunchDirection, 
         Environment const* aEnvironment);
-    void FireProjectile(AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    void FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
@@ -157,14 +156,12 @@ private:
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
-    void InitializeAmmo(AmmoStruct& aAmmo);
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
     void InitializeAmmoMachineGun(AmmoStruct& aAmmo);
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
-    void InitializeProjectileModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
@@ -190,7 +187,6 @@ private:
     AmmoStruct m_ammoMachineGun;
     AmmoStruct m_ammoMirv;
     AmmoStruct m_ammoShotgun;
-    AmmoStruct m_ballAmmoStruct;
 
     ExplosionStruct m_explosionStruct;
 
