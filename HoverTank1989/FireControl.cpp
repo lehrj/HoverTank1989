@@ -453,6 +453,7 @@ void FireControl::InitializeAmmo(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 1.0f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
@@ -470,6 +471,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 1.2f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
@@ -487,6 +489,7 @@ void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_EXPLOSIVE;
     aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 1.7f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
@@ -504,6 +507,7 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MACHINEGUN;
     aAmmo.ammoData.baseDamage = 0.5f;
+    aAmmo.ammoData.cooldown = 0.02f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
@@ -521,6 +525,7 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MIRV;
     aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 1.9f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
@@ -538,6 +543,7 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_BALL01;
     aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 1.3f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;

@@ -38,6 +38,7 @@ struct AmmoData
 {
     AmmoType ammoType;
     float   baseDamage;
+    float   cooldown;
     float   dragCoefficient;
     float   impactDurration;
     float   impactModifier;
