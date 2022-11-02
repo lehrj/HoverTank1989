@@ -7,6 +7,11 @@ Vehicle::~Vehicle()
     //delete m_fireControl;
 }
 
+void Vehicle::CycleFireControlAmmo()
+{
+    m_fireControl->CycleLoadedAmmo();
+}
+
 DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVehicleData)
 {
     const DirectX::SimpleMath::Vector3 gravForce = -m_environment->GetGravityVec();

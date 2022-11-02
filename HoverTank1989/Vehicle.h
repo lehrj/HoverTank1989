@@ -209,6 +209,7 @@ class Vehicle
 {
 public:
     ~Vehicle();
+    void CycleFireControlAmmo();
     void DebugToggle();
 
     void DebugInputVelocityZero();

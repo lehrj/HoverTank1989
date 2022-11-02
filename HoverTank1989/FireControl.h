@@ -134,6 +134,7 @@ struct ExplosionStruct
 class FireControl
 {
 public:
+    void CycleLoadedAmmo();
     void DrawExplosion(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
@@ -198,6 +199,8 @@ private:
     const float m_testCoolDown = 0.00016f;
     float m_coolDownTimer = 0.0f;
     bool m_isCoolDownActive = false;
+
+    AmmoType m_currentAmmoType;
     
 public:
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };

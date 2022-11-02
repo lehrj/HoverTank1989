@@ -987,7 +987,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            m_vehicle->CycleFireControlAmmo();
         }
     }
     if (m_kbStateTracker.pressed.Space)
@@ -1219,6 +1219,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->TestFireCannon();
+        }
+    }
+    if (m_buttons.y == GamePad::ButtonStateTracker::PRESSED)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->CycleFireControlAmmo();
         }
     }
 }

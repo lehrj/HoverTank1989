@@ -102,6 +102,30 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, Explo
     m_explosionStruct.explosionVec.push_back(createdExplosion);
 }
 
+void FireControl::CycleLoadedAmmo()
+{
+    if (m_currentAmmoType == AmmoType::AMMOTYPE_CANNON)
+    {
+        m_currentAmmoType = AmmoType::AMMOTYPE_MACHINEGUN;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
+    {
+        m_currentAmmoType = AmmoType::AMMOTYPE_SHOTGUN;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
+    {
+        m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+    {
+        m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
+    {
+        m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
+    }
+}
+
 void FireControl::DeleteProjectileFromVec(const unsigned int aIndex)
 {
     if (aIndex > m_projectileVec.size())
@@ -619,6 +643,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_explosionStruct.explosionToPushVec.clear();
     m_projectileVec.clear();
     m_environment = aEnvironment;
+    m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
     InitializeAmmoMachineGun(m_ammoMachineGun);
