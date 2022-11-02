@@ -196,7 +196,7 @@ private:
     float m_testTimer = 0.0f;
 
     const float m_testCoolDown = 0.00016f;
-    float m_testCoolDownTimer = 0.0f;
+    float m_coolDownTimer = 0.0f;
     bool m_isCoolDownActive = false;
     
 public:

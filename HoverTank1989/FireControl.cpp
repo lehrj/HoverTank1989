@@ -264,8 +264,10 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
 {
     if (m_isCoolDownActive == false)
     {
-        m_isCoolDownActive = true;
         AmmoData firedAmmo = m_ammoCannon.ammoData;
+
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
 
         ProjectileData firedProjectile;
         firedProjectile.ammoData = firedAmmo;
@@ -289,180 +291,192 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
 
 void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
-    AmmoData firedAmmo = m_ammoExplosive.ammoData;
+    if (m_isCoolDownActive == false)
+    {
+        AmmoData firedAmmo = m_ammoExplosive.ammoData;
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
+        ProjectileData firedProjectile;
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (m_ammoExplosive.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
-    ProjectileData firedProjectile;
-    firedProjectile.ammoData = firedAmmo;
-    firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ammoExplosive.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
-    firedProjectile.isCollisionTrue = false;
-    firedProjectile.isDeleteTrue = false;
-    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+        // collision data
+        firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
 
-    // collision data
-    firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
-    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
-    firedProjectile.collisionData.mass = firedAmmo.mass;
-    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+        firedProjectile.time = 0.0f;
 
-    firedProjectile.time = 0.0f;
+        firedProjectile.isMidAirDeployAvailable = false;
 
-    firedProjectile.isMidAirDeployAvailable = false;
-
-    m_projectileVec.push_back(firedProjectile);
+        m_projectileVec.push_back(firedProjectile);
+    }
 }
 
 void FireControl::FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
-    AmmoData firedAmmo = m_ammoMirv.ammoData;
+    if (m_isCoolDownActive == false)
+    {
+        AmmoData firedAmmo = m_ammoMirv.ammoData;
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
+        ProjectileData firedProjectile;
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (m_ammoMirv.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
-    ProjectileData firedProjectile;
-    firedProjectile.ammoData = firedAmmo;
-    firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ammoMirv.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
-    firedProjectile.isCollisionTrue = false;
-    firedProjectile.isDeleteTrue = false;
-    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+        // collision data
+        firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
 
-    // collision data
-    firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
-    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
-    firedProjectile.collisionData.mass = firedAmmo.mass;
-    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+        firedProjectile.time = 0.0f;
 
-    firedProjectile.time = 0.0f;
+        firedProjectile.isMidAirDeployAvailable = true;
+        firedProjectile.isFuseTriggered = false;
 
-    firedProjectile.isMidAirDeployAvailable = true;
-    firedProjectile.isFuseTriggered = false;
-
-    m_projectileVec.push_back(firedProjectile);
+        m_projectileVec.push_back(firedProjectile);
+    }
 }
 
 void FireControl::FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
-    AmmoData firedAmmo = m_ammoShotgun.ammoData;
+    if (m_isCoolDownActive == false)
+    {
+        AmmoData firedAmmo = m_ammoShotgun.ammoData;
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
+        ProjectileData firedProjectile;
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (m_ammoShotgun.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
 
-    ProjectileData firedProjectile;
-    firedProjectile.ammoData = firedAmmo;
-    firedProjectile.q.position = aLaunchPos;
-    firedProjectile.q.velocity = (m_ammoShotgun.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+        firedProjectile.time = 0.0f;
 
-    firedProjectile.isCollisionTrue = false;
-    firedProjectile.isDeleteTrue = false;
-    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
-    firedProjectile.time = 0.0f;
+        // collision data
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
 
-    // collision data
-    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
-    firedProjectile.collisionData.mass = firedAmmo.mass;
-    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
-   
-    m_projectileVec.push_back(firedProjectile);
+        m_projectileVec.push_back(firedProjectile);
 
-    DirectX::SimpleMath::Vector3 up = aLaunchDirectionForward;
+        DirectX::SimpleMath::Vector3 up = aLaunchDirectionForward;
 
-    up = aLaunchDirectionRight.Cross(aLaunchDirectionForward);
-    ProjectileData shot = firedProjectile;
-    float chokeAngle = 5.0f;
-    float upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    float rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    DirectX::SimpleMath::Vector3 shotCenterAim = m_ammoShotgun.ammoData.launchVelocity * aLaunchDirectionForward;
-    DirectX::SimpleMath::Matrix upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    DirectX::SimpleMath::Matrix rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 2
+        up = aLaunchDirectionRight.Cross(aLaunchDirectionForward);
+        ProjectileData shot = firedProjectile;
+        float chokeAngle = 5.0f;
+        float upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        float rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        DirectX::SimpleMath::Vector3 shotCenterAim = m_ammoShotgun.ammoData.launchVelocity * aLaunchDirectionForward;
+        DirectX::SimpleMath::Matrix upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        DirectX::SimpleMath::Matrix rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 2
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 3
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 3
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 4
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 4
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 5
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 5
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 6
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 6
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 7
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 7
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 8
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 8
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 9
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 9
 
-    upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
-    upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
-    rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
-    shot.q.velocity = shotCenterAim;
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
-    shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
-    shot.q.velocity += aLauncherVelocity;
-    m_projectileVec.push_back(shot);
-    // 10
+        upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        rightAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
+        upAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(up, Utility::ToRadians(upAxisRot));
+        rightAxisRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aLaunchDirectionRight, Utility::ToRadians(rightAxisRot));
+        shot.q.velocity = shotCenterAim;
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, upAxisRotMat);
+        shot.q.velocity = DirectX::SimpleMath::Vector3::Transform(shot.q.velocity, rightAxisRotMat);
+        shot.q.velocity += aLauncherVelocity;
+        m_projectileVec.push_back(shot);
+        // 10
+    }
 }
 
 void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
@@ -766,10 +780,10 @@ void FireControl::UpdateFireControl(double aTimeDelta)
 {
     if (m_isCoolDownActive == true)
     {
-        m_testCoolDownTimer += static_cast<float>(aTimeDelta);
-        if (m_testCoolDownTimer >= m_testCoolDown)
+        m_coolDownTimer -= static_cast<float>(aTimeDelta);
+        if (m_coolDownTimer <= 0.0f)
         {
-            m_testCoolDownTimer = 0.0f;
+            m_coolDownTimer = 0.0f;
             m_isCoolDownActive = false;
         }
     }
