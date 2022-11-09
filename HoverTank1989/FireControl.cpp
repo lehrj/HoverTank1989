@@ -2,6 +2,13 @@
 #include "FireControl.h"
 
 
+void FireControl::ActivateMuzzleFlash()
+{
+    m_muzzleFlash.flashTimer = 0.0f;
+    m_muzzleFlash.isFlashActive = true;
+    m_muzzleFlash.sizeMod = 0.0f;
+}
+
 void FireControl::CheckCollisions()
 {
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
@@ -196,7 +203,7 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     aProjectile.isDeleteTrue = true;
 }
 
-void FireControl::DrawExplosion(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
+void FireControl::DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
     {
@@ -212,7 +219,112 @@ void FireControl::DrawExplosion(const DirectX::SimpleMath::Matrix aView, const D
     }
 }
 
-void FireControl::DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
+void FireControl::DrawFireControlObjects(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
+{
+    DrawExplosions(aView, aProj);
+    if (m_muzzleFlash.isFlashActive == true)
+    {
+        DrawMuzzleFlash(aView, aProj);
+    }
+    DrawProjectiles(aView, aProj);
+
+}
+
+void FireControl::DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
+{
+    //m_debugData->DebugPushTestLinePositionIndicator(m_muzzleFlash.position, 9.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f,1.0f, 1.0f, 1.0f));
+    //m_muzzleFlash.worldMuzzleFlashConeMatrix = m_muzzleFlash.localMuzzleConeMatrix;
+    //m_muzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_muzzleFlash.position);
+    m_muzzleFlash.muzzleFlashConeShape2->Draw(m_muzzleFlash.worldTestMatrix, aView, aProj, m_muzzleFlash.currentColor);
+    m_muzzleFlash.muzzleFlashConeShape->Draw(m_muzzleFlash.worldMuzzleFlashConeMatrix, aView, aProj, m_muzzleFlash.currentColor);
+}
+
+void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta)
+{
+    aMuzzleFlash.flashTimer += aTimeDelta;
+    if (aMuzzleFlash.flashTimer >= aMuzzleFlash.flashDuration)
+    {
+        aMuzzleFlash.isFlashActive = false;
+        m_muzzleFlash.flashTimer = 0.0f;
+        m_muzzleFlash.sizeMod = 0.0f;
+    }
+    const float durationPercentage = aMuzzleFlash.flashTimer / aMuzzleFlash.flashDuration;
+    //const float durationPercentage = 0.1f;
+    const float inverseDurationPercentage = 1.0f - durationPercentage;
+    if (durationPercentage <= 0.5f)
+    {
+        aMuzzleFlash.sizeMod += aMuzzleFlash.growthRate * static_cast<float>(aTimeDelta);
+    }
+    else
+    {
+        aMuzzleFlash.sizeMod -= aMuzzleFlash.growthRate * static_cast<float>(aTimeDelta);
+    }
+    //aMuzzleFlash.sizeMod += aMuzzleFlash.growthRate * static_cast<float>(aTimeDelta);
+    
+    DirectX::SimpleMath::Vector4 colorTest = aMuzzleFlash.startColor - aMuzzleFlash.endColor;
+    aMuzzleFlash.currentColor = aMuzzleFlash.startColor - (colorTest * durationPercentage);
+    aMuzzleFlash.currentColor.w = 1.0f;
+    aMuzzleFlash.currentColor.x = 1.0f;
+
+    DirectX::SimpleMath::Matrix updateMat = m_playerVehicle->GetAlignment();
+    updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetPos());
+    const float maxModSize = aMuzzleFlash.flashDuration * aMuzzleFlash.growthRate;
+    
+    //const float scale = cos(m_testTimer) + 1.0f;
+    const float scale = aMuzzleFlash.sizeMod;
+
+    const float testRot = Utility::WrapAngle(m_testTimer * 345.2345f);
+    //const float scaleTransOffset = (scale * 1.0f) * 0.5f;
+    const float scaleTransOffset = ((maxModSize * durationPercentage) * 1.0f) * 0.5f;
+    DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
+    DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale, scale));
+    DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
+    aMuzzleFlash.worldTestMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
+    aMuzzleFlash.worldTestMatrix *= scaleMat;
+    aMuzzleFlash.worldTestMatrix *= scaleTransOffsetMat;
+    aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+    aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+    aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+    
+    //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetMuzzlePos());
+    aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
+    aMuzzleFlash.worldTestMatrix *= updateMat;
+
+    aMuzzleFlash.worldMuzzleFlashConeMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= scaleMat;
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= scaleTransOffsetMat;
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, (-0.5f * scale), 0.0f));
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+
+    //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetMuzzlePos());
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
+    aMuzzleFlash.worldMuzzleFlashConeMatrix *= updateMat;
+}
+
+void FireControl::InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash)
+{
+    const float coneHeight = 6.0f;
+    const float coneDiameter = 6.0f;
+    //aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), 0.3f, 1.0f, 32Ui64, false);
+    aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), 0.3f, 1.0f);
+    //aMuzzleFlash.muzzleFlashConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f, 16Ui64, true, true);
+    aMuzzleFlash.muzzleFlashConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f, 16Ui64);
+
+    aMuzzleFlash.localMuzzleConeMatrix = DirectX::SimpleMath::Matrix::Identity;
+    //aMuzzleFlash.localMuzzleConeMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    //aMuzzleFlash.localMuzzleConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
+    aMuzzleFlash.worldMuzzleFlashConeMatrix = aMuzzleFlash.localMuzzleConeMatrix;
+
+    aMuzzleFlash.worldTestMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aMuzzleFlash.localTestMatrix = DirectX::SimpleMath::Matrix::Identity;
+}
+
+void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -280,7 +392,7 @@ void FireControl::DrawProjectile(const DirectX::SimpleMath::Matrix aView, const 
         else
         {
             m_ammoCannon.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
-        }
+        }      
     }
 }
 
@@ -288,6 +400,7 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
 {
     if (m_isCoolDownActive == false)
     {
+        ActivateMuzzleFlash();
         AmmoData firedAmmo = m_ammoCannon.ammoData;
 
         m_isCoolDownActive = true;
@@ -507,7 +620,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_CANNON;
     aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 1.2f;
+    aAmmo.ammoData.cooldown = 0.09f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
@@ -638,8 +751,9 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 
 void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
     const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, 
-    Environment const* aEnvironment)
+    Environment const* aEnvironment, std::shared_ptr<Vehicle> aVehicle)
 {   
+    m_playerVehicle = aVehicle;
     m_explosionStruct.explosionToPushVec.clear();
     m_projectileVec.clear();
     m_environment = aEnvironment;
@@ -650,6 +764,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     InitializeAmmoMirv(m_ammoMirv);
     InitializeAmmoShotgun(m_ammoShotgun);
     InitializeExplosionData(aContext, m_explosionStruct.explosionRefData);
+    InitializeMuzzleFlashModel(aContext, m_muzzleFlash);
     InitializeProjectileModelCannon(aContext, m_ammoCannon);
     InitializeProjectileModelExplosive(aContext, m_ammoExplosive);
     InitializeProjectileModelMachineGun(aContext, m_ammoMachineGun);
@@ -665,6 +780,8 @@ void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX:
     aLauncher.reloadCoolDown = 3.0f;
     aLauncher.coolDownTimer = 0.0f;
 }
+
+
 
 void FireControl::InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
@@ -811,6 +928,11 @@ void FireControl::UpdateFireControl(double aTimeDelta)
             m_coolDownTimer = 0.0f;
             m_isCoolDownActive = false;
         }
+    }
+
+    if (m_muzzleFlash.isFlashActive == true)
+    {
+        UpdateMuzzleFlash(m_muzzleFlash, aTimeDelta);
     }
 
     m_testTimer += static_cast<float>(aTimeDelta);

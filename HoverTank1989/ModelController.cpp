@@ -19,14 +19,14 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.barrelModel = aBarrel;
     aModel.bodyModel = aBody;
     aModel.turretModel = aTurret;
-
+    
     aModel.bodyLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.bodyLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
     aModel.bodyWorldMatrix = aModel.bodyLocalMatrix;
 
     aModel.turretLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
-    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5);
+    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
     aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
     DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
@@ -38,12 +38,25 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.barrelLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(barrelTrans);
     aModel.barrelLocalMatrix *= aModel.turretOffSetMatrix;
     aModel.barrelWorldMatrix = aModel.barrelLocalMatrix;
-
+    
     aModel.weaponPosLocal = DirectX::SimpleMath::Vector3(0.0, 0.0, -0.9);
     aModel.weaponPosWorld = aModel.weaponPosLocal;
 
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::UnitX;
     aModel.weaponDirWorld = aModel.weaponDirLocal;
+
+    aModel.muzzlePosLocal = aModel.weaponPosLocal;
+    aModel.muzzlePosLocal += DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    aModel.localizedMuzzlePos = aModel.muzzlePosLocal;
+    aModel.muzzlePosWorld = aModel.muzzlePosLocal;
+    //aModel.muzzleTransMatrix = aModel.barrelLocalMatrix;
+    //aModel.muzzleTransMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -5.0f));
+    aModel.muzzleTransMatrix = DirectX::SimpleMath::Matrix::Identity;
+    //aModel.muzzleTransMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -5.41f));
+    aModel.muzzleTransMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.64f));
+    aModel.muzzleLocalMatrix = aModel.barrelLocalMatrix;
+    aModel.muzzleLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
+    aModel.muzzleWorldMatrix = aModel.muzzleLocalMatrix;
 }
 
 void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)
@@ -58,6 +71,16 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.turretWorldMatrix *= turretMat;
     aModel.turretWorldMatrix *= aModel.turretLocalMatrix;
     aModel.turretWorldMatrix *= updateMat;
+
+    DirectX::SimpleMath::Vector3 test1;
+    DirectX::SimpleMath::Vector3 test2;
+    DirectX::SimpleMath::Vector3 test3;
+    DirectX::SimpleMath::Quaternion quat1;
+    aModel.turretWorldMatrix.Decompose(test1, quat1, test2);
+    m_debugData->DebugPushTestLinePositionIndicator(test2, 3.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushUILineDecimalNumber("test2.x", test2.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("test2.y ", test2.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("test2.z", test2.z, "");
 
     DirectX::SimpleMath::Matrix barrelMat = DirectX::SimpleMath::Matrix::CreateRotationX(aBarrelPitch);
     aModel.barrelWorldMatrix = barrelMat;
@@ -74,6 +97,24 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
 
     aModel.weaponPosWorld = aModel.weaponPosLocal;
     aModel.weaponPosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponPosWorld, aModel.barrelWorldMatrix);
+
+
+
+    aModel.muzzleWorldMatrix = aModel.muzzleLocalMatrix;
+    aModel.muzzleWorldMatrix = aModel.barrelWorldMatrix;
+
+    aModel.muzzleWorldMatrix = aModel.muzzleTransMatrix;
+    aModel.muzzleWorldMatrix *= barrelMat;
+    aModel.muzzleWorldMatrix *= aModel.muzzleLocalMatrix;
+    aModel.muzzleWorldMatrix *= turretMat;
+    aModel.muzzleWorldMatrix *= aModel.barrelTransMatrix;
+    aModel.localizedMuzzlePos = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosLocal, aModel.muzzleWorldMatrix);
+    aModel.muzzleWorldMatrix *= updateMat;
+
+
+    aModel.muzzlePosWorld = aModel.muzzlePosLocal;
+    //aModel.muzzlePosWorld = aModel.weaponPosWorld;
+    aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
 }
 
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)

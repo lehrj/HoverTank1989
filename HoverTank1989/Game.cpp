@@ -28,7 +28,7 @@ Game::Game() noexcept(false)
     m_camera = new Camera(outputWidth, outputHeight);
     m_camera->InintializePreSwingCamera(DirectX::SimpleMath::Vector3::Zero, 0.0);
     m_lighting = new Lighting();
-    m_vehicle = new Vehicle();
+    m_vehicle = std::make_shared<Vehicle>();
     m_vehicle->SetEnvironment(m_environment);
     m_camera->SetVehicleFocus(m_vehicle);
     m_camera->SetCameraEnvironment(m_environment);
@@ -114,7 +114,8 @@ void Game::Initialize(HWND window, int width, int height)
     }
 
     auto context = m_deviceResources->GetD3DDeviceContext();
-    m_vehicle->InitializeVehicle(context, m_npcController);
+    //m_vehicle->InitializeVehicle(context, m_npcController);
+    m_vehicle->InitializeVehicle(context, m_npcController, m_vehicle);
     m_vehicle->SetDebugData(m_debugData);
     m_npcController->LoadNPCs(context, m_npcController);
     m_terrainVector.clear();
@@ -434,7 +435,7 @@ Game::~Game()
     delete m_camera;
     delete m_environment;
     delete m_lighting;
-    delete m_vehicle;
+    //delete m_vehicle;
 
     delete[] m_terrainGamePlay.terrainVertexArray;
     m_terrainGamePlay.terrainVertexArray = 0;
@@ -487,6 +488,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());   
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
+        m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
     }
     UpdateInput(aTimer);
@@ -994,14 +996,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->TestFireCannon();
+            //m_vehicle->TestFireCannon();
         }
     }
     if (kb.Space)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->TestFireCannon();
+            m_vehicle->TestFireCannon();
         }
     }
     if (m_kbStateTracker.released.Q)
@@ -1281,7 +1283,10 @@ void Game::Render()
     m_effect2->Apply(context);
     context->IASetInputLayout(m_inputLayout.Get());
     m_batch2->Begin();
-    DrawTerrainNew(m_terrainGamePlay);
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+    {
+        DrawTerrainNew(m_terrainGamePlay);
+    }
     m_batch2->End();
 
     m_effect3->SetWorld(m_world);

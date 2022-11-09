@@ -34,6 +34,7 @@ public:
     void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
     void SetNPCEnvironment(Environment const* aEnvironment);
     void SetPlayer(Vehicle const* aVehicle);
+    void SetPlayer(std::shared_ptr<Vehicle> aVehicle);
     void SetVehicleDeath(const unsigned int aVehicleId);
     void TestPositionChange();
     void UnlockJumpAbility();
@@ -46,7 +47,7 @@ private:
     unsigned int GetUniqueID();
 
     Environment const* m_environment;
-    Vehicle const* m_player;
+    std::shared_ptr<Vehicle> m_player;
     std::shared_ptr<DebugData> m_debugData;
     std::shared_ptr<FireControl> m_fireControl;
     std::vector<NPCVehicle*> m_npcVec;

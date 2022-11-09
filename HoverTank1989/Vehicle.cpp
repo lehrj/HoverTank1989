@@ -250,8 +250,7 @@ void Vehicle::DebugToggle()
 
 void Vehicle::DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
-    m_fireControl->DrawProjectile(aView, aProj);
-    m_fireControl->DrawExplosion(aView, aProj);
+    m_fireControl->DrawFireControlObjects(aView, aProj);
 }
 
 void Vehicle::InitializeFlightControls(ControlInput& aInput)
@@ -362,7 +361,7 @@ void Vehicle::InitializeRotorBlades(HeliData& aHeliData)
     }
 }
 
-void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController)
+void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController, std::shared_ptr<Vehicle> aVehicle)
 {
     InitializeFlightControls(m_heli.controlInput);
 
@@ -429,7 +428,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.weaponPos = DirectX::SimpleMath::Vector3::Zero;
     m_heli.weaponPos = DirectX::SimpleMath::Vector3::Transform(m_heli.weaponPos, DirectX::SimpleMath::Matrix::CreateTranslation(muzzleTrans));
     m_heli.localWeaponPos = m_heli.weaponPos;
-
+    m_heli.muzzlePos = m_heli.weaponPos;
+    m_heli.localMuzzlePos = m_heli.muzzlePos;
+    m_heli.localizedMuzzlePos = m_heli.localMuzzlePos;
     // set up rotor blades
     InitializeRotorBlades(m_heli);
 
@@ -452,7 +453,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_testTerrainNormTorque.magnitude = 0.0f;
     
     m_fireControl = std::make_shared<FireControl>();
-    m_fireControl->InitializeFireControl(aContext, m_heli.localWeaponPos, m_heli.localWeaponDirection, m_environment);
+    m_fireControl->InitializeFireControl(aContext, m_heli.localWeaponPos, m_heli.localWeaponDirection, m_environment, aVehicle);
     m_fireControl->SetNPCController(aNPCController);
     aNPCController->SetFireControl(m_fireControl);
 }
@@ -1413,6 +1414,8 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle)
 
     aVehicle.weaponDirection = m_modelController->GetWeaponDir();
     aVehicle.weaponPos = m_modelController->GetWeaponPos();
+    aVehicle.muzzlePos = m_modelController->GetMuzzlePos();
+    aVehicle.localizedMuzzlePos = m_modelController->GetLocalizedMuzzlePos();
 }
 
 void Vehicle::UpdateResistance()
@@ -1663,8 +1666,13 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateAlignmentTorque();
     UpdateAlignmentCamera();
 
-    m_fireControl->UpdateFireControl(aTimeDelta);
+    //m_fireControl->UpdateFireControl(aTimeDelta);
     m_isFiredTest = false;
+}
+
+void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
+{
+    m_fireControl->UpdateFireControl(aTimeDelta);
 }
 
 void Vehicle::DebugInputVelocityZero()

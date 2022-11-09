@@ -24,6 +24,14 @@ struct TankModel
     DirectX::SimpleMath::Vector3 weaponPosWorld;
     DirectX::SimpleMath::Vector3 weaponDirLocal;
     DirectX::SimpleMath::Vector3 weaponDirWorld;
+
+    DirectX::SimpleMath::Vector3 localizedMuzzlePos;
+    DirectX::SimpleMath::Vector3 muzzlePosLocal;
+    DirectX::SimpleMath::Vector3 muzzlePosWorld;
+    DirectX::SimpleMath::Matrix  muzzleLocalMatrix;
+    DirectX::SimpleMath::Matrix  muzzleWorldMatrix;
+    DirectX::SimpleMath::Matrix  muzzleTransMatrix;
+
 };
 
 
@@ -33,6 +41,9 @@ public:
     void InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret);
     void DrawModel(ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection);
 
+    DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_playerModel.muzzleWorldMatrix; };
+    DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_playerModel.muzzlePosWorld; };
+    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };
     DirectX::SimpleMath::Vector3 GetWeaponDir() const { return m_playerModel.weaponDirWorld; };
 

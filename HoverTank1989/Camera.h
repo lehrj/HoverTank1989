@@ -111,7 +111,7 @@ public:
     void SetTransitionSpeed(const float aSpeed);
 
     void SetNpcController(std::shared_ptr<NPCController> aNpcController);
-    void SetVehicleFocus(const Vehicle* aVehicle);
+    void SetVehicleFocus(std::shared_ptr<Vehicle> aVehicle);
     void SpinClockwise(float aRotation);
     void SpinCounterClockwise(float aRotation);
 
@@ -175,7 +175,7 @@ private:
     DirectX::SimpleMath::Matrix     m_projectionMatrix;
     DirectX::SimpleMath::Matrix     m_orthogonalMatrix;
 
-    const float                     m_posTravelSpeed = 65.0f;
+    const float                     m_posTravelSpeed = 30.0f;
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
@@ -223,7 +223,8 @@ private:
     DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
 
     Environment const* m_environment;
-    Vehicle const* m_vehicleFocus;
+    //Vehicle const* m_vehicleFocus;
+    std::shared_ptr<Vehicle> m_vehicleFocus;
     std::shared_ptr<DebugData>      m_debugData;
     std::shared_ptr<NPCController> m_npcController;
 

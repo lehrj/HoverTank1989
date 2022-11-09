@@ -5,6 +5,8 @@
 #include "FireControl.h"
 #include "ModelController.h"
 
+class FireControl;
+
 struct ControlInput
 {
     // input control data
@@ -162,6 +164,9 @@ struct HeliData
     DirectX::SimpleMath::Vector3 landingGearPos;
     DirectX::SimpleMath::Vector3 localLandingGearPos;
 
+    DirectX::SimpleMath::Vector3 muzzlePos;
+    DirectX::SimpleMath::Vector3 localMuzzlePos;
+    DirectX::SimpleMath::Vector3 localizedMuzzlePos;
     DirectX::SimpleMath::Vector3 weaponPos;
     DirectX::SimpleMath::Vector3 localWeaponPos;
     DirectX::SimpleMath::Vector3 weaponDirection;
@@ -242,6 +247,9 @@ public:
 
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_heli.q.velocity; };
 
+    DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_modelController->GetMuzzleDirMat(); };
+    DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_heli.muzzlePos; };
+    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_heli.localizedMuzzlePos; };
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
     float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
     DirectX::SimpleMath::Vector3 GetWeaponDirection() const { return m_heli.weaponDirection; };
@@ -249,7 +257,7 @@ public:
     DirectX::SimpleMath::Vector3 GetWeaponLocalPos() const { return m_heli.localWeaponPos; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_heli.weaponPos; };
 
-    void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController);
+    void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController, std::shared_ptr<Vehicle> aVehicle);
 
     // helicopter functions
     void InputCollective(const float aCollectiveInput);
@@ -275,7 +283,7 @@ public:
     void SetModelController(std::shared_ptr<ModelController> aModelController);
 
     void UpdateVehicle(const double aTimeDelta);
-
+    void UpdateVehicleFireControl(const double aTimeDelta);
     void TestFireCannon();
     void TestFireExplosive();
     void TestFireMirv();
@@ -313,9 +321,9 @@ private:
     void UpdateTerrainNormTorque();
 
     std::shared_ptr<DebugData>      m_debugData;
-    Environment const* m_environment;
+    Environment const*              m_environment;
     std::shared_ptr<FireControl>    m_fireControl;
-    std::shared_ptr<ModelController>      m_modelController;
+    std::shared_ptr<ModelController> m_modelController;
 
     HeliData                        m_heli;
 

@@ -48,7 +48,8 @@ public:
     float GetThrottleInput();
     DirectX::SimpleMath::Vector3 GetVecToDestination();
 
-    void InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController);
+    void InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicle> aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController);
+
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
     void UpdateAI(const float aTimeStep);
@@ -113,7 +114,8 @@ private:
 
     //a pointer to the owner of this instance
     NPCVehicle const* m_npcOwner;
-    Vehicle const* m_playerVehicle;
+    //Vehicle const* m_playerVehicle;
+    std::shared_ptr<Vehicle> m_playerVehicle;
     Environment const* m_environment;
     std::shared_ptr<NPCController> m_npcController;
 

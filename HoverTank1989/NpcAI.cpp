@@ -209,7 +209,7 @@ float NpcAI::GetThrottleInput()
     return m_aiControls.aiOutput.forwardThrust;
 }
 
-void NpcAI::InitializeAI(Environment const* aEnvironment, Vehicle const* aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController)
+void NpcAI::InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicle> aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController)
 {
     m_debugData = aDebugPtr;
     m_environment = aEnvironment;

@@ -297,7 +297,8 @@ void NPCController::SetNPCEnvironment(Environment const* aEnvironment)
     m_environment = aEnvironment;
 }
 
-void NPCController::SetPlayer(Vehicle const* aVehicle)
+//void NPCController::SetPlayer(Vehicle const* aVehicle)
+void NPCController::SetPlayer(std::shared_ptr<Vehicle> aVehicle)
 {
     m_player = aVehicle;
 }

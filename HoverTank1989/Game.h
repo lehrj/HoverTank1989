@@ -113,7 +113,7 @@ private:
 
     std::shared_ptr<NPCController> m_npcController;
 
-    Vehicle* m_vehicle;
+    std::shared_ptr<Vehicle> m_vehicle;
     std::shared_ptr<ModelController> m_modelController;
     std::shared_ptr<DebugData> m_debugData;
 
@@ -284,15 +284,15 @@ private:
 
     // for height map
     std::vector<DirectX::VertexPositionColor>   m_terrainVector;
-    DirectX::VertexPositionColor* m_terrainVertexArray;
-    DirectX::VertexPositionColor* m_terrainVertexArrayBase;
-    int                                         m_terrainVertexCount;
+    DirectX::VertexPositionColor*       m_terrainVertexArray;
+    DirectX::VertexPositionColor*       m_terrainVertexArrayBase;
+    int                                 m_terrainVertexCount;
     std::vector<DirectX::VertexPositionNormalColor>   m_terrainVector2;
     DirectX::VertexPositionNormalColor* m_terrainVertexArray2;
     DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
-    int                                  m_terrainVertexCount2;
-    Terrain m_terrainGamePlay;
-    Terrain m_terrainStartScreen;
+    int                                 m_terrainVertexCount2;
+    Terrain                             m_terrainGamePlay;
+    Terrain                             m_terrainStartScreen;
     DirectX::SimpleMath::Vector4        m_startScreenGridDimmerColor = DirectX::SimpleMath::Vector4(0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f);
     float                               m_debugValue1 = 0.0;
     float                               m_debugValue2 = 0.0;

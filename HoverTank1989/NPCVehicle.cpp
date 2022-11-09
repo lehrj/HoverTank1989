@@ -1544,7 +1544,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
 void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
     const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
-    std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID)
+    std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Vehicle> aPlayer, const unsigned int aID)
 {
     m_context = aContext;
     m_environment = aEnvironment;

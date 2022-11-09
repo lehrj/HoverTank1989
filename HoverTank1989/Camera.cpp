@@ -23,10 +23,8 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homePitch = -0.053f;
 	m_homeYaw = 0.0f;
 
-	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERANPC;
-	//m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLE;
 	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
-	
+
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
@@ -47,8 +45,8 @@ Camera::~Camera()
 {
 	m_environment = nullptr;
 	delete m_environment;
-	m_vehicleFocus = nullptr;
-	delete m_vehicleFocus;
+	//m_vehicleFocus = nullptr;
+	//delete m_vehicleFocus;
 }
 
 void Camera::CycleNpcFocus(const bool isCycleIncrease)
@@ -678,7 +676,7 @@ void Camera::SetNpcController(std::shared_ptr<NPCController> aNpcController)
 	m_npcController = aNpcController;
 }
 
-void Camera::SetVehicleFocus(const Vehicle* aVehicle)
+void Camera::SetVehicleFocus(std::shared_ptr<Vehicle> aVehicle)
 {
 	m_vehicleFocus = aVehicle;
 }

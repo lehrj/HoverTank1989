@@ -2,6 +2,9 @@
 #include "Environment.h"
 #include "NPCController.h"
 #include "Utility.h"
+#include "Vehicle.h"
+
+class Vehicle;
 
 enum class AmmoType
 {
@@ -130,17 +133,40 @@ struct ExplosionStruct
     float maxExplosionImpactRadius;
 };
 
+struct MuzzleFlash
+{
+    DirectX::SimpleMath::Vector4 color1 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+    DirectX::SimpleMath::Vector4 startColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(0.501960814f, 0.501960814f, 0.501960814f, 1.0f);
+    DirectX::SimpleMath::Vector4 currentColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    muzzleFlashConeShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    muzzleFlashConeShape2;
+    DirectX::SimpleMath::Matrix worldMuzzleFlashConeMatrix;
+    DirectX::SimpleMath::Matrix localMuzzleConeMatrix;
+    DirectX::SimpleMath::Matrix worldTestMatrix;
+    DirectX::SimpleMath::Matrix localTestMatrix;
+    DirectX::SimpleMath::Vector3 position = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitX;
+    float flashDuration = 0.15f;
+    float flashTimer = 0.0f;
+    bool isFlashActive = false;
+    float sizeMod = 0.0f;
+    const float growthRate = 20.0f;
+};
 
 class FireControl
 {
 public:
     void CycleLoadedAmmo();
-    void DrawExplosion(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
-    void DrawProjectile(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+    void DrawFireControlObjects(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+
     void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         const DirectX::SimpleMath::Vector3 aLaunchPos, 
         const DirectX::SimpleMath::Vector3 aLaunchDirection, 
-        Environment const* aEnvironment);
+        Environment const* aEnvironment, std::shared_ptr<Vehicle> aVehicle);
     void FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
@@ -153,16 +179,21 @@ public:
     void UpdateFireControl(double aTimeDelta);
 
 private:
+    void ActivateMuzzleFlash();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
+    void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+    void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+    void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
     void InitializeAmmoMachineGun(AmmoStruct& aAmmo);
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
+    void InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
@@ -175,11 +206,13 @@ private:
    
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
+    void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
 
     Environment const* m_environment;
-    std::shared_ptr<NPCController> m_npcController;
     std::shared_ptr<DebugData> m_debugData;
+    std::shared_ptr<NPCController> m_npcController;
+    std::shared_ptr<Vehicle> m_playerVehicle;
 
     LauncherData m_launcherData;
 
@@ -201,7 +234,8 @@ private:
     bool m_isCoolDownActive = false;
 
     AmmoType m_currentAmmoType;
-    
+    MuzzleFlash m_muzzleFlash;
+
 public:
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
     float GetMaxExplosionForce() const { return m_explosionStruct.maxExplosionForce; };
