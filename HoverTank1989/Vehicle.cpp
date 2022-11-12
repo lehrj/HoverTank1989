@@ -1703,7 +1703,7 @@ void Vehicle::TestFireCannon()
         m_fireForceTest.Normalize();
         const float fireForceMag = 1000000.0f;
         m_fireForceTest *= fireForceMag;
-
+        /*
         m_testImpulseForce.currentTime = 0.0f;
         m_testImpulseForce.totalTime = 0.1f;
         m_testImpulseForce.currentMagnitude = 0.0f;
@@ -1711,6 +1711,8 @@ void Vehicle::TestFireCannon()
         m_testImpulseForce.directionNorm = -launchDir;
         m_testImpulseForce.directionNorm.Normalize();
         m_testImpulseForce.isActive = true;     
+        */
+        m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
     }
 }
 

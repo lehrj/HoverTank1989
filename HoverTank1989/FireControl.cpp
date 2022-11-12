@@ -616,6 +616,64 @@ void FireControl::FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaun
     }
 }
 
+Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm)
+{
+    Utility::ImpulseForce recoilImpulseForce;
+
+    if (m_currentAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
+    {
+        recoilImpulseForce.currentTime = 0.0f;
+        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.maxMagnitude = 50000.0f;
+        recoilImpulseForce.directionNorm = aDirectionNorm;
+        recoilImpulseForce.directionNorm.Normalize();
+        recoilImpulseForce.isActive = true;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+    {
+        recoilImpulseForce.currentTime = 0.0f;
+        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.maxMagnitude = 50000.0f;
+        recoilImpulseForce.directionNorm = aDirectionNorm;
+        recoilImpulseForce.directionNorm.Normalize();
+        recoilImpulseForce.isActive = true;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
+    {
+        recoilImpulseForce.currentTime = 0.0f;
+        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.maxMagnitude = 50000.0f;
+        recoilImpulseForce.directionNorm = aDirectionNorm;
+        recoilImpulseForce.directionNorm.Normalize();
+        recoilImpulseForce.isActive = true;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
+    {
+        recoilImpulseForce.currentTime = 0.0f;
+        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.maxMagnitude = 50000.0f;
+        recoilImpulseForce.directionNorm = aDirectionNorm;
+        recoilImpulseForce.directionNorm.Normalize();
+        recoilImpulseForce.isActive = true;
+    }
+    else  // Default to cannon, AmmoType::AMMOTYPE_CANNON
+    {
+        recoilImpulseForce.currentTime = 0.0f;
+        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.maxMagnitude = 50000.0f;
+        recoilImpulseForce.directionNorm = aDirectionNorm;
+        recoilImpulseForce.directionNorm.Normalize();
+        recoilImpulseForce.isActive = true;
+    }
+
+    return recoilImpulseForce;
+}
+
 void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_CANNON;
