@@ -288,6 +288,7 @@ public:
     void TestFireExplosive();
     void TestFireMirv();
     void TestFireShotgun();
+    void FireWeapon();
 
 private:
     DirectX::SimpleMath::Vector3 CalculateBuoyancyForce(const HeliData& aVehicleData);

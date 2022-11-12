@@ -616,6 +616,32 @@ void FireControl::FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaun
     }
 }
 
+void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
+{
+    if (m_currentAmmoType == AmmoType::AMMOTYPE_CANNON)
+    {
+        FireProjectileCannon(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+    {
+        FireProjectileExplosive(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
+    {
+        FireProjectileCannon(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
+    {
+        FireProjectileMirv(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
+    {
+        DirectX::SimpleMath::Vector3 up = m_playerVehicle->GetVehicleUp();
+        DirectX::SimpleMath::Vector3 right = -up.Cross(aLaunchDirectionForward);
+        FireProjectileShotGun(aLaunchPos, aLaunchDirectionForward, right, aLauncherVelocity);
+    }
+}
+
 Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm)
 {
     Utility::ImpulseForce recoilImpulseForce;

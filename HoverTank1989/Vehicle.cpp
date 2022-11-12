@@ -1689,6 +1689,17 @@ void Vehicle::DebugInputVelocityZero()
     m_heli.controlInput.brakeIsPressed = true;
 }
 
+void Vehicle::FireWeapon()
+{
+    if (m_fireControl->GetIsCoolDownActive() == false)
+    {
+        DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
+        DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+        DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
+        m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
+    }
+}
+
 void Vehicle::TestFireCannon()
 {
     if (m_fireControl->GetIsCoolDownActive() == false)

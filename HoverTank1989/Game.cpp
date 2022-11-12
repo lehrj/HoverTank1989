@@ -925,7 +925,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.L)
@@ -933,21 +933,21 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
 
-            m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            //m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.OemPeriod)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            //m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.OemComma)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Z)
@@ -1003,7 +1003,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->TestFireCannon();
+            //m_vehicle->TestFireCannon();
+            m_vehicle->FireWeapon();
         }
     }
     if (m_kbStateTracker.released.Q)

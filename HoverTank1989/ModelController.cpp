@@ -77,10 +77,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     DirectX::SimpleMath::Vector3 test3;
     DirectX::SimpleMath::Quaternion quat1;
     aModel.turretWorldMatrix.Decompose(test1, quat1, test2);
-    m_debugData->DebugPushTestLinePositionIndicator(test2, 3.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushUILineDecimalNumber("test2.x", test2.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("test2.y ", test2.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("test2.z", test2.z, "");
 
     DirectX::SimpleMath::Matrix barrelMat = DirectX::SimpleMath::Matrix::CreateRotationX(aBarrelPitch);
     aModel.barrelWorldMatrix = barrelMat;
