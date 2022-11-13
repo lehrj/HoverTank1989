@@ -1,12 +1,57 @@
 #include "pch.h"
 #include "FireControl.h"
 
-
+/*
 void FireControl::ActivateMuzzleFlash()
 {
     m_muzzleFlash.flashTimer = 0.0f;
     m_muzzleFlash.isFlashActive = true;
     m_muzzleFlash.sizeMod = 0.0f;
+}
+*/
+
+void FireControl::ActivateMuzzleFlash(AmmoType aAmmoType)
+{
+    if (aAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+    {
+        m_muzzleFlash.flashTimer = 0.0f;
+        m_muzzleFlash.isFlashActive = true;
+        m_muzzleFlash.sizeMod = 0.0f;
+        m_muzzleFlash.flashDuration = 0.15f;
+        m_muzzleFlash.growthRate = 20.0f;
+    }
+    else if (aAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
+    {
+        m_muzzleFlash.flashTimer = 0.0f;
+        m_muzzleFlash.isFlashActive = true;
+        m_muzzleFlash.sizeMod = 0.0f;
+        m_muzzleFlash.flashDuration = 0.15f;
+        m_muzzleFlash.growthRate = 20.0f;
+    }
+    else if (aAmmoType == AmmoType::AMMOTYPE_MIRV)
+    {
+        m_muzzleFlash.flashTimer = 0.0f;
+        m_muzzleFlash.isFlashActive = true;
+        m_muzzleFlash.sizeMod = 0.0f;
+        m_muzzleFlash.flashDuration = 0.15f;
+        m_muzzleFlash.growthRate = 20.0f;
+    }
+    else if (aAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
+    {
+        m_muzzleFlash.flashTimer = 0.0f;
+        m_muzzleFlash.isFlashActive = true;
+        m_muzzleFlash.sizeMod = 0.0f;
+        m_muzzleFlash.flashDuration = 0.15f;
+        m_muzzleFlash.growthRate = 20.0f;
+    }
+    else // default to cannon muzzle flash aAmmoType == AmmoType::AMMOTYPE_CANNON
+    {
+        m_muzzleFlash.flashTimer = 0.0f;
+        m_muzzleFlash.isFlashActive = true;
+        m_muzzleFlash.sizeMod = 0.0f;
+        m_muzzleFlash.flashDuration = 0.25f;
+        m_muzzleFlash.growthRate = 20.0f;
+    }
 }
 
 void FireControl::CheckCollisions()
@@ -400,7 +445,6 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
 {
     if (m_isCoolDownActive == false)
     {
-        ActivateMuzzleFlash();
         AmmoData firedAmmo = m_ammoCannon.ammoData;
 
         m_isCoolDownActive = true;
@@ -618,27 +662,31 @@ void FireControl::FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaun
 
 void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
-    if (m_currentAmmoType == AmmoType::AMMOTYPE_CANNON)
+    if (m_isCoolDownActive == false)
     {
-        FireProjectileCannon(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
-    }
-    else if (m_currentAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
-    {
-        FireProjectileExplosive(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
-    }
-    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
-    {
-        FireProjectileCannon(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
-    }
-    else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
-    {
-        FireProjectileMirv(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
-    }
-    else if (m_currentAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
-    {
-        DirectX::SimpleMath::Vector3 up = m_playerVehicle->GetVehicleUp();
-        DirectX::SimpleMath::Vector3 right = -up.Cross(aLaunchDirectionForward);
-        FireProjectileShotGun(aLaunchPos, aLaunchDirectionForward, right, aLauncherVelocity);
+        ActivateMuzzleFlash(m_currentAmmoType);
+        if (m_currentAmmoType == AmmoType::AMMOTYPE_CANNON)
+        {
+            FireProjectileCannon(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+        }
+        else if (m_currentAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+        {
+            FireProjectileExplosive(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+        }
+        else if (m_currentAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
+        {
+            FireProjectileCannon(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+        }
+        else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
+        {
+            FireProjectileMirv(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+        }
+        else if (m_currentAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
+        {
+            DirectX::SimpleMath::Vector3 up = m_playerVehicle->GetVehicleUp();
+            DirectX::SimpleMath::Vector3 right = -up.Cross(aLaunchDirectionForward);
+            FireProjectileShotGun(aLaunchPos, aLaunchDirectionForward, right, aLauncherVelocity);
+        }
     }
 }
 
@@ -704,7 +752,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_CANNON;
     aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 0.09f;
+    aAmmo.ammoData.cooldown = 1.09f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;

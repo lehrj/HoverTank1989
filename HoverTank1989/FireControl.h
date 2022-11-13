@@ -154,7 +154,8 @@ struct MuzzleFlash
     float flashTimer = 0.0f;
     bool isFlashActive = false;
     float sizeMod = 0.0f;
-    const float growthRate = 20.0f;
+    float growthRate = 20.0f;
+    //const float growthRate = 20.0f;
 };
 
 class FireControl
@@ -181,7 +182,8 @@ public:
     void UpdateFireControl(double aTimeDelta);
 
 private:
-    void ActivateMuzzleFlash();
+    //void ActivateMuzzleFlash();
+    void ActivateMuzzleFlash(AmmoType aAmmoType);
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
