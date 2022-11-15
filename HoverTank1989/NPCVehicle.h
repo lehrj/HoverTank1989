@@ -280,6 +280,15 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    collisionShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    avoidanceRadiusShape;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    shadowBaseShape;
+    DirectX::SimpleMath::Matrix shadowBaseMat = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix shadowJetLeftMat = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix shadowJetRightMat = DirectX::SimpleMath::Matrix::Identity;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    customShape;
+    DirectX::SimpleMath::Matrix localCustomMatrix;
+    DirectX::SimpleMath::Matrix worldCustomMatrix;
 };
 
 struct VehicleHardPoints

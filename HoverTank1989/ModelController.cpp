@@ -12,6 +12,10 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
     aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
     aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
+
+    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelShadowMatrix, aView, aProjection);
+    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyShadowMatrix, aView, aProjection);
+    aModel.turretModel->Draw(deviceContext, states, aModel.turretShadowMatrix, aView, aProjection);
 }
 
 void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
@@ -111,6 +115,40 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
     //aModel.muzzlePosWorld = aModel.weaponPosWorld;
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
+
+    
+    /// /////////////////////////////
+    DirectX::SimpleMath::Vector3 vert1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 vert2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 vert3 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testPos = aPos;
+    bool isTriFound = m_environment->GetTerrainTriangleData(vert1, vert2, vert3, testPos);
+
+    //DirectX::SimpleMath::Vector3 lightDir = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirection();
+    //DirectX::SimpleMath::Plane groundPlane(0.0f, 1.0f, 0.0f, 0.0f);
+    //DirectX::SimpleMath::Plane groundPlane(vert1, vert2, vert3);
+    //DirectX::SimpleMath::Plane groundPlane(vert3, vert2, vert1);
+    DirectX::SimpleMath::Plane groundPlane;// (vert3, vert2, vert1);
+    bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, testPos);
+
+    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
+    DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
+    //planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -2.4f, 0.0f));
+    planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
+    DirectX::SimpleMath::Matrix planeTrans2 = planeTrans;
+    planeTrans2 = planeTrans2.Transpose();
+    groundPlane = DirectX::SimpleMath::Plane::Transform(groundPlane, planeTrans2);
+
+    //DirectX::SimpleMath::Matrix shadowMat = m_vehicleStruct00.npcModel.worldModelMatrix;
+    aModel.barrelShadowMatrix = aModel.barrelWorldMatrix;
+    aModel.barrelShadowMatrix *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
+
+    aModel.bodyShadowMatrix = aModel.bodyWorldMatrix;
+    aModel.bodyShadowMatrix *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
+
+    aModel.turretShadowMatrix = aModel.turretWorldMatrix;
+    aModel.turretShadowMatrix *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
 }
 
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)
@@ -121,6 +159,11 @@ void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlign
 void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
 {
     InitializeModel(m_playerModel, aBarrel, aBody, aTurret);
+}
+
+void ModelController::SetEnvironment(Environment const* aEnviron)
+{
+    m_environment = aEnviron;
 }
 
 void ModelController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)

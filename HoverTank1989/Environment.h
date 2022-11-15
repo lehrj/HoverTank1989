@@ -120,6 +120,8 @@ public:
     DirectX::SimpleMath::Vector3 GetGravityVec() const { return m_currentEnviron.gravityVec; };
     std::string GetGravityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravityStr; };
     float GetGravity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravity; };
+    bool GetGroundPlane(DirectX::SimpleMath::Plane& aPlane, DirectX::SimpleMath::Vector3 aPos) const;
+    DirectX::SimpleMath::Vector3 GetLightDirection() const { return -DirectX::SimpleMath::Vector3::UnitY; };
     int GetNumerOfEnvirons() const { return m_environsAvailable; };
     int GetNumberOfEnvironSelectDisplayVariables() const { return m_environSelectDisplayDataPoints; };
     float GetScale() const { return m_currentEnviron.scale; };

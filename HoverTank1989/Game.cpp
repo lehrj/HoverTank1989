@@ -42,6 +42,7 @@ Game::Game() noexcept(false)
     m_camera->SetNpcController(m_npcController);
     m_modelController = std::make_shared<ModelController>();
     m_modelController->SetDebugData(m_debugData);
+    m_modelController->SetEnvironment(m_environment);
     m_vehicle->SetModelController(m_modelController);
 
     m_testVehicleHover = std::make_shared<VehicleHover>();

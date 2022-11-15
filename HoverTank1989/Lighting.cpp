@@ -45,7 +45,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
     const float timeStamp = static_cast<float>(aTimer);
 
     aEffect->EnableDefaultLighting();
-
+    
 
     if (m_currentLightingState == LightingState::LIGHTINGSTATE_JI)
     {

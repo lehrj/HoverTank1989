@@ -368,7 +368,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     jetHousingColor = m_vehicleStruct00.npcModel.color2;
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
-    /*
+    
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix, aView, aProj, testHighlight);
     m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2, aView, aProj, testShadow);
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix, aView, aProj, testHighlight);
@@ -425,7 +425,16 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix7, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix8, aView, aProj, ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix9, aView, aProj, ventColor);
-    */
+    
+
+
+    //m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.shadowBaseMat, aView, aProj, DirectX::Colors::Black);
+    m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.shadowBaseMat, aView, aProj, DirectX::Colors::Black);
+    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.shadowJetLeftMat, aView, aProj, DirectX::Colors::Black);
+    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.shadowJetRightMat, aView, aProj, DirectX::Colors::Black);
+    
+    m_vehicleStruct00.npcModel.customShape->Draw(m_vehicleStruct00.npcModel.worldCustomMatrix, aView, aProj, jetHousingShellColor, nullptr, false);
+    
     DirectX::SimpleMath::Vector3 lightDir = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Plane groundPlane(0.0f, 1.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
@@ -436,7 +445,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     
     DirectX::SimpleMath::Matrix shadowMat = m_vehicleStruct00.npcModel.worldModelMatrix;
     shadowMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
-    m_vehicleStruct00.npcModel.modelShape->Draw(shadowMat, aView, aProj, DirectX::Colors::Red);
+    //m_vehicleStruct00.npcModel.modelShape->Draw(shadowMat, aView, aProj, DirectX::Colors::Red);
 
     DirectX::SimpleMath::Vector3 pos;
     DirectX::SimpleMath::Vector3 scale;
@@ -832,6 +841,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     mainBodySize.y -= (zFightOffset * 10.0f) * 2.0f;
     mainBodySize.z *= 0.45f;
 
+    aModel.shadowBaseShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), aDimensions);
+    
     const float mainBodyOffset = 2.0f;
     mainBodySize.x -= mainBodyOffset;
     const float mainBodyCutOff = 3.0f;
@@ -1475,6 +1486,83 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.worldVentMatrix9 = aModel.localVentMatrix9;
 
     aModel.avoidanceShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
+
+    aModel.localCustomMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.worldCustomMatrix = aModel.localCustomMatrix;
+
+    DirectX::GeometricPrimitive::VertexCollection vertices;
+    DirectX::GeometricPrimitive::IndexCollection indices;
+    DirectX::GeometricPrimitive::CreateBox(vertices, indices,
+        DirectX::XMFLOAT3(1.f / 2.f, 2.f / 2.f, 3.f / 2.f));
+    
+    for (auto& it : vertices)
+    {
+        //it.textureCoordinate.x *= 5.f;
+        //it.textureCoordinate.y *= 5.f;
+    }
+
+    DirectX::GeometricPrimitive::VertexCollection vertices2;
+    DirectX::GeometricPrimitive::IndexCollection indices2;
+    //DirectX::GeometricPrimitive::CreateBox(vertices2, indices2, DirectX::XMFLOAT3(3.f / 2.f, 2.f / 2.f, 1.f / 2.f));
+    DirectX::GeometricPrimitive::CreateCone(vertices2, indices2, 1.0f, 1.0f);
+    DirectX::SimpleMath::Vector3 testTranslation = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+    //DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+    for (auto& it : vertices2)
+    {
+        it.position.x += testTranslation.x;
+        it.position.y += testTranslation.y;
+        it.position.z += testTranslation.z;
+        //it.textureCoordinate.x *= 5.f;
+        //it.textureCoordinate.y *= 5.f;
+    }
+    for (auto& it : indices2)
+    {
+        
+        //it.position.x += testTranslation.x;
+        //it.position.y += testTranslation.y;
+        //it.position.z += testTranslation.z;
+        //it.textureCoordinate.x *= 5.f;
+        //it.textureCoordinate.y *= 5.f;
+    }
+
+    for (auto& it : vertices2)
+    {
+        //it.textureCoordinate.x *= 5.f;
+        //it.textureCoordinate.y *= 5.f;
+    }
+    int vertSize1 = indices.size();
+    for (auto& it : vertices2)
+    {
+        vertices.push_back(it);
+    }
+    for (auto& it : indices2)
+    {
+        indices.push_back(it);
+    }
+    int vertSize2 = indices.size();
+
+    DirectX::GeometricPrimitive::VertexCollection vertices3;
+    DirectX::GeometricPrimitive::IndexCollection indices3;
+    for (int i = 0; i < vertices.size(); ++i)
+    {
+        vertices3.push_back(vertices[i]);
+    }
+    for (int i = 0; i < indices.size(); ++i)
+    {
+        indices3.push_back(indices[i]);
+    }
+
+    for (int i = 0; i < vertices2.size(); ++i)
+    {
+        vertices3.push_back(vertices2[i]);
+    }
+    for (int i = 0; i < indices2.size(); ++i)
+    {
+        indices3.push_back(indices2[i]);
+    }
+
+    aModel.customShape = DirectX::GeometricPrimitive::CreateCustom(aContext.Get(), vertices3, indices3);
+    vertSize2 = indices.size();
 }
 
 void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
@@ -2658,6 +2746,31 @@ void NPCVehicle::UpdateNPCModel()
     m_vehicleStruct00.npcModel.worldVentMatrix8 *= updateMat;
     m_vehicleStruct00.npcModel.worldVentMatrix9 = m_vehicleStruct00.npcModel.localVentMatrix9;
     m_vehicleStruct00.npcModel.worldVentMatrix9 *= updateMat;
+
+    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirection();
+    DirectX::SimpleMath::Plane groundPlane;// (vert3, vert2, vert1);
+    bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, m_vehicleStruct00.vehicleData.q.position);
+    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
+    DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
+    //planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -2.4f, 0.0f));
+    planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
+    DirectX::SimpleMath::Matrix planeTrans2 = planeTrans;
+    planeTrans2 = planeTrans2.Transpose();
+    groundPlane = DirectX::SimpleMath::Plane::Transform(groundPlane, planeTrans2);
+
+    DirectX::SimpleMath::Matrix shadowMat = DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
+    //m_vehicleStruct00.npcModel.shadowBaseMat = updateMat;
+    m_vehicleStruct00.npcModel.shadowBaseMat = m_vehicleStruct00.npcModel.worldSkirtMatrix;
+    m_vehicleStruct00.npcModel.shadowBaseMat *= shadowMat;
+
+    m_vehicleStruct00.npcModel.shadowJetLeftMat = m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowMat;
+
+    m_vehicleStruct00.npcModel.shadowJetRightMat = m_vehicleStruct00.npcModel.worldJetHousingRightMatrix;
+    m_vehicleStruct00.npcModel.shadowJetRightMat *= shadowMat;
+
+    m_vehicleStruct00.npcModel.worldCustomMatrix = m_vehicleStruct00.npcModel.localCustomMatrix;
+    m_vehicleStruct00.npcModel.worldCustomMatrix *= updateMat;
 }
 
 void NPCVehicle::UpdatePlayerPos(const DirectX::SimpleMath::Vector3 aPlayerPos)

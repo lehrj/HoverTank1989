@@ -1697,6 +1697,7 @@ void Vehicle::FireWeapon()
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
         DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
         m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
+        m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
     }
 }
 
