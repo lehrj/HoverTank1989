@@ -473,6 +473,79 @@ std::vector<DirectX::VertexPositionNormalColor> Environment::GetTerrainPositionN
     return vertPosNormColor;
 }
 
+bool Environment::GetTerrainTriangleData(DirectX::SimpleMath::Vector3& aTriVertex1, DirectX::SimpleMath::Vector3& aTriVertex2, DirectX::SimpleMath::Vector3& aTriVertex3, DirectX::SimpleMath::Vector3 aPos) const
+{
+    bool isTriFound = false;
+    for (unsigned int i = 0; i < m_heightMapGamePlayData.terrainModel.size(); ++i)
+    {
+        DirectX::XMFLOAT3 vertex1 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex2 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex3 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex4 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex5 = m_heightMapGamePlayData.terrainModel[i].position;
+        ++i;
+        DirectX::XMFLOAT3 vertex6 = m_heightMapGamePlayData.terrainModel[i].position;
+
+        DirectX::SimpleMath::Vector3 pos = aPos;
+
+        if (aPos.x <= vertex2.x && aPos.x >= vertex4.x && aPos.z <= vertex2.z && aPos.z >= vertex4.z)
+        {
+            isTriFound = CheckTerrainTriangleHeight(aPos, vertex1, vertex2, vertex3);
+            if (isTriFound == true)
+            {
+                //aHeight = aPos.y;
+                aTriVertex1 = vertex3;
+                aTriVertex2 = vertex2;
+                aTriVertex3 = vertex1;
+                DirectX::SimpleMath::Vector3 p3 = vertex1;
+                DirectX::SimpleMath::Vector3 p2 = vertex2;
+                DirectX::SimpleMath::Vector3 p1 = vertex3;
+
+                DirectX::SimpleMath::Vector3 U = p2 - p1;
+                DirectX::SimpleMath::Vector3 V = p3 - p1;
+                DirectX::SimpleMath::Vector3 terrainNormal;
+                terrainNormal.x = (U.y * V.z) - (U.z * V.y);
+                terrainNormal.y = (U.z * V.x) - (U.x * V.z);
+                terrainNormal.z = (U.x * V.y) - (U.y * V.x);
+                terrainNormal.Normalize();
+                //aNorm = terrainNormal;
+                i = static_cast<unsigned int>(m_heightMapGamePlayData.terrainModel.size());
+            }
+            else if (CheckTerrainTriangleHeight(aPos, vertex6, vertex5, vertex4) == true)
+            {
+                isTriFound = true;
+                //aHeight = aPos.y;
+                aTriVertex1 = vertex6;
+                aTriVertex2 = vertex5;
+                aTriVertex3 = vertex4;
+
+                DirectX::SimpleMath::Vector3 p3 = vertex4;
+                DirectX::SimpleMath::Vector3 p2 = vertex5;
+                DirectX::SimpleMath::Vector3 p1 = vertex6;
+
+                DirectX::SimpleMath::Vector3 U = p2 - p1;
+                DirectX::SimpleMath::Vector3 V = p3 - p1;
+                DirectX::SimpleMath::Vector3 terrainNormal;
+                terrainNormal.x = (U.y * V.z) - (U.z * V.y);
+                terrainNormal.y = (U.z * V.x) - (U.x * V.z);
+                terrainNormal.z = (U.x * V.y) - (U.y * V.x);
+                terrainNormal.Normalize();
+                //aNorm = terrainNormal;
+                i = static_cast<unsigned int>(m_heightMapGamePlayData.terrainModel.size());
+            }
+            else
+            {
+                // to do : height check failure, add error checking
+            }
+        }
+    }
+    return isTriFound;
+}
+
 bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3& aNorm, float& aHeight) const
 {
     bool foundHeight = false;

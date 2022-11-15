@@ -128,6 +128,7 @@ public:
     DirectX::SimpleMath::Vector3 GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const;
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
     std::vector<DirectX::VertexPositionNormalColor> GetTerrainPositionNormalColorVertex(EnvironmentType aEnvironType);
+    bool GetTerrainTriangleData(DirectX::SimpleMath::Vector3& aTriVertex1, DirectX::SimpleMath::Vector3& aTriVertex2, DirectX::SimpleMath::Vector3& aTriVertex3, DirectX::SimpleMath::Vector3 aPos) const;
     bool GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3& aNorm, float& aHeight) const;
     float GetWindDirection() const;
     DirectX::SimpleMath::Vector3 GetWindVector() const { return m_currentEnviron.wind; };

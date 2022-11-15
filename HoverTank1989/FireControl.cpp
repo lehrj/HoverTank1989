@@ -322,10 +322,12 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
     //const float scaleTransOffset = (scale * 1.0f) * 0.5f;
     const float scaleTransOffset = ((maxModSize * durationPercentage) * 1.0f) * 0.5f;
     DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
-    DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale, scale));
+    DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale * 1.0f, scale));
     DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
     aMuzzleFlash.worldTestMatrix = DirectX::SimpleMath::Matrix::Identity;
+    //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.1f * -scale, 0.0f));
     aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
+    //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.2f, 0.0f));
     aMuzzleFlash.worldTestMatrix *= scaleMat;
     aMuzzleFlash.worldTestMatrix *= scaleTransOffsetMat;
     aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
@@ -357,6 +359,8 @@ void FireControl::InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11Device
     const float coneDiameter = 6.0f;
     //aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), 0.3f, 1.0f, 32Ui64, false);
     aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), 0.3f, 1.0f);
+    //aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f);
+    //aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCube(aContext.Get(), 0.3f);
     //aMuzzleFlash.muzzleFlashConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f, 16Ui64, true, true);
     aMuzzleFlash.muzzleFlashConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f, 16Ui64);
 
@@ -494,6 +498,35 @@ void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLa
         firedProjectile.time = 0.0f;
 
         firedProjectile.isMidAirDeployAvailable = false;
+
+        m_projectileVec.push_back(firedProjectile);
+    }
+}
+
+void FireControl::FireProjectileMachineGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
+{
+    if (m_isCoolDownActive == false)
+    {
+        AmmoData firedAmmo = m_ammoMachineGun.ammoData;
+
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
+
+        ProjectileData firedProjectile;
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (firedProjectile.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+
+        // collision data
+        firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+
+        firedProjectile.time = 0.0f;
 
         m_projectileVec.push_back(firedProjectile);
     }
@@ -675,7 +708,7 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
         }
         else if (m_currentAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
         {
-            FireProjectileCannon(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
+            FireProjectileMachineGun(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity);
         }
         else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
         {
@@ -788,14 +821,14 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MACHINEGUN;
     aAmmo.ammoData.baseDamage = 0.5f;
-    aAmmo.ammoData.cooldown = 0.02f;
+    aAmmo.ammoData.cooldown = 0.09f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 145.0f;
     aAmmo.ammoData.length = 0.4f;
     aAmmo.ammoData.mass = 45.0f;
-    aAmmo.ammoData.radius = 0.12f;
+    aAmmo.ammoData.radius = 0.14f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
