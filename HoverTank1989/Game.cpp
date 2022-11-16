@@ -1253,10 +1253,20 @@ void Game::Render()
     context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
     context->OMSetDepthStencilState(m_states->DepthNone(), 0);
     context->RSSetState(m_states->CullNone());
+    /*
+    m_effect->SetWorld(m_world);
+    m_effect->SetProjection(m_proj);
+    m_effect->SetView(m_view);
+    m_effect->SetDiffuseColor(Colors::Blue);
+    m_effect->SetAmbientLightColor(Colors::Blue);
+    */
     m_effect->Apply(context);
     auto sampler = m_states->LinearClamp();
     context->PSSetSamplers(0, 1, &sampler);
     context->IASetInputLayout(m_inputLayout.Get());
+
+    //m_effect->SetDiffuseColor(Colors::Blue);
+    //m_effect->SetAmbientLightColor(Colors::Blue);
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
@@ -1269,7 +1279,7 @@ void Game::Render()
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         DrawSky();
-        //DrawTestTrack();
+        DrawTestTrack();
     }
     m_batch->End();
 
@@ -1280,7 +1290,7 @@ void Game::Render()
     context->RSSetState(m_states->CullNone());
     */
     //context->RSSetState(m_raster.Get());
-
+    
     m_effect2->SetWorld(m_world);
     m_effect2->Apply(context);
     context->IASetInputLayout(m_inputLayout.Get());
@@ -1296,7 +1306,7 @@ void Game::Render()
     m_batch3->Begin();
     DrawDebugLinesVector();
     m_batch3->End();
-
+    
     m_spriteBatch->Begin();
     if (m_isDisplayCountdownTrue == true)
     {
@@ -1461,7 +1471,24 @@ void Game::CreateDeviceDependentResources()
     m_effect->SetFogColor(DirectX::Colors::Black);
     m_effect->SetFogStart(1.0);
     m_effect->SetFogEnd(4.0);
+    /////////////////////////////
 
+    //m_effect->SetTextureEnabled(true);
+    //m_effect->SetPerPixelLighting(true);
+    //m_effect->SetLightingEnabled(true);
+    m_effect->SetLightEnabled(0, true);
+    m_effect->SetLightDiffuseColor(0, Colors::Blue);
+    m_effect->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitZ);
+
+    //m_effect->EnableDefaultLighting();
+    m_effect->SetLightEnabled(0, true);
+    m_effect->SetLightEnabled(1, true);
+    m_effect->SetLightEnabled(2, true);
+    m_effect->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
+    m_effect->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
+    m_effect->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
+    m_effect->SetAmbientLightColor(Colors::Blue);
+    
     m_effect2 = std::make_unique<BasicEffect>(device);
     m_effect2->SetVertexColorEnabled(true);
     //m_effect2->EnableDefaultLighting();
@@ -1513,10 +1540,42 @@ void Game::CreateDeviceDependentResources()
     m_modelTestBody = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
     m_modelTestTurret = Model::CreateFromCMO(device, L"HoverTankTurret02.cmo", *m_fxFactory);
 
+    //DirectX::IEffect*
+    m_modelTestBody->UpdateEffects([](IEffect* effect)
+    {
+        auto lights = dynamic_cast<IEffectLights*>(effect);
+        if (lights)
+        {
+            
+            lights->SetLightingEnabled(true);
+            lights->SetPerPixelLighting(true);
+            lights->SetLightEnabled(0, true);
+            lights->SetLightDiffuseColor(0, Colors::Gold);
+            lights->SetLightEnabled(1, true);
+            lights->SetLightEnabled(2, true);
+            lights->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
+            lights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
+            lights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
+            lights->EnableDefaultLighting();
+            
+        }
+        /*
+        auto fog = dynamic_cast<IEffectFog*>(effect);
+        if (fog)
+        {
+            fog->SetFogEnabled(true);
+            fog->SetFogColor(Colors::CornflowerBlue);
+            fog->SetFogStart(3.f);
+            fog->SetFogEnd(400.f);
+        }
+        */
+    });
+
     m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret);
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
+
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.

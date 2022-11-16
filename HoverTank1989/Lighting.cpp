@@ -386,9 +386,9 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
         if (ilights)
         {
             ilights->EnableDefaultLighting();
-            ilights->SetLightEnabled(0, false);
-            ilights->SetLightEnabled(1, false);
-            ilights->SetLightEnabled(2, false);
+            ilights->SetLightEnabled(0, true);
+            ilights->SetLightEnabled(1, true);
+            ilights->SetLightEnabled(2, true);
 
             
             const float yaw = cosf(-timeStamp * 1.2f);
@@ -409,10 +409,12 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
 
             light.Normalize();
             light0 = light;
+            light1 = light;
+            light2 = light;
 
-            light0 = DirectX::SimpleMath::Vector3::UnitX;
-            light1 = DirectX::SimpleMath::Vector3::UnitX;
-            light2 = DirectX::SimpleMath::Vector3::UnitX;
+            //light0 = DirectX::SimpleMath::Vector3::UnitX;
+            //light1 = DirectX::SimpleMath::Vector3::UnitX;
+            //light2 = DirectX::SimpleMath::Vector3::UnitX;
 
             ilights->SetLightDirection(0, light0);
             ilights->SetLightDirection(1, light1);
