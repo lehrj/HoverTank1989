@@ -120,11 +120,9 @@ private:
     std::shared_ptr<VehicleHover> m_testVehicleHover;
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;
+    //using VertexType = DirectX::VertexPositionNormalColor;
     using VertexType2 = DirectX::VertexPositionNormalColor;
     using VertexType3 = DirectX::VertexPositionColor;
-
-    std::unique_ptr<DirectX::BasicEffect> m_effect4;
-    std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalColor>> m_batch4;
 
     std::shared_ptr<DirectX::NormalMapEffect>       m_effect;
     std::shared_ptr<DirectX::BasicEffect>           m_effect2;
@@ -132,6 +130,9 @@ private:
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType2>> m_batch2;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType3>> m_batch3;
+
+    std::unique_ptr<DirectX::BasicEffect> m_effect4;
+    std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalColor>> m_batch4;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureSky;
 

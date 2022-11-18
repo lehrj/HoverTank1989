@@ -168,6 +168,17 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
     }
 }
 
+void NPCController::DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetIsDead() == false)
+        {
+            m_npcVec[i]->DrawNPC2(aView, aProj, aEffect, aInputLayout);
+        }
+    }
+}
+
 DirectX::SimpleMath::Vector3 NPCController::GetNpcAccelVecTest(const unsigned int aId)
 {
     for (int i = 0; i < m_npcVec.size(); ++i)

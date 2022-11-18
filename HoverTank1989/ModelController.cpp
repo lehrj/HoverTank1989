@@ -149,6 +149,22 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
 
     aModel.turretShadowMatrix = aModel.turretWorldMatrix;
     aModel.turretShadowMatrix *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
+
+
+    //DirectX::SimpleMath::Vector3 dir1 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
+    //DirectX::SimpleMath::Vector3 dir2 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
+    //DirectX::SimpleMath::Vector3 dir3 = DirectX::SimpleMath::Vector3(.4545195f, -0.7660444f, 0.4545195f);
+
+    DirectX::SimpleMath::Vector3 dir1 = DirectX::SimpleMath::Vector3(-1.0f, -2.0, 0.0f);
+    dir1.Normalize();
+    DirectX::SimpleMath::Vector3 dir2 = DirectX::SimpleMath::Vector3(1.0f, -2.0f, 1.0f);
+    dir2.Normalize();
+    DirectX::SimpleMath::Vector3 dir3 = DirectX::SimpleMath::Vector3(1.0f, -2.0f, -1.0f);
+    dir3.Normalize();
+
+    m_debugData->DebugPushTestLine(aPos, -dir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(aPos, -dir2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(aPos, -dir3, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)

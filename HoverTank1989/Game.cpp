@@ -480,13 +480,13 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     // TODO: Add your game logic here.
     elapsedTime;
-    
+
     //UpdateInput(aTimer);
-    
+
     if (m_isPauseOn == false)
     {
         m_debugData->DebugClearUI();
-        m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());   
+        m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
@@ -1267,17 +1267,37 @@ void Game::Render()
 
     //m_effect->SetDiffuseColor(Colors::Blue);
     //m_effect->SetAmbientLightColor(Colors::Blue);
-
+    m_effect->SetProjection(m_proj);
+    m_effect->SetView(m_camera->GetViewMatrix());
+    m_effect->SetWorld(m_world);
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj);
     }
-    
+
     m_batch->Begin();
+
+    auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
+    if (ilights)
+    {
+        ilights->EnableDefaultLighting();
+        ilights->SetLightEnabled(0, true);
+        ilights->SetLightEnabled(1, true);
+        ilights->SetLightEnabled(2, true);
+        ilights->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
+        ilights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
+        ilights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
+        //ilights->SetDiffuseColor(Colors::Blue);
+        //ilights->SetAmbientLightColor(Colors::Blue);
+        ilights->EnableDefaultLighting();
+    }
+
+    m_effect->Apply(context);
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
+        //m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
         DrawTestTrack();
     }
@@ -1290,7 +1310,7 @@ void Game::Render()
     context->RSSetState(m_states->CullNone());
     */
     //context->RSSetState(m_raster.Get());
-    
+
     m_effect2->SetWorld(m_world);
     m_effect2->Apply(context);
     context->IASetInputLayout(m_inputLayout.Get());
@@ -1306,7 +1326,7 @@ void Game::Render()
     m_batch3->Begin();
     DrawDebugLinesVector();
     m_batch3->End();
-    
+
     m_spriteBatch->Begin();
     if (m_isDisplayCountdownTrue == true)
     {
@@ -1488,7 +1508,7 @@ void Game::CreateDeviceDependentResources()
     m_effect->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
     m_effect->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
     m_effect->SetAmbientLightColor(Colors::Blue);
-    
+
     m_effect2 = std::make_unique<BasicEffect>(device);
     m_effect2->SetVertexColorEnabled(true);
     //m_effect2->EnableDefaultLighting();
@@ -1519,13 +1539,15 @@ void Game::CreateDeviceDependentResources()
     m_titleFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/titleFont.spritefont");
     m_bitwiseFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/bitwise24.spritefont");
     m_spriteBatch = std::make_unique<SpriteBatch>(context);
-   
+
+    
     m_effect4 = std::make_unique<BasicEffect>(device);
     m_effect4->SetVertexColorEnabled(true);
 
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexPositionNormalColor>(device, m_effect4.get(), m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch4 = std::make_unique<PrimitiveBatch<VertexPositionNormalColor>>(context);
     
+
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
     //m_model = Model::CreateFromCMO(device, L"cup.cmo", *m_fxFactory);
     //m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
@@ -1542,34 +1564,34 @@ void Game::CreateDeviceDependentResources()
 
     //DirectX::IEffect*
     m_modelTestBody->UpdateEffects([](IEffect* effect)
-    {
-        auto lights = dynamic_cast<IEffectLights*>(effect);
-        if (lights)
         {
-            
-            lights->SetLightingEnabled(true);
-            lights->SetPerPixelLighting(true);
-            lights->SetLightEnabled(0, true);
-            lights->SetLightDiffuseColor(0, Colors::Gold);
-            lights->SetLightEnabled(1, true);
-            lights->SetLightEnabled(2, true);
-            lights->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
-            lights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
-            lights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
-            lights->EnableDefaultLighting();
-            
-        }
-        /*
-        auto fog = dynamic_cast<IEffectFog*>(effect);
-        if (fog)
-        {
-            fog->SetFogEnabled(true);
-            fog->SetFogColor(Colors::CornflowerBlue);
-            fog->SetFogStart(3.f);
-            fog->SetFogEnd(400.f);
-        }
-        */
-    });
+            auto lights = dynamic_cast<IEffectLights*>(effect);
+            if (lights)
+            {
+
+                lights->SetLightingEnabled(true);
+                lights->SetPerPixelLighting(true);
+                lights->SetLightEnabled(0, true);
+                lights->SetLightDiffuseColor(0, Colors::Gold);
+                lights->SetLightEnabled(1, true);
+                lights->SetLightEnabled(2, true);
+                lights->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
+                lights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
+                lights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
+                lights->EnableDefaultLighting();
+
+            }
+            /*
+            auto fog = dynamic_cast<IEffectFog*>(effect);
+            if (fog)
+            {
+                fog->SetFogEnabled(true);
+                fog->SetFogColor(Colors::CornflowerBlue);
+                fog->SetFogStart(3.f);
+                fog->SetFogEnd(400.f);
+            }
+            */
+        });
 
     m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret);
 
@@ -1645,7 +1667,7 @@ void Game::DrawEndUI()
     m_endScreenTimer += static_cast<float>(m_timer.GetElapsedSeconds());
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
     textLinePos.x = 960;
-    textLinePos.y = 540; 
+    textLinePos.y = 540;
     const float maxScale = 3.0f;
 
     float fontScale = m_endScreenTimer * 0.5f;
@@ -1684,14 +1706,14 @@ void Game::DrawUIDisplay()
     float fontScale = 3.0f;
 
     std::string textLine = m_uiDisplayString;
-    
+
     if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
     {
         int textSize = static_cast<int>(textLine.size());
         float ratio = m_uiDisplayTimer / m_uiDisplayTypeDuration;
         int displaySize = static_cast<int>(ratio * static_cast<float>(textSize));
         textLine.resize(displaySize);
-    }   
+    }
 
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.0f;
     textLineOrigin.x = 0.0f;
@@ -1741,7 +1763,7 @@ void Game::DrawUnlockUI()
 
     textLinePos.x = 1580;
     const float maxScale = 3.0f;
-    float fontScale = (cos(m_unlockTimer1) + 1.0f) * 2.5f;   
+    float fontScale = (cos(m_unlockTimer1) + 1.0f) * 2.5f;
     fontScale = m_unlockTimer2;
     fontScale *= 3.0f;
     if (fontScale > maxScale)

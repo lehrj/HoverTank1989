@@ -1413,7 +1413,8 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle)
     aVehicle.weaponDirection = DirectX::SimpleMath::Vector3::Transform(aVehicle.weaponDirection, weaponMuzzleMat);
 
     aVehicle.weaponDirection = m_modelController->GetWeaponDir();
-    aVehicle.weaponPos = m_modelController->GetWeaponPos();
+    //aVehicle.weaponPos = m_modelController->GetWeaponPos();
+    aVehicle.weaponPos = m_modelController->GetMuzzlePos();
     aVehicle.muzzlePos = m_modelController->GetMuzzlePos();
     aVehicle.localizedMuzzlePos = m_modelController->GetLocalizedMuzzlePos();
 }

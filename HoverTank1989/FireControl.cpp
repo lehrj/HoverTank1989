@@ -946,8 +946,6 @@ void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX:
     aLauncher.coolDownTimer = 0.0f;
 }
 
-
-
 void FireControl::InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
     const float ammoSize = aAmmo.ammoData.radius;
