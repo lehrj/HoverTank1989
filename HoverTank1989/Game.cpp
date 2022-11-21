@@ -1275,7 +1275,7 @@ void Game::Render()
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj);
     }
 
-    m_batch->Begin();
+    //m_batch->Begin();
 
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
     if (ilights)
@@ -1289,7 +1289,7 @@ void Game::Render()
         ilights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
         //ilights->SetDiffuseColor(Colors::Blue);
         //ilights->SetAmbientLightColor(Colors::Blue);
-        ilights->EnableDefaultLighting();
+        //ilights->EnableDefaultLighting();
     }
 
     m_effect->Apply(context);
@@ -1301,7 +1301,7 @@ void Game::Render()
         DrawSky();
         DrawTestTrack();
     }
-    m_batch->End();
+    //m_batch->End();
 
     // m_batch2 start
     /*
@@ -1313,7 +1313,7 @@ void Game::Render()
 
     m_effect2->SetWorld(m_world);
     m_effect2->Apply(context);
-    context->IASetInputLayout(m_inputLayout.Get());
+    context->IASetInputLayout(m_inputLayout2.Get());
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
@@ -1522,7 +1522,9 @@ void Game::CreateDeviceDependentResources()
     //m_effect2->GetVertexShaderBytecode(&shaderByteCode2, &byteCodeLength2);
     //DX::ThrowIfFailed(device->CreateInputLayout(VertexType2::InputElements, VertexType2::InputElementCount, shaderByteCode2, byteCodeLength2, m_inputLayout.ReleaseAndGetAddressOf()));
     //m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(device);
-    DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType2>(device, m_effect2.get(), m_inputLayout.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType2>(device, m_effect2.get(), m_inputLayout.ReleaseAndGetAddressOf()));
+    //m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
+    DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType2>(device, m_effect2.get(), m_inputLayout2.ReleaseAndGetAddressOf()));
     m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
 
     //m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
@@ -1540,13 +1542,7 @@ void Game::CreateDeviceDependentResources()
     m_bitwiseFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/bitwise24.spritefont");
     m_spriteBatch = std::make_unique<SpriteBatch>(context);
 
-    
-    m_effect4 = std::make_unique<BasicEffect>(device);
-    m_effect4->SetVertexColorEnabled(true);
 
-    DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexPositionNormalColor>(device, m_effect4.get(), m_inputLayout.ReleaseAndGetAddressOf()));
-    m_batch4 = std::make_unique<PrimitiveBatch<VertexPositionNormalColor>>(context);
-    
 
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
     //m_model = Model::CreateFromCMO(device, L"cup.cmo", *m_fxFactory);
@@ -1614,9 +1610,6 @@ void Game::CreateWindowSizeDependentResources()
     m_effect2->SetProjection(m_proj);
     m_effect3->SetView(m_view);
     m_effect3->SetProjection(m_proj);
-
-    m_effect4->SetView(m_view);
-    m_effect4->SetProjection(m_proj);
 }
 
 void Game::DrawDebugDataUI()
@@ -1967,6 +1960,8 @@ void Game::OnDeviceLost()
     m_textureTeaser.Reset();
 
     m_inputLayout.Reset();
+    m_inputLayout2.Reset();
+
     m_font.reset();
     m_titleFont.reset();
     m_bitwiseFont.reset();
@@ -1994,9 +1989,6 @@ void Game::OnDeviceLost()
     m_jiLogoTexture.Reset();
 
     m_backgroundTex.Reset();
-
-    m_effect4.reset();
-    m_batch4.reset();
 
     m_testShape.reset();
     m_testShape2.reset();

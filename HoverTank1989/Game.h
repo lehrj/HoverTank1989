@@ -78,6 +78,7 @@ private:
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
 
     void Render();
+
     void TogglePause();
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
@@ -120,19 +121,15 @@ private:
     std::shared_ptr<VehicleHover> m_testVehicleHover;
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;
-    //using VertexType = DirectX::VertexPositionNormalColor;
     using VertexType2 = DirectX::VertexPositionNormalColor;
     using VertexType3 = DirectX::VertexPositionColor;
-
+    
     std::shared_ptr<DirectX::NormalMapEffect>       m_effect;
     std::shared_ptr<DirectX::BasicEffect>           m_effect2;
     std::shared_ptr<DirectX::BasicEffect>           m_effect3;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType2>> m_batch2;
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType3>> m_batch3;
-
-    std::unique_ptr<DirectX::BasicEffect> m_effect4;
-    std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormalColor>> m_batch4;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureSky;
 
@@ -160,6 +157,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTeaser;
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout2;
+
 
     std::shared_ptr<DirectX::IEffect>               m_lightEffect;
 

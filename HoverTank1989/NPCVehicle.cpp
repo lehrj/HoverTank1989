@@ -480,6 +480,9 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector4 jetHousingColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     DirectX::SimpleMath::Vector4 jetHousingShellColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     DirectX::SimpleMath::Vector4 afterBurnColor = DirectX::SimpleMath::Vector4(1.000000000f, 0.270588249f, 0.000000000f, 1.40000000f);
+
+    //DirectX::SimpleMath::Vector4 afterBurnColor = DirectX::SimpleMath::Vector4(1.000000000f, 1.000000000f, 1.000000000f, 1.00000000f);
+
     DirectX::SimpleMath::Vector4 ventColor = DirectX::SimpleMath::Vector4(0.3f, 0.3f, 0.3f, 1.0f);
     DirectX::SimpleMath::Vector4 ventColorAlt = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     ventColor = color;
@@ -504,11 +507,12 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
+    /*
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix);
     aEffect->SetColorAndAlpha(testHighlight);
     //aEffect->Apply();
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(aEffect.get(), aInputLayout.Get());
-
+    
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2);
     aEffect->SetColorAndAlpha(testShadow);
     m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(aEffect.get(), aInputLayout.Get());
@@ -538,10 +542,23 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix);
     aEffect->SetColorAndAlpha(testShadow);
     m_vehicleStruct00.npcModel.baseJetShadowShape->Draw(aEffect.get(), aInputLayout.Get());
+    */
+
+    DirectX::SimpleMath::Vector3 scale1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 scale2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 trans1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 trans2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion quat1 = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion quat2 = DirectX::SimpleMath::Quaternion::Identity;
+
+    m_vehicleStruct00.npcModel.worldBaseBurnMatrix1.Decompose(scale1, quat1, trans1);
+    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix.Decompose(scale2, quat2, trans2);
 
     aEffect->SetLightDirection(0, DirectX::SimpleMath::Vector3::UnitY);
     aEffect->SetLightDirection(1, DirectX::SimpleMath::Vector3::UnitY);
     aEffect->SetLightDirection(2, DirectX::SimpleMath::Vector3::UnitY);
+    //aEffect->SetAmbientLightColor(DirectX::Colors::Blue);
+    
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldBaseBurnMatrix1);
     aEffect->SetColorAndAlpha(afterBurnColor);
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -549,6 +566,13 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetColorAndAlpha(afterBurnColor);
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(aEffect.get(), aInputLayout.Get());
     
+
+
+    aEffect->SetLightDirection(0, DirectX::SimpleMath::Vector3::UnitY);
+    aEffect->SetLightDirection(1, DirectX::SimpleMath::Vector3::UnitY);
+    aEffect->SetLightDirection(2, DirectX::SimpleMath::Vector3::UnitY);
+
+
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2);
     aEffect->SetColorAndAlpha(afterBurnColor);
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -563,11 +587,13 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetColorAndAlpha(afterBurnColor);
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
     
-    //aEffect->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
-    //aEffect->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
-    //aEffect->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
-    aEffect->EnableDefaultLighting();
+    aEffect->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
+    aEffect->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
+    aEffect->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
+    //aEffect->EnableDefaultLighting();
 
+
+    /*
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix);
     aEffect->SetColorAndAlpha(jetHousingColor);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -602,9 +628,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldNoseConeMatrix);
     aEffect->SetColorAndAlpha(color);
     m_vehicleStruct00.npcModel.noseConeShape->Draw(aEffect.get(), aInputLayout.Get());
-    //aEffect->SetWorld();
-    //aEffect->SetColorAndAlpha();
-    
+
     
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldFrontAirDamMatrix);
@@ -689,7 +713,9 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat, aView, aProj, DirectX::Colors::Black);
-    
+    */
+
+
 
 
     /*
@@ -1450,6 +1476,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.afterBurnFlickerRate = 100.1f;
     // Jet after burn left
     const float afterBurnDiameter = jetHousingDiameter * 0.9f;
+    //const float afterBurnDiameter = 6.0f;
+
     const float afterBurnHeight = 0.1f;
     aModel.afterBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), afterBurnDiameter, afterBurnHeight, 3);
     DirectX::SimpleMath::Vector3 afterBurnLowerLeftTranslation;
