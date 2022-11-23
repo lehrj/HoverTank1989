@@ -94,6 +94,10 @@ struct NPCModel
     float afterBurnLengthRightPrev2 = 0.0f;
     float afterBurnLengthRightPrev3 = 0.0f;
 
+    DirectX::SimpleMath::Vector3 jetDirectionBase = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 jetDirectionLeft = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 jetDirectionRight = DirectX::SimpleMath::Vector3::Zero;
+    
     float maxDelta = 0.0f;
 
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
@@ -292,6 +296,22 @@ struct NPCModel
     std::unique_ptr<DirectX::GeometricPrimitive>    customShape;
     DirectX::SimpleMath::Matrix localCustomMatrix;
     DirectX::SimpleMath::Matrix worldCustomMatrix;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureBlank;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularBlank;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapBlank;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureFlame;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularFlame;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapFlame;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureTest1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularTest1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapTest1;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureTest2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularTest2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapTest2;
 };
 
 struct VehicleHardPoints
@@ -402,6 +422,14 @@ struct VehicleStruct
     NPCModel                    npcModel;
 };
 
+enum class NpcTextureMapType
+{
+    TEXTUREMAPTYPE_BLANK,
+    TEXTUREMAPTYPE_FLAME,
+    TEXTUREMAPTYPE_TEST1,
+    TEXTUREMAPTYPE_TEST2
+};
+
 class NPCVehicle
 {
 public:
@@ -428,6 +456,7 @@ public:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
         std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Vehicle> aPlayer, const unsigned int aID);
+    void InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
     DirectX::BoundingOrientedBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };

@@ -245,6 +245,16 @@ void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceC
     m_environment = aEnvironment;
 }
 
+void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap)
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        m_npcVec[i]->InitializeTextureMaps(aTextureMapType, aTexture, aNormalMap, aSpecularMap);
+        int testBreak = 0;
+        testBreak++;
+    }
+}
+
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
     const float xOrgVal = 70.0f;

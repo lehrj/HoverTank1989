@@ -119,6 +119,10 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->InitializeVehicle(context, m_npcController, m_vehicle);
     m_vehicle->SetDebugData(m_debugData);
     m_npcController->LoadNPCs(context, m_npcController);
+
+    m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_BLANK, m_texture, m_normalMap, m_specular);
+    m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST1, m_textureJI, m_normalMapJI, m_specularJI);
+
     m_terrainVector.clear();
 }
 
@@ -1248,6 +1252,7 @@ void Game::Render()
 
     m_deviceResources->PIXBeginEvent(L"Render");
     auto context = m_deviceResources->GetD3DDeviceContext();
+
     // TODO: Add your rendering code here.
     context;
     context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -1292,12 +1297,14 @@ void Game::Render()
         //ilights->EnableDefaultLighting();
     }
 
-    m_effect->Apply(context);
+    m_effect->SetNormalTexture(m_normalMapJI.Get());
+    m_effect->SetSpecularTexture(m_specularJI.Get());
+    //m_effect->Apply(context);
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
-        m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
-        //m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
+        m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
         DrawTestTrack();
     }
@@ -1593,7 +1600,6 @@ void Game::CreateDeviceDependentResources()
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
-
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
