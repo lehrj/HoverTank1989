@@ -1,5 +1,5 @@
 # HoverTank1989
-A retro themed hover tank game in development
+A retro themed hover tank game in development using C++, DirectX 11, and DirectXTK
 
 <p align="center">
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Trailer01.png">
