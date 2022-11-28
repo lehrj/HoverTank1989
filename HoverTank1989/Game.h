@@ -141,6 +141,19 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTest;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTest;
 
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapMetalTest1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureMetalTest1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularMetalTest1;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapMetalTest2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureMetalTest2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularMetalTest2;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFlameTest;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFlameTest;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFlameTest;
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI;
@@ -372,7 +385,7 @@ private:
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
-
+    std::unique_ptr<DirectX::GeometricPrimitive> m_testShape3;
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;
 };

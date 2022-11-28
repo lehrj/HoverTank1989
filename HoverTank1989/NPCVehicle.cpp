@@ -507,10 +507,11 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
-    
+    /*
+
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix);
     aEffect->SetColorAndAlpha(testHighlight);
-    //aEffect->Apply();
+
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2);
@@ -543,21 +544,35 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetColorAndAlpha(testShadow);
     m_vehicleStruct00.npcModel.baseJetShadowShape->Draw(aEffect.get(), aInputLayout.Get());
     
+    */
 
-    DirectX::SimpleMath::Vector3 scale1 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 scale2 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 trans1 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 trans2 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Quaternion quat1 = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion quat2 = DirectX::SimpleMath::Quaternion::Identity;
 
-    m_vehicleStruct00.npcModel.worldBaseBurnMatrix1.Decompose(scale1, quat1, trans1);
-    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix.Decompose(scale2, quat2, trans2);
+    aEffect->SetNormalTexture(m_vehicleStruct00.npcModel.normalMapBlank.Get());
+    aEffect->SetSpecularTexture(m_vehicleStruct00.npcModel.specularBlank .Get());
 
-    aEffect->SetLightDirection(0, m_vehicleStruct00.npcModel.jetDirectionBase);
-    aEffect->SetLightDirection(1, m_vehicleStruct00.npcModel.jetDirectionBase);
-    aEffect->SetLightDirection(2, m_vehicleStruct00.npcModel.jetDirectionBase);
+    DirectX::SimpleMath::Vector3 lightDirection0;
+    DirectX::SimpleMath::Vector3 lightDirection1;
+    DirectX::SimpleMath::Vector3 lightDirection2;
+
+    const float baseRad = 3.0f;
+    const float baseLength = m_vehicleStruct00.npcModel.baseBurnLength;
+    const float toa = baseLength / baseRad;
+    const float baseAngle = atan(toa);
+    const float baseAngleDegrees = Utility::ToDegrees(baseAngle);
+
+    m_vehicleStruct00.npcModel.jetDirectionBase.Normalize();
+    Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionBase, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
+
+    aEffect->SetLightDirection(0, lightDirection0);
+    aEffect->SetLightDirection(1, lightDirection1);
+    aEffect->SetLightDirection(2, lightDirection2);
     //aEffect->SetAmbientLightColor(DirectX::Colors::Blue);
+    aEffect->SetAmbientLightColor(DirectX::Colors::White);
+    //aEffect->SetLightEnabled(0, false);
+    //aEffect->SetLightEnabled(1, false);
+    //aEffect->SetLightEnabled(2, false);
+    
+
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldBaseBurnMatrix1);
     aEffect->SetColorAndAlpha(afterBurnColor);
@@ -567,10 +582,29 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(aEffect.get(), aInputLayout.Get());
 
 
+    const float leftRad = 0.945f;
+    const float leftLength = m_vehicleStruct00.npcModel.afterBurnLengthLeft;
+    const float leftToa = leftLength / leftRad;
+    const float leftAngleDegrees2 = Utility::ToDegrees(leftToa);
+    const float leftAngle = atan(leftToa);
+    //const float leftAngleDegrees =  90.0f + Utility::ToDegrees(leftAngle);
+    const float leftAngleDegrees =  (Utility::ToDegrees(leftAngle) - 90.0f) + 180.0f;
+    const float toaTan = tan(toa);
+    const float rotation = m_vehicleStruct00.npcModel.afterBurnLeftFlicker;
 
-    aEffect->SetLightDirection(0, m_vehicleStruct00.npcModel.jetDirectionLeft);
-    aEffect->SetLightDirection(1, m_vehicleStruct00.npcModel.jetDirectionLeft);
-    aEffect->SetLightDirection(2, m_vehicleStruct00.npcModel.jetDirectionLeft);
+    //Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionLeft, Utility::ToRadians(leftAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
+    Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionLeft, Utility::ToRadians(leftAngleDegrees), rotation, lightDirection0, lightDirection1, lightDirection2);
+    m_debugData->DebugClearUI();
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection0, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection1, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection2, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+
+    aEffect->SetLightDirection(0, lightDirection0);
+    aEffect->SetLightDirection(1, lightDirection1);
+    aEffect->SetLightDirection(2, lightDirection2);
+    //aEffect->SetLightDirection(0, m_vehicleStruct00.npcModel.jetDirectionLeft);
+    //aEffect->SetLightDirection(1, m_vehicleStruct00.npcModel.jetDirectionLeft);
+    //aEffect->SetLightDirection(2, m_vehicleStruct00.npcModel.jetDirectionLeft);
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix);
     aEffect->SetColorAndAlpha(afterBurnColor);
@@ -580,21 +614,34 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
 
 
-    aEffect->SetLightDirection(0, m_vehicleStruct00.npcModel.jetDirectionRight);
-    aEffect->SetLightDirection(1, m_vehicleStruct00.npcModel.jetDirectionRight);
-    aEffect->SetLightDirection(2, m_vehicleStruct00.npcModel.jetDirectionRight);
+    const float rightRad = 0.945f;
+    const float rightLength = m_vehicleStruct00.npcModel.afterBurnLengthRight;
+    const float rightToa = rightLength / rightRad;
+    const float rightAngle = atan(rightToa);
+    const float rightAngleDegrees = Utility::ToDegrees(rightAngle);
+
+    Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionRight, Utility::ToRadians(rightAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
+
+    aEffect->SetLightDirection(0, lightDirection0);
+    aEffect->SetLightDirection(1, lightDirection1);
+    aEffect->SetLightDirection(2, lightDirection2);
+    //aEffect->SetLightDirection(0, m_vehicleStruct00.npcModel.jetDirectionRight);
+    //aEffect->SetLightDirection(1, m_vehicleStruct00.npcModel.jetDirectionRight);
+    //aEffect->SetLightDirection(2, m_vehicleStruct00.npcModel.jetDirectionRight);
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix);
     aEffect->SetColorAndAlpha(afterBurnColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2);
     aEffect->SetColorAndAlpha(afterBurnColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
 
+    aEffect->SetNormalTexture(m_vehicleStruct00.npcModel.normalMapBlank.Get());
+    aEffect->SetSpecularTexture(m_vehicleStruct00.npcModel.specularBlank.Get());
 
     aEffect->EnableDefaultLighting();
 
-
+    /*
     
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix);
     aEffect->SetColorAndAlpha(jetHousingColor);
@@ -612,16 +659,15 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
 
 
 
-    aEffect->SetNormalTexture(m_vehicleStruct00.npcModel.normalMapTest1.Get());
-    aEffect->SetSpecularTexture(m_vehicleStruct00.npcModel.specularTest1.Get());
-    //aEffect->Apply(aContext.Get());
+    aEffect->SetNormalTexture(m_vehicleStruct00.npcModel.normalMapTest2.Get());
+    aEffect->SetSpecularTexture(m_vehicleStruct00.npcModel.specularTest2.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldSkirtMatrix);
     aEffect->SetColorAndAlpha(ventColor);
     m_vehicleStruct00.npcModel.skirtShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetNormalTexture(m_vehicleStruct00.npcModel.normalMapBlank.Get());
     aEffect->SetSpecularTexture(m_vehicleStruct00.npcModel.specularBlank.Get());
-    //aEffect->Apply(aContext.Get());
+    
 
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldEyeLeftMatrix);
@@ -728,83 +774,9 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat, aView, aProj, DirectX::Colors::Black);
     
-
-
-
-
-    /*
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix, aView, aProj, testHighlight);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2, aView, aProj, testShadow);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix, aView, aProj, testHighlight);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2, aView, aProj, testShadow);
-
-    m_vehicleStruct00.npcModel.jetMountShape->Draw(m_vehicleStruct00.npcModel.worldJetMountMatrix, aView, aProj, ventColor);
-
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix, aView, aProj, jetHousingColor);
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellLeftMatrix, aView, aProj, jetHousingShellColor);
-
-    m_vehicleStruct00.npcModel.baseJetHousingShape->Draw(m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix, aView, aProj, jetHousingShellColor);
-
-    m_vehicleStruct00.npcModel.baseJetShadowShape->Draw(m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix, aView, aProj, testShadow);
-    m_vehicleStruct00.npcModel.baseBurnShape->Draw(m_vehicleStruct00.npcModel.worldBaseBurnMatrix1, aView, aProj, afterBurnColor);
-    m_vehicleStruct00.npcModel.baseBurnShape->Draw(m_vehicleStruct00.npcModel.worldBaseBurnMatrix2, aView, aProj, afterBurnColor);
-
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2, aView, aProj, afterBurnColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2, aView, aProj, afterBurnColor);
-
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix, aView, aProj, afterBurnColor);
-    m_vehicleStruct00.npcModel.afterBurnShape->Draw(m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix, aView, aProj, afterBurnColor);
-
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix, aView, aProj, jetHousingColor);
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix, aView, aProj, jetHousingShellColor);
-
-    m_vehicleStruct00.npcModel.rearBodyShape->Draw(m_vehicleStruct00.npcModel.worldRearBodyMatrix, aView, aProj, jetHousingShellColor);
-    m_vehicleStruct00.npcModel.rearDeckShape->Draw(m_vehicleStruct00.npcModel.worldRearDeckMatrix, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtMatrix, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeLeftMatrix, aView, aProj, eyeColor);
-    m_vehicleStruct00.npcModel.eyeShape->Draw(m_vehicleStruct00.npcModel.worldEyeRightMatrix, aView, aProj, eyeColor);
-    m_vehicleStruct00.npcModel.grillShape->Draw(m_vehicleStruct00.npcModel.worldGrillLeftMatrix, aView, aProj, steeringColor);
-    m_vehicleStruct00.npcModel.grillShape->Draw(m_vehicleStruct00.npcModel.worldGrillRightMatrix, aView, aProj, steeringColor);
-    m_vehicleStruct00.npcModel.forwardShape->Draw(m_vehicleStruct00.npcModel.worldForwardMatrix, aView, aProj, forwardColor);
-    m_vehicleStruct00.npcModel.noseConeShape->Draw(m_vehicleStruct00.npcModel.worldNoseConeMatrix, aView, aProj, color);
-    m_vehicleStruct00.npcModel.frontAirDamShape->Draw(m_vehicleStruct00.npcModel.worldFrontAirDamMatrix, aView, aProj, skirtColor);
-    m_vehicleStruct00.npcModel.omniBaseShape->Draw(m_vehicleStruct00.npcModel.worldOmniBaseMatrix, aView, aProj, forwardColor);
-    m_vehicleStruct00.npcModel.omniDialShape->Draw(m_vehicleStruct00.npcModel.worldOmniDialMatrix, aView, aProj, steeringColor);
-
-    m_vehicleStruct00.npcModel.wingArmShape->Draw(m_vehicleStruct00.npcModel.worldWingArmMatrix, aView, aProj, jetHousingShellColor);
-    m_vehicleStruct00.npcModel.wingShape->Draw(m_vehicleStruct00.npcModel.worldWingMatrix, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.wingFinShape->Draw(m_vehicleStruct00.npcModel.worldWingFinLeftMatrix, aView, aProj, jetHousingShellColor);
-    m_vehicleStruct00.npcModel.wingFinShape->Draw(m_vehicleStruct00.npcModel.worldWingFinRightMatrix, aView, aProj, jetHousingShellColor);
-
-    m_vehicleStruct00.npcModel.steeringShape->Draw(m_vehicleStruct00.npcModel.worldSteeringMatrix, aView, aProj, steeringColor);
-
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix1, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldModelMatrix, aView, aProj, DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.modelShape->Draw(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix, aView, aProj, DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix2, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix3, aView, aProj, ventColorAlt);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix4, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix5, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix6, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix7, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix8, aView, aProj, ventColor);
-    m_vehicleStruct00.npcModel.ventShape->Draw(m_vehicleStruct00.npcModel.worldVentMatrix9, aView, aProj, ventColor);
-
-
-
-    m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.shadowBaseMat, aView, aProj, DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.shadowSkirtMat, aView, aProj, DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.shadowJetLeftMat, aView, aProj, DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.shadowJetRightMat, aView, aProj, DirectX::Colors::Black);
-
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat, aView, aProj, DirectX::Colors::Black);
-
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat, aView, aProj, DirectX::Colors::Black);
-
-
-    m_vehicleStruct00.npcModel.customShape->Draw(m_vehicleStruct00.npcModel.worldCustomMatrix, aView, aProj, jetHousingShellColor, nullptr, false);
-
     */
+
+
     DirectX::SimpleMath::Vector3 lightDir = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Plane groundPlane(0.0f, 1.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
@@ -821,16 +793,16 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector3 scale;
     DirectX::SimpleMath::Quaternion quat;
     shadowMat.Decompose(scale, quat, pos);
-    m_debugData->DebugPushTestLinePositionIndicator(pos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLinePositionIndicator(pos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
     DirectX::SimpleMath::Vector3 vert1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vert2 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vert3 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 testPos = m_vehicleStruct00.vehicleData.q.position;
     bool isTriFound = m_environment->GetTerrainTriangleData(vert1, vert2, vert3, testPos);
-    m_debugData->DebugPushTestLinePositionIndicator(vert1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLinePositionIndicator(vert2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLinePositionIndicator(vert3, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLinePositionIndicator(vert1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLinePositionIndicator(vert2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    //m_debugData->DebugPushTestLinePositionIndicator(vert3, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
@@ -1489,6 +1461,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.afterBurnLeftFlicker = 0.0f;
     aModel.afterBurnRightFlicker = 0.0f;
     aModel.afterBurnFlickerRate = 100.1f;
+
     // Jet after burn left
     const float afterBurnDiameter = jetHousingDiameter * 0.9f;
     //const float afterBurnDiameter = 6.0f;
@@ -1502,6 +1475,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localAfterBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.worldAfterBurnLeftMatrix = aModel.localAfterBurnLeftMatrix;
 
+    /*
     // foward burn left
     DirectX::SimpleMath::Vector3 forwardBurnLeftTranslation;
     forwardBurnLeftTranslation = jetHousingLeftTranslation;
@@ -1510,6 +1484,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localForwardBurnLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localForwardBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.worldForwardBurnLeftMatrix = aModel.localForwardBurnLeftMatrix;
+    */
 
     // Jet after burn right
     DirectX::SimpleMath::Vector3 afterBurnRightTranslation;
@@ -1722,6 +1697,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.worldBaseBurnMatrix1 = aModel.localBaseBurnMatrix;
     aModel.worldBaseBurnMatrix2 = aModel.localBaseBurnMatrix;
     // base burner end
+
 
     // old wing
     DirectX::SimpleMath::Vector3 rearShapeSize = aDimensions;
@@ -2882,7 +2858,7 @@ void NPCVehicle::UpdateNPCModel()
     m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix = m_vehicleStruct00.npcModel.localBaseJetShadowMatrix;
     m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix *= updateMat;
     //
-    m_vehicleStruct00.npcModel.afterBurnFlickerRate = 100.1f;
+    //m_vehicleStruct00.npcModel.afterBurnFlickerRate = 100.1f;
 
     const float throttle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
     const float steering = m_vehicleStruct00.vehicleData.controlInput.steeringInput / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
@@ -2970,6 +2946,24 @@ void NPCVehicle::UpdateNPCModel()
     m_vehicleStruct00.npcModel.jetDirectionLeft = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, jetRotationMatLeft);
     m_vehicleStruct00.npcModel.jetDirectionLeft = DirectX::SimpleMath::Vector3::TransformNormal(m_vehicleStruct00.npcModel.jetDirectionLeft, updateMat);
 
+    //m_vehicleStruct00.npcModel.jetDirectionLeft = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_vehicleStruct00.vehicleData.alignment);
+    //DirectX::SimpleMath::Matrix lightDirLeft = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleStruct00.vehicleData.right, testThrottleRotLeft);
+    
+    DirectX::SimpleMath::Matrix lightDirLeft = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleStruct00.vehicleData.right, testThrottleRotLeft);
+    m_vehicleStruct00.npcModel.jetDirectionLeft = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, m_vehicleStruct00.vehicleData.alignment);  
+    m_vehicleStruct00.npcModel.jetDirectionLeft = DirectX::SimpleMath::Vector3::TransformNormal(m_vehicleStruct00.npcModel.jetDirectionLeft, lightDirLeft);
+
+    m_vehicleStruct00.npcModel.jetDirectionLeft.Normalize();
+    m_vehicleStruct00.npcModel.jetDirectionLeft = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, jetRotationMatLeft);
+    m_vehicleStruct00.npcModel.jetDirectionLeft = DirectX::SimpleMath::Vector3::TransformNormal(m_vehicleStruct00.npcModel.jetDirectionLeft, updateMat);
+
+    DirectX::SimpleMath::Vector3 jetPosLeft = m_vehicleStruct00.vehicleData.q.position;
+    jetPosLeft += -m_vehicleStruct00.vehicleData.forward * 5.35f;
+    jetPosLeft += -m_vehicleStruct00.vehicleData.right * 6.7f;
+    m_debugData->DebugPushTestLine(jetPosLeft, m_vehicleStruct00.npcModel.jetDirectionLeft, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+
     // right burner 
     afterBurnLength = (afterBurnLengthModRight * afterBurnLengthSum);
     afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
@@ -3003,8 +2997,17 @@ void NPCVehicle::UpdateNPCModel()
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= m_vehicleStruct00.npcModel.jetHousingTranslationRightMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= updateMat;
 
-    m_vehicleStruct00.npcModel.jetDirectionRight = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, jetRotationMatRight);
+    m_vehicleStruct00.npcModel.jetDirectionRight = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, -jetRotationMatRight);
     m_vehicleStruct00.npcModel.jetDirectionRight = DirectX::SimpleMath::Vector3::TransformNormal(m_vehicleStruct00.npcModel.jetDirectionRight, updateMat);
+
+
+    //m_vehicleStruct00.npcModel.jetDirectionRight = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix);
+    //m_vehicleStruct00.npcModel.jetDirectionRight.Normalize();
+
+    DirectX::SimpleMath::Vector3 jetPosRight = m_vehicleStruct00.vehicleData.q.position;
+    jetPosRight += -m_vehicleStruct00.vehicleData.forward * 5.35f;
+    jetPosRight += m_vehicleStruct00.vehicleData.right * 6.7f;
+    m_debugData->DebugPushTestLine(jetPosRight, m_vehicleStruct00.npcModel.jetDirectionRight, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
     m_vehicleStruct00.npcModel.jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, updateMat);
 
@@ -3023,6 +3026,10 @@ void NPCVehicle::UpdateNPCModel()
     baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
     m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;
     float baseBurnY = (baseBurnLength * 0.5f) * 0.1f;
+
+
+    m_vehicleStruct00.npcModel.baseBurnLength = baseBurnY;
+
     DirectX::SimpleMath::Matrix baseBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(baseBurnLength), 1.0f);
     DirectX::SimpleMath::Matrix baseBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, baseBurnY, 0.0f);
     const float baseBurnFlickerMod = 0.6f;

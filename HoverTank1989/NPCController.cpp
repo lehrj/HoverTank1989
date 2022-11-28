@@ -263,44 +263,44 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float low = 7.0f;
     const float high = 13.0f;
     const float zPosOffSet = 12.0f;
-    const int rows = 4;
-    const int columns = 5;
+    const int rows = 0;
+    const int columns = 0;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = yOffSet;
-            //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+            this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
             pos.x += 25.0f;
         }
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
 
-    const float xLine = 185.0f;
+    const float xLine = 85.0f;
     const float yLine = 10.0f;
     const float zSpacing = 90.0f;
     // target 1
     pos.x = xLine;
     pos.y = yLine;
-    pos.z = -600.0f;
-    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+    pos.z = -300.0f;
+    //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+
+    pos.z += zSpacing;
+    //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+
+    pos.z += zSpacing;
+    //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 
     pos.z += zSpacing;
     this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 
     pos.z += zSpacing;
-    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+    //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 
     pos.z += zSpacing;
-    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
-
-    pos.z += zSpacing;
-    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
-
-    pos.z += zSpacing;
-    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+    //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 }
 
 void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)

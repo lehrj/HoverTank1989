@@ -14,8 +14,7 @@ public:
         
         m_debugUI.clear();
         m_debugUIVector.clear();
-        m_debugLinesVec.clear();
-        
+        m_debugLinesVec.clear();       
     };
 
     void DebugPushUILine(std::string aString, float aVal);

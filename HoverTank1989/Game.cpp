@@ -121,7 +121,9 @@ void Game::Initialize(HWND window, int width, int height)
     m_npcController->LoadNPCs(context, m_npcController);
 
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_BLANK, m_texture, m_normalMap, m_specular);
-    m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST1, m_textureJI, m_normalMapJI, m_specularJI);
+    m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST1, m_textureMetalTest1, m_normalMapMetalTest1, m_specularMetalTest1);
+    m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST2, m_textureMetalTest2, m_normalMapMetalTest2, m_specularMetalTest2);
+    m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_FLAME, m_textureFlameTest, m_normalMapFlameTest, m_specularFlameTest);
 
     m_terrainVector.clear();
 }
@@ -1297,16 +1299,15 @@ void Game::Render()
         //ilights->EnableDefaultLighting();
     }
 
-    m_effect->SetNormalTexture(m_normalMapJI.Get());
-    m_effect->SetSpecularTexture(m_specularJI.Get());
+
     //m_effect->Apply(context);
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
-        //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
-        m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
+        //m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
-        DrawTestTrack();
+        //DrawTestTrack();
     }
     //m_batch->End();
 
@@ -1453,7 +1454,22 @@ void Game::CreateDeviceDependentResources()
 
     // sky texture
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
-    // Jackson Industry textures
+
+    // metal tests
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest1.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapMetalTest1.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularMetalTest1.ReleaseAndGetAddressOf()));
+    
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapMetalTest2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularMetalTest2.ReleaseAndGetAddressOf()));
+
+    // flame test
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureFlameTest.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapFlameTest.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularFlameTest.ReleaseAndGetAddressOf()));
+    
+    // Blank textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
@@ -1600,6 +1616,7 @@ void Game::CreateDeviceDependentResources()
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
+    m_testShape3 = DirectX::GeometricPrimitive::CreateCone(context, 10.0f, 10.0f, 3);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -1951,6 +1968,19 @@ void Game::OnDeviceLost()
     m_textureTest.Reset();
     m_specularTest.Reset();
 
+    m_normalMapMetalTest1.Reset();
+    m_textureMetalTest1.Reset();
+    m_specularMetalTest1.Reset();
+
+    m_normalMapMetalTest2.Reset();
+    m_textureMetalTest2.Reset();
+    m_specularMetalTest2.Reset();
+
+    m_normalMapFlameTest.Reset();
+    m_textureFlameTest.Reset();
+    m_specularFlameTest.Reset();
+
+
     m_normalMapJI.Reset();
     m_specularJI.Reset();
     m_textureJI.Reset();
@@ -1998,6 +2028,7 @@ void Game::OnDeviceLost()
 
     m_testShape.reset();
     m_testShape2.reset();
+    m_testShape3.reset();
 }
 
 void Game::OnDeviceRestored()

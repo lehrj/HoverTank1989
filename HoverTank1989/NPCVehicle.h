@@ -97,16 +97,15 @@ struct NPCModel
     DirectX::SimpleMath::Vector3 jetDirectionBase = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 jetDirectionLeft = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 jetDirectionRight = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Matrix jetMatLeft = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix jetMatRight = DirectX::SimpleMath::Matrix::Identity;
     
     float maxDelta = 0.0f;
 
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix worldAfterBurnRightMatrix2 = DirectX::SimpleMath::Matrix::Identity;
 
-    DirectX::SimpleMath::Matrix localForwardBurnLeftMatrix;
-    DirectX::SimpleMath::Matrix worldForwardBurnLeftMatrix;
-    DirectX::SimpleMath::Matrix localForwardBurnRightMatrix;
-    DirectX::SimpleMath::Matrix worldForwardBurnRightMatrix;
 
     float afterBurnLeftFlicker;
     float afterBurnLeftFlicker2 = 0.0f;
@@ -444,13 +443,6 @@ public:
     void DebugToggleAI();
     void DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
-
-    /*
-    void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
-        const DirectX::SimpleMath::Vector3 aHeading,
-        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
-        std::shared_ptr<NPCController> aNpcController, Vehicle const* aPlayer, const unsigned int aID);
-    */
 
     void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
