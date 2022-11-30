@@ -241,13 +241,13 @@ public:
 
         aDir1 = aPrimeDirection;
         aDir1 = DirectX::SimpleMath::Vector3::TransformNormal(aDir1, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(rightVec, aOffsetAngle));
-        aDir1 = DirectX::SimpleMath::Vector3::TransformNormal(aDir2, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, aRotation));
+        aDir1 = DirectX::SimpleMath::Vector3::TransformNormal(aDir1, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, aRotation));
         aDir2 = aDir1;
         aDir2 = DirectX::SimpleMath::Vector3::TransformNormal(aDir2, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, Utility::ToRadians(120.0f)));
-        aDir2 = DirectX::SimpleMath::Vector3::TransformNormal(aDir2, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, aRotation));
+        //aDir2 = DirectX::SimpleMath::Vector3::TransformNormal(aDir2, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, aRotation));
         aDir3 = aDir1;
         aDir3 = DirectX::SimpleMath::Vector3::TransformNormal(aDir3, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, Utility::ToRadians(240.0f)));
-        aDir3 = DirectX::SimpleMath::Vector3::TransformNormal(aDir2, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, aRotation));
+        //aDir3 = DirectX::SimpleMath::Vector3::TransformNormal(aDir3, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, aRotation));
     }
 
 private:

@@ -388,4 +388,12 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape3;
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;
+
+    const int m_sideCount = 64;
+    float m_shape3Diameter = 5.89f;
+    float m_shape3Height = 1.1f;
+    float m_shape3Scale = 3.0f;
+
+    float m_lightRotation = 0.0f;
+    float m_shapeRotation = 0.0f;
 };
