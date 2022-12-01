@@ -516,6 +516,10 @@ void Game::Update(DX::StepTimer const& aTimer)
     {
         m_isPauseOn = true;
     }
+
+    //m_shapeScaleMod = Utility::WrapAngle(m_shapeScaleMod + cos(aTimer.GetElapsedSeconds() * 9.0f));
+    //m_shapeScaleMod = Utility::WrapAngle(m_shapeScaleMod + cos(aTimer.GetTotalSeconds() * 9.0f));
+    m_shapeScaleMod = Utility::WrapAngle(m_shapeScaleMod + (0.1f * 9.0f));
 }
 #pragma endregion
 
@@ -1354,9 +1358,12 @@ void Game::Render()
     m_effect->SetLightDirection(1, lightDirection1);
     m_effect->SetLightDirection(2, lightDirection2);
 
+    float scaleVal = m_shape3Scale + (m_shapeScaleMod * 0.1f);
+
     DirectX::SimpleMath::Matrix posMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Vector3 posVec = DirectX::SimpleMath::Vector3(0.0f, 25.0f, 0.0f);
-    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, m_shape3Scale, 1.0f));
+    posVec.y += scaleVal * 0.5f;
+    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, scaleVal, 1.0f));
     posMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_shapeRotation);
     posMat *= DirectX::SimpleMath::Matrix::CreateTranslation(posVec);
     m_effect->SetAlpha(1.0f);
@@ -1369,12 +1376,12 @@ void Game::Render()
     //m_effect->SetLightDirection(0, lightDirection0);
     //m_effect->SetLightDirection(1, lightDirection1);
     //m_effect->SetLightDirection(2, lightDirection2);
+    
     posMat = DirectX::SimpleMath::Matrix::Identity;
     posMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
-    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, m_shape3Scale, 1.0f));
+    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, scaleVal, 1.0f));
     posMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_shapeRotation);
     posMat *= DirectX::SimpleMath::Matrix::CreateTranslation(posVec);
-
     m_effect->SetWorld(posMat);
     m_testShape3->Draw(m_effect.get(), m_inputLayout.Get());
 

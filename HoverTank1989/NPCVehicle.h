@@ -111,6 +111,9 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix worldAfterBurnRightMatrix2 = DirectX::SimpleMath::Matrix::Identity;
 
+    const float burnFlickerFrequencyMod = 39.04f;
+    const float burnFlickerLengthMod = 7.1f;
+    float burnFlickerLegth = 0.0f;
 
     float afterBurnLeftFlicker;
     float afterBurnLeftFlicker2 = 0.0f;

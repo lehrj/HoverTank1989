@@ -171,6 +171,22 @@ public:
         return mod;
     }
 
+    template<typename T>
+    static T WrapAnglePositive(T aTheta) noexcept
+    {
+        const T pi = (T)1 * (T)Utility::GetPi();
+        const T mod = fmod(aTheta, pi);
+        if (mod > (T)Utility::GetPi())
+        {
+            return mod - pi;
+        }
+        else if (mod < -(T)0.0)
+        {
+            return mod + pi;
+        }
+        return mod;
+    }
+
     static float GetAngleBetweenVectors(DirectX::SimpleMath::Vector3 aVec1, DirectX::SimpleMath::Vector3 aVec2)
     {
         aVec1.Normalize();

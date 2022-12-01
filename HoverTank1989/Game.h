@@ -394,6 +394,7 @@ private:
     float m_shape3Height = 1.1f;
     float m_shape3Scale = 3.0f;
 
+    float m_shapeScaleMod = 0.0f;
     float m_lightRotation = 0.0f;
     float m_shapeRotation = 0.0f;
 };
