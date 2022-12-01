@@ -94,6 +94,11 @@ struct NPCModel
     float afterBurnLengthRightPrev2 = 0.0f;
     float afterBurnLengthRightPrev3 = 0.0f;
 
+    float afterBurnRadius;
+    float afterBurnHeight;
+    float afterBurnLeftScaledHeight;
+    float afterBurnRightScaledHeight;
+
     DirectX::SimpleMath::Vector3 jetDirectionBase = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 jetDirectionLeft = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 jetDirectionRight = DirectX::SimpleMath::Vector3::Zero;
@@ -121,6 +126,9 @@ struct NPCModel
     float baseBurnLengthPrev1 = 0.0f;
     float baseBurnFlicker1;
     float baseBurnFlicker2;
+    float baseBurnRadius;
+    float baseBurnHeight;
+    float baseBurnScaledHeight;
 
     float mainThrustLengthMod = 1.0f;
 
@@ -550,7 +558,7 @@ private:
     void UpdateHardPoints();
     void UpdateImpulseForces(const float aTimeDelta);
     void UpdateJumpData(JumpData& aJumpData, const float aTimeDelta);
-    void UpdateNPCModel();
+    void UpdateNPCModel(const double aTimeDelta);
 
     Environment const* m_environment;
 
@@ -601,6 +609,10 @@ private:
     DirectX::SimpleMath::Vector3 m_lastImpactPos = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 m_testAccelVec = DirectX::SimpleMath::Vector3::Zero;
+
+    float m_testLightRotation = 0.0f;
+    float m_testShapeRotation = 0.0f;
+
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
 

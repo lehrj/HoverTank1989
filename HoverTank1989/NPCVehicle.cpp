@@ -508,7 +508,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
-    /*
+    
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix);
     aEffect->SetColorAndAlpha(testHighlight);
@@ -545,7 +545,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetColorAndAlpha(testShadow);
     m_vehicleStruct00.npcModel.baseJetShadowShape->Draw(aEffect.get(), aInputLayout.Get());
     
-    */
+    
 
 
     aEffect->SetNormalTexture(m_vehicleStruct00.npcModel.normalMapBlank.Get());
@@ -555,15 +555,15 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector3 lightDirection1;
     DirectX::SimpleMath::Vector3 lightDirection2;
 
-    const float baseRad = 3.0f;
-    const float baseLength = m_vehicleStruct00.npcModel.baseBurnLength;
+    const float baseRad = m_vehicleStruct00.npcModel.baseBurnRadius;
+    const float baseLength = m_vehicleStruct00.npcModel.baseBurnScaledHeight;
     const float toa = baseLength / baseRad;
     const float baseAngle = atan(toa);
     const float baseAngleDegrees = Utility::ToDegrees(baseAngle);
-
+    const float baseBurnRotation = m_vehicleStruct00.npcModel.baseBurnFlicker1;
     m_vehicleStruct00.npcModel.jetDirectionBase.Normalize();
     Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionBase, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
-
+    Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionBase, Utility::ToRadians(baseAngleDegrees), baseBurnRotation, lightDirection0, lightDirection1, lightDirection2);
     aEffect->SetLightDirection(0, lightDirection0);
     aEffect->SetLightDirection(1, lightDirection1);
     aEffect->SetLightDirection(2, lightDirection2);
@@ -573,7 +573,9 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     //aEffect->SetLightEnabled(1, false);
     //aEffect->SetLightEnabled(2, false);
     
-
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection0, 15.0f, 1.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection1, 15.0f, 1.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection2, 15.0f, 1.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldBaseBurnMatrix1);
     aEffect->SetColorAndAlpha(afterBurnColor);
@@ -583,19 +585,22 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.baseBurnShape->Draw(aEffect.get(), aInputLayout.Get());
 
 
-    const float leftRad = 0.945f;
-    const float leftLength = m_vehicleStruct00.npcModel.afterBurnLengthLeft;
+    const float leftRad = m_vehicleStruct00.npcModel.afterBurnRadius;
+    const float leftLength = m_vehicleStruct00.npcModel.afterBurnLeftScaledHeight;
     const float leftToa = leftLength / leftRad;
     const float leftAngleDegrees2 = Utility::ToDegrees(leftToa);
     const float leftAngle = atan(leftToa);
     //const float leftAngleDegrees =  90.0f + Utility::ToDegrees(leftAngle);
-    const float leftAngleDegrees =  (Utility::ToDegrees(leftAngle) - 90.0f) + 180.0f;
+    //const float leftAngleDegrees =  (Utility::ToDegrees(leftAngle) - 90.0f) + 180.0f;
+    const float leftAngleDegrees = Utility::ToDegrees(leftAngle);
     const float toaTan = tan(toa);
     const float rotation = m_vehicleStruct00.npcModel.afterBurnLeftFlicker;
 
+    //const float rotation = 0.0f;
     //Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionLeft, Utility::ToRadians(leftAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
-    Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionLeft, Utility::ToRadians(leftAngleDegrees), rotation, lightDirection0, lightDirection1, lightDirection2);
-    m_debugData->DebugClearUI();
+    //Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionLeft, Utility::ToRadians(leftAngleDegrees), rotation, lightDirection0, lightDirection1, lightDirection2);
+    Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionLeft, Utility::ToRadians(leftAngleDegrees), m_testLightRotation, lightDirection0, lightDirection1, lightDirection2);
+    //m_debugData->DebugClearUI();
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection0, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection1, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection2, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
@@ -616,13 +621,14 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.afterBurnShape->Draw(aEffect.get(), aInputLayout.Get());
 
 
-    const float rightRad = 0.945f;
-    const float rightLength = m_vehicleStruct00.npcModel.afterBurnLengthRight;
+    const float rightRad = m_vehicleStruct00.npcModel.afterBurnRadius;
+    const float rightLength = m_vehicleStruct00.npcModel.afterBurnRightScaledHeight;
     const float rightToa = rightLength / rightRad;
     const float rightAngle = atan(rightToa);
     const float rightAngleDegrees = Utility::ToDegrees(rightAngle);
 
     Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionRight, Utility::ToRadians(rightAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
+    Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionRight, Utility::ToRadians(rightAngleDegrees), m_vehicleStruct00.npcModel.afterBurnRightFlicker, lightDirection0, lightDirection1, lightDirection2);
 
     aEffect->SetLightDirection(0, lightDirection0);
     aEffect->SetLightDirection(1, lightDirection1);
@@ -643,7 +649,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
 
     aEffect->EnableDefaultLighting();
 
-    /*
+    
     
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix);
     aEffect->SetColorAndAlpha(jetHousingColor);
@@ -776,7 +782,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat, aView, aProj, DirectX::Colors::Black);
     
-    */
+    
 
 
     DirectX::SimpleMath::Vector3 lightDir = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
@@ -1463,13 +1469,14 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.afterBurnLeftFlicker = 0.0f;
     aModel.afterBurnRightFlicker = 0.0f;
     aModel.afterBurnFlickerRate = 100.1f;
+    //aModel.afterBurnFlickerRate = 0.0f;
 
     // Jet after burn left
     const float afterBurnDiameter = jetHousingDiameter * 0.9f;
-    //const float afterBurnDiameter = 6.0f;
-
     const float afterBurnHeight = 0.1f;
-    aModel.afterBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), afterBurnDiameter, afterBurnHeight, 3);
+    aModel.afterBurnRadius = afterBurnDiameter * 0.5f;
+    aModel.afterBurnHeight = afterBurnHeight;
+    aModel.afterBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), afterBurnDiameter, afterBurnHeight, 64);
     DirectX::SimpleMath::Vector3 afterBurnLowerLeftTranslation;
     afterBurnLowerLeftTranslation = jetHousingLeftTranslation;
     afterBurnLowerLeftTranslation.y += 0.0f;
@@ -1688,9 +1695,14 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     // base burner start
     aModel.baseBurnFlicker1 = 0.0f;
     aModel.baseBurnFlicker2 = 0.0f;
-    const float baseBurnDiameter = baseJetHousingDiameter - baseJetHousingThickness;
+    //const float baseBurnDiameter = baseJetHousingDiameter - baseJetHousingThickness;
+    //const float baseBurnHeight = 0.1f;
+    const float baseBurnDiameter = 1.89f;
     const float baseBurnHeight = 0.1f;
-    aModel.baseBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), baseBurnDiameter, baseBurnHeight, 3);
+    aModel.baseBurnRadius = baseBurnDiameter * 0.5f;
+    aModel.baseBurnHeight = baseBurnHeight;
+    aModel.baseBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), baseBurnDiameter, baseBurnHeight, 64);
+    //aModel.baseBurnShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), 1.89, 0.1, 64);
     DirectX::SimpleMath::Vector3 baseBurnTranslation = baseJetHousingTranslation;
     baseBurnTranslation.y -= 0.25f;
     aModel.localBaseBurnMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -2666,6 +2678,9 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
 
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
 {
+    m_testLightRotation = Utility::WrapAngle((m_testLightRotation + (aTimeDelta * -100.5f)));
+    m_testShapeRotation = Utility::WrapAngle((m_testShapeRotation + (aTimeDelta * 200.5f)));
+
     if (m_vehicleStruct00.vehicleData.isDead == true)
     {
         m_vehicleStruct00.vehicleData.deleteCountDownTimer -= static_cast<float>(aTimeDelta);
@@ -2707,7 +2722,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignment();
-    UpdateNPCModel();
+    UpdateNPCModel(aTimeDelta);
     UpdateHardPoints();
 
     if (m_vehicleStruct00.vehicleData.q.position.y > 1300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)
@@ -2749,7 +2764,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     UpdateForceTorqueVecs();
 }
 
-void NPCVehicle::UpdateNPCModel()
+void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 {
     DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(m_vehicleStruct00.vehicleData.q.position, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
 
@@ -2920,13 +2935,13 @@ void NPCVehicle::UpdateNPCModel()
     const float afterBurnFlickerModLeft = afterBurnLengthModLeft + idleFlicker;
     m_vehicleStruct00.npcModel.afterBurnLeftFlicker += (afterBurnFlickerModLeft * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.afterBurnLeftFlicker = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
-    m_vehicleStruct00.npcModel.afterBurnLeftFlicker = 0.0f;
+    //m_vehicleStruct00.npcModel.afterBurnLeftFlicker = 0.0f;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
     DirectX::SimpleMath::Matrix afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(afterBurnLength), 1.0f);
-
+    m_vehicleStruct00.npcModel.afterBurnLeftScaledHeight = m_vehicleStruct00.npcModel.afterBurnHeight * abs(afterBurnLength);
     m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 -= (afterBurnFlickerModLeft * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnLeftFlicker2);
-    m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 = Utility::ToRadians(0.0f);
+    //m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 = Utility::ToRadians(0.0f);
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnLeftFlicker2 + Utility::ToRadians(60.0f));
 
     if (afterBurnLengthModLeft <= 0.0f)
@@ -2967,22 +2982,22 @@ void NPCVehicle::UpdateNPCModel()
     m_debugData->DebugPushTestLine(jetPosLeft, m_vehicleStruct00.npcModel.jetDirectionLeft, 25.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
 
-
+    
     // right burner 
     afterBurnLength = (afterBurnLengthModRight * afterBurnLengthSum);
     afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
     afterBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(afterBurnLength), 1.0f);
     afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY, 0.0f);
-
+    m_vehicleStruct00.npcModel.afterBurnRightScaledHeight = m_vehicleStruct00.npcModel.afterBurnHeight * abs(afterBurnLength);
     const float afterBurnFlickerModRight = afterBurnLengthModRight + idleFlicker;
     m_vehicleStruct00.npcModel.afterBurnRightFlicker -= (afterBurnFlickerModRight * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.afterBurnRightFlicker = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnRightFlicker);
-    m_vehicleStruct00.npcModel.afterBurnRightFlicker = 0.0f;
+    //m_vehicleStruct00.npcModel.afterBurnRightFlicker = 0.0f;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnRightFlicker);
 
     m_vehicleStruct00.npcModel.afterBurnRightFlicker2 += (afterBurnFlickerModRight * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.afterBurnRightFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.afterBurnRightFlicker2);
-    m_vehicleStruct00.npcModel.afterBurnRightFlicker2 = Utility::ToRadians(0.0f);
+    //m_vehicleStruct00.npcModel.afterBurnRightFlicker2 = Utility::ToRadians(0.0f);
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.afterBurnRightFlicker2 + Utility::ToRadians(60.0f));
 
     if (afterBurnLengthModRight <= 0.0f)
@@ -3032,16 +3047,16 @@ void NPCVehicle::UpdateNPCModel()
     baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
     m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;
     float baseBurnY = (baseBurnLength * 0.5f) * 0.1f;
-
+    
 
     m_vehicleStruct00.npcModel.baseBurnLength = baseBurnY;
-
+    m_vehicleStruct00.npcModel.baseBurnScaledHeight = m_vehicleStruct00.npcModel.baseBurnHeight * abs(baseBurnLength);
     DirectX::SimpleMath::Matrix baseBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(baseBurnLength), 1.0f);
     DirectX::SimpleMath::Matrix baseBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, baseBurnY, 0.0f);
     const float baseBurnFlickerMod = 0.6f;
     m_vehicleStruct00.npcModel.baseBurnFlicker1 -= (baseBurnFlickerMod * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.baseBurnFlicker1 = Utility::WrapAngle(m_vehicleStruct00.npcModel.baseBurnFlicker1);
-    m_vehicleStruct00.npcModel.baseBurnFlicker1 = 0.0f;
+    //m_vehicleStruct00.npcModel.baseBurnFlicker1 = 0.0f;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.baseBurnFlicker1);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 *= baseBurnScale;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 *= baseBurnTranslation;
@@ -3050,13 +3065,15 @@ void NPCVehicle::UpdateNPCModel()
 
     m_vehicleStruct00.npcModel.baseBurnFlicker2 += (baseBurnFlickerMod * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.baseBurnFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.baseBurnFlicker2);
-    m_vehicleStruct00.npcModel.baseBurnFlicker2 = Utility::ToRadians(60.0f);
+    //m_vehicleStruct00.npcModel.baseBurnFlicker2 = Utility::ToRadians(60.0f);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.baseBurnFlicker2);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= baseBurnScale;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= baseBurnTranslation;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= m_vehicleStruct00.npcModel.localBaseBurnMatrix;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= updateMat;
     //
+     
+    
     //   
     m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix = m_vehicleStruct00.npcModel.localJetIntakeCoverLeftTranslationMatrix;
     m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(m_vehicleStruct00.npcModel.afterBurnLeftFlicker);
