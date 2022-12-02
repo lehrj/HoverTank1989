@@ -313,6 +313,13 @@ std::vector<DirectX::VertexPositionColor> Environment::GetTerrainColorVertex()
     return vertPosColor;
 }
 
+void Environment::GetLightDirectionalVectors(DirectX::SimpleMath::Vector3& aLightVec0, DirectX::SimpleMath::Vector3& aLightVec1, DirectX::SimpleMath::Vector3& aLightVec2) const
+{
+    aLightVec0 = m_currentEnviron.LightDirection0;
+    aLightVec1 = m_currentEnviron.LightDirection1;
+    aLightVec2 = m_currentEnviron.LightDirection2;
+}
+
 bool Environment::GetIsPosInPlay(const DirectX::XMFLOAT3 aPos) const
 {
     if (aPos.x > m_heightMapGamePlayData.xPosMax || aPos.x < m_heightMapGamePlayData.xPosMin
@@ -782,6 +789,7 @@ void Environment::LoadEnvironmentData()
     m_environs[i].scale = 0.02;
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, -0.9f);
+    UpdateDirectionalLightingVectors(m_environs[i]);
 
     ++i;
     m_environs[i].name = "Breezy";    
@@ -794,6 +802,7 @@ void Environment::LoadEnvironmentData()
     m_environs[i].scale = 0.02;
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(-10.0f, 0.0f, 0.0f);
+    UpdateDirectionalLightingVectors(m_environs[i]);
 
     m_environs[i].name = "Calm";
     m_environs[i].airDensity = 1.225;
@@ -805,6 +814,7 @@ void Environment::LoadEnvironmentData()
     m_environs[i].scale = 0.02;
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    UpdateDirectionalLightingVectors(m_environs[i]);
 }
 
 bool Environment::LoadHeightMap(HeightMap& aMap)
@@ -1006,4 +1016,18 @@ void Environment::UpdateEnvironment(const int aIndex)
     m_currentEnviron = m_environs[aIndex];
     m_landingFriction = m_environs[aIndex].landingFrictionScale;
     m_landingHardness = m_environs[aIndex].landingHardnessScale;
+}
+
+void Environment::UpdateDirectionalLightingVectors(Environ& aEnviron)
+{
+    DirectX::SimpleMath::Vector3 lightVectorPrime = aEnviron.LightDirectionPrime;
+    DirectX::SimpleMath::Vector3 lightVector0 = aEnviron.LightDirection0;
+    DirectX::SimpleMath::Vector3 lightVector1 = aEnviron.LightDirection1;
+    DirectX::SimpleMath::Vector3 lightVector2 = aEnviron.LightDirection2;
+    const float offsetAngle = aEnviron.lightDirectionsOffsetAngle;
+    const float rotationAngle = aEnviron.lightDirectionsOffsetAngle;
+    Utility::GetDispersedLightDirectionsRotation(lightVectorPrime, offsetAngle, rotationAngle, lightVector0, lightVector1, lightVector2);
+    aEnviron.LightDirection0 = lightVector0;
+    aEnviron.LightDirection1 = lightVector1;
+    aEnviron.LightDirection2 = lightVector2;
 }

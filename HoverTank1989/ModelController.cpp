@@ -125,7 +125,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     bool isTriFound = m_environment->GetTerrainTriangleData(vert1, vert2, vert3, testPos);
 
     //DirectX::SimpleMath::Vector3 lightDir = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirection();
+    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     //DirectX::SimpleMath::Plane groundPlane(0.0f, 1.0f, 0.0f, 0.0f);
     //DirectX::SimpleMath::Plane groundPlane(vert1, vert2, vert3);
     //DirectX::SimpleMath::Plane groundPlane(vert3, vert2, vert1);

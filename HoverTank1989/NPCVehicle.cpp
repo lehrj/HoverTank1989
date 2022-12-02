@@ -508,8 +508,15 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
-    
     aEffect->EnableDefaultLighting();
+    DirectX::SimpleMath::Vector3 mainLightDirection0;
+    DirectX::SimpleMath::Vector3 mainLightDirection1;
+    DirectX::SimpleMath::Vector3 mainLightDirection2;
+    m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
+    aEffect->SetLightDirection(0, mainLightDirection0);
+    aEffect->SetLightDirection(1, mainLightDirection1);
+    aEffect->SetLightDirection(2, mainLightDirection2);
+    
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix);
     aEffect->SetColorAndAlpha(testHighlight);
 
@@ -649,7 +656,9 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetSpecularTexture(m_vehicleStruct00.npcModel.specularBlank.Get());
 
     aEffect->EnableDefaultLighting();
-
+    aEffect->SetLightDirection(0, mainLightDirection0);
+    aEffect->SetLightDirection(1, mainLightDirection1);
+    aEffect->SetLightDirection(2, mainLightDirection2);
     
     
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetHousingRightMatrix);
@@ -3211,7 +3220,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldVentMatrix9 = m_vehicleStruct00.npcModel.localVentMatrix9;
     m_vehicleStruct00.npcModel.worldVentMatrix9 *= updateMat;
 
-    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirection();
+    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane;// (vert3, vert2, vert1);
     bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, m_vehicleStruct00.vehicleData.q.position);
     DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;

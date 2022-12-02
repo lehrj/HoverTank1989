@@ -45,6 +45,13 @@ struct Environ
     std::string                         windXStr;
     std::string                         windYStr;
     std::string                         windZStr;
+
+    DirectX::SimpleMath::Vector3  LightDirectionPrime = -DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3  LightDirection0 = -DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3  LightDirection1 = -DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3  LightDirection2 = -DirectX::SimpleMath::Vector3::UnitY;
+    float lightDirectionsOffsetAngle = Utility::ToRadians(20.0f);
+    float lightDirectionRotation = Utility::ToRadians(0.0f);
 };
 
 enum class FixtureType
@@ -121,7 +128,8 @@ public:
     std::string GetGravityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravityStr; };
     float GetGravity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].gravity; };
     bool GetGroundPlane(DirectX::SimpleMath::Plane& aPlane, DirectX::SimpleMath::Vector3 aPos) const;
-    DirectX::SimpleMath::Vector3 GetLightDirection() const { return -DirectX::SimpleMath::Vector3::UnitY; };
+    DirectX::SimpleMath::Vector3 GetLightDirectionPrime() const { return m_currentEnviron.LightDirectionPrime; };
+    void GetLightDirectionalVectors(DirectX::SimpleMath::Vector3& aLightVec0, DirectX::SimpleMath::Vector3& aLightVec1, DirectX::SimpleMath::Vector3& aLightVec2) const;
     int GetNumerOfEnvirons() const { return m_environsAvailable; };
     int GetNumberOfEnvironSelectDisplayVariables() const { return m_environSelectDisplayDataPoints; };
     float GetScale() const { return m_currentEnviron.scale; };
@@ -143,7 +151,6 @@ public:
 
     bool InitializeTerrain(HeightMap& aMap);
 
-    void SortFixtureBucketByDistance();
     void UpdateEnvironment(const int aIndex);
 
 private:    
@@ -157,7 +164,8 @@ private:
     bool LoadHeightMap(HeightMap& aMap);
 
     void ScaleTerrain(HeightMap& aMap);
-    
+    void UpdateDirectionalLightingVectors(Environ& aEnviron);
+
     Environ                             m_currentEnviron;
     std::vector<Environ>                m_environs;
     const int                           m_environsAvailable = 3;
