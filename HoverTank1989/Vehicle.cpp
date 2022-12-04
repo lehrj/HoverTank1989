@@ -253,6 +253,11 @@ void Vehicle::DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, co
     m_fireControl->DrawFireControlObjects(aView, aProj);
 }
 
+void Vehicle::DrawVehicleProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    m_fireControl->DrawFireControlObjects2(aView, aProj, aEffect, aInputLayout);
+}
+
 void Vehicle::InitializeFlightControls(ControlInput& aInput)
 {
     aInput.collectiveInput = 0.0f;

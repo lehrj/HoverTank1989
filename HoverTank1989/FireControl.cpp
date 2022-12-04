@@ -264,9 +264,64 @@ void FireControl::DrawExplosions(const DirectX::SimpleMath::Matrix aView, const 
     }
 }
 
+void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
+    {
+        aEffect->EnableDefaultLighting();
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix0);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].explosionCurrentColor);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+  
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix1);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color1);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+  
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix2);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color2);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix3);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color3);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix4);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color4);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix5);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color5);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix6);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color6);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix7);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color7);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix8);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color8);
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+    }
+}
+
 void FireControl::DrawFireControlObjects(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     DrawExplosions(aView, aProj);
+    if (m_muzzleFlash.isFlashActive == true)
+    {
+        DrawMuzzleFlash(aView, aProj);
+    }
+    DrawProjectiles(aView, aProj);
+
+}
+
+void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    DrawExplosions2(aView, aProj, aEffect, aInputLayout);
+
     if (m_muzzleFlash.isFlashActive == true)
     {
         DrawMuzzleFlash(aView, aProj);

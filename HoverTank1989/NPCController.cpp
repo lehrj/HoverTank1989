@@ -263,8 +263,8 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float low = 7.0f;
     const float high = 13.0f;
     const float zPosOffSet = 12.0f;
-    const int rows = 0;
-    const int columns = 0;
+    const int rows = 5;
+    const int columns = 5;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)

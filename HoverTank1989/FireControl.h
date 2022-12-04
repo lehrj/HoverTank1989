@@ -163,6 +163,7 @@ class FireControl
 public:
     void CycleLoadedAmmo();
     void DrawFireControlObjects(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+    void DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
     void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
         const DirectX::SimpleMath::Vector3 aLaunchPos, 
@@ -183,13 +184,14 @@ public:
     void UpdateFireControl(double aTimeDelta);
 
 private:
-    //void ActivateMuzzleFlash();
     void ActivateMuzzleFlash(AmmoType aAmmoType);
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+    void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
