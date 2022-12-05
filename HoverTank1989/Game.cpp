@@ -118,12 +118,16 @@ void Game::Initialize(HWND window, int width, int height)
     //m_vehicle->InitializeVehicle(context, m_npcController);
     m_vehicle->InitializeVehicle(context, m_npcController, m_vehicle);
     m_vehicle->SetDebugData(m_debugData);
+    m_vehicle->PassFireControl(m_fireControl);
+
     m_npcController->LoadNPCs(context, m_npcController);
 
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_BLANK, m_texture, m_normalMap, m_specular);
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST1, m_textureMetalTest1, m_normalMapMetalTest1, m_specularMetalTest1);
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST2, m_textureMetalTest2, m_normalMapMetalTest2, m_specularMetalTest2);
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_FLAME, m_textureFlameTest, m_normalMapFlameTest, m_specularFlameTest);
+
+    m_fireControl->InitializeTextureMapsExplosion(m_textureFlameTest, m_normalMapFlameTest, m_specularFlameTest);
 
     m_terrainVector.clear();
 }
@@ -1356,6 +1360,8 @@ void Game::Render()
     m_effect->SetLightSpecularColor(2, DirectX::Colors::Orange);
     */
 
+
+    /*
     //m_effect->SetLightEnabled(0, false);
     m_effect->SetLightDirection(0, lightDirection0);
     m_effect->SetLightDirection(1, lightDirection1);
@@ -1400,6 +1406,8 @@ void Game::Render()
     m_debugData->DebugPushUILineDecimalNumber("lightDirection0 = ", lightDirection0.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("lightDirection1 = ", lightDirection0.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("lightDirection2 = ", lightDirection0.Length(), "");
+    */
+
 
     m_effect->EnableDefaultLighting();
     m_effect->SetWorld(m_world);

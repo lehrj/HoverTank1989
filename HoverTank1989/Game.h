@@ -108,15 +108,15 @@ private:
     DirectX::ModelBone::TransformArray m_drawBones;
     DirectX::ModelBone::TransformArray m_animBones;
 
-    Camera* m_camera;   
-    Environment* m_environment;
-    Lighting* m_lighting;
-
-    std::shared_ptr<NPCController> m_npcController;
-
-    std::shared_ptr<Vehicle> m_vehicle;
+    Camera*                         m_camera;   
+    std::shared_ptr<DebugData>      m_debugData;
+    Environment*                     m_environment;
+    std::shared_ptr<FireControl>    m_fireControl;
+    Lighting*                       m_lighting;
     std::shared_ptr<ModelController> m_modelController;
-    std::shared_ptr<DebugData> m_debugData;
+    std::shared_ptr<NPCController>  m_npcController;
+    std::shared_ptr<Vehicle>        m_vehicle;
+    
 
     std::shared_ptr<VehicleHover> m_testVehicleHover;
 

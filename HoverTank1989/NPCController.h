@@ -35,7 +35,6 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
     void SetNPCEnvironment(Environment const* aEnvironment);
-    void SetPlayer(Vehicle const* aVehicle);
     void SetPlayer(std::shared_ptr<Vehicle> aVehicle);
     void SetVehicleDeath(const unsigned int aVehicleId);
     void TestPositionChange();

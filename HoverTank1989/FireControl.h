@@ -128,6 +128,10 @@ struct ExplosionStruct
     std::vector<ExplosionData> explosionVec;
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, int>> explosionToPushVec;
 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureExplosion;  
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapExplosion;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularExplosion;
+
     const float internalVehicleExplosionRadiusMod = 2.5f;
     float maxExplosionForce;
     float maxExplosionImpactRadius;
@@ -169,6 +173,9 @@ public:
         const DirectX::SimpleMath::Vector3 aLaunchPos, 
         const DirectX::SimpleMath::Vector3 aLaunchDirection, 
         Environment const* aEnvironment, std::shared_ptr<Vehicle> aVehicle);
+
+    void InitializeTextureMapsExplosion(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
+
     void FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileMachineGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);

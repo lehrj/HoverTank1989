@@ -277,6 +277,9 @@ public:
 
     void Jump();
 
+    void PassFireControl(std::shared_ptr<FireControl>& aFireControl);
+  
+
     void ResetVehicle();
 
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);

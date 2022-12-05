@@ -786,6 +786,11 @@ void Vehicle::LandVehicle()
     m_heli.isVehicleAirborne = false;
 }
 
+void Vehicle::PassFireControl(std::shared_ptr<FireControl>& aFireControl)
+{
+    aFireControl = m_fireControl;
+}
+
 void Vehicle::ResetVehicle()
 {
     m_heli.q.position = DirectX::SimpleMath::Vector3::Zero;

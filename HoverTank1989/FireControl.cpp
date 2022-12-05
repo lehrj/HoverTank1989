@@ -269,10 +269,15 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
     for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
     {
         aEffect->EnableDefaultLighting();
+
+        aEffect->SetNormalTexture(m_explosionStruct.normalMapExplosion.Get());
+        aEffect->SetSpecularTexture(m_explosionStruct.specularExplosion.Get());
+
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix0);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].explosionCurrentColor);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
-  
+        
+        
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix1);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color1);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -304,6 +309,7 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix8);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color8);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+        
     }
 }
 
@@ -978,6 +984,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_projectileVec.clear();
     m_environment = aEnvironment;
     m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
+    m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
     InitializeAmmoMachineGun(m_ammoMachineGun);
@@ -1058,6 +1065,13 @@ void FireControl::InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
+}
+
+void FireControl::InitializeTextureMapsExplosion(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap)
+{  
+    m_explosionStruct.textureExplosion = aTexture;
+    m_explosionStruct.normalMapExplosion = aNormalMap;
+    m_explosionStruct.specularExplosion = aSpecularMap;
 }
 
 void FireControl::PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId)
