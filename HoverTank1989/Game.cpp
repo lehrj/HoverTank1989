@@ -1268,27 +1268,15 @@ void Game::Render()
     context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
     context->OMSetDepthStencilState(m_states->DepthNone(), 0);
     context->RSSetState(m_states->CullNone());
-    /*
-    m_effect->SetWorld(m_world);
-    m_effect->SetProjection(m_proj);
-    m_effect->SetView(m_view);
-    m_effect->SetDiffuseColor(Colors::Blue);
-    m_effect->SetAmbientLightColor(Colors::Blue);
-    */
+
     m_effect->Apply(context);
     auto sampler = m_states->LinearClamp();
     context->PSSetSamplers(0, 1, &sampler);
     context->IASetInputLayout(m_inputLayout.Get());
 
-    //m_effect->SetDiffuseColor(Colors::Blue);
-    //m_effect->SetAmbientLightColor(Colors::Blue);
     m_effect->SetProjection(m_proj);
     m_effect->SetView(m_camera->GetViewMatrix());
     m_effect->SetWorld(m_world);
-    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-    {
-        //m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj);
-    }
 
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
     if (ilights)
@@ -1325,10 +1313,6 @@ void Game::Render()
     DirectX::SimpleMath::Vector3 lightDirection3;
     DirectX::SimpleMath::Vector3 lightDirection4;
     DirectX::SimpleMath::Vector3 lightDirection5;
-
-    //lightDirection0 = DirectX::SimpleMath::Vector3::UnitY;
-    //lightDirection1 = DirectX::SimpleMath::Vector3::UnitY;
-    //lightDirection2 = DirectX::SimpleMath::Vector3::UnitY;
     
     const float radius = m_shape3Diameter * 0.5f;
     const float height = m_shape3Height * m_shape3Scale;
@@ -1616,9 +1600,6 @@ void Game::CreateDeviceDependentResources()
     m_effect->SetFogEnd(4.0);
     /////////////////////////////
 
-    //m_effect->SetTextureEnabled(true);
-    //m_effect->SetPerPixelLighting(true);
-    //m_effect->SetLightingEnabled(true);
     m_effect->SetLightEnabled(0, true);
     m_effect->SetLightDiffuseColor(0, Colors::Blue);
     m_effect->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitZ);
@@ -1634,19 +1615,10 @@ void Game::CreateDeviceDependentResources()
 
     m_effect2 = std::make_unique<BasicEffect>(device);
     m_effect2->SetVertexColorEnabled(true);
-    //m_effect2->EnableDefaultLighting();
-    //m_effect2->SetLightDiffuseColor(0, Colors::Gray);
 
     m_effect3 = std::make_unique<BasicEffect>(device);
     m_effect3->SetVertexColorEnabled(true);
 
-    //void const* shaderByteCode2;
-    //size_t byteCodeLength2;
-    //m_effect2->GetVertexShaderBytecode(&shaderByteCode2, &byteCodeLength2);
-    //DX::ThrowIfFailed(device->CreateInputLayout(VertexType2::InputElements, VertexType2::InputElementCount, shaderByteCode2, byteCodeLength2, m_inputLayout.ReleaseAndGetAddressOf()));
-    //m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(device);
-    //DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType2>(device, m_effect2.get(), m_inputLayout.ReleaseAndGetAddressOf()));
-    //m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType2>(device, m_effect2.get(), m_inputLayout2.ReleaseAndGetAddressOf()));
     m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
 
@@ -1666,10 +1638,6 @@ void Game::CreateDeviceDependentResources()
     m_spriteBatch = std::make_unique<SpriteBatch>(context);
 
 
-
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specular.ReleaseAndGetAddressOf()));
-    //m_model = Model::CreateFromCMO(device, L"cup.cmo", *m_fxFactory);
-    //m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
     m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
     m_modelTankBody01 = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
     m_modelTankTurret01 = Model::CreateFromCMO(device, L"HoverTankTurret02.cmo", *m_fxFactory);
@@ -1681,7 +1649,6 @@ void Game::CreateDeviceDependentResources()
     m_modelTestBody = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
     m_modelTestTurret = Model::CreateFromCMO(device, L"HoverTankTurret02.cmo", *m_fxFactory);
 
-    //DirectX::IEffect*
     m_modelTestBody->UpdateEffects([](IEffect* effect)
         {
             auto lights = dynamic_cast<IEffectLights*>(effect);
