@@ -119,6 +119,10 @@ struct ExplosionData
     ExplosionType explosionType;
 
     double totalDuration;
+
+    DirectX::SimpleMath::Vector3 lightDir0 = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 lightDir1 = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 lightDir2 = DirectX::SimpleMath::Vector3::UnitZ;
 };
 
 struct ExplosionStruct
@@ -200,6 +204,8 @@ private:
     void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+    void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);

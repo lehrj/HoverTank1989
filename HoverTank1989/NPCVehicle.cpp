@@ -611,7 +611,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection0, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection1, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 0.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, lightDirection2, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-    m_debugData->DebugClearUI();
+    //m_debugData->DebugClearUI();
 
     aEffect->SetLightDirection(0, lightDirection0);
     aEffect->SetLightDirection(1, lightDirection1);

@@ -17,7 +17,7 @@ void FireControl::ActivateMuzzleFlash(AmmoType aAmmoType)
         m_muzzleFlash.flashTimer = 0.0f;
         m_muzzleFlash.isFlashActive = true;
         m_muzzleFlash.sizeMod = 0.0f;
-        m_muzzleFlash.flashDuration = 0.15f;
+        m_muzzleFlash.flashDuration = 5.15f;
         m_muzzleFlash.growthRate = 20.0f;
     }
     else if (aAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
@@ -270,18 +270,47 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
     {
         aEffect->EnableDefaultLighting();
 
-        aEffect->SetNormalTexture(m_explosionStruct.normalMapExplosion.Get());
-        aEffect->SetSpecularTexture(m_explosionStruct.specularExplosion.Get());
+        const float high = Utility::GetPi();
+        const float low = -Utility::GetPi();
+        float yaw = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+        float pitch = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+        float roll = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+
+        const float t = 0.9999f;
+        DirectX::SimpleMath::Vector3 lightDir0 = m_explosionStruct.explosionVec[i].lightDir0;
+        DirectX::SimpleMath::Matrix lightRot = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(yaw, pitch, roll);
+        lightDir0 = DirectX::SimpleMath::Vector3::Transform(lightDir0, lightRot);
+        lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(m_explosionStruct.explosionVec[i].lightDir0, lightDir0, t);
+        m_explosionStruct.explosionVec[i].lightDir0 = lightDir0;
+
+        DirectX::SimpleMath::Vector3 lightDir1 = m_explosionStruct.explosionVec[i].lightDir1;
+        lightDir0 = DirectX::SimpleMath::Vector3::Transform(lightDir1, lightRot);
+        lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(m_explosionStruct.explosionVec[i].lightDir1, lightDir1, t);
+        m_explosionStruct.explosionVec[i].lightDir1 = lightDir1;
+
+        DirectX::SimpleMath::Vector3 lightDir2 = m_explosionStruct.explosionVec[i].lightDir2;
+        lightDir2 = DirectX::SimpleMath::Vector3::Transform(lightDir2, lightRot);
+        lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_explosionStruct.explosionVec[i].lightDir2, lightDir2, t);
+        m_explosionStruct.explosionVec[i].lightDir2 = lightDir2;
+
+        aEffect->SetLightDirection(0, m_explosionStruct.explosionVec[i].lightDir0);
+        aEffect->SetLightDirection(1, m_explosionStruct.explosionVec[i].lightDir1);
+        aEffect->SetLightDirection(2, m_explosionStruct.explosionVec[i].lightDir2);
+
+
+        //aEffect->SetNormalTexture(m_explosionStruct.normalMapExplosion.Get());
+        //aEffect->SetSpecularTexture(m_explosionStruct.specularExplosion.Get());
 
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix0);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].explosionCurrentColor);
-        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
-        
+        //m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+     
         
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix1);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color1);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
   
+        
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix2);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color2);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -330,7 +359,7 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
 
     if (m_muzzleFlash.isFlashActive == true)
     {
-        DrawMuzzleFlash(aView, aProj);
+        DrawMuzzleFlash2(aView, aProj, aEffect, aInputLayout);
     }
     DrawProjectiles(aView, aProj);
 
@@ -343,6 +372,35 @@ void FireControl::DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const
     //m_muzzleFlash.worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_muzzleFlash.position);
     m_muzzleFlash.muzzleFlashConeShape2->Draw(m_muzzleFlash.worldTestMatrix, aView, aProj, m_muzzleFlash.currentColor);
     m_muzzleFlash.muzzleFlashConeShape->Draw(m_muzzleFlash.worldMuzzleFlashConeMatrix, aView, aProj, m_muzzleFlash.currentColor);
+}
+
+void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    aEffect->EnableDefaultLighting();
+    
+    DirectX::SimpleMath::Vector3 weaponDir = m_launcherData.launchDirectionNorm;
+    DirectX::SimpleMath::Vector3 lightDir0 = weaponDir;
+    DirectX::SimpleMath::Vector3 lightDir1 = weaponDir;
+    DirectX::SimpleMath::Vector3 lightDir2 = weaponDir;
+
+    const float flashDurationRatio = m_muzzleFlash.flashTimer / m_muzzleFlash.flashDuration;
+    float lightAngle = flashDurationRatio * (Utility::GetPi() * 0.5f);
+    Utility::GetDispersedLightDirectionsRotation(weaponDir, lightAngle, flashDurationRatio , lightDir0, lightDir1, lightDir2);
+    aEffect->SetLightDirection(0, lightDir0);
+    aEffect->SetLightDirection(1, lightDir1);
+    aEffect->SetLightDirection(2, lightDir2);
+
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir0, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), weaponDir, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+    aEffect->SetWorld(m_muzzleFlash.worldTestMatrix);
+    aEffect->SetColorAndAlpha(m_muzzleFlash.currentColor);
+    m_muzzleFlash.muzzleFlashConeShape2->Draw(aEffect.get(), aInputLayout.Get());
+    aEffect->SetWorld(m_muzzleFlash.worldMuzzleFlashConeMatrix);
+    m_muzzleFlash.muzzleFlashConeShape->Draw(aEffect.get(), aInputLayout.Get());
 }
 
 void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta)

@@ -1649,6 +1649,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateTerrainNormTorque();
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
+
     //UpdateRotorData(m_heli, aTimeDelta);
 
     if (m_heli.forward.Dot(m_heli.q.velocity) < 0.0)
