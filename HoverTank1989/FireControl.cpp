@@ -378,14 +378,18 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
 {
     aEffect->EnableDefaultLighting();
     
-    DirectX::SimpleMath::Vector3 weaponDir = m_launcherData.launchDirectionNorm;
+    DirectX::SimpleMath::Vector3 weaponDir = -m_playerVehicle->GetWeaponDirection();
     DirectX::SimpleMath::Vector3 lightDir0 = weaponDir;
     DirectX::SimpleMath::Vector3 lightDir1 = weaponDir;
     DirectX::SimpleMath::Vector3 lightDir2 = weaponDir;
 
     const float flashDurationRatio = m_muzzleFlash.flashTimer / m_muzzleFlash.flashDuration;
-    float lightAngle = flashDurationRatio * (Utility::GetPi() * 0.5f);
-    Utility::GetDispersedLightDirectionsRotation(weaponDir, lightAngle, flashDurationRatio , lightDir0, lightDir1, lightDir2);
+    float coneSideAngle = atan((m_muzzleFlash.baseConeHeight / (m_muzzleFlash.baseConeDiameter * 0.5f)));
+
+    float lightAngle = flashDurationRatio * (Utility::GetPi() * -0.5f) + Utility::ToRadians(90.0f);
+    lightAngle = coneSideAngle;
+    const float lightRotation = flashDurationRatio * 342.42f;
+    Utility::GetDispersedLightDirectionsRotation(weaponDir, lightAngle, lightRotation, lightDir0, lightDir1, lightDir2);
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
     aEffect->SetLightDirection(2, lightDir2);
@@ -433,15 +437,23 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
     DirectX::SimpleMath::Matrix updateMat = m_playerVehicle->GetAlignment();
     updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetPos());
     const float maxModSize = aMuzzleFlash.flashDuration * aMuzzleFlash.growthRate;
-    
-    //const float scale = cos(m_testTimer) + 1.0f;
-    const float scale = aMuzzleFlash.sizeMod;
+
+    float scale = aMuzzleFlash.sizeMod;
+    if (aMuzzleFlash.isFlickerTrue == true)
+    {
+        scale *= aMuzzleFlash.flickerScale;
+        aMuzzleFlash.isFlickerTrue = false;
+    }
+    else
+    {
+        aMuzzleFlash.isFlickerTrue = true;
+    }
 
     const float testRot = Utility::WrapAngle(m_testTimer * 345.2345f);
     //const float scaleTransOffset = (scale * 1.0f) * 0.5f;
     const float scaleTransOffset = ((maxModSize * durationPercentage) * 1.0f) * 0.5f;
     DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
-    DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale * 1.0f, scale));
+    DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale, scale));
     DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
     aMuzzleFlash.worldTestMatrix = DirectX::SimpleMath::Matrix::Identity;
     //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.1f * -scale, 0.0f));
@@ -474,18 +486,10 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
 
 void FireControl::InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash)
 {
-    const float coneHeight = 6.0f;
-    const float coneDiameter = 6.0f;
-    //aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), 0.3f, 1.0f, 32Ui64, false);
-    aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), 0.3f, 1.0f);
-    //aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f);
-    //aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCube(aContext.Get(), 0.3f);
-    //aMuzzleFlash.muzzleFlashConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f, 16Ui64, true, true);
-    aMuzzleFlash.muzzleFlashConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), 0.3f, 16Ui64);
+    aMuzzleFlash.muzzleFlashConeShape2 = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), aMuzzleFlash.baseConeDiameter, aMuzzleFlash.baseConeHeight);
+    aMuzzleFlash.muzzleFlashConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), aMuzzleFlash.baseConeDiameter, 16Ui64);
 
     aMuzzleFlash.localMuzzleConeMatrix = DirectX::SimpleMath::Matrix::Identity;
-    //aMuzzleFlash.localMuzzleConeMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
-    //aMuzzleFlash.localMuzzleConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
     aMuzzleFlash.worldMuzzleFlashConeMatrix = aMuzzleFlash.localMuzzleConeMatrix;
 
     aMuzzleFlash.worldTestMatrix = DirectX::SimpleMath::Matrix::Identity;

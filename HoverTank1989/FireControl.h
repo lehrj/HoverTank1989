@@ -163,7 +163,11 @@ struct MuzzleFlash
     bool isFlashActive = false;
     float sizeMod = 0.0f;
     float growthRate = 20.0f;
-    //const float growthRate = 20.0f;
+
+    bool isFlickerTrue = false;
+    float flickerScale = 0.5f;
+    float baseConeHeight = 1.0f;
+    float baseConeDiameter = 0.3f;
 };
 
 class FireControl
