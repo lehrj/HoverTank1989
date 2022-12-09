@@ -1303,7 +1303,7 @@ void Game::Render()
         //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
-        //DrawTestTrack();
+        DrawTestTrack();
     }
 
     DirectX::SimpleMath::Vector3 lightDirection0;
@@ -2047,7 +2047,6 @@ void Game::OnDeviceLost()
     m_normalMapFlameTest.Reset();
     m_textureFlameTest.Reset();
     m_specularFlameTest.Reset();
-
 
     m_normalMapJI.Reset();
     m_specularJI.Reset();

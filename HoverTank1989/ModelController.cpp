@@ -53,10 +53,7 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.muzzlePosLocal += DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     aModel.localizedMuzzlePos = aModel.muzzlePosLocal;
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
-    //aModel.muzzleTransMatrix = aModel.barrelLocalMatrix;
-    //aModel.muzzleTransMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -5.0f));
     aModel.muzzleTransMatrix = DirectX::SimpleMath::Matrix::Identity;
-    //aModel.muzzleTransMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -5.41f));
     aModel.muzzleTransMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.64f));
     aModel.muzzleLocalMatrix = aModel.barrelLocalMatrix;
     aModel.muzzleLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
@@ -98,8 +95,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.weaponPosWorld = aModel.weaponPosLocal;
     aModel.weaponPosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponPosWorld, aModel.barrelWorldMatrix);
 
-
-
     aModel.muzzleWorldMatrix = aModel.muzzleLocalMatrix;
     aModel.muzzleWorldMatrix = aModel.barrelWorldMatrix;
 
@@ -111,36 +106,26 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.localizedMuzzlePos = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosLocal, aModel.muzzleWorldMatrix);
     aModel.muzzleWorldMatrix *= updateMat;
 
-
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
-    //aModel.muzzlePosWorld = aModel.weaponPosWorld;
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
-
-    
+  
     /// /////////////////////////////
     DirectX::SimpleMath::Vector3 vert1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vert2 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vert3 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 testPos = aPos;
     bool isTriFound = m_environment->GetTerrainTriangleData(vert1, vert2, vert3, testPos);
-
-    //DirectX::SimpleMath::Vector3 lightDir = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
-    //DirectX::SimpleMath::Plane groundPlane(0.0f, 1.0f, 0.0f, 0.0f);
-    //DirectX::SimpleMath::Plane groundPlane(vert1, vert2, vert3);
-    //DirectX::SimpleMath::Plane groundPlane(vert3, vert2, vert1);
-    DirectX::SimpleMath::Plane groundPlane;// (vert3, vert2, vert1);
+    DirectX::SimpleMath::Plane groundPlane;
     bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, testPos);
 
     DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
-    //planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -2.4f, 0.0f));
     planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
     DirectX::SimpleMath::Matrix planeTrans2 = planeTrans;
     planeTrans2 = planeTrans2.Transpose();
     groundPlane = DirectX::SimpleMath::Plane::Transform(groundPlane, planeTrans2);
 
-    //DirectX::SimpleMath::Matrix shadowMat = m_vehicleStruct00.npcModel.worldModelMatrix;
     aModel.barrelShadowMatrix = aModel.barrelWorldMatrix;
     aModel.barrelShadowMatrix *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
 
@@ -149,22 +134,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
 
     aModel.turretShadowMatrix = aModel.turretWorldMatrix;
     aModel.turretShadowMatrix *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
-
-
-    //DirectX::SimpleMath::Vector3 dir1 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
-    //DirectX::SimpleMath::Vector3 dir2 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
-    //DirectX::SimpleMath::Vector3 dir3 = DirectX::SimpleMath::Vector3(.4545195f, -0.7660444f, 0.4545195f);
-
-    DirectX::SimpleMath::Vector3 dir1 = DirectX::SimpleMath::Vector3(-1.0f, -2.0, 0.0f);
-    dir1.Normalize();
-    DirectX::SimpleMath::Vector3 dir2 = DirectX::SimpleMath::Vector3(1.0f, -2.0f, 1.0f);
-    dir2.Normalize();
-    DirectX::SimpleMath::Vector3 dir3 = DirectX::SimpleMath::Vector3(1.0f, -2.0f, -1.0f);
-    dir3.Normalize();
-
-    m_debugData->DebugPushTestLine(aPos, -dir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(aPos, -dir2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(aPos, -dir3, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)
