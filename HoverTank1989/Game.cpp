@@ -1293,7 +1293,6 @@ void Game::Render()
         //ilights->EnableDefaultLighting();
     }
 
-    //m_effect->Apply(context);
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj);
@@ -1306,102 +1305,9 @@ void Game::Render()
         DrawTestTrack();
     }
 
-    DirectX::SimpleMath::Vector3 lightDirection0;
-    DirectX::SimpleMath::Vector3 lightDirection1;
-    DirectX::SimpleMath::Vector3 lightDirection2;
-
-    DirectX::SimpleMath::Vector3 lightDirection3;
-    DirectX::SimpleMath::Vector3 lightDirection4;
-    DirectX::SimpleMath::Vector3 lightDirection5;
-    
-    const float radius = m_shape3Diameter * 0.5f;
-    const float height = m_shape3Height * m_shape3Scale;
-    const float toa = height / radius;
-    const float baseAngle = atan(toa);
-    float baseAngleDegrees = Utility::ToDegrees(baseAngle);
-    //baseAngleDegrees = 10.0f;
-    const float testTime = m_timer.GetElapsedSeconds();
-
-    m_lightRotation = Utility::WrapAngle((m_lightRotation + (m_timer.GetElapsedSeconds() * -100.0f)));
-    m_shapeRotation = Utility::WrapAngle((m_shapeRotation + (m_timer.GetElapsedSeconds() * 200.5f)));
-    DirectX::SimpleMath::Vector3 primeLightDirection = -DirectX::SimpleMath::Vector3::UnitY;
-
-    //Utility::GetDispersedLightDirections(primeLightDirection, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
-    //Utility::GetDispersedLightDirectionsRotation(primeLightDirection, Utility::ToRadians(baseAngleDegrees), m_lightRotation, lightDirection0, lightDirection1, lightDirection2);
-    //Utility::GetDispersedLightDirectionsRotation(primeLightDirection, Utility::ToRadians(60.0f), m_lightRotation, lightDirection0, lightDirection1, lightDirection2);
-    Utility::GetDispersedLightDirectionsRotation(primeLightDirection, Utility::ToRadians(baseAngleDegrees), m_lightRotation, lightDirection0, lightDirection1, lightDirection2);
-    //Utility::GetDispersedLightDirections(primeLightDirection, Utility::ToRadians(baseAngleDegrees), lightDirection3, lightDirection4, lightDirection5);
-
-    DirectX::SimpleMath::Vector4 diffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
-    /*
-    m_effect->SetLightDiffuseColor(0, diffuseColor);
-    m_effect->SetLightDiffuseColor(1, diffuseColor);
-    m_effect->SetLightDiffuseColor(2, diffuseColor);
-    
-
-    m_effect->SetLightSpecularColor(0, DirectX::Colors::Orange);
-    m_effect->SetLightSpecularColor(1, DirectX::Colors::Orange);
-    m_effect->SetLightSpecularColor(2, DirectX::Colors::Orange);
-    */
-
-
-    /*
-    //m_effect->SetLightEnabled(0, false);
-    m_effect->SetLightDirection(0, lightDirection0);
-    m_effect->SetLightDirection(1, lightDirection1);
-    m_effect->SetLightDirection(2, lightDirection2);
-
-    float scaleVal = m_shape3Scale + (m_shapeScaleMod * 0.1f);
-
-    DirectX::SimpleMath::Matrix posMat = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Vector3 posVec = DirectX::SimpleMath::Vector3(0.0f, 25.0f, 0.0f);
-    posVec.y += scaleVal * 0.5f;
-    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, scaleVal, 1.0f));
-    posMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_shapeRotation);
-    posMat *= DirectX::SimpleMath::Matrix::CreateTranslation(posVec);
-    m_effect->SetAlpha(1.0f);
-    m_effect->SetWorld(posMat);
-    m_effect->Apply(context);
-    m_testShape3->Draw(m_effect.get(), m_inputLayout.Get());
-
-
-    Utility::GetDispersedLightDirectionsRotation(primeLightDirection, Utility::ToRadians(baseAngleDegrees), -m_lightRotation, lightDirection0, lightDirection1, lightDirection2);
-    //m_effect->SetLightDirection(0, lightDirection0);
-    //m_effect->SetLightDirection(1, lightDirection1);
-    //m_effect->SetLightDirection(2, lightDirection2);
-    
-    posMat = DirectX::SimpleMath::Matrix::Identity;
-    posMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
-    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, scaleVal, 1.0f));
-    posMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_shapeRotation);
-    posMat *= DirectX::SimpleMath::Matrix::CreateTranslation(posVec);
-    m_effect->SetWorld(posMat);
-    m_testShape3->Draw(m_effect.get(), m_inputLayout.Get());
-
-
-    m_debugData->DebugPushTestLine(posVec, lightDirection0, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(posVec, lightDirection1, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(posVec, lightDirection2, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    m_debugData->DebugPushTestLine(posVec, lightDirection3, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(posVec, lightDirection4, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    m_debugData->DebugPushTestLine(posVec, lightDirection5, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    m_debugData->DebugPushUILineDecimalNumber("lightDirection0 = ", lightDirection0.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("lightDirection1 = ", lightDirection0.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("lightDirection2 = ", lightDirection0.Length(), "");
-    */
-
 
     m_effect->EnableDefaultLighting();
     m_effect->SetWorld(m_world);
-    // m_batch2 start
-    /*
-    context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
-    context->OMSetDepthStencilState(m_states->DepthNone(), 0);
-    context->RSSetState(m_states->CullNone());
-    */
-    //context->RSSetState(m_raster.Get());
 
     m_effect2->SetWorld(m_world);
     m_effect2->Apply(context);
@@ -1416,22 +1322,29 @@ void Game::Render()
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
     m_batch3->Begin();
-    DrawDebugLinesVector();
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+    {
+        DrawDebugLinesVector();
+    }
     m_batch3->End();
 
     m_spriteBatch->Begin();
-    if (m_isDisplayCountdownTrue == true)
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawUnlockUI();
-    }
-    DrawDebugDataUI();
-    if (m_isDisplayEndScreenTrue == true)
-    {
-        DrawEndUI();
-    }
-    if (m_isUiDisplayTrue == true)
-    {
-        DrawUIDisplay();
+        DrawDebugDataUI();
+
+        if (m_isDisplayCountdownTrue == true)
+        {
+            DrawUnlockUI();
+        }
+        if (m_isDisplayEndScreenTrue == true)
+        {
+            DrawEndUI();
+        }
+        if (m_isUiDisplayTrue == true)
+        {
+            DrawUIDisplay();
+        }
     }
     m_spriteBatch->End();
 
@@ -1683,7 +1596,6 @@ void Game::CreateDeviceDependentResources()
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
-    //m_testShape3 = DirectX::GeometricPrimitive::CreateCone(context, 10.0f, 10.0f, 3);
     m_testShape3 = DirectX::GeometricPrimitive::CreateCone(context, m_shape3Diameter, m_shape3Height, m_sideCount);
 }
 
@@ -2104,7 +2016,6 @@ void Game::OnDeviceRestored()
 
     CreateWindowSizeDependentResources();
 }
-
 
 void Game::SetUiDisplay(std::string aString)
 {

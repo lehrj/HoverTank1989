@@ -1612,15 +1612,11 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 {
     UpdatePhysicsPoints(m_heli);
 
-    //UpdateBladeLiftForce(static_cast<float>(aTimeDelta));
-
     m_heli.q.bodyTorqueForce.axis = DirectX::SimpleMath::Vector3::Zero;
     m_heli.q.bodyTorqueForce.magnitude = 0.0f;
 
     DirectX::SimpleMath::Vector3 prevVelocity = m_heli.q.velocity;
     DirectX::SimpleMath::Vector3 prevPos = m_heli.q.position;
-
-    //UpdateCyclicStick(m_heli.controlInput);
 
     m_heli.isVehicleLanding = false;
     m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
@@ -1648,9 +1644,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateBrakeForce(static_cast<float>(aTimeDelta));
     UpdateTerrainNormTorque();
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
-    //RungeKutta4(&m_heli, aTimeDelta);
-
-    //UpdateRotorData(m_heli, aTimeDelta);
+    RungeKutta4(&m_heli, aTimeDelta);
 
     if (m_heli.forward.Dot(m_heli.q.velocity) < 0.0)
     {
@@ -1678,7 +1672,6 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateAlignmentTorque();
     UpdateAlignmentCamera();
 
-    //m_fireControl->UpdateFireControl(aTimeDelta);
     m_isFiredTest = false;
 }
 
