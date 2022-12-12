@@ -25,6 +25,24 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     m_npcVec.push_back(newNPC);
 }
 
+void NPCController::AirDropNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const DirectX::SimpleMath::Vector3 aDropPosition,
+    const DirectX::SimpleMath::Vector3 aOrientation, const float aAltitude, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing)
+{
+    DirectX::SimpleMath::Vector3 pos = aDropPosition;
+    DirectX::SimpleMath::Vector3 heading = aOrientation;
+
+    for (unsigned int i = 0; i < aColumnCount; ++i)
+    {
+        for (unsigned int j = 0; j < aRowCount; ++j)
+        {
+            this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+            pos.x += aColumnSpacing;
+        }
+        pos.x = aDropPosition.x;
+        pos.z += aRowSpacing;
+    }
+}
+
 bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere)
 {
     bool isCollisionTrue = false;
@@ -258,9 +276,10 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float xOrgVal = 70.0f;
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, -40.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
-    const float low = 7.0f;
-    const float high = 13.0f;
+    const float low = 0.1f;
+    const float high = 5.0f;
     const float zPosOffSet = 12.0f;
+    const float baseHeight = 30.0f;
     const int rows = 1;
     const int columns = 8;
     for (int i = 0; i < columns; ++i)
@@ -268,7 +287,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
         for (int j = 0; j < rows; ++j)
         {
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-            pos.y = yOffSet;
+            pos.y = baseHeight + yOffSet;
             this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
             pos.x += 25.0f;
         }

@@ -1125,6 +1125,22 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             SetUiDisplay("Explosive MIRV Ammo Loaded");
         }
     }
+    if (m_kbStateTracker.pressed.D0)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            const float altitude = 50.0f;
+            const unsigned int columnCount = 0;
+            const unsigned int rowCount = 0;
+            const float columSpaceing = 10.0f;
+            const float rowSpacing = 20.0f;
+            const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(90.0f, 50.0f, -40.0f);
+            const DirectX::SimpleMath::Vector3 orientation = DirectX::SimpleMath::Vector3::UnitX;
+
+            auto context = m_deviceResources->GetD3DDeviceContext();
+            m_npcController->AirDropNPCs(context, m_npcController, dropPosition, orientation, altitude, columnCount, rowCount, columSpaceing, rowSpacing);
+        }
+    }
 
     auto mouse = m_mouse->GetState();
 
