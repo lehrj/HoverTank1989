@@ -16,6 +16,17 @@ NPCController::~NPCController()
     m_npcVec.clear();
 }
 
+void NPCController::ActivateNPCs()
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetIsActivated() == false)
+        {
+            m_npcVec[i]->ActivateNPC();
+        }
+    }
+}
+
 void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, std::shared_ptr<NPCController> aNpcController)
 {
     NPCVehicle* newNPC = new NPCVehicle;
@@ -190,7 +201,7 @@ void NPCController::DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const Dir
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        if (m_npcVec[i]->GetIsDead() == false)
+        if (m_npcVec[i]->GetIsDead() == false && m_npcVec[i]->GetIsActivated() == true)
         {
             m_npcVec[i]->DrawNPC2(aView, aProj, aEffect, aInputLayout);
         }
@@ -353,6 +364,9 @@ void NPCController::UpdateNPCController(const double aTimeDelta)
 void NPCController::UpdateNPCs(const double aTimeDelta)
 {
     m_testTimer += static_cast<float>(aTimeDelta);
+
+    ActivateNPCs();
+
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->UpdateNPC(aTimeDelta);

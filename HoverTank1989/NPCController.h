@@ -10,6 +10,8 @@ class NPCController
 public:
     NPCController();
     ~NPCController();
+
+    void ActivateNPCs();
     void AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, std::shared_ptr<NPCController> aNpcController);

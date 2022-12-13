@@ -1130,8 +1130,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             const float altitude = 50.0f;
-            const unsigned int columnCount = 0;
-            const unsigned int rowCount = 0;
+            const unsigned int columnCount = 2;
+            const unsigned int rowCount = 5;
             const float columSpaceing = 10.0f;
             const float rowSpacing = 20.0f;
             const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(90.0f, 50.0f, -40.0f);

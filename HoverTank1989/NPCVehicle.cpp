@@ -77,6 +77,11 @@ void NPCVehicle::ActivateJumpLanding()
     Utility::ImpulseForce testLandImpulse = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce;
 }
 
+void NPCVehicle::ActivateNPC()
+{
+    m_vehicleStruct00.vehicleData.isActivated = true;
+}
+
 void NPCVehicle::CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
     const float mass1 = aImpactForce.impactMass;
@@ -2586,9 +2591,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 preVelocity = m_vehicleStruct00.vehicleData.q.velocity;
 
     DirectX::SimpleMath::Vector3 preThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
-
+  
     bool isVehicleInPlayUpdate = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
-
     if (isVehicleInPlayUpdate == false)
     {
         // to do: add error handling if out of play

@@ -400,6 +400,8 @@ struct VehicleData
     NPCType                     npcType;
     DirectX::BoundingOrientedBox        collisionBox;
     bool                        isCollisionTrue;
+
+    bool                        isActivated = false;
     bool                        isExploding = false;
     bool                        isDead = false;
     bool                        isReadyToDelete = false;
@@ -445,6 +447,7 @@ class NPCVehicle
 public:
     NPCVehicle();
     bool ActivateJump();
+    void ActivateNPC();
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
@@ -476,6 +479,7 @@ public:
     float GetHeight() const { return m_vehicleStruct00.vehicleData.q.position.y; };
     unsigned int GetID() const { return m_vehicleStruct00.vehicleData.id; };
 
+    bool GetIsActivated() const { return m_vehicleStruct00.vehicleData.isActivated; };
     bool GetIsExploding() const { return m_vehicleStruct00.vehicleData.isExploding; };
     bool GetIsDead() const { return m_vehicleStruct00.vehicleData.isDead; };
     bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
