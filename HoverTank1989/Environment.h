@@ -52,7 +52,7 @@ struct Environ
     DirectX::SimpleMath::Vector3  LightDirection2   = -DirectX::SimpleMath::Vector3::UnitY;
     float lightDirectionsOffsetAngle                = Utility::ToRadians(20.0f);
     float lightDirectionRotation                    = Utility::ToRadians(0.0f);
-    float maxShadowCastRange                        = 30.0f;
+    float maxShadowCastRange                        = 60.0f;
 };
 
 enum class FixtureType
