@@ -303,6 +303,23 @@ struct NPCModel
     DirectX::SimpleMath::Matrix shadowJetRightMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix shadowJetInteriorLeftMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix shadowJetInteriorRightMat = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Vector3 shadowJetTranslationLeft = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Matrix shadowJetTranslationLeftMat = DirectX::SimpleMath::Matrix::Identity;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    jetMountShadowShape;
+    DirectX::SimpleMath::Matrix localJetMountShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix jetMountShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix worldJetMountShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix localSkirtShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix skirtShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix worldSkirtShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix localBodyMainShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix bodyMainShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix worldBodyMainShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    customShape;
     DirectX::SimpleMath::Matrix localCustomMatrix;
     DirectX::SimpleMath::Matrix worldCustomMatrix;

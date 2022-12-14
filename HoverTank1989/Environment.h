@@ -47,11 +47,12 @@ struct Environ
     std::string                         windZStr;
 
     DirectX::SimpleMath::Vector3  LightDirectionPrime = -DirectX::SimpleMath::Vector3::UnitY;
-    DirectX::SimpleMath::Vector3  LightDirection0 = -DirectX::SimpleMath::Vector3::UnitY;
-    DirectX::SimpleMath::Vector3  LightDirection1 = -DirectX::SimpleMath::Vector3::UnitY;
-    DirectX::SimpleMath::Vector3  LightDirection2 = -DirectX::SimpleMath::Vector3::UnitY;
-    float lightDirectionsOffsetAngle = Utility::ToRadians(20.0f);
-    float lightDirectionRotation = Utility::ToRadians(0.0f);
+    DirectX::SimpleMath::Vector3  LightDirection0   = -DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3  LightDirection1   = -DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3  LightDirection2   = -DirectX::SimpleMath::Vector3::UnitY;
+    float lightDirectionsOffsetAngle                = Utility::ToRadians(20.0f);
+    float lightDirectionRotation                    = Utility::ToRadians(0.0f);
+    float maxShadowCastRange                        = 30.0f;
 };
 
 enum class FixtureType
@@ -130,6 +131,7 @@ public:
     bool GetGroundPlane(DirectX::SimpleMath::Plane& aPlane, DirectX::SimpleMath::Vector3 aPos) const;
     DirectX::SimpleMath::Vector3 GetLightDirectionPrime() const { return m_currentEnviron.LightDirectionPrime; };
     void GetLightDirectionalVectors(DirectX::SimpleMath::Vector3& aLightVec0, DirectX::SimpleMath::Vector3& aLightVec1, DirectX::SimpleMath::Vector3& aLightVec2) const;
+    float GetMaxShadowCastRange() const { return m_currentEnviron.maxShadowCastRange; };
     int GetNumerOfEnvirons() const { return m_environsAvailable; };
     int GetNumberOfEnvironSelectDisplayVariables() const { return m_environSelectDisplayDataPoints; };
     float GetScale() const { return m_currentEnviron.scale; };

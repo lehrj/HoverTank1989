@@ -475,18 +475,17 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix);
     aEffect->SetColorAndAlpha(testHighlight);
-
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix2);
     aEffect->SetColorAndAlpha(testShadow);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix);
     aEffect->SetColorAndAlpha(testHighlight);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix2);
     aEffect->SetColorAndAlpha(testShadow);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.jetIntakeCoverShape2->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetMountMatrix);
     aEffect->SetColorAndAlpha(ventColor);
@@ -497,7 +496,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetHousingShellLeftMatrix);
     aEffect->SetColorAndAlpha(jetHousingShellColor);
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix);
     aEffect->SetColorAndAlpha(jetHousingShellColor);
@@ -594,7 +593,7 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldJetHousingShellRightMatrix);
     aEffect->SetColorAndAlpha(jetHousingShellColor);
-    m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldRearBodyMatrix);
     aEffect->SetColorAndAlpha(jetHousingShellColor);
@@ -694,10 +693,10 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowBaseMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.shadowBaseMat, aView, aProj, DirectX::Colors::Black);
+    //m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.shadowBaseMat, aView, aProj, DirectX::Colors::Black);
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowSkirtMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.shadowSkirtMat, aView, aProj, DirectX::Colors::Black);
+    //m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.shadowSkirtMat, aView, aProj, DirectX::Colors::Black);
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetLeftMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.shadowJetLeftMat, aView, aProj, DirectX::Colors::Black);
@@ -706,10 +705,15 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.shadowJetRightMat, aView, aProj, DirectX::Colors::Black);
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat, aView, aProj, DirectX::Colors::Black);
+    //m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat, aView, aProj, DirectX::Colors::Black);
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat, aView, aProj, DirectX::Colors::Black);
+    //m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat, aView, aProj, DirectX::Colors::Black);
+
+    m_vehicleStruct00.npcModel.jetMountShadowShape->Draw(m_vehicleStruct00.npcModel.worldJetMountShadowMatrix, aView, aProj, DirectX::Colors::Red);
+
+    m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtShadowMatrix, aView, aProj, DirectX::Colors::Red);
+    m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix, aView, aProj, DirectX::Colors::Red);
 }
 
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
@@ -1099,6 +1103,10 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localShadowBaseMat = DirectX::SimpleMath::Matrix::Identity;
     aModel.localShadowBaseMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(baseShadowSize.x * 0.04f, baseShadowSize.y * 0.45f, 0.0f));
 
+    aModel.localBodyMainShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.bodyMainShadowTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(baseShadowSize.x * 0.04f, baseShadowSize.y * 0.45f, 0.0f));
+    aModel.worldBodyMainShadowMatrix = aModel.localBodyMainShadowMatrix;
+
     DirectX::SimpleMath::Vector3 mainBodySize = aDimensions;
     mainBodySize.x -= zFightOffset * 2.0f;
     mainBodySize.y -= (zFightOffset * 10.0f) * 2.0f;
@@ -1287,6 +1295,9 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.jetHousingTranslationLeftMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingLeftTranslation);
     aModel.worldJetHousingLeftMatrix = aModel.localJetHousingLeftMatrix;
 
+    aModel.shadowJetTranslationLeft = jetHousingLeftTranslation;
+    aModel.shadowJetTranslationLeftMat = DirectX::SimpleMath::Matrix::CreateTranslation(jetHousingLeftTranslation);
+
     aHardPoints.localLeftJetAxis = jetHousingLeftTranslation;
     aHardPoints.leftJetAxis = aHardPoints.localLeftJetAxis;
 
@@ -1319,6 +1330,7 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aHardPoints.localRightJetAxis = jetHousingRightTranslation;
     aHardPoints.rightJetAxis = aHardPoints.localRightJetAxis;
 
+    // Jet mounting arm
     DirectX::SimpleMath::Vector3 jetMountSize;
     jetMountSize.x = 1.1f;
     jetMountSize.y = 2.0f;
@@ -1333,6 +1345,16 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 
     aHardPoints.localJetArmCenterAxis = jetMountTranslation;
     aHardPoints.jetArmCenterAxis = aHardPoints.localJetArmCenterAxis;
+
+    // Jet mounting arm shadow
+    DirectX::SimpleMath::Vector3 jetMountShadowSize = jetMountSize;
+    jetMountShadowSize.z *= 1.27f;
+    aModel.jetMountShadowShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), jetMountShadowSize.z, jetMountShadowSize.y);
+    aModel.localJetMountShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localJetMountShadowMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    aModel.jetMountShadowTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(jetMountTranslation);
+    aModel.worldJetMountShadowMatrix = aModel.localJetMountShadowMatrix;
+
 
     // jet intake
     const float jetIntakeSize = 1.0f;
@@ -1383,17 +1405,6 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.localAfterBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aModel.worldAfterBurnLeftMatrix = aModel.localAfterBurnLeftMatrix;
 
-    /*
-    // foward burn left
-    DirectX::SimpleMath::Vector3 forwardBurnLeftTranslation;
-    forwardBurnLeftTranslation = jetHousingLeftTranslation;
-    forwardBurnLeftTranslation.x += jetHousingDiameter * 0.7f;
-    forwardBurnLeftTranslation.y += 0.0f;
-    aModel.localForwardBurnLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localForwardBurnLeftMatrix = DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
-    aModel.worldForwardBurnLeftMatrix = aModel.localForwardBurnLeftMatrix;
-    */
-
     // Jet after burn right
     DirectX::SimpleMath::Vector3 afterBurnRightTranslation;
     afterBurnRightTranslation = jetHousingRightTranslation;
@@ -1415,16 +1426,23 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.skirtShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), skirtSize);
     aModel.skirtShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), skirtSize.z, 1.0f, 4);
     aModel.localSkirtMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localSkirtMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-55.0f));
+    const float skirtRot = Utility::ToRadians(-55.0f);
+    aModel.localSkirtMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(skirtRot);
     aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
-    const float skirtRot = 15.0f;
+    const float skirtTilt = Utility::ToRadians(3.0f);
     aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateScale(19.8f, 5.0f, 1.0f);
-    aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(3.0f));
+    aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(skirtTilt);
+    aModel.localSkirtShadowMatrix = aModel.localSkirtMatrix;
     skirtTranslation.y = (-aDimensions.y * 0.15f);
     skirtTranslation.y = -1.85f;
     aModel.localSkirtMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(skirtTranslation);
     aModel.localSkirtMatrix *= centerMassTranslation;
     aModel.worldSkirtMatrix = aModel.localSkirtMatrix;
+
+    aModel.skirtShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.skirtShadowTranslationMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(skirtTranslation);
+    aModel.skirtShadowTranslationMatrix *= centerMassTranslation;
+    aModel.worldSkirtShadowMatrix = aModel.localSkirtShadowMatrix;
 
     DirectX::SimpleMath::Vector3 noseConeSize(aDimensions);
     noseConeSize.x *= 1.0f;
@@ -1876,6 +1894,10 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.time = 0.0f;
     aVehicleStruct.vehicleData.forward = aHeading;
     aVehicleStruct.vehicleData.up = DirectX::SimpleMath::Vector3::UnitY;
+    aVehicleStruct.vehicleData.right = aVehicleStruct.vehicleData.forward.Cross(aVehicleStruct.vehicleData.up);
+    aVehicleStruct.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicleStruct.vehicleData.right, aVehicleStruct.vehicleData.up);
+
+    aVehicleStruct.vehicleData.up = DirectX::SimpleMath::Vector3::UnitZ;
     aVehicleStruct.vehicleData.right = aVehicleStruct.vehicleData.forward.Cross(aVehicleStruct.vehicleData.up);
     aVehicleStruct.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicleStruct.vehicleData.right, aVehicleStruct.vehicleData.up);
 
@@ -3088,6 +3110,12 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane;// (vert3, vert2, vert1);
     bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, m_vehicleStruct00.vehicleData.q.position);
+
+    
+    //groundPlane.w = -m_vehicleStruct00.vehicleData.altitude;
+    //m_debugData->DebugPushUILineDecimalNumber("groundPlane.w = ", groundPlane.w, "");
+    //m_debugData->DebugPushTestLinePositionIndicator(testPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
     DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
     //planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -2.4f, 0.0f));
@@ -3095,26 +3123,155 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Matrix planeTrans2 = planeTrans;
     planeTrans2 = planeTrans2.Transpose();
     groundPlane = DirectX::SimpleMath::Plane::Transform(groundPlane, planeTrans2);
-
+    float alt = m_vehicleStruct00.vehicleData.altitude;
     DirectX::SimpleMath::Matrix shadowMat = DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
+    //shadowMat = shadowMat.Translation(DirectX::SimpleMath::Vector3(0.0f, alt, 0.0f));
+    //shadowMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, alt, 0.0f));
+
+    const float maxShadowRange = m_environment->GetMaxShadowCastRange();
+    float shadowScale;
+    float inverseShadowScale;
+    if (m_vehicleStruct00.vehicleData.altitude > maxShadowRange)
+    {
+        shadowScale = 0.0f;
+        inverseShadowScale = 1.0f;
+    }
+    else
+    {
+        //shadowScale = m_vehicleStruct00.vehicleData.altitude / maxShadowHeight;
+        inverseShadowScale = m_vehicleStruct00.vehicleData.altitude / maxShadowRange;
+        shadowScale = 1.0f - inverseShadowScale;
+        //shadowScale = maxShadowHeight / m_vehicleStruct00.vehicleData.altitude;
+    }
+    DirectX::SimpleMath::Matrix shadowScaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(shadowScale, shadowScale, shadowScale));
+    //shadowMat *= shadowScaleMat;
+
     m_vehicleStruct00.npcModel.shadowBaseMat = m_vehicleStruct00.npcModel.localShadowBaseMat;
+    m_vehicleStruct00.npcModel.shadowBaseMat *= shadowScaleMat;
     m_vehicleStruct00.npcModel.shadowBaseMat *= updateMat;
     m_vehicleStruct00.npcModel.shadowBaseMat *= shadowMat;
 
-    m_vehicleStruct00.npcModel.shadowSkirtMat = m_vehicleStruct00.npcModel.worldSkirtMatrix;
+    m_vehicleStruct00.npcModel.shadowBaseMat = m_vehicleStruct00.npcModel.localShadowBaseMat;
+    m_vehicleStruct00.npcModel.shadowBaseMat = shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowBaseMat *= updateMat;
+    m_vehicleStruct00.npcModel.shadowBaseMat *= shadowMat;
+
+
+    m_vehicleStruct00.npcModel.shadowSkirtMat = shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowSkirtMat *= m_vehicleStruct00.npcModel.worldSkirtMatrix;
     m_vehicleStruct00.npcModel.shadowSkirtMat *= shadowMat;
 
-    m_vehicleStruct00.npcModel.shadowJetLeftMat = m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix;
+
+    //m_vehicleStruct00.npcModel.shadowJetLeftMat = m_vehicleStruct00.npcModel.jetHousingTranslationLeftMatrix.Invert()  * shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat = (m_vehicleStruct00.npcModel.jetHousingTranslationLeftMatrix * 0.5f * shadowScale) + (shadowScaleMat * 1.0f);
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowScaleMat;
+    //m_vehicleStruct00.npcModel.shadowJetLeftMat *= m_vehicleStruct00.npcModel.jetHousingTranslationLeftMatrix.Invert();
+    //m_vehicleStruct00.npcModel.shadowJetLeftMat *= -m_vehicleStruct00.npcModel.jetHousingTranslationLeftMatrix;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix;  
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowMat;
+    
+
+    DirectX::SimpleMath::Matrix leftJetTrans = m_vehicleStruct00.npcModel.shadowJetTranslationLeftMat;
+    leftJetTrans *= m_vehicleStruct00.vehicleData.alignment;
+    //m_vehicleStruct00.npcModel.shadowJetLeftMat = shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat = leftJetTrans * inverseShadowScale;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowScaleMat;
+
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix;
     m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowMat;
 
-    m_vehicleStruct00.npcModel.shadowJetRightMat = m_vehicleStruct00.npcModel.worldJetHousingRightMatrix;
+
+
+
+    m_vehicleStruct00.npcModel.shadowJetLeftMat = shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= m_vehicleStruct00.npcModel.worldJetHousingLeftMatrix;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowMat;
+
+
+
+    DirectX::SimpleMath::Vector3 leftJetOffset = m_vehicleStruct00.npcModel.shadowJetTranslationLeft;
+    leftJetTrans = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-leftJetOffset.x, leftJetOffset.y, -leftJetOffset.z));
+    //leftJetTrans *= m_vehicleStruct00.vehicleData.alignment;
+
+    m_vehicleStruct00.npcModel.shadowJetLeftMat = m_vehicleStruct00.npcModel.localJetHousingLeftMatrix;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= jetRotationMatLeft;
+    //m_vehicleStruct00.npcModel.shadowJetLeftMat *= leftJetTrans.Invert() * inverseShadowScale;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= m_vehicleStruct00.npcModel.jetHousingTranslationLeftMatrix * inverseShadowScale;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= updateMat;
+    m_vehicleStruct00.npcModel.shadowJetLeftMat *= shadowMat;
+
+
+   
+    m_vehicleStruct00.npcModel.shadowJetRightMat = shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowJetRightMat *= m_vehicleStruct00.npcModel.worldJetHousingRightMatrix;
     m_vehicleStruct00.npcModel.shadowJetRightMat *= shadowMat;
 
-    m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat = m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix;
+
+    m_vehicleStruct00.npcModel.shadowJetRightMat = m_vehicleStruct00.npcModel.localJetHousingRightMatrix;
+    m_vehicleStruct00.npcModel.shadowJetRightMat *= jetRotationMatRight;
+    //m_vehicleStruct00.npcModel.shadowJetRightMat *= leftJetTrans.Invert() * inverseShadowScale;
+    m_vehicleStruct00.npcModel.shadowJetRightMat *= m_vehicleStruct00.npcModel.jetHousingTranslationRightMatrix * inverseShadowScale;
+    m_vehicleStruct00.npcModel.shadowJetRightMat *= shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowJetRightMat *= updateMat;
+    m_vehicleStruct00.npcModel.shadowJetRightMat *= shadowMat;
+
+  
+
+    m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat = leftJetTrans.Invert() * inverseShadowScale;
+    m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat *= shadowScaleMat;
+    //m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat *= leftJetTrans * inverseShadowScale;
+    //m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat *= m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix;
+    m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat *= updateMat;
     m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat *= shadowMat;
 
-    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat = m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix;
+    //DirectX::SimpleMath::Vector3 testPos = DirectX::SimpleMath::Vector3::Zero;
+    //testPos = DirectX::SimpleMath::Vector3::Transform(testPos, m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat);
+    //m_debugData->DebugPushTestLinePositionIndicator(testPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat = shadowScaleMat;
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= m_vehicleStruct00.npcModel.worldJetIntakeCoverRightMatrix;
     m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= shadowMat;
+
+
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat = jetRotationMatRight;
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= m_vehicleStruct00.npcModel.localJetIntakeCoverRightMatrix;
+    
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= m_vehicleStruct00.npcModel.localJetIntakeCoverLeftTranslationMatrix.Invert() * inverseShadowScale;
+    //m_vehicleStruct00.npcModel.shadowJetInteriorRightMat = leftJetTrans.Invert() * inverseShadowScale;
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= shadowScaleMat;
+    //m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= leftJetTrans * inverseShadowScale;
+    //m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= m_vehicleStruct00.npcModel.worldJetIntakeCoverLeftMatrix;
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= updateMat;
+    m_vehicleStruct00.npcModel.shadowJetInteriorRightMat *= shadowMat;
+
+
+
+    m_vehicleStruct00.npcModel.worldJetMountShadowMatrix = m_vehicleStruct00.npcModel.localJetMountShadowMatrix;
+    
+    m_vehicleStruct00.npcModel.worldJetMountShadowMatrix *= m_vehicleStruct00.npcModel.jetMountShadowTranslationMatrix * inverseShadowScale;
+    m_vehicleStruct00.npcModel.worldJetMountShadowMatrix *= shadowScaleMat;
+    //m_vehicleStruct00.npcModel.worldJetMountShadowMatrix *= m_vehicleStruct00.npcModel.jetMountShadowTranslationMatrix;
+    m_vehicleStruct00.npcModel.worldJetMountShadowMatrix *= updateMat;
+    m_vehicleStruct00.npcModel.worldJetMountShadowMatrix *= shadowMat;
+
+    DirectX::SimpleMath::Vector3 testPos = DirectX::SimpleMath::Vector3::Zero;
+    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, m_vehicleStruct00.npcModel.worldJetMountShadowMatrix);
+    m_debugData->DebugPushTestLinePositionIndicator(testPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    m_vehicleStruct00.npcModel.worldSkirtShadowMatrix = m_vehicleStruct00.npcModel.localSkirtShadowMatrix;
+    m_vehicleStruct00.npcModel.worldSkirtShadowMatrix *= m_vehicleStruct00.npcModel.skirtShadowTranslationMatrix * inverseShadowScale;
+    m_vehicleStruct00.npcModel.worldSkirtShadowMatrix *= shadowScaleMat;
+    m_vehicleStruct00.npcModel.worldSkirtShadowMatrix *= updateMat;
+    m_vehicleStruct00.npcModel.worldSkirtShadowMatrix *= shadowMat;
+
+    m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix = m_vehicleStruct00.npcModel.localBodyMainShadowMatrix;
+    m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix *= m_vehicleStruct00.npcModel.bodyMainShadowTranslationMatrix * inverseShadowScale;
+    m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix *= shadowScaleMat;
+    m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix *= updateMat;
+    m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix *= shadowMat;
+
 
     m_vehicleStruct00.npcModel.worldCustomMatrix = m_vehicleStruct00.npcModel.localCustomMatrix;
     m_vehicleStruct00.npcModel.worldCustomMatrix *= updateMat;
