@@ -13,16 +13,27 @@ struct TankModel
     DirectX::SimpleMath::Matrix barrelTransMatrix;
     DirectX::SimpleMath::Matrix barrelShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
 
+    DirectX::SimpleMath::Matrix barrelShadowLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix barrelShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+
     std::shared_ptr<DirectX::Model> bodyModel;
     DirectX::SimpleMath::Matrix bodyLocalMatrix;
     DirectX::SimpleMath::Matrix bodyWorldMatrix;
     DirectX::SimpleMath::Matrix bodyShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix bodyShadowLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix bodyShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
+
 
     std::shared_ptr<DirectX::Model> turretModel;
     DirectX::SimpleMath::Matrix turretLocalMatrix;
     DirectX::SimpleMath::Matrix turretOffSetMatrix;
     DirectX::SimpleMath::Matrix turretWorldMatrix;
     DirectX::SimpleMath::Matrix turretShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix turretShadowLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix turretShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
 
     DirectX::SimpleMath::Vector3 weaponPosLocal;
     DirectX::SimpleMath::Vector3 weaponPosWorld;
@@ -53,12 +64,12 @@ public:
 
     void SetEnvironment(Environment const* m_environment);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
-    void UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation);
+    void UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation);
 
 private:
     void InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret);
     void DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection);
-    void UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation);
+    void UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation);
 
     TankModel m_playerModel;
 

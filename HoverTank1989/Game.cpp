@@ -498,7 +498,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_debugData->DebugClearUI();
         m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
-        m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
+        m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
     }
@@ -1019,7 +1019,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_vehicle->TestFireCannon();
-            m_vehicle->FireWeapon();
+            //m_vehicle->FireWeapon();
+            m_vehicle->Jump();
         }
     }
     if (m_kbStateTracker.released.Q)
@@ -1549,7 +1550,10 @@ void Game::CreateDeviceDependentResources()
     m_effect3->SetVertexColorEnabled(true);
 
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType2>(device, m_effect2.get(), m_inputLayout2.ReleaseAndGetAddressOf()));
-    m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
+    //m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
+    const int maxVertices = 8192;
+    const int maxIndices = maxVertices * 3;
+    m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context, maxIndices, maxVertices);
 
     //m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType>(device, m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf()));
