@@ -1007,20 +1007,11 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->CycleFireControlAmmo();
         }
     }
-    if (m_kbStateTracker.pressed.Space)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            //m_vehicle->TestFireCannon();
-        }
-    }
     if (kb.Space)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->TestFireCannon();
-            //m_vehicle->FireWeapon();
-            m_vehicle->Jump();
+            m_vehicle->FireWeapon();
         }
     }
     if (m_kbStateTracker.released.Q)

@@ -13,10 +13,6 @@ struct TankModel
     DirectX::SimpleMath::Matrix barrelTransMatrix;
     DirectX::SimpleMath::Matrix barrelShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
 
-    DirectX::SimpleMath::Matrix barrelShadowLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix barrelShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
-
-
     std::shared_ptr<DirectX::Model> bodyModel;
     DirectX::SimpleMath::Matrix bodyLocalMatrix;
     DirectX::SimpleMath::Matrix bodyWorldMatrix;
@@ -25,15 +21,11 @@ struct TankModel
     DirectX::SimpleMath::Matrix bodyShadowLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix bodyShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
 
-
     std::shared_ptr<DirectX::Model> turretModel;
     DirectX::SimpleMath::Matrix turretLocalMatrix;
     DirectX::SimpleMath::Matrix turretOffSetMatrix;
     DirectX::SimpleMath::Matrix turretWorldMatrix;
     DirectX::SimpleMath::Matrix turretShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
-
-    DirectX::SimpleMath::Matrix turretShadowLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix turretShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
 
     DirectX::SimpleMath::Vector3 weaponPosLocal;
     DirectX::SimpleMath::Vector3 weaponPosWorld;
@@ -46,7 +38,6 @@ struct TankModel
     DirectX::SimpleMath::Matrix  muzzleLocalMatrix;
     DirectX::SimpleMath::Matrix  muzzleWorldMatrix;
     DirectX::SimpleMath::Matrix  muzzleTransMatrix;
-
 };
 
 

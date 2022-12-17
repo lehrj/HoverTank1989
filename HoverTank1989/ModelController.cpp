@@ -34,16 +34,11 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     // turret
     aModel.turretLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
-    aModel.turretShadowLocalMatrix = aModel.turretLocalMatrix;
     DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
     aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
     DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
     aModel.turretWorldMatrix = aModel.turretLocalMatrix;
-
-    aModel.turretShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
-    //aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
-    aModel.turretShadowTranslationMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
 
     // barrel
     aModel.barrelLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -53,11 +48,6 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.barrelLocalMatrix *= aModel.turretOffSetMatrix;
     aModel.barrelWorldMatrix = aModel.barrelLocalMatrix;
     
-    aModel.barrelShadowLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.barrelShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.barrelShadowTranslationMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(barrelTrans);
-    aModel.barrelShadowTranslationMatrix *= aModel.turretOffSetMatrix;
-
     aModel.weaponPosLocal = DirectX::SimpleMath::Vector3(0.0, 0.0, -0.9);
     aModel.weaponPosWorld = aModel.weaponPosLocal;
 
@@ -88,27 +78,12 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.turretWorldMatrix *= aModel.turretLocalMatrix;
     aModel.turretWorldMatrix *= updateMat;
 
-    DirectX::SimpleMath::Vector3 testPos = DirectX::SimpleMath::Vector3::Zero;
-    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, aModel.turretWorldMatrix);
-    m_debugData->DebugPushTestLinePositionIndicator(testPos, 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    /*
-    DirectX::SimpleMath::Vector3 test1;
-    DirectX::SimpleMath::Vector3 test2;
-    DirectX::SimpleMath::Vector3 test3;
-    DirectX::SimpleMath::Quaternion quat1;
-    aModel.turretWorldMatrix.Decompose(test1, quat1, test2);
-    */
-
     DirectX::SimpleMath::Matrix barrelMat = DirectX::SimpleMath::Matrix::CreateRotationX(aBarrelPitch);
     aModel.barrelWorldMatrix = barrelMat;
     aModel.barrelWorldMatrix *= aModel.barrelLocalMatrix;
     aModel.barrelWorldMatrix *= turretMat;
     aModel.barrelWorldMatrix *= aModel.barrelTransMatrix; 
     aModel.barrelWorldMatrix *= updateMat; 
-
-    testPos = DirectX::SimpleMath::Vector3::Zero;
-    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, aModel.barrelWorldMatrix);
-    m_debugData->DebugPushTestLinePositionIndicator(testPos, 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
     DirectX::SimpleMath::Matrix muzzleMat = DirectX::SimpleMath::Matrix::CreateRotationZ(aBarrelPitch);
     aModel.weaponDirWorld = aModel.weaponDirLocal;
@@ -133,10 +108,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
   
-    /// /////////////////////////////
-
-    
-
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane;
     DirectX::SimpleMath::Vector3 modelPos = aPos;
@@ -166,38 +137,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
         inverseShadowScale = aAltitude / maxShadowRange;
         shadowScale = 1.0f - inverseShadowScale;
     }
-
-    //shadowScale = 1.0f;
-    //inverseShadowScale = 0.0f;
-
     DirectX::SimpleMath::Matrix shadowScaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(shadowScale, shadowScale, shadowScale));
-
-    //aModel.turretShadowMatrix = aModel.turretWorldMatrix;
-    //aModel.turretShadowMatrix *= shadowMat;
-
-    /*
-    aModel.turretShadowMatrix = aModel.turretShadowLocalMatrix;
-    aModel.turretShadowMatrix *= aModel.bodyShadowTranslationMatrix * inverseShadowScale;
-    aModel.turretShadowMatrix *= aModel.turretOffSetMatrix * inverseShadowScale;;
-    aModel.turretShadowMatrix *= shadowScaleMat;  
-    aModel.turretShadowMatrix *= turretMat;
-    //aModel.turretShadowMatrix *= aModel.turretLocalMatrix;
-    aModel.turretShadowMatrix *= updateMat;
-    */
-    //
-
-    
-    aModel.turretShadowMatrix = aModel.turretOffSetMatrix;
-    aModel.turretShadowMatrix *= turretMat;
-    aModel.turretShadowMatrix *= aModel.turretShadowLocalMatrix;
-    aModel.turretShadowMatrix *= aModel.bodyShadowTranslationMatrix * inverseShadowScale;
-    aModel.turretShadowMatrix *= shadowScaleMat;
-    aModel.turretShadowMatrix *= updateMat;
-    aModel.turretShadowMatrix *= shadowMat;
-    
-
-    //aModel.bodyShadowMatrix = aModel.bodyWorldMatrix;
-    //aModel.bodyShadowMatrix *= shadowMat;
 
     aModel.bodyShadowMatrix = aModel.bodyShadowLocalMatrix;
     aModel.bodyShadowMatrix *= aModel.bodyShadowTranslationMatrix * inverseShadowScale;
@@ -205,9 +145,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.bodyShadowMatrix *= updateMat;
     aModel.bodyShadowMatrix *= shadowMat;
 
-    //aModel.barrelShadowMatrix = aModel.barrelWorldMatrix;
-    //aModel.barrelShadowMatrix *= shadowMat;
-    /*
     aModel.barrelShadowMatrix = barrelMat;
     aModel.barrelShadowMatrix *= aModel.barrelLocalMatrix;
     aModel.barrelShadowMatrix *= turretMat;
@@ -215,85 +152,13 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.barrelShadowMatrix *= shadowScaleMat;
     aModel.barrelShadowMatrix *= updateMat;
     aModel.barrelShadowMatrix *= shadowMat;
-    */
-    aModel.barrelWorldMatrix = barrelMat;
-    aModel.barrelWorldMatrix *= aModel.barrelLocalMatrix;
-    aModel.barrelWorldMatrix *= turretMat;
-    aModel.barrelWorldMatrix *= aModel.barrelTransMatrix;
-    aModel.barrelWorldMatrix *= updateMat;
-
-    aModel.barrelShadowMatrix = barrelMat;
-    aModel.barrelShadowMatrix *= aModel.barrelLocalMatrix;
-    aModel.barrelShadowMatrix *= turretMat;
-    aModel.barrelShadowMatrix *= aModel.barrelTransMatrix * inverseShadowScale;
-    aModel.barrelShadowMatrix *= shadowScaleMat;
-    aModel.barrelShadowMatrix *= updateMat;
-    aModel.barrelShadowMatrix *= shadowMat;
-    ///////////////////////////////////////////////////////////
-
-
-    aModel.turretShadowMatrix = aModel.turretOffSetMatrix * inverseShadowScale;
-    aModel.turretShadowMatrix *= turretMat;
-    aModel.turretShadowMatrix *= aModel.turretShadowLocalMatrix;
-    aModel.turretShadowMatrix *= aModel.bodyShadowTranslationMatrix * inverseShadowScale;
-    aModel.turretShadowMatrix *= shadowScaleMat;
-    aModel.turretShadowMatrix *= updateMat;
-    aModel.turretShadowMatrix *= shadowMat;
-
-
-    /*
-    aModel.turretShadowMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.turretShadowMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
-    aModel.turretShadowLocalMatrix = aModel.turretLocalMatrix;
-    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
-    aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
-    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0);
-    aModel.turretShadowMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
-    aModel.turretWorldMatrix = aModel.turretLocalMatrix;
-    */
-
-    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
-    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0);
-
-    DirectX::SimpleMath::Matrix localShadowTurret = DirectX::SimpleMath::Matrix::Identity;
-    localShadowTurret *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
-
-    localShadowTurret *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
-
-    aModel.turretShadowMatrix = aModel.turretOffSetMatrix;
-    aModel.turretShadowMatrix *= turretMat;
-    aModel.turretShadowMatrix *= aModel.turretLocalMatrix;
-    aModel.turretShadowMatrix *= updateMat;
 
     aModel.turretShadowMatrix = aModel.turretOffSetMatrix;
     aModel.turretShadowMatrix *= turretMat;
     aModel.turretShadowMatrix *= aModel.turretLocalMatrix;
     aModel.turretShadowMatrix *= shadowScaleMat;
     aModel.turretShadowMatrix *= updateMat;
-
     aModel.turretShadowMatrix *= shadowMat;
-
-    /*
-    aModel.turretShadowMatrix = aModel.turretOffSetMatrix;
-    aModel.turretShadowMatrix *= turretMat;
-    aModel.turretShadowMatrix *= aModel.turretLocalMatrix;
-    aModel.turretShadowMatrix *= updateMat;
-    aModel.turretShadowMatrix *= shadowMat;
-
-    aModel.barrelShadowMatrix = barrelMat;
-    aModel.barrelShadowMatrix *= aModel.barrelLocalMatrix;
-    aModel.barrelShadowMatrix *= turretMat;
-    aModel.barrelShadowMatrix *= aModel.barrelTransMatrix;
-    aModel.barrelShadowMatrix *= updateMat;
-    aModel.barrelShadowMatrix *= shadowMat;
-    */
-    testPos = DirectX::SimpleMath::Vector3::Zero;
-    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, aModel.turretShadowMatrix);
-    m_debugData->DebugPushTestLinePositionIndicator(testPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    testPos = DirectX::SimpleMath::Vector3::Zero;
-    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, aModel.barrelShadowMatrix);
-    m_debugData->DebugPushTestLinePositionIndicator(testPos, 15.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)
