@@ -5,6 +5,13 @@
 class Vehicle;
 class FireControl;
 
+struct LoadQueue
+{
+    DirectX::SimpleMath::Vector3 deployPosition;
+    DirectX::SimpleMath::Vector3 deployOrientation;
+    NPCType deployType;
+};
+
 class NPCController
 {
 public:
@@ -18,7 +25,8 @@ public:
 
     void AirDropNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const DirectX::SimpleMath::Vector3 aDropPosition,
         const DirectX::SimpleMath::Vector3 aOrientation, const float aAltitude, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing);
-        
+    
+
     bool CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere);
     bool CheckProjectileCollisions(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId);
     void DebugToggleAI();
@@ -35,6 +43,7 @@ public:
     std::vector<DirectX::SimpleMath::Vector3> GetVecOfNpcPos(const unsigned int aSelfID);
 
     void LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController);
+    void LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const float aAltitude, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing);
 
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
@@ -43,6 +52,7 @@ public:
     void SetVehicleDeath(const unsigned int aVehicleId);
     void TestPositionChange();
     void UnlockJumpAbility();
+    void UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const double aTimeDelta);
     void UpdateNPCs(const double aTimeDelta);
     void UpdateNPCController(const double aTimeDelta);
 
@@ -56,6 +66,8 @@ private:
     std::shared_ptr<DebugData> m_debugData;
     std::shared_ptr<FireControl> m_fireControl;
     std::vector<NPCVehicle*> m_npcVec;
+
+    std::vector<LoadQueue> m_loadQueue;
 
     unsigned int m_nextUniqueID = 0;
     float m_testTimer = 0.0f;    

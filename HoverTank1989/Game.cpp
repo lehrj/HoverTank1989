@@ -501,6 +501,9 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
+
+        auto context = m_deviceResources->GetD3DDeviceContext();
+        m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());
     }
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
@@ -1130,7 +1133,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const DirectX::SimpleMath::Vector3 orientation = DirectX::SimpleMath::Vector3::UnitX;
 
             auto context = m_deviceResources->GetD3DDeviceContext();
-            m_npcController->AirDropNPCs(context, m_npcController, dropPosition, orientation, altitude, columnCount, rowCount, columSpaceing, rowSpacing);
+            //m_npcController->AirDropNPCs(context, m_npcController, dropPosition, orientation, altitude, columnCount, rowCount, columSpaceing, rowSpacing);
+            m_npcController->LoadToQueue(dropPosition, orientation, altitude, columnCount, rowCount, columSpaceing, rowSpacing);
         }
     }
 
@@ -1541,7 +1545,6 @@ void Game::CreateDeviceDependentResources()
     m_effect3->SetVertexColorEnabled(true);
 
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType2>(device, m_effect2.get(), m_inputLayout2.ReleaseAndGetAddressOf()));
-    //m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
     const int maxVertices = 8192;
     const int maxIndices = maxVertices * 3;
     m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context, maxIndices, maxVertices);

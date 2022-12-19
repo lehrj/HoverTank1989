@@ -272,6 +272,7 @@ void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceC
     m_nextUniqueID = 0;
     m_npcVec.clear();
     m_environment = aEnvironment;
+    m_loadQueue.clear();
 }
 
 void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap)
@@ -317,6 +318,28 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 }
 
+void NPCController::LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const float aAltitude, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing)
+{
+    DirectX::SimpleMath::Vector3 pos = aLoadPosition;
+    DirectX::SimpleMath::Vector3 heading = aOrientation;
+
+    LoadQueue loadData;
+    loadData.deployType = NPCType::NPCTYPE_NPC00;
+    for (unsigned int i = 0; i < aColumnCount; ++i)
+    {
+        for (unsigned int j = 0; j < aRowCount; ++j)
+        {
+            loadData.deployOrientation = aOrientation;
+            loadData.deployPosition = pos;
+            m_loadQueue.push_back(loadData);
+
+            pos.x += aColumnSpacing;
+        }
+        pos.x = aLoadPosition.x;
+        pos.z += aRowSpacing;
+    }
+}
+
 void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 {
     m_debugData = aDebugPtr;
@@ -332,7 +355,6 @@ void NPCController::SetNPCEnvironment(Environment const* aEnvironment)
     m_environment = aEnvironment;
 }
 
-//void NPCController::SetPlayer(Vehicle const* aVehicle)
 void NPCController::SetPlayer(std::shared_ptr<Vehicle> aVehicle)
 {
     m_player = aVehicle;
@@ -354,6 +376,17 @@ void NPCController::UnlockJumpAbility()
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->UnlockJump();
+    }
+}
+
+void NPCController::UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const double aTimeDelta)
+{
+    if (m_loadQueue.size() > 0)
+    {
+        const unsigned int i = m_loadQueue.size() - 1;
+        m_loadQueue[i].deployOrientation;
+        this->AddNPC(aContext, m_loadQueue[i].deployType, m_loadQueue[i].deployOrientation, m_loadQueue[i].deployPosition, aNpcController);
+        m_loadQueue.pop_back();
     }
 }
 
