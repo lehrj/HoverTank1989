@@ -775,39 +775,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->UpdatePos(0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
         }
     }
-    if (m_kbStateTracker.pressed.D1)
-    {
-        if (m_moveLightWithCameraFocus1 == true)
-        {
-            m_moveLightWithCameraFocus1 = false;
-        }
-        else
-        {
-            m_moveLightWithCameraFocus1 = true;
-        }
-    }
-    if (m_kbStateTracker.pressed.D2)
-    {
-        if (m_moveLightWithCameraFocus2 == true)
-        {
-            m_moveLightWithCameraFocus2 = false;
-        }
-        else
-        {
-            m_moveLightWithCameraFocus2 = true;
-        }
-    }
-    if (m_kbStateTracker.pressed.D3)
-    {
-        if (m_moveLightWithCameraFocus3 == true)
-        {
-            m_moveLightWithCameraFocus3 = false;
-        }
-        else
-        {
-            m_moveLightWithCameraFocus3 = true;
-        }
-    }
     if (m_kbStateTracker.pressed.T)
     {
         m_testTimer1 = 0.0f;
@@ -1008,6 +975,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->CycleFireControlAmmo();
+            SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
         }
     }
     if (kb.Space)
@@ -1090,34 +1058,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             m_endScreenTimer = 0.0f;
             m_isDisplayEndScreenTrue = true;
-        }
-    }
-    if (m_kbStateTracker.pressed.D1)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            SetUiDisplay("Kinetic Cannon Ammo Loaded");
-        }
-    }
-    if (m_kbStateTracker.pressed.D2)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            SetUiDisplay("Shotgun Ammo Loaded");
-        }
-    }
-    if (m_kbStateTracker.pressed.D3)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            SetUiDisplay("Explosive Cannon Ammo Loaded");
-        }
-    }
-    if (m_kbStateTracker.pressed.D4)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            SetUiDisplay("Explosive MIRV Ammo Loaded");
         }
     }
     if (m_kbStateTracker.pressed.D0)
@@ -1229,10 +1169,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (pad.IsRightShoulderPressed() == true)
         {
-            m_vehicle->TestFireCannon();
-            //m_vehicle->TestFireShotgun();
-            //m_vehicle->TestFireExplosive();
-            //m_vehicle->TestFireMirv();
+            m_vehicle->FireWeapon();
         }
         if (pad.IsLeftStickPressed() == true)
         {
@@ -1256,6 +1193,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->CycleFireControlAmmo();
+            SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
         }
     }
 }
@@ -1715,7 +1653,7 @@ void Game::DrawUIDisplay()
     textLinePos.y = static_cast<float>(m_camera->GetWindowHeight() * 0.9f);
     float fontScale = 3.0f;
 
-    std::string textLine = m_uiDisplayString;
+    std::string textLine = m_uiAmmoDisplayString;
 
     if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
     {
@@ -2033,10 +1971,43 @@ void Game::OnDeviceRestored()
 
 void Game::SetUiDisplay(std::string aString)
 {
-    m_uiDisplayString = aString;
+    m_uiAmmoDisplayString = aString;
     m_uiDisplayTimer = 0.0f;
     m_isUiDisplayTrue = true;
 }
 
+void Game::SetUiAmmoDisplay(AmmoType aAmmoType)
+{
+    if (aAmmoType == AmmoType::AMMOTYPE_CANNON)
+    {
+        m_uiAmmoDisplayString = "Kinetic Cannon Ammo Loaded";
+    }
+    else if (aAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+    {
+        m_uiAmmoDisplayString = "Explosive Cannon Ammo Loaded";
+    }
+    else if (aAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
+    {
+        m_uiAmmoDisplayString = "Machine Gum Ammo Loaded";
+    }
+    else if (aAmmoType == AmmoType::AMMOTYPE_MIRV)
+    {
+        m_uiAmmoDisplayString = "Explosive MIRV Ammo Loaded";
+    }
+    else if (aAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
+    {
+        m_uiAmmoDisplayString = "Shotgun Ammo Loaded";
+    }
+    else
+    {
+        m_uiAmmoDisplayString = "Error : Unknown Ammo Type";
+    }
+
+
+
+    //m_uiDisplayString = aString;
+    m_uiDisplayTimer = 0.0f;
+    m_isUiDisplayTrue = true;
+}
 
 #pragma endregion

@@ -78,7 +78,9 @@ private:
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
 
     void Render();
-
+    void SetUiAmmoDisplay(AmmoType aAmmoType);
+    void SetUiDisplay(std::string aString);
+    
     void TogglePause();
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
@@ -110,7 +112,7 @@ private:
 
     Camera*                         m_camera;   
     std::shared_ptr<DebugData>      m_debugData;
-    Environment*                     m_environment;
+    Environment*                    m_environment;
     std::shared_ptr<FireControl>    m_fireControl;
     Lighting*                       m_lighting;
     std::shared_ptr<ModelController> m_modelController;
@@ -171,7 +173,6 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout2;
-
 
     std::shared_ptr<DirectX::IEffect>               m_lightEffect;
 
@@ -380,8 +381,7 @@ private:
     const float m_uiDisplayTypeDuration = 1.2f;
     float m_uiDisplayTimer = 0.0f;
     bool m_isUiDisplayTrue = false;
-    std::string m_uiDisplayString = "";
-    void SetUiDisplay(std::string aString);
+    std::string m_uiAmmoDisplayString = "";
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
