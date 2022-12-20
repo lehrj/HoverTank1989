@@ -566,7 +566,6 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     const float rightAngleDegrees = Utility::ToDegrees(rightAngle);
 
     Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionRight, Utility::ToRadians(rightAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
-    //Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionRight, Utility::ToRadians(rightAngleDegrees), m_vehicleStruct00.npcModel.afterBurnRightFlicker, lightDirection0, lightDirection1, lightDirection2);
     Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionRight, Utility::ToRadians(rightAngleDegrees), m_testLightRotation, lightDirection0, lightDirection1, lightDirection2);
 
     aEffect->SetLightDirection(0, lightDirection0);
@@ -691,11 +690,11 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetColorAndAlpha(ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(aEffect.get(), aInputLayout.Get());
 
-    aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowBaseMat);
-    aEffect->SetColorAndAlpha(DirectX::Colors::Black);
+    //aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowBaseMat);
+    //aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     //m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.shadowBaseMat, aView, aProj, DirectX::Colors::Black);
-    aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowSkirtMat);
-    aEffect->SetColorAndAlpha(DirectX::Colors::Black);
+    //aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowSkirtMat);
+    //aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     //m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.shadowSkirtMat, aView, aProj, DirectX::Colors::Black);
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetLeftMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
@@ -703,11 +702,11 @@ void NPCVehicle::DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX
     aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetRightMat);
     aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(m_vehicleStruct00.npcModel.shadowJetRightMat, aView, aProj, DirectX::Colors::Black);
-    aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat);
-    aEffect->SetColorAndAlpha(DirectX::Colors::Black);
+    //aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat);
+    //aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     //m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorLeftMat, aView, aProj, DirectX::Colors::Black);
-    aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat);
-    aEffect->SetColorAndAlpha(DirectX::Colors::Black);
+    //aEffect->SetWorld(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat);
+    //aEffect->SetColorAndAlpha(DirectX::Colors::Black);
     //m_vehicleStruct00.npcModel.jetIntakeCoverShape->Draw(m_vehicleStruct00.npcModel.shadowJetInteriorRightMat, aView, aProj, DirectX::Colors::Black);
 
     m_vehicleStruct00.npcModel.jetMountShadowShape->Draw(m_vehicleStruct00.npcModel.worldJetMountShadowMatrix, aView, aProj, DirectX::Colors::Black);
@@ -1896,10 +1895,6 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.up = DirectX::SimpleMath::Vector3::UnitY;
     aVehicleStruct.vehicleData.right = aVehicleStruct.vehicleData.forward.Cross(aVehicleStruct.vehicleData.up);
     aVehicleStruct.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicleStruct.vehicleData.right, aVehicleStruct.vehicleData.up);
-
-    //aVehicleStruct.vehicleData.up = DirectX::SimpleMath::Vector3::UnitZ;
-    //aVehicleStruct.vehicleData.right = aVehicleStruct.vehicleData.forward.Cross(aVehicleStruct.vehicleData.up);
-    //aVehicleStruct.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicleStruct.vehicleData.right, aVehicleStruct.vehicleData.up);
 
     // zero out impact force
     aVehicleStruct.vehicleData.impactForce.impactVelocity = DirectX::SimpleMath::Vector3::Zero;
