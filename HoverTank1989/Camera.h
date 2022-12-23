@@ -53,7 +53,7 @@ public:
 
     CameraState GetCameraState() const { return m_cameraState; };
     float GetAimTurnRate() const { return m_aimTurnRate; };
-
+    DirectX::BoundingFrustum GetCameraFrustum() const { return m_boundingFrustum; };
     DirectX::SimpleMath::Vector3 GetHomePos() const { return m_homePosition; };
     float GetPitch() const { return m_pitch; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_position; };
@@ -143,7 +143,6 @@ private:
 
     void UpdateBoundingFrustum();
     void UpdateBoundingFrustum2();
-    void UpdateBoundingFrustum3();
     void UpdateChaseCameraNPC();
     void UpdateChaseCamera();
 

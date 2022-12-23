@@ -1265,7 +1265,7 @@ void Game::Render()
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawTerrainNew(m_terrainGamePlay);
+        DrawTerrainNew(m_terrainGamePlay);
     }
     m_batch2->End();
 
