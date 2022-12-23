@@ -203,7 +203,7 @@ void NPCController::DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const Dir
     {
         if (m_npcVec[i]->GetIsDead() == false && m_npcVec[i]->GetIsActivated() == true)
         {
-            m_npcVec[i]->DrawNPC2(aView, aProj, aEffect, aInputLayout);
+            m_npcVec[i]->DrawNPC3(aView, aProj, aEffect, aInputLayout);
         }
     }
 }

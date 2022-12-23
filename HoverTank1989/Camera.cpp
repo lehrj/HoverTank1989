@@ -709,6 +709,307 @@ void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
 	m_position = { m_position.x + aTranslation.x, m_position.y + aTranslation.y, m_position.z + aTranslation.z };
 }
 
+void Camera::UpdateBoundingFrustum()
+{
+	const float clientWidth = 1600.0f;
+	const float clientHeight = 900.0f;
+	const float aspectRatio = clientWidth / clientHeight;
+	const float fov = DirectX::XM_PI / 4.f;
+	const float nearPlane = 1.0f;
+	const float farPlane = 100.0f;
+	DirectX::SimpleMath::Vector3 testRight = DirectX::SimpleMath::Vector3::Zero;
+	testRight.x = m_right.x;
+	testRight.y = m_right.y;
+	testRight.z = m_right.z;
+	DirectX::SimpleMath::Vector3 testTarget = DirectX::SimpleMath::Vector3::UnitX;
+	DirectX::SimpleMath::Vector3 testPositon = DirectX::SimpleMath::Vector3::Zero;
+	DirectX::SimpleMath::Vector3 testUp = DirectX::SimpleMath::Vector3::UnitY;
+	DirectX::SimpleMath::Matrix testAlignent = m_vehicleFocus->GetAlignment();
+
+	testTarget = DirectX::SimpleMath::Vector3::Transform(testTarget, testAlignent);
+	testUp = DirectX::SimpleMath::Vector3::Transform(testUp, testAlignent);
+	//testPositon = DirectX::SimpleMath::Vector3::Transform(testPositon, testAlignent);
+
+	DirectX::SimpleMath::Vector3 weaponForward = m_vehicleFocus->GetWeaponDirection();
+	DirectX::SimpleMath::Vector3 weaponPositon = m_vehicleFocus->GetWeaponPos();
+	DirectX::SimpleMath::Vector3 weaponUp = DirectX::SimpleMath::Vector3::UnitY;
+	DirectX::SimpleMath::Vector3 weaponRight = weaponForward;
+	weaponRight = weaponRight.Cross(weaponUp);
+	weaponUp = weaponRight.Cross(weaponForward);
+
+	m_debugData->DebugPushTestLine(weaponPositon, weaponForward, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	m_debugData->DebugPushTestLine(weaponPositon, weaponUp, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	m_debugData->DebugPushTestLine(weaponPositon, weaponRight, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	DirectX::SimpleMath::Matrix weaponWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -weaponRight, weaponUp);
+
+
+	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, farPlane, nearPlane);
+	DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
+	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane);
+	//m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, testProjectionMat);
+	m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, testProjectionMat, true);
+	//DirectX::SimpleMath::Matrix testViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(testPositon, testTarget, testUp);
+	DirectX::SimpleMath::Matrix testViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, weaponForward, weaponUp);
+
+	DirectX::SimpleMath::Quaternion testOrientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(testViewMatrix);
+	//m_boundingFrustum.Orientation = testOrientationQuat;
+	m_boundingFrustum.Transform(m_boundingFrustum, testViewMatrix);
+
+	DirectX::SimpleMath::Vector3 testPos = m_boundingFrustum.Origin;
+	DirectX::SimpleMath::Vector3 origin = m_boundingFrustum.Origin;
+	DirectX::XMFLOAT3 testCorners[8];
+	DirectX::XMFLOAT3* pCorners;
+	pCorners = testCorners;
+	m_boundingFrustum.GetCorners(pCorners);
+	DirectX::SimpleMath::Vector3 prevPos = testPos;
+	unsigned int i = 0;
+	for (i; i < 8; ++i)
+	{
+		testPos = testCorners[i];
+		//m_debugData->DebugPushTestLinePositionIndicator(testPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushTestLineBetweenPoints(testPos, prevPos, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushTestLineBetweenPoints(testPos, origin, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushUILineDecimalNumber("Data = ", testPos.x, "");
+		prevPos = testPos;
+	}
+
+	pCorners = nullptr;
+	delete pCorners;
+
+	m_debugData->DebugPushTestLinePositionIndicator(DirectX::SimpleMath::Vector3::Zero, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::SimpleMath::Vector3 testTarget2 = m_target - m_position;
+	m_debugData->DebugPushTestLinePositionIndicator(testTarget2, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::SimpleMath::Vector3 testTarget3 = m_target - m_position;
+	testTarget3 = testTarget3.Cross(m_up);
+	m_debugData->DebugPushTestLinePositionIndicator(testTarget3, 2.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+}
+
+void Camera::UpdateBoundingFrustum2()
+{
+	const float clientWidth = 1600.0f;
+	const float clientHeight = 900.0f;
+	const float aspectRatio = clientWidth / clientHeight;
+	const float fov = DirectX::XM_PI / 4.f;
+	const float nearPlane = 1.0f;
+	const float farPlane = 100.0f;
+	DirectX::SimpleMath::Vector3 testRight = DirectX::SimpleMath::Vector3::Zero;
+	testRight.x = m_right.x;
+	testRight.y = m_right.y;
+	testRight.z = m_right.z;
+	DirectX::SimpleMath::Vector3 testTarget = DirectX::SimpleMath::Vector3::Zero;
+	testTarget = m_target;
+	testTarget = testTarget.Cross(m_up);
+	DirectX::SimpleMath::Vector3 testTarget4 = m_target - m_position;
+	testTarget4 = testTarget4.Cross(m_up);
+	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XM_PI / 4.f, (float)m_clientWidth / (float)m_clientHeight, m_nearPlane, m_farPlane);
+	DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
+	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane);
+	m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, testProjectionMat);
+
+	DirectX::SimpleMath::Matrix testViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	//m_boundingFrustum.Transform(m_boundingFrustum, testViewMatrix);
+
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(DirectX::XM_PI / 2.f, 0.0f, 0.0f));
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, 0.0f, DirectX::XM_PI / 2.f));
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+	DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+
+
+
+
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_target - m_position, m_up);
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, testTarget, m_up);
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, testTarget4, m_up);
+
+	DirectX::SimpleMath::Matrix testRotationMat = XMMatrixLookAtLH(DirectX::SimpleMath::Vector3::Zero, testTarget4, m_up);
+
+	DirectX::SimpleMath::Matrix testToQuatMat = DirectX::SimpleMath::Matrix::Identity;
+	//testToQuatMat *= defaultRotMat;
+	testToQuatMat *= testRotationMat;
+
+
+	DirectX::SimpleMath::Quaternion testRotationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(testToQuatMat);
+
+	DirectX::SimpleMath::Quaternion defaultRotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, -DirectX::XM_PI / 2.f, 0.0f));
+
+	//m_boundingFrustum.Orientation = testRotationQuat;
+	//m_boundingFrustum.Origin = m_position;
+	DirectX::SimpleMath::Matrix transMat = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
+	DirectX::SimpleMath::Matrix rotMat = testToQuatMat;
+
+	DirectX::SimpleMath::Quaternion transQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(transMat);
+	DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+
+	//m_boundingFrustum.Orientation = defaultRotQuat;
+	//m_boundingFrustum = m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotMat, transMat);
+	//m_boundingFrustum = m_boundingFrustum.Transform(1.0f, rotMat, transMat);
+	//m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotQuat, transQuat);
+
+	//m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotQuat, transQuat);
+	m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotQuat, DirectX::SimpleMath::Quaternion::Identity);
+
+
+	//m_boundingFrustum.Origin = m_position;
+
+	DirectX::SimpleMath::Vector3 testPos = m_boundingFrustum.Origin;
+	DirectX::SimpleMath::Vector3 origin = m_boundingFrustum.Origin;
+	//m_debugData->DebugPushTestLinePositionIndicator(testPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::XMFLOAT3 testCorners[8];
+	DirectX::XMFLOAT3* pCorners;
+	pCorners = testCorners;
+	m_boundingFrustum.GetCorners(pCorners);
+	DirectX::SimpleMath::Vector3 prevPos = testPos;
+	unsigned int i = 0;
+	for (i; i < 8; ++i)
+	{
+		testPos = testCorners[i];
+		//m_debugData->DebugPushTestLinePositionIndicator(testPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushTestLineBetweenPoints(testPos, prevPos, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushTestLineBetweenPoints(testPos, origin, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushUILineDecimalNumber("Data = ", testPos.x, "");
+		prevPos = testPos;
+	}
+
+	pCorners = nullptr;
+	delete pCorners;
+
+	//m_debugData->DebugPushTestLinePositionIndicator(m_target, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_debugData->DebugClearUI();
+
+
+	m_debugData->DebugPushTestLinePositionIndicator(DirectX::SimpleMath::Vector3::Zero, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::SimpleMath::Vector3 testTarget2 = m_target - m_position;
+	m_debugData->DebugPushTestLinePositionIndicator(testTarget2, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::SimpleMath::Vector3 testTarget3 = m_target - m_position;
+	testTarget3 = testTarget3.Cross(m_up);
+	m_debugData->DebugPushTestLinePositionIndicator(testTarget3, 2.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+}
+
+void Camera::UpdateBoundingFrustum3()
+{
+	const float clientWidth = 1600.0f;
+	const float clientHeight = 900.0f;
+	const float aspectRatio = clientWidth / clientHeight;
+	const float fov = DirectX::XM_PI / 4.f;
+	const float nearPlane = 1.0f;
+	const float farPlane = 100.0f;
+	DirectX::SimpleMath::Vector3 testRight = DirectX::SimpleMath::Vector3::Zero;
+	testRight.x = m_right.x;
+	testRight.y = m_right.y;
+	testRight.z = m_right.z;
+	DirectX::SimpleMath::Vector3 testTarget = DirectX::SimpleMath::Vector3::Zero;
+	testTarget = m_target;
+	testTarget = testTarget.Cross(m_up);
+	DirectX::SimpleMath::Vector3 testTarget4 = m_target - m_position;
+	//testTarget4 = testTarget4.Cross(m_up);
+	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XM_PI / 4.f, (float)m_clientWidth / (float)m_clientHeight, m_nearPlane, m_farPlane);
+	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
+	DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, farPlane, nearPlane);
+	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane);
+	m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, testProjectionMat);
+
+	DirectX::SimpleMath::Matrix testViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	//m_boundingFrustum.Transform(m_boundingFrustum, testViewMatrix);
+
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(DirectX::XM_PI / 2.f, 0.0f, 0.0f));
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, 0.0f, DirectX::XM_PI / 2.f));
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+
+	//DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+	DirectX::SimpleMath::Matrix defaultRotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, DirectX::XM_PI / 2.f, 0.0f));
+
+
+
+
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_target - m_position, m_up);
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, testTarget, m_up);
+	//DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, testTarget4, m_up);
+
+	//DirectX::SimpleMath::Matrix testRotationMat = XMMatrixLookAtLH(DirectX::SimpleMath::Vector3::Zero, testTarget4, m_up);
+	DirectX::SimpleMath::Matrix testRotationMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+
+	DirectX::SimpleMath::Matrix testToQuatMat = DirectX::SimpleMath::Matrix::Identity;
+	//testToQuatMat *= defaultRotMat;
+	testToQuatMat *= testRotationMat;
+
+
+	DirectX::SimpleMath::Quaternion testRotationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(testToQuatMat);
+
+	DirectX::SimpleMath::Quaternion defaultRotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(0.0f, -DirectX::XM_PI / 2.f, 0.0f));
+
+	//m_boundingFrustum.Orientation = testRotationQuat;
+	//m_boundingFrustum.Origin = m_position;
+	DirectX::SimpleMath::Matrix transMat = DirectX::SimpleMath::Matrix::CreateTranslation(m_position);
+	DirectX::SimpleMath::Matrix rotMat = testToQuatMat;
+
+	DirectX::SimpleMath::Quaternion transQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(transMat);
+	DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+
+	//m_boundingFrustum.Orientation = defaultRotQuat;
+	//m_boundingFrustum = m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotMat, transMat);
+	//m_boundingFrustum = m_boundingFrustum.Transform(1.0f, rotMat, transMat);
+	//m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotQuat, transQuat);
+
+	m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotQuat, transQuat);
+	//m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotQuat, DirectX::SimpleMath::Quaternion::Identity);
+
+
+	//m_boundingFrustum.Origin = m_position;
+
+	DirectX::SimpleMath::Vector3 testPos = m_boundingFrustum.Origin;
+	DirectX::SimpleMath::Vector3 origin = m_boundingFrustum.Origin;
+	//m_debugData->DebugPushTestLinePositionIndicator(testPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::XMFLOAT3 testCorners[8];
+	DirectX::XMFLOAT3* pCorners;
+	pCorners = testCorners;
+	m_boundingFrustum.GetCorners(pCorners);
+	DirectX::SimpleMath::Vector3 prevPos = testPos;
+	unsigned int i = 0;
+	for (i; i < 8; ++i)
+	{
+		testPos = testCorners[i];
+		//m_debugData->DebugPushTestLinePositionIndicator(testPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushTestLineBetweenPoints(testPos, prevPos, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushTestLineBetweenPoints(testPos, origin, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		m_debugData->DebugPushUILineDecimalNumber("Data = ", testPos.x, "");
+		prevPos = testPos;
+	}
+
+	pCorners = nullptr;
+	delete pCorners;
+
+	//m_debugData->DebugPushTestLinePositionIndicator(m_target, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_debugData->DebugClearUI();
+
+
+	m_debugData->DebugPushTestLinePositionIndicator(DirectX::SimpleMath::Vector3::Zero, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::SimpleMath::Vector3 testTarget2 = m_target - m_position;
+	m_debugData->DebugPushTestLinePositionIndicator(testTarget2, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	DirectX::SimpleMath::Vector3 testTarget3 = m_target - m_position;
+	testTarget3 = testTarget3.Cross(m_up);
+	m_debugData->DebugPushTestLinePositionIndicator(testTarget3, 2.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+}
+
 void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 {
 	UpdateTimer(aTimer);
@@ -840,6 +1141,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
+	UpdateBoundingFrustum();
 }
 
 void Camera::UpdateFirstPersonCamera()
