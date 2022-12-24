@@ -422,6 +422,7 @@ struct VehicleData
     bool                        isExploding = false;
     bool                        isDead = false;
     bool                        isReadyToDelete = false;
+    bool                        isVehicleInCameraFrustum = true;
     float                       deleteCountDownTimer = 1.0f;
     Utility::ImpactForce        impactForce;
     std::vector<Utility::ImpactForce> impactForceVec;
@@ -471,6 +472,8 @@ public:
     void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateSelfRightingTorque();
 
+    void CheckIfInCameraFrustum(const DirectX::BoundingFrustum& aFrustum);
+
     void DebugToggleAI();
     void DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -503,6 +506,7 @@ public:
     bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
     bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
     bool GetIsJumpReady() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpReady; };
+    bool GetIsInCameraFrustrum() const { return m_vehicleStruct00.vehicleData.isVehicleInCameraFrustum; };
     bool GetIsReadyToDelete() const { return m_vehicleStruct00.vehicleData.isReadyToDelete; };
     float GetMaxSteeringAngle() const { return m_vehicleStruct00.vehicleData.controlInput.steeringInputMax; };
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };

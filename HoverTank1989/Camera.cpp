@@ -45,8 +45,6 @@ Camera::~Camera()
 {
 	m_environment = nullptr;
 	delete m_environment;
-	//m_vehicleFocus = nullptr;
-	//delete m_vehicleFocus;
 }
 
 void Camera::CycleNpcFocus(const bool isCycleIncrease)
@@ -112,7 +110,7 @@ void Camera::InitializeOrthoganalMatrix()
 
 void Camera::InitializeProjectionMatrix()
 {
-	m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XM_PI / 4.f, static_cast<float>(m_clientWidth) / static_cast<float>(m_clientHeight), m_nearPlane, m_farPlane);
+	m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(m_fov, static_cast<float>(m_clientWidth) / static_cast<float>(m_clientHeight), m_nearPlane, m_farPlane);
 }
 
 void Camera::InintializePreSwingCamera(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees)
@@ -711,18 +709,27 @@ void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
 
 void Camera::UpdateBoundingFrustum()
 {
+	/*
 	const float clientWidth = 1600.0f;
 	const float clientHeight = 900.0f;
 	const float aspectRatio = clientWidth / clientHeight;
-	const float fov = DirectX::XM_PI / 5.f;
+	const float fov = DirectX::XM_PI / 6.f;
 	const float nearPlane = 1.0f;
-	const float farPlane = 100.0f;
+	const float farPlane = 1000.0f;
+	*/
+	const float clientWidth = m_clientWidth;
+	const float clientHeight = m_clientHeight;
+	const float aspectRatio = clientWidth / clientHeight;
+	const float fov = m_fov;
+	const float nearPlane = m_nearPlane;
+	const float farPlane = m_farPlane;
 
 	DirectX::SimpleMath::Matrix cameraWorld = DirectX::SimpleMath::Matrix::CreateWorld(m_position, m_target - m_position, m_up);
 	DirectX::SimpleMath::Matrix projectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
 	m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, projectionMat, true);
 	m_boundingFrustum.Transform(m_boundingFrustum, cameraWorld);
 
+	/*
 	DirectX::SimpleMath::Vector3 testPos = m_boundingFrustum.Origin;
 	DirectX::SimpleMath::Vector3 origin = m_boundingFrustum.Origin;
 	DirectX::XMFLOAT3 testCorners[8];
@@ -734,7 +741,6 @@ void Camera::UpdateBoundingFrustum()
 	for (i; i < 8; ++i)
 	{
 		testPos = testCorners[i];
-		//m_debugData->DebugPushTestLinePositionIndicator(testPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		m_debugData->DebugPushTestLineBetweenPoints(testPos, prevPos, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		m_debugData->DebugPushTestLineBetweenPoints(testPos, origin, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		prevPos = testPos;
@@ -742,93 +748,7 @@ void Camera::UpdateBoundingFrustum()
 
 	pCorners = nullptr;
 	delete pCorners;
-}
-
-void Camera::UpdateBoundingFrustum2()
-{
-	const float clientWidth = 1600.0f;
-	const float clientHeight = 900.0f;
-	const float aspectRatio = clientWidth / clientHeight;
-	const float fov = DirectX::XM_PI / 4.f;
-	const float nearPlane = 1.0f;
-	const float farPlane = 100.0f;
-	DirectX::SimpleMath::Vector3 testRight = DirectX::SimpleMath::Vector3::Zero;
-	testRight.x = m_right.x;
-	testRight.y = m_right.y;
-	testRight.z = m_right.z;
-	DirectX::SimpleMath::Vector3 testTarget = DirectX::SimpleMath::Vector3::UnitX;
-	DirectX::SimpleMath::Vector3 testPositon = DirectX::SimpleMath::Vector3::Zero;
-	DirectX::SimpleMath::Vector3 testUp = DirectX::SimpleMath::Vector3::UnitY;
-	DirectX::SimpleMath::Matrix testAlignent = m_vehicleFocus->GetAlignment();
-
-	testTarget = DirectX::SimpleMath::Vector3::Transform(testTarget, testAlignent);
-	testUp = DirectX::SimpleMath::Vector3::Transform(testUp, testAlignent);
-	//testPositon = DirectX::SimpleMath::Vector3::Transform(testPositon, testAlignent);
-
-	DirectX::SimpleMath::Vector3 weaponForward = m_vehicleFocus->GetWeaponDirection();
-	DirectX::SimpleMath::Vector3 weaponPositon = m_vehicleFocus->GetWeaponPos();
-	DirectX::SimpleMath::Vector3 weaponUp = DirectX::SimpleMath::Vector3::UnitY;
-	DirectX::SimpleMath::Vector3 weaponRight = weaponForward;
-	weaponRight = weaponRight.Cross(weaponUp);
-	weaponUp = weaponRight.Cross(weaponForward);
-
-	m_debugData->DebugPushTestLine(weaponPositon, weaponForward, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	m_debugData->DebugPushTestLine(weaponPositon, weaponUp, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	m_debugData->DebugPushTestLine(weaponPositon, weaponRight, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	DirectX::SimpleMath::Matrix weaponWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -weaponRight, weaponUp);
-	weaponWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, weaponForward, weaponUp);
-	//weaponWorld = DirectX::SimpleMath::Matrix::CreateWorld(weaponPositon, weaponForward, weaponUp);
-	DirectX::SimpleMath::Matrix weaponTrans = DirectX::SimpleMath::Matrix::CreateTranslation(weaponPositon);
-
-	DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(weaponWorld);
-	DirectX::SimpleMath::Quaternion transQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(weaponTrans);
-
-	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, farPlane, nearPlane);
-	DirectX::SimpleMath::Matrix testProjectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
-	//DirectX::SimpleMath::Matrix testProjectionMat = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane);
-	//m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, testProjectionMat);
-	m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, testProjectionMat, true);
-	//DirectX::SimpleMath::Matrix testViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(testPositon, testTarget, testUp);
-	DirectX::SimpleMath::Matrix testViewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, weaponForward, weaponUp);
-
-	DirectX::SimpleMath::Quaternion testOrientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(testViewMatrix);
-	//m_boundingFrustum.Orientation = testOrientationQuat;
-	//m_boundingFrustum.Transform(m_boundingFrustum, testViewMatrix);
-	//m_boundingFrustum.Transform(m_boundingFrustum, weaponWorld);
-
-	m_boundingFrustum.Transform(m_boundingFrustum, 1.0f, rotQuat, transQuat);
-
-	DirectX::SimpleMath::Vector3 testPos = m_boundingFrustum.Origin;
-	DirectX::SimpleMath::Vector3 origin = m_boundingFrustum.Origin;
-	DirectX::XMFLOAT3 testCorners[8];
-	DirectX::XMFLOAT3* pCorners;
-	pCorners = testCorners;
-	m_boundingFrustum.GetCorners(pCorners);
-	DirectX::SimpleMath::Vector3 prevPos = testPos;
-	unsigned int i = 0;
-	for (i; i < 8; ++i)
-	{
-		testPos = testCorners[i];
-		//m_debugData->DebugPushTestLinePositionIndicator(testPos, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-		m_debugData->DebugPushTestLineBetweenPoints(testPos, prevPos, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-		m_debugData->DebugPushTestLineBetweenPoints(testPos, origin, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-		m_debugData->DebugPushUILineDecimalNumber("Data = ", testPos.x, "");
-		prevPos = testPos;
-	}
-
-	pCorners = nullptr;
-	delete pCorners;
-
-	m_debugData->DebugPushTestLinePositionIndicator(DirectX::SimpleMath::Vector3::Zero, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-	DirectX::SimpleMath::Vector3 testTarget2 = m_target - m_position;
-	m_debugData->DebugPushTestLinePositionIndicator(testTarget2, 1.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-	DirectX::SimpleMath::Vector3 testTarget3 = m_target - m_position;
-	testTarget3 = testTarget3.Cross(m_up);
-	m_debugData->DebugPushTestLinePositionIndicator(testTarget3, 2.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-
+	*/
 }
 
 void Camera::UpdateCamera(DX::StepTimer const& aTimer)
@@ -1594,7 +1514,7 @@ void Camera::UpdateOrthoganalMatrix()
 
 void Camera::UpdateProjectionMatrix()
 {
-	m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XM_PI / 4.f, (float)m_clientWidth / (float)m_clientHeight, m_nearPlane, m_farPlane);
+	m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(m_fov, (float)m_clientWidth / (float)m_clientHeight, m_nearPlane, m_farPlane);
 }
 
 void Camera::UpdateViewMatrix()

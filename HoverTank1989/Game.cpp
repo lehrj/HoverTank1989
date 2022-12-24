@@ -500,7 +500,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
-        m_npcController->UpdateNPCController(aTimer.GetElapsedSeconds());
+        m_npcController->UpdateNPCController(m_camera->GetCameraFrustum() , aTimer.GetElapsedSeconds());
 
         auto context = m_deviceResources->GetD3DDeviceContext();
         m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());

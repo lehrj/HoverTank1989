@@ -971,6 +971,18 @@ void NPCVehicle::DrawNPC3(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix, aView, aProj, DirectX::Colors::Black);
 }
 
+void NPCVehicle::CheckIfInCameraFrustum(const DirectX::BoundingFrustum& aFrustum)
+{
+    if (aFrustum.Contains(m_vehicleStruct00.vehicleData.collisionBox) == true || aFrustum.Intersects(m_vehicleStruct00.vehicleData.collisionBox) == true)
+    {
+        m_vehicleStruct00.vehicleData.isVehicleInCameraFrustum = true;
+    }
+    else
+    {
+        m_vehicleStruct00.vehicleData.isVehicleInCameraFrustum = false;
+    }
+}
+
 bool NPCVehicle::CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos)
 {
     DirectX::BoundingOrientedBox updatedCollision = m_vehicleStruct00.vehicleData.collisionBox;
@@ -2865,16 +2877,13 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 preThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
   
-    /*
+    
     bool isVehicleInPlayUpdate = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
     if (isVehicleInPlayUpdate == false)
     {
         // to do: add error handling if out of play
     }
-    */
-    m_vehicleStruct00.vehicleData.terrainNormal = DirectX::SimpleMath::Vector3::UnitY;
-    m_vehicleStruct00.vehicleData.terrainHightAtPos = 0.0f;
-
+    
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
 
     m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
@@ -2894,7 +2903,10 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignment();
-    UpdateNPCModel(aTimeDelta);
+    if (m_vehicleStruct00.vehicleData.isVehicleInCameraFrustum == true)
+    {
+        UpdateNPCModel(aTimeDelta);
+    }
     UpdateHardPoints();
 
     if (m_vehicleStruct00.vehicleData.q.position.y > 1300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)

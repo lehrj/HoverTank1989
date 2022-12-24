@@ -201,7 +201,7 @@ void NPCController::DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const Dir
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-        if (m_npcVec[i]->GetIsDead() == false && m_npcVec[i]->GetIsActivated() == true)
+        if (m_npcVec[i]->GetIsDead() == false && m_npcVec[i]->GetIsActivated() == true && m_npcVec[i]->GetIsInCameraFrustrum() == true)
         {
             m_npcVec[i]->DrawNPC3(aView, aProj, aEffect, aInputLayout);
         }
@@ -292,7 +292,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float high = 5.0f;
     const float zPosOffSet = 12.0f;
     float baseHeight = 10.0f;
-    const int rows = 1;
+    const int rows = 5;
     const int columns = 8;
     for (int i = 0; i < columns; ++i)
     {
@@ -390,12 +390,12 @@ void NPCController::UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
     }
 }
 
-void NPCController::UpdateNPCController(const double aTimeDelta)
+void NPCController::UpdateNPCController(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta)
 {
-    UpdateNPCs(aTimeDelta);
+    UpdateNPCs(aFrustum, aTimeDelta);
 }
 
-void NPCController::UpdateNPCs(const double aTimeDelta)
+void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta)
 {
     m_testTimer += static_cast<float>(aTimeDelta);
 
@@ -403,6 +403,7 @@ void NPCController::UpdateNPCs(const double aTimeDelta)
 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
+        m_npcVec[i]->CheckIfInCameraFrustum(aFrustum);
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
 
