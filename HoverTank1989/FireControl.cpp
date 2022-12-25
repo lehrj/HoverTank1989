@@ -857,7 +857,7 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     else if (m_currentAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
     {
         recoilImpulseForce.currentTime = 0.0f;
-        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.totalTime = 0.2f;
         recoilImpulseForce.currentMagnitude = 0.0f;
         recoilImpulseForce.maxMagnitude = 50000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
@@ -869,7 +869,7 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 0.1f;
         recoilImpulseForce.currentMagnitude = 0.0f;
-        recoilImpulseForce.maxMagnitude = 50000.0f;
+        recoilImpulseForce.maxMagnitude = 10000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
         recoilImpulseForce.isActive = true;
@@ -877,7 +877,7 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
     {
         recoilImpulseForce.currentTime = 0.0f;
-        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.totalTime = 0.25f;
         recoilImpulseForce.currentMagnitude = 0.0f;
         recoilImpulseForce.maxMagnitude = 50000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
@@ -912,8 +912,6 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
-    aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
-    aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
@@ -930,8 +928,6 @@ void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
-    aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
-    aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
@@ -948,8 +944,6 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.14f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
-    aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
-    aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
@@ -966,8 +960,6 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.2f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
-    aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
-    aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
@@ -984,8 +976,6 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
-    aAmmo.ammoData.collisionSphere.Radius = aAmmo.ammoData.radius;
-    aAmmo.ammoData.collisionSphere.Center = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData)

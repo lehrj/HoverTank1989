@@ -50,8 +50,6 @@ struct AmmoData
     float   frontSurfaceArea;
     float   radius;
     int tickDownCounter;  // value to tick down as collisions occure, to be used for penetration and ricochet 
-
-    DirectX::BoundingSphere collisionSphere;
 };
 
 struct AmmoStruct
