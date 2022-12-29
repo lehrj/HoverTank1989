@@ -593,7 +593,62 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
 
 void FireControl::FireDefaultProjectile(const AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
+    if (m_isCoolDownActive == false)
+    {
+        ProjectileData firedProjectile;
+        AmmoData firedAmmo;
+        if (aAmmoType == AmmoType::AMMOTYPE_CANNON)
+        {
+            firedAmmo = m_ammoCannon.ammoData;
+            firedProjectile.isMidAirDeployAvailable = false;
+        }
+        else if (aAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+        {
+            firedAmmo = m_ammoExplosive.ammoData;
+            firedProjectile.isMidAirDeployAvailable = false;
+        }
+        else if (aAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
+        {
+            firedAmmo = m_ammoExplosive.ammoData;
+            firedProjectile.isMidAirDeployAvailable = false;
+        }
+        else if (aAmmoType == AmmoType::AMMOTYPE_MIRV)
+        {
+            firedAmmo = m_ammoExplosive.ammoData;
+            firedProjectile.isMidAirDeployAvailable = true;
+        }
+        else if (aAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
+        {
+            firedAmmo = m_ammoExplosive.ammoData;
+            firedProjectile.isMidAirDeployAvailable = false;     
+        }
+        else
+        {
+            // ToDo - add error handling, ammo type missing
+            firedAmmo = m_ammoCannon.ammoData;
+            firedProjectile.isMidAirDeployAvailable = false;
+        }
 
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
+        
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (m_ammoExplosive.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+
+        // collision data
+        firedProjectile.collisionData.collisionModifier = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+
+        firedProjectile.time = 0.0f;
+
+        m_projectileVec.push_back(firedProjectile);
+    }
 }
 
 void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
