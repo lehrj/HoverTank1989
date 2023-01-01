@@ -1196,9 +1196,9 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
-    aAmmo.ammoData.launchVelocity = 145.0f;
+    aAmmo.ammoData.launchVelocity = 125.0f;
     aAmmo.ammoData.length = 0.4f;
-    aAmmo.ammoData.mass = 45.0f;
+    aAmmo.ammoData.mass = 10.0f;
     aAmmo.ammoData.radius = 0.14f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
@@ -1212,7 +1212,7 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
-    aAmmo.ammoData.launchVelocity = 55.0f;
+    aAmmo.ammoData.launchVelocity = 65.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
     aAmmo.ammoData.radius = 0.2f;
@@ -1228,9 +1228,9 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 4.0f;
-    aAmmo.ammoData.launchVelocity = 135.0f;
+    aAmmo.ammoData.launchVelocity = 125.0f;
     aAmmo.ammoData.length = 1.0f;
-    aAmmo.ammoData.mass = 45.0f;
+    aAmmo.ammoData.mass = 25.0f;
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
@@ -1287,7 +1287,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_explosionStruct.explosionToPushVec.clear();
     m_projectileVec.clear();
     m_environment = aEnvironment;
-    m_currentAmmoType = AmmoType::AMMOTYPE_SHOTGUN;
+    m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
 
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
