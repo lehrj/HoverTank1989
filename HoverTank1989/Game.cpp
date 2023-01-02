@@ -497,6 +497,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     {
         m_debugData->DebugClearUI();
         m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
+
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
@@ -869,11 +870,12 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
-    if (kb.Decimal)
+    if (m_kbStateTracker.pressed.Decimal)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            m_vehicle->CycleFireControlAmmo();
+            SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
         }
     }
     if (m_kbStateTracker.pressed.R)
@@ -925,14 +927,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
+
         }
     }
     if (kb.OemComma)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
+
         }
     }
     if (kb.Z)

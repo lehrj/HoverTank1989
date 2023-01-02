@@ -1698,9 +1698,13 @@ void Vehicle::FireWeapon()
 {
     if (m_fireControl->GetIsCoolDownActive() == false)
     {
-        DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
+        //DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
+        //DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
+
+        DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
+        DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDir();
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
-        DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
+
         m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
         m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
     }
