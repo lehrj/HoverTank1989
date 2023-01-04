@@ -286,7 +286,7 @@ void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Mic
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
     const float xOrgVal = 70.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0, -40.0f);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 0.1f;
     const float high = 5.0f;
@@ -318,7 +318,44 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 }
 
-void NPCController::LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const float aAltitude, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing)
+void NPCController::LoadNPCsTestFireRange(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
+{
+    const float xOrgVal = 70.0f;
+    const float yOrgVal = 11.0f;
+    const float zOrgVal = -240.0f;
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, yOrgVal, zOrgVal);
+    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
+    const float low = 0.1f;
+    const float high = 5.0f;
+    const float zPosSpacing = 62.0f;
+    float baseHeight = 10.0f;
+    const int rows = 1;
+    const int columns = 8;
+    for (int i = 0; i < columns; ++i)
+    {
+        for (int j = 0; j < rows; ++j)
+        {
+            float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+            pos.y = baseHeight + yOffSet;
+            this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+            pos.x += 25.0f;
+        }
+   
+        pos.x = xOrgVal;
+        pos.z += zPosSpacing;
+    }
+
+    const float xLine = 85.0f;
+    const float yLine = 10.0f;
+    const float zSpacing = 90.0f;
+    // target 1
+    pos.x = xLine;
+    pos.y = yLine;
+    pos.z = -300.0f;
+    //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+}
+
+void NPCController::LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing)
 {
     DirectX::SimpleMath::Vector3 pos = aLoadPosition;
     DirectX::SimpleMath::Vector3 heading = aOrientation;

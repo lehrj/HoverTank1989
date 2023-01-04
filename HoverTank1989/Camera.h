@@ -179,7 +179,7 @@ private:
 
     DirectX::BoundingFrustum        m_boundingFrustum;
 
-    const float                     m_posTravelSpeed = 40.0f;
+    const float                     m_posTravelSpeed = 140.0f;
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 

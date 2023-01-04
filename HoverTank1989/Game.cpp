@@ -120,7 +120,9 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->SetDebugData(m_debugData);
     m_vehicle->PassFireControl(m_fireControl);
 
-    m_npcController->LoadNPCs(context, m_npcController);
+    //m_npcController->LoadNPCs(context, m_npcController);
+    m_npcController->LoadNPCsTestFireRange(context, m_npcController);
+
 
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_BLANK, m_texture, m_normalMap, m_specular);
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST1, m_textureMetalTest1, m_normalMapMetalTest1, m_specularMetalTest1);
@@ -1062,21 +1064,19 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_isDisplayEndScreenTrue = true;
         }
     }
-    if (m_kbStateTracker.pressed.D0)
+    if (m_kbStateTracker.pressed.D1)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            const float altitude = 50.0f;
-            const unsigned int columnCount = 2;
-            const unsigned int rowCount = 5;
-            const float columSpaceing = 10.0f;
-            const float rowSpacing = 20.0f;
-            const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(90.0f, 50.0f, -40.0f);
+            const unsigned int columnCount = 5;
+            const unsigned int rowCount = 2;
+            const float columSpaceing = 20.0f;
+            const float rowSpacing = 25.0f;
+            const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(-90.0f, 10.0f, -40.0f);
             const DirectX::SimpleMath::Vector3 orientation = DirectX::SimpleMath::Vector3::UnitX;
 
             auto context = m_deviceResources->GetD3DDeviceContext();
-            //m_npcController->AirDropNPCs(context, m_npcController, dropPosition, orientation, altitude, columnCount, rowCount, columSpaceing, rowSpacing);
-            m_npcController->LoadToQueue(dropPosition, orientation, altitude, columnCount, rowCount, columSpaceing, rowSpacing);
+            m_npcController->LoadToQueue(dropPosition, orientation,  columnCount, rowCount, columSpaceing, rowSpacing);
         }
     }
 
