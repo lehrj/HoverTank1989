@@ -1175,7 +1175,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
 void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_EXPLOSIVE;
-    aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.baseDamage = 1.5f;
     aAmmo.ammoData.cooldown = 1.7f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
@@ -1193,7 +1193,7 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MACHINEGUN;
     aAmmo.ammoData.baseDamage = 0.5f;
     aAmmo.ammoData.cooldown = 0.09f;
-    aAmmo.ammoData.dragCoefficient = 0.3f;
+    aAmmo.ammoData.dragCoefficient = 0.25f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 125.0f;
@@ -1223,7 +1223,7 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
 void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_SHOTGUN;
-    aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.baseDamage = 0.75f;
     aAmmo.ammoData.cooldown = 1.3f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
