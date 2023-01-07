@@ -3373,6 +3373,10 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane;
     bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, m_vehicleStruct00.vehicleData.q.position);
+    if (isPlaneFound == false)
+    {
+        // todo: add error handling
+    }
 
     DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;

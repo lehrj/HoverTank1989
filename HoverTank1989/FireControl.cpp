@@ -404,7 +404,7 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
 
 void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta)
 {
-    aMuzzleFlash.flashTimer += aTimeDelta;
+    aMuzzleFlash.flashTimer += static_cast<float>(aTimeDelta);
     if (aMuzzleFlash.flashTimer >= aMuzzleFlash.flashDuration)
     {
         aMuzzleFlash.isFlashActive = false;

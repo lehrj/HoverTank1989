@@ -420,7 +420,7 @@ void NPCController::UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
 {
     if (m_loadQueue.size() > 0)
     {
-        const unsigned int i = m_loadQueue.size() - 1;
+        const unsigned int i = static_cast<unsigned int>(m_loadQueue.size() - 1);
         m_loadQueue[i].deployOrientation;
         this->AddNPC(aContext, m_loadQueue[i].deployType, m_loadQueue[i].deployOrientation, m_loadQueue[i].deployPosition, aNpcController);
         m_loadQueue.pop_back();
