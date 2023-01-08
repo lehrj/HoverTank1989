@@ -136,6 +136,12 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     {
         inverseShadowScale = aAltitude / maxShadowRange;
         shadowScale = 1.0f - inverseShadowScale;
+
+        const float tol = 0.00001f;
+        if (inverseShadowScale < tol)
+        {
+            inverseShadowScale = tol;
+        }
     }
     DirectX::SimpleMath::Matrix shadowScaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(shadowScale, shadowScale, shadowScale));
 
