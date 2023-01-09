@@ -717,8 +717,8 @@ void Camera::UpdateBoundingFrustum()
 	const float nearPlane = 1.0f;
 	const float farPlane = 1000.0f;
 	*/
-	const float clientWidth = m_clientWidth;
-	const float clientHeight = m_clientHeight;
+	const float clientWidth = static_cast<float>(m_clientWidth);
+	const float clientHeight = static_cast<float>(m_clientHeight);
 	const float aspectRatio = clientWidth / clientHeight;
 	const float fov = m_fov;
 	const float nearPlane = m_nearPlane;

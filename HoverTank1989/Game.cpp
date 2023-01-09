@@ -1074,8 +1074,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const float rowSpacing = 25.0f;
             const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(-90.0f, 10.0f, -40.0f);
             const DirectX::SimpleMath::Vector3 orientation = DirectX::SimpleMath::Vector3::UnitX;
-
-            auto context = m_deviceResources->GetD3DDeviceContext();
             m_npcController->LoadToQueue(dropPosition, orientation,  columnCount, rowCount, columSpaceing, rowSpacing);
         }
     }
