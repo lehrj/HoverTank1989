@@ -1102,69 +1102,67 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         m_buttons.Update(pad);
 
+        float rightX = pad.thumbSticks.rightX;
+        m_debugData->DebugPushUILineDecimalNumber("rightX    = ", rightX, "");
+
+        float rightXmod = pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal;
+        m_debugData->DebugPushUILineDecimalNumber("rightXmod = ", rightXmod, "");
+
         if (pad.IsViewPressed())
         {
             ExitGame();
         }
         if (pad.IsLeftThumbStickLeft() == true)
         {
-            //m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
-            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
-            const float inputMod = 0.2f;
-            m_vehicle->InputGamePadTurn(pad.thumbSticks.leftX * inputMod);
+            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
         }
         if (pad.IsLeftThumbStickRight() == true)
         {
-            const float inputMod = 0.2f;
-            //m_vehicle->InputCyclicRoll(-pad.thumbSticks.leftX);
-            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
-            m_vehicle->InputGamePadTurn(pad.thumbSticks.leftX * inputMod);
+            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
         }
         if (pad.IsLeftThumbStickUp() == true)
         {
-            //m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
-            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY);
+            const float inputMod = m_gamePadInputRateBodyAccel;
+            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
         }
         if (pad.IsLeftThumbStickDown() == true)
         {
-            //m_vehicle->InputCyclicPitch(pad.thumbSticks.leftY);
-            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY);
+            const float inputMod = m_gamePadInputRateBodyAccel;
+            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
         }
         if (pad.IsRightThumbStickLeft() == true)
         {
-            const float inputMod = 0.05f;
-            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
-            const float inputMod2 = 0.3f;
-            //m_vehicle->InputGamePadTurn(pad.thumbSticks.rightX * inputMod2);
+            const float inputMod = m_gamePadInputRateTurretHorizontal;
+            //m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
+            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX);
         }
         if (pad.IsRightThumbStickRight() == true)
         {
-            const float inputMod = 0.05f;
-            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
-            const float inputMod2 = 0.3f;
-            //m_vehicle->InputGamePadTurn(pad.thumbSticks.rightX * inputMod2);
+            const float inputMod = m_gamePadInputRateTurretHorizontal;
+            //m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
+            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX);
         }
         if (pad.IsRightThumbStickUp() == true)
         {
-            const float inputMod = 0.05f;
+            const float inputMod = m_gamePadInputRateTurretVerticle;
             m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod);
         }
         if (pad.IsRightThumbStickDown() == true)
         {
-            const float inputMod = 0.05f;
+            const float inputMod = m_gamePadInputRateTurretVerticle;
             m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * inputMod);
         }
         if (pad.IsLeftTriggerPressed() == true)
         {
-            //m_vehicle->InputYawPedal(-pad.triggers.left * inputMod2);
         }
         if (pad.IsRightTriggerPressed() == true)
         {
-            //m_vehicle->InputYawPedal(pad.triggers.right * inputMod2);
         }
         if (pad.IsLeftTriggerPressed() == true || pad.IsRightTriggerPressed() == true)
         {
-            const float turnMod = 0.3f;
+            const float turnMod = m_gamePadInputRateBodyTurn;
             m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right) * turnMod);
         }
         if (pad.IsRightShoulderPressed() == true)
