@@ -709,14 +709,6 @@ void Camera::TranslateAtSpeed(DirectX::SimpleMath::Vector3 aTranslation)
 
 void Camera::UpdateBoundingFrustum()
 {
-	/*
-	const float clientWidth = 1600.0f;
-	const float clientHeight = 900.0f;
-	const float aspectRatio = clientWidth / clientHeight;
-	const float fov = DirectX::XM_PI / 6.f;
-	const float nearPlane = 1.0f;
-	const float farPlane = 1000.0f;
-	*/
 	const float clientWidth = static_cast<float>(m_clientWidth);
 	const float clientHeight = static_cast<float>(m_clientHeight);
 	const float aspectRatio = clientWidth / clientHeight;
@@ -728,27 +720,6 @@ void Camera::UpdateBoundingFrustum()
 	DirectX::SimpleMath::Matrix projectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
 	m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, projectionMat, true);
 	m_boundingFrustum.Transform(m_boundingFrustum, cameraWorld);
-
-	/*
-	DirectX::SimpleMath::Vector3 testPos = m_boundingFrustum.Origin;
-	DirectX::SimpleMath::Vector3 origin = m_boundingFrustum.Origin;
-	DirectX::XMFLOAT3 testCorners[8];
-	DirectX::XMFLOAT3* pCorners;
-	pCorners = testCorners;
-	m_boundingFrustum.GetCorners(pCorners);
-	DirectX::SimpleMath::Vector3 prevPos = testPos;
-	unsigned int i = 0;
-	for (i; i < 8; ++i)
-	{
-		testPos = testCorners[i];
-		m_debugData->DebugPushTestLineBetweenPoints(testPos, prevPos, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-		m_debugData->DebugPushTestLineBetweenPoints(testPos, origin, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-		prevPos = testPos;
-	}
-
-	pCorners = nullptr;
-	delete pCorners;
-	*/
 }
 
 void Camera::UpdateCamera(DX::StepTimer const& aTimer)

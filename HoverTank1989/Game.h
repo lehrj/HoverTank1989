@@ -397,4 +397,11 @@ private:
     float m_shapeScaleMod = 0.0f;
     float m_lightRotation = 0.0f;
     float m_shapeRotation = 0.0f;
+
+    const float m_gamePadInputRateTurretHorizontal = 0.02f;
+    const float m_gamePadInputRateTurretVerticle = 0.02f;
+    const float m_gamePadInputRateBodyTurn = 0.02f;
+    const float m_gamePadInputRateBodyAccel = 0.02f;
+    const float m_gamePadInputRateBodySideStrafe = 0.02f;
+
 };
