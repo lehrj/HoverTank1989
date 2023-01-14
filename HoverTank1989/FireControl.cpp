@@ -49,7 +49,7 @@ void FireControl::ActivateMuzzleFlash(AmmoType aAmmoType)
         m_muzzleFlash.flashTimer = 0.0f;
         m_muzzleFlash.isFlashActive = true;
         m_muzzleFlash.sizeMod = 0.0f;
-        m_muzzleFlash.flashDuration = 0.25f;
+        m_muzzleFlash.flashDuration = 0.35f;
         m_muzzleFlash.growthRate = 20.0f;
     }
 }
@@ -381,25 +381,78 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     const float flashDurationRatio = m_muzzleFlash.flashTimer / m_muzzleFlash.flashDuration;
     float coneSideAngle = atan((m_muzzleFlash.baseConeHeight / (m_muzzleFlash.baseConeDiameter * 0.5f)));
 
+    const float coneSideAngleDegrees = Utility::ToDegrees(coneSideAngle);
+    m_debugData->DebugPushUILineDecimalNumber("coneSideAngleDegrees = ", coneSideAngleDegrees, "");
+
     //float lightAngle = flashDurationRatio * (Utility::GetPi() * -0.5f) + Utility::ToRadians(90.0f);
     float lightAngle = flashDurationRatio * (Utility::GetPi() * -0.5f) + coneSideAngle;
+
+    const float lightAngleDegrees = Utility::ToDegrees(lightAngle);
+    m_debugData->DebugPushUILineDecimalNumber("lightAngleDegrees = ", lightAngleDegrees, "");
+
     //lightAngle -= coneSideAngle;
-    const float lightRotation = flashDurationRatio * 342.42f;
-    Utility::GetDispersedLightDirectionsRotation(weaponDir, lightAngle, lightRotation, lightDir0, lightDir1, lightDir2);
+    //const float lightRotation = flashDurationRatio * 342.42f;
+
+    const float low = 0.0f;
+    const float high = DirectX::XM_2PI;
+    //float lightRotation = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    float lightRotation = 0.0f;
+
+    //Utility::GetDispersedLightDirectionsRotation(weaponDir, lightAngle, lightRotation, lightDir0, lightDir1, lightDir2);
+
+    if (m_muzzleFlash.isFlickerTrue == true)
+    {
+        Utility::GetDispersedLightDirectionsRotation(weaponDir, lightAngle, lightRotation, lightDir0, lightDir1, lightDir2);
+    }
+    else
+    {
+        Utility::GetDispersedLightDirectionsRotation(-weaponDir, lightAngle, lightRotation, lightDir0, lightDir1, lightDir2);
+    }
+
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
     aEffect->SetLightDirection(2, lightDir2);
+
     /*
+    if (m_muzzleFlash.isFlickerTrue == true)
+    {
+        aEffect->SetLightDirection(0, lightDir0);
+        aEffect->SetLightDirection(1, lightDir1);
+        aEffect->SetLightDirection(2, lightDir2);
+    }
+    else
+    {
+        aEffect->SetLightDirection(0, -lightDir0);
+        aEffect->SetLightDirection(1, -lightDir1);
+        aEffect->SetLightDirection(2, -lightDir2);
+    }
+    */
+
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir0, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), weaponDir, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    */
+    
+    DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
+
     aEffect->SetWorld(m_muzzleFlash.worldTestMatrix);
-    aEffect->SetColorAndAlpha(m_muzzleFlash.currentColor);
+    //aEffect->SetColorAndAlpha(m_muzzleFlash.currentColor);
+    aEffect->SetColorAndAlpha(testColor);
     m_muzzleFlash.muzzleFlashConeShape2->Draw(aEffect.get(), aInputLayout.Get());
+
+
+    aEffect->SetLightDirection(0, -lightDir0);
+    aEffect->SetLightDirection(1, -lightDir1);
+    aEffect->SetLightDirection(2, -lightDir2);
+    /*
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), -lightDir0, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), -lightDir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), -lightDir2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), -weaponDir, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    */
+
     aEffect->SetWorld(m_muzzleFlash.worldMuzzleFlashConeMatrix);
-    m_muzzleFlash.muzzleFlashConeShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_muzzleFlash.muzzleFlashConeShape->Draw(aEffect.get(), aInputLayout.Get());
 }
 
 void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta)

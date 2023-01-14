@@ -331,6 +331,7 @@ private:
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
     void UpdateTerrainNorm();
     void UpdateTerrainNormTorque();
+    void UpdateTestDrivetrainTorque(const float aTimer);
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const*              m_environment;
@@ -364,5 +365,7 @@ private:
 
     Utility::ImpulseForce m_testImpulseForce;
     Utility::Torque m_testTerrainNormTorque;
+
+    Utility::Torque m_testDrivetrainTorque;
 };
 
