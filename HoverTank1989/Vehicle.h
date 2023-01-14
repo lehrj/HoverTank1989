@@ -10,7 +10,7 @@ class FireControl;
 struct ControlInput
 {
     // input control data
-    const float inputDeadZone = 0.001;  // small deadzone to ignore nominal control input
+    const float inputDeadZone = 0.001f;  // small deadzone to ignore nominal control input
 
     float       brakeInput = 0.0f;
     const float breakInputMax = 1.0f;

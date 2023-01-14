@@ -1097,7 +1097,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
 
     auto pad = m_gamePad->GetState(0);
-
+    
     if (pad.IsConnected())
     {
         m_buttons.Update(pad);
@@ -1112,6 +1112,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             ExitGame();
         }
+
+        /*
         if (pad.IsLeftThumbStickLeft() == true)
         {
             const float inputMod = m_gamePadInputRateBodySideStrafe;
@@ -1133,16 +1135,53 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
         }
         if (pad.IsRightThumbStickLeft() == true)
-        {
+        {           
             const float inputMod = m_gamePadInputRateTurretHorizontal;
             //m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
-            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX);
+            //m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX);
+
+            //m_vehicle->InputTurretYawGamePad(-pad.thumbSticks.rightX);
         }
+        */
+
+
+
+        if (pad.thumbSticks.leftY > m_gamePadInputDeadZone || pad.thumbSticks.leftY < -m_gamePadInputDeadZone)
+        {
+            const float inputMod = m_gamePadInputRateBodyAccel;
+            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY* inputMod);
+        }
+        if (pad.thumbSticks.leftX > m_gamePadInputDeadZone || pad.thumbSticks.leftX < -m_gamePadInputDeadZone)
+        {
+            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
+        }
+
+        if (pad.triggers.left > m_gamePadInputDeadZone || pad.triggers.right > m_gamePadInputDeadZone)
+        {
+            const float turnMod = m_gamePadInputRateBodyTurn;
+            m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right)* turnMod);
+        }
+
+        if (pad.thumbSticks.rightX > m_gamePadInputDeadZone || pad.thumbSticks.rightX < - m_gamePadInputDeadZone)
+        {
+            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal);
+        }
+        if (pad.thumbSticks.rightY > m_gamePadInputDeadZone || pad.thumbSticks.rightY < -m_gamePadInputDeadZone)
+        {
+            const float pitchMod = m_gamePadInputRateTurretVerticle;
+            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * pitchMod);
+        }
+
+
+        /*
         if (pad.IsRightThumbStickRight() == true)
         {
             const float inputMod = m_gamePadInputRateTurretHorizontal;
             //m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * inputMod);
-            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX);
+            //m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX);
+            
+            //m_vehicle->InputTurretYawGamePad(-pad.thumbSticks.rightX);
         }
         if (pad.IsRightThumbStickUp() == true)
         {
@@ -1165,6 +1204,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const float turnMod = m_gamePadInputRateBodyTurn;
             m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right) * turnMod);
         }
+        */
+
+
         if (pad.IsRightShoulderPressed() == true)
         {
             m_vehicle->FireWeapon();
