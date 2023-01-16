@@ -318,7 +318,8 @@ private:
     void UpdateAlignmentTorque();
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
-    Utility::Torque UpdateBodyTorqueRunge(const float aTimeStep);  
+    Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendTorque, const float aTimeStep);  
+    Utility::Torque UpdateBodyTorqueRunge2(const float aTimeStep);
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCyclicStick(ControlInput& aInput);
     float UpdateGroundEffectForce(const float aLiftForce);
@@ -332,6 +333,7 @@ private:
     void UpdateTerrainNorm();
     void UpdateTerrainNormTorque();
     void UpdateTestDrivetrainTorque(const float aTimer);
+    void UpdateTestDrivetrainTorque2(const float aTimer);
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const*              m_environment;
