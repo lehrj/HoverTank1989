@@ -62,13 +62,14 @@ private:
     void DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection);
     void UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation);
 
+    const DirectX::SimpleMath::Vector3 m_centerOfMassOffset = DirectX::SimpleMath::Vector3(0.0f, -0.5f, 0.0f);
     TankModel m_playerModel;
 
     std::shared_ptr<DebugData> m_debugData;
     Environment const* m_environment;
 
-    std::unique_ptr<DirectX::Model> m_testModel;
-    std::shared_ptr<DirectX::Model> m_testModel2;
-    std::unique_ptr<DirectX::Model> m_testModel3;
+    //std::unique_ptr<DirectX::Model> m_testModel;
+    //std::shared_ptr<DirectX::Model> m_testModel2;
+    //std::unique_ptr<DirectX::Model> m_testModel3;
 };
 

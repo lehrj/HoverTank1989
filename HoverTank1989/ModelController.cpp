@@ -24,9 +24,12 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.bodyModel = aBody;
     aModel.turretModel = aTurret;
     
+    DirectX::SimpleMath::Vector3 cogOffset = m_centerOfMassOffset;
+
     // body
     aModel.bodyLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.bodyLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
+    aModel.bodyLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
     aModel.bodyWorldMatrix = aModel.bodyLocalMatrix;
     aModel.bodyShadowLocalMatrix = aModel.bodyLocalMatrix;
     aModel.bodyShadowTranslationMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -37,6 +40,7 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
     aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
     DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0);
+    aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
     aModel.turretWorldMatrix = aModel.turretLocalMatrix;
 

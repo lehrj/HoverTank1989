@@ -443,6 +443,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.localMainRotorPos = DirectX::SimpleMath::Vector3(0.0f, -2.174999997f, 0.00000000f);
     m_heli.mainRotorPos = m_heli.localMainRotorPos;
     m_heli.localCenterOfMass = DirectX::SimpleMath::Vector3::Zero;
+    //m_heli.localCenterOfMass = DirectX::SimpleMath::Vector3(0.0, 0.5f, 0.0f);
     m_heli.centerOfMass = m_heli.localCenterOfMass;
     m_heli.localTailRotorPos = DirectX::SimpleMath::Vector3(-9.25000000, 0.00000000, 0.00000000);
     m_heli.tailRotorPos = m_heli.localTailRotorPos;
@@ -1878,7 +1879,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
             //LandVehicle();
             m_heli.isVehicleLanding = true;
             m_testTimer2 = m_testTimer;
-            m_testTimer = 0.0f;
+            //m_testTimer = 0.0f;
         }
         m_heli.isVehicleAirborne = false;
     }
@@ -1911,7 +1912,48 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
     UpdateResistance();
 
+    /*
+    m_debugData->DebugClearUI();
+    m_debugData->DebugPushTestLine(m_heli.q.position, m_heli.forward, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_heli.q.position, m_heli.up, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_heli.q.position, m_heli.right, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_heli.q.position, -m_heli.right, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_heli.q.position, -m_heli.forward, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    m_debugData->DebugPushTestLine(m_heli.centerOfMass, m_heli.forward, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_heli.centerOfMass, m_heli.up, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLine(m_heli.centerOfMass, m_heli.right, 7.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.position.x = ", m_heli.q.position.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.position.y = ", m_heli.q.position.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.position.z = ", m_heli.q.position.z, "");
+    m_debugData->DebugClearUI();
+    m_debugData->DebugPushTestLinePositionIndicator(m_heli.tailRotorPos, 8.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLinePositionIndicator(m_heli.mainRotorPos, 18.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    /*
+    m_debugData->DebugPushTestLinePositionIndicator(DirectX::SimpleMath::Vector3::Zero, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    m_debugData->DebugPushTestLinePositionIndicator(m_heli.q.position, 8.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_rotorTimerTest += static_cast<float>(aTimeDelta);
+
+    m_testTimer += static_cast<float>(aTimeDelta);
+    m_debugData->DebugPushUILineDecimalNumber("m_testTimer = ", m_testTimer, "");
+    DirectX::SimpleMath::Vector3 yawPitchRoll(0.0f, 0.0f, 0.0f);
+    //yawPitchRoll.x = Utility::ToRadians(m_testTimer);
+    yawPitchRoll.x = m_testTimer;
+    //m_heli.q.angularVelocity = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yawPitchRoll);
+
+    DirectX::SimpleMath::Matrix testRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_heli.q.angularVelocity);
+    //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocity);
+
+    m_heli.alignment = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(yawPitchRoll);
+
+    m_heli.up = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_heli.alignment);
+    m_heli.right = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ, m_heli.alignment);
+    m_heli.forward = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, m_heli.alignment);
+
+    m_heli.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
+    */
 
     UpdateAlignmentTorque();
     UpdateAlignmentCamera();
