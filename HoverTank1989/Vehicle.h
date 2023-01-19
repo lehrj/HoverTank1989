@@ -87,6 +87,9 @@ struct Motion
     Utility::Torque              pendulumTorqueForceTest;
 
     DirectX::SimpleMath::Vector3 parabolicMomentum;
+
+    DirectX::SimpleMath::Quaternion angularVelocity = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion angularPosition = DirectX::SimpleMath::Quaternion::Identity;
 };
 
 struct Rotor
@@ -320,8 +323,6 @@ private:
     void UpdateBladeLiftForce(const float aTimeStep);
 
     Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendTorque, const float aTimeStep);  
-    Utility::Torque UpdateBodyTorqueRunge2(const float aTimeStep);
-    Utility::Torque UpdateBodyTorqueRunge3(Utility::Torque aPendTorque, const float aTimeStep);
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCyclicStick(ControlInput& aInput);
