@@ -1231,6 +1231,7 @@ void Game::Render()
 
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
+    context->IASetInputLayout(m_inputLayout3.Get());
     m_batch3->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
@@ -1455,7 +1456,7 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType>(device, m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf()));
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(context);
 
-    DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType3>(device, m_effect3.get(), m_inputLayout.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType3>(device, m_effect3.get(), m_inputLayout3.ReleaseAndGetAddressOf()));
     m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(context);
 
     m_skyShape = GeometricPrimitive::CreateSphere(context, 200000.0f, 32, false);
@@ -1892,6 +1893,7 @@ void Game::OnDeviceLost()
 
     m_inputLayout.Reset();
     m_inputLayout2.Reset();
+    m_inputLayout3.Reset();
 
     m_font.reset();
     m_titleFont.reset();

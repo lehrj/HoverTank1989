@@ -173,6 +173,7 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout2;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout3;
 
     std::shared_ptr<DirectX::IEffect>               m_lightEffect;
 
