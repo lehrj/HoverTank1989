@@ -1727,6 +1727,15 @@ void Game::DrawDebugLinesVector()
         VertexPositionColor lineEnd(std::get<1>(lineTup[i]), lineColor);
         m_batch3->DrawLine(lineStart, lineEnd);
     }
+
+    std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32>> lineTupVec = m_debugData->GetDebugLinesVec();
+    for (unsigned int i = 0; i < lineTupVec.size(); ++i)
+    {
+        DirectX::XMVECTORF32 lineColor = std::get<2>(lineTupVec[i]);
+        VertexPositionColor lineStart(std::get<0>(lineTupVec[i]), lineColor);
+        VertexPositionColor lineEnd(std::get<1>(lineTupVec[i]), lineColor);
+        m_batch3->DrawLine(lineStart, lineEnd);
+    }
 }
 
 void Game::DrawSky()

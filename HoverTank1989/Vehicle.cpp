@@ -1748,8 +1748,6 @@ void Vehicle::UpdateTestDrivetrainTorque(const float aTimer)
    
     //m_debugData->DebugPushTestLine(m_heli.q.position, updatedCyclic, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
-
-
     //const float torqueMax = 25.0f * aTimer;
     const float torqueMax = 0.3f;
     Utility::Torque lateralTorque;
@@ -1774,7 +1772,6 @@ void Vehicle::UpdateTestDrivetrainTorque(const float aTimer)
     //m_debugData->DebugPushUILineDecimalNumber("torqueMax = ", torqueMax, "");
 
     //m_debugData->DebugPushTestLine(m_heli.q.position, m_testDrivetrainTorque.axis, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
 
     DirectX::SimpleMath::Vector3 centerMassPos = m_heli.centerOfMass;
     DirectX::SimpleMath::Vector3 rotorPos = m_heli.mainRotorPos;
@@ -1828,37 +1825,6 @@ void Vehicle::UpdateTestDrivetrainTorque(const float aTimer)
     //m_debugData->DebugPushUILineDecimalNumber("torqueSum.magnitude = -> ", torqueSum.magnitude, "");
     //torqueSum.axis = DirectX::SimpleMath::Vector3::TransformNormal(torqueSum.axis, m_heli.alignment);
     m_testDrivetrainTorque = torqueSum;
-}
-
-void Vehicle::UpdateTestDrivetrainTorque2(const float aTimer)
-{
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputPitch = ", m_heli.controlInput.cyclicInputPitch, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputRoll = ", m_heli.controlInput.cyclicInputRoll, "");
-
-    //const float torqueMax = 25.0f * aTimer;
-    const float torqueMax = 0.3f;
-    Utility::Torque lateralTorque;
-    lateralTorque.axis = DirectX::SimpleMath::Vector3::UnitX;
-    lateralTorque.axis = m_heli.forward;
-    lateralTorque.magnitude = -m_heli.controlInput.cyclicInputRoll * torqueMax;
-    Utility::Torque longitudinalTorque;
-    longitudinalTorque.axis = DirectX::SimpleMath::Vector3::UnitZ;
-    longitudinalTorque.axis = m_heli.right;
-    longitudinalTorque.magnitude = -m_heli.controlInput.cyclicInputPitch * torqueMax;
-
-    Utility::Torque torqueSum;
-
-    torqueSum.axis = (lateralTorque.axis * lateralTorque.magnitude) + (longitudinalTorque.axis * longitudinalTorque.magnitude);
-    torqueSum.axis.Normalize();
-    torqueSum.magnitude = lateralTorque.magnitude + longitudinalTorque.magnitude;
-
-    //torqueSum.axis = DirectX::SimpleMath::Vector3::TransformNormal(torqueSum.axis, m_heli.alignment);
-    m_testDrivetrainTorque = torqueSum;
-
-    m_debugData->DebugPushUILineDecimalNumber("m_testDrivetrainTorque.magnitude = ", m_testDrivetrainTorque.magnitude, "");
-    m_debugData->DebugPushUILineDecimalNumber("torqueMax = ", torqueMax, "");
-
-    m_debugData->DebugPushTestLine(m_heli.q.position, m_testDrivetrainTorque.axis, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void Vehicle::UpdateVehicle(const double aTimeDelta)

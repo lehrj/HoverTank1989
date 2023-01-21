@@ -22,12 +22,36 @@ void DebugData::DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, Direct
     }
 }
 
+void DebugData::PushDebugLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::XMVECTORF32 aColor)
+{
+    if (m_isDebugOn == true)
+    {
+        DirectX::SimpleMath::Vector3 scaledLineBase = aLineBase;
+        scaledLineBase.y += aYOffset;
+        DirectX::SimpleMath::Vector3 scaledLineEnd = aLineEnd;
+        scaledLineEnd.Normalize();
+        scaledLineEnd *= aLength;
+        scaledLineEnd += scaledLineBase;
+        std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32> lineTup(scaledLineBase, scaledLineEnd, aColor);
+        m_debugLinesVector.push_back(lineTup);
+    }
+}
+
 void DebugData::DebugPushTestLineBetweenPoints(DirectX::SimpleMath::Vector3 aPoint1, DirectX::SimpleMath::Vector3 aPoint2, DirectX::SimpleMath::Vector4 aColor)
 {
     if (m_isDebugOn == true)
     {
         std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector4> lineTup(aPoint1, aPoint2, aColor);
         m_debugLinesVec.push_back(lineTup);
+    }
+}
+
+void DebugData::PushTestDebugBetweenPoints(DirectX::SimpleMath::Vector3 aPoint1, DirectX::SimpleMath::Vector3 aPoint2, DirectX::XMVECTORF32 aColor)
+{
+    if (m_isDebugOn == true)
+    {
+        std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32> lineTup(aPoint1, aPoint2, aColor);
+        m_debugLinesVector.push_back(lineTup);
     }
 }
 
@@ -41,6 +65,19 @@ void DebugData::DebugPushTestLinePositionIndicator(const DirectX::SimpleMath::Ve
         DebugPushTestLine(aPoint, -DirectX::SimpleMath::Vector3::UnitX, aLineLength, aOffset, aColor);
         DebugPushTestLine(aPoint, -DirectX::SimpleMath::Vector3::UnitY, aLineLength, aOffset, aColor);
         DebugPushTestLine(aPoint, -DirectX::SimpleMath::Vector3::UnitZ, aLineLength, aOffset, aColor);
+    }
+}
+
+void DebugData::PushDebugLinePositionIndicator(const DirectX::SimpleMath::Vector3 aPoint, const float aLineLength, const float aOffset, const DirectX::XMVECTORF32 aColor)
+{
+    if (m_isDebugOn == true)
+    {
+        PushDebugLine(aPoint, DirectX::SimpleMath::Vector3::UnitX, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, DirectX::SimpleMath::Vector3::UnitY, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, DirectX::SimpleMath::Vector3::UnitZ, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -DirectX::SimpleMath::Vector3::UnitX, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -DirectX::SimpleMath::Vector3::UnitY, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -DirectX::SimpleMath::Vector3::UnitZ, aLineLength, aOffset, aColor);
     }
 }
 

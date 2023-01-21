@@ -337,7 +337,6 @@ private:
     void UpdateTerrainNorm();
     void UpdateTerrainNormTorque();
     void UpdateTestDrivetrainTorque(const float aTimer);
-    void UpdateTestDrivetrainTorque2(const float aTimer);
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const*              m_environment;
