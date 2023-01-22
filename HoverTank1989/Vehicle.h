@@ -34,6 +34,9 @@ struct ControlInput
     const float cyclicInputMin = -Utility::ToRadians(20.0f);
     const float cyclicInputRate = 0.1f;
 
+    DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 cyclicNormWorld = DirectX::SimpleMath::Vector3::UnitY;
+
     float       jetInput;
     const float jetInputDecayRate = 0.6f;
     bool        jetInputIsPressed;
@@ -171,6 +174,14 @@ struct HeliData
     DirectX::SimpleMath::Vector3 localTailRotorPos;
     DirectX::SimpleMath::Vector3 centerOfMass;
     DirectX::SimpleMath::Vector3 localCenterOfMass;
+
+    DirectX::SimpleMath::Vector3 physicsPointRear;
+    DirectX::SimpleMath::Vector3 localPhysicsPointRear;
+    DirectX::SimpleMath::Vector3 physicsPointRight;
+    DirectX::SimpleMath::Vector3 localPhysicsPointRight;
+
+
+
     DirectX::SimpleMath::Vector3 landingGearPos;
     DirectX::SimpleMath::Vector3 localLandingGearPos;
 
@@ -326,6 +337,7 @@ private:
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCyclicStick(ControlInput& aInput);
+    void UpdateCyclicNorm();
     float UpdateGroundEffectForce(const float aLiftForce);
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle);
