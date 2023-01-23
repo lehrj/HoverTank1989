@@ -1212,7 +1212,7 @@ void Game::Render()
         //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
-        DrawTestTrack();
+        //DrawTestTrack();
     }
 
 
@@ -1552,7 +1552,7 @@ void Game::DrawDebugDataUI()
     std::string textLine = "Timer  " + std::to_string(m_testTimer1);
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
-    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
 
     textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
