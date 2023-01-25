@@ -175,6 +175,10 @@ struct HeliData
     DirectX::SimpleMath::Vector3 centerOfMass;
     DirectX::SimpleMath::Vector3 localCenterOfMass;
 
+    DirectX::SimpleMath::Vector3 physicsPointFront;
+    DirectX::SimpleMath::Vector3 localPhysicsPointFront;
+    DirectX::SimpleMath::Vector3 physicsPointLeft;
+    DirectX::SimpleMath::Vector3 localPhysicsPointLeft;
     DirectX::SimpleMath::Vector3 physicsPointRear;
     DirectX::SimpleMath::Vector3 localPhysicsPointRear;
     DirectX::SimpleMath::Vector3 physicsPointRight;
@@ -350,6 +354,7 @@ private:
     void UpdateTerrainNormTorque();
     void UpdateTestDrivetrainTorque(const float aTimer);
     void UpdateTestDrivetrainTorque2(const float aTimer);
+    void UpdateTestDrivetrainTorque3(const float aTimer);
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const*              m_environment;

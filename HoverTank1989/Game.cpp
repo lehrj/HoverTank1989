@@ -989,13 +989,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->FireWeapon();
         }
     }
-    if (m_kbStateTracker.released.Q)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->DebugToggle();
-        }
-    }
     if (m_kbStateTracker.pressed.G)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1060,8 +1053,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_endScreenTimer = 0.0f;
-            m_isDisplayEndScreenTrue = true;
+            m_vehicle->DebugToggle();
+            //m_endScreenTimer = 0.0f;
+            //m_isDisplayEndScreenTrue = true;
         }
     }
     if (m_kbStateTracker.pressed.D1)
@@ -1553,7 +1547,7 @@ void Game::DrawDebugDataUI()
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
-    textLinePos.y += 30;
+    //textLinePos.y += 30;
 
     textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
