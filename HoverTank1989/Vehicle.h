@@ -167,6 +167,10 @@ struct HeliData
     const float mainRotorForceMagMin = 0.0f;
     DirectX::SimpleMath::Vector3 mainRotorPos;
     DirectX::SimpleMath::Vector3 localMainRotorPos;
+
+    DirectX::SimpleMath::Vector3 topPos;
+    DirectX::SimpleMath::Vector3 localTopPos;
+
     float       mainRotorRPM;
     const float mainRotorRPMmin = 0.0f;
     const float mainRotorRPMmax = 500.0f;
@@ -229,6 +233,9 @@ struct HeliData
 
     float   testAccel = 0.0;
     DirectX::SimpleMath::Vector3 testAccelVec = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Matrix inertiaMatrixTest;
+    DirectX::SimpleMath::Matrix inverseInertiaMatrixTest;
 
     ControlInput  controlInput;
     Rotor         mainRotor;
@@ -390,5 +397,7 @@ private:
     Utility::Torque m_testTerrainNormTorque;
 
     Utility::Torque m_testDrivetrainTorque;
+
+    Utility::Torque m_testGravForce;
 };
 
