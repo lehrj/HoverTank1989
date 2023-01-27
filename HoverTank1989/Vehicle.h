@@ -25,14 +25,14 @@ struct ControlInput
     const float collectiveInputRate = 0.5f;
 
     DirectX::SimpleMath::Vector3 cyclicStick;
-    const float cyclicDecayRate = 0.3f;
+    const float cyclicDecayRate = 10.3f;
     float       cyclicInputPitch;
     bool        cyclicInputPitchIsPressed;
     float       cyclicInputRoll;
     bool        cyclicInputRollIsPressed;
     const float cyclicInputMax = Utility::ToRadians(20.0f);
     const float cyclicInputMin = -Utility::ToRadians(20.0f);
-    const float cyclicInputRate = 0.1f;
+    const float cyclicInputRate = 10.1f;
 
     DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 cyclicNormWorld = DirectX::SimpleMath::Vector3::UnitY;
@@ -399,5 +399,19 @@ private:
     Utility::Torque m_testDrivetrainTorque;
 
     Utility::Torque m_testGravForce;
+
+    DirectX::SimpleMath::Vector3 m_sumOfForceTest = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_sumOfMomentsTest = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::Torque m_bodyTorqueTest;
+
+    bool m_isRungeOn = true;
+
+    DirectX::SimpleMath::Vector3 m_testLatTorqueArm = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_testLatTorqueForce = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 m_testLongTorqueArm = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_testLongTorqueForce = DirectX::SimpleMath::Vector3::Zero;
+
 };
 

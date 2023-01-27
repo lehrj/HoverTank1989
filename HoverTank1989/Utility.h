@@ -215,6 +215,17 @@ public:
         return torqueForce;
     }
     
+    static Torque GetTorqueForce2(const DirectX::SimpleMath::Vector3 aArm, const DirectX::SimpleMath::Vector3 aForce)
+    {
+        Torque torqueForce;
+        //torqueForce.axis = aArm.Cross(aForce);
+        torqueForce.axis = aForce.Cross(aArm);
+        torqueForce.axis.Normalize();
+        torqueForce.magnitude = aArm.Length() * aForce.Length() * sin(GetAngleBetweenVectors(aArm, aForce));
+
+        return torqueForce;
+    }
+
     static void GetDispersedLightDirections(const DirectX::SimpleMath::Vector3 aPrimeDirection, const float aOffsetAngle, DirectX::SimpleMath::Vector3& aDir1, DirectX::SimpleMath::Vector3& aDir2, DirectX::SimpleMath::Vector3& aDir3)
     {
         DirectX::SimpleMath::Vector3 rightVec;
