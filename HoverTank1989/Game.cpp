@@ -742,17 +742,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->UpdatePos(0.0f, 0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
-    if (kb.Q)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY && m_camera->GetCameraState() == CameraState::CAMERASTATE_FOLLOWVEHICLE || m_currentGameState == GameState::GAMESTATE_GAMEPLAYSTART)
-        {
-            m_vehicle->InputThrottle(static_cast<float>(-aTimer.GetElapsedSeconds()));
-        }
-        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
-        {
-            m_camera->UpdatePitchYaw(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()));
-        }
-    }
     if (kb.E)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY && m_camera->GetCameraState() == CameraState::CAMERASTATE_FOLLOWVEHICLE || m_currentGameState == GameState::GAMESTATE_GAMEPLAYSTART)
@@ -769,13 +758,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
         {
             m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
-        }
-    }
-    if (kb.C)
-    {
-        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
-        {
-            m_camera->UpdatePos(0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
         }
     }
     if (m_kbStateTracker.pressed.T)
@@ -939,18 +921,18 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
         }
     }
-    if (kb.Z)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->InputJet(static_cast<float>(aTimer.GetElapsedSeconds()));
-        }
-    }
     if (kb.X)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->DebugInputVelocityZero();
+        }
+    }
+    if (kb.C)
+    {
+        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+        {
+            m_vehicle->InputJet(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (m_kbStateTracker.pressed.N)
@@ -965,13 +947,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_camera->StartTrailerCamera();
-        }
-    }
-    if (m_kbStateTracker.pressed.P)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            TogglePause();
         }
     }
     if (m_kbStateTracker.pressed.L)
@@ -1056,6 +1031,27 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->DebugToggle();
             //m_endScreenTimer = 0.0f;
             //m_isDisplayEndScreenTrue = true;
+        }
+    }
+    if (m_kbStateTracker.pressed.Z)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle2();
+        }
+    }
+    if (m_kbStateTracker.pressed.P)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            TogglePause();
+        }
+    }
+    if (m_kbStateTracker.pressed.P)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            TogglePause();
         }
     }
     if (m_kbStateTracker.pressed.D1)
@@ -1548,6 +1544,32 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     //textLinePos.y += 30;
+
+    if (m_vehicle->GetIsDebugToggled() == true)
+    {
+        textLine = "DebugToggle = true";
+    }
+    else
+    {
+        textLine = "DebugToggle = false";
+    }
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
+
+    if (m_vehicle->GetIsDebugToggled2() == true)
+    {
+        textLine = "DebugToggle2 = true";
+    }
+    else
+    {
+        textLine = "DebugToggle2 = false";
+    }
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
 
     textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;

@@ -91,8 +91,11 @@ struct Motion
 
     DirectX::SimpleMath::Vector3 parabolicMomentum;
 
-    DirectX::SimpleMath::Quaternion angularVelocity = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion angularPosition = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion angularVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion angularPositionQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Matrix angularVelocityMat = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix angularPositionMat = DirectX::SimpleMath::Matrix::Identity;
 };
 
 struct Rotor
@@ -236,6 +239,15 @@ struct HeliData
 
     DirectX::SimpleMath::Matrix inertiaMatrixTest;
     DirectX::SimpleMath::Matrix inverseInertiaMatrixTest;
+    DirectX::SimpleMath::Matrix localInertiaMatrixTest;
+    DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest;
+
+    DirectX::SimpleMath::Quaternion inertiaMatrixTestQuat;
+    DirectX::SimpleMath::Quaternion inverseInertiaMatrixTestQuat;
+    DirectX::SimpleMath::Quaternion localInertiaMatrixTestQuat;
+    DirectX::SimpleMath::Quaternion localInverseInertiaMatrixTestQuat;
+
+    DirectX::SimpleMath::Quaternion alignmentQuat;
 
     ControlInput  controlInput;
     Rotor         mainRotor;
@@ -248,6 +260,7 @@ public:
     ~Vehicle();
     void CycleFireControlAmmo();
     void DebugToggle();
+    void DebugToggle2();
 
     void DebugInputVelocityZero();
     void DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
@@ -289,6 +302,9 @@ public:
     DirectX::SimpleMath::Vector3 GetWeaponLocalDirection() const { return m_heli.localWeaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalPos() const { return m_heli.localWeaponPos; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_heli.weaponPos; };
+
+    bool GetIsDebugToggled() const { return m_debugToggle; };
+    bool GetIsDebugToggled2() const { return m_debugToggle2; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController, std::shared_ptr<Vehicle> aVehicle);
 
@@ -386,6 +402,8 @@ private:
     float m_testTimer2 = 0.0f;
 
     bool m_debugToggle = false;
+    bool m_debugToggle2 = false;
+
     DirectX::SimpleMath::Vector3 m_testPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testPos2 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testPos3 = DirectX::SimpleMath::Vector3::Zero;
