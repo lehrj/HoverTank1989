@@ -51,10 +51,10 @@ struct ControlInput
 
     bool        yawPedalIsPressed;
     float       yawPedalInput;
-    const float yawPedalDecayRate = 0.2f;
+    const float yawPedalDecayRate = 10.2f;
     const float yawPedalInputMax = 1.0f;
     const float yawPedalInputMin = -1.0f;
-    const float yawPedalInputRate = 0.15f;
+    const float yawPedalInputRate = 10.15f;
 
     float weaponPitch;
     const float weaponPitchInputRate = 0.7f;
@@ -96,6 +96,9 @@ struct Motion
 
     DirectX::SimpleMath::Matrix angularVelocityMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix angularPositionMat = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct Rotor
@@ -230,6 +233,7 @@ struct HeliData
     DirectX::SimpleMath::Vector3 up;
     DirectX::SimpleMath::Vector3 right;
     DirectX::SimpleMath::Matrix alignment;
+    DirectX::SimpleMath::Matrix alignmentInverse;
     DirectX::SimpleMath::Matrix cameraOrientation;
     DirectX::SimpleMath::Matrix cameraOrientationPrevious;
     float   terrainHightAtPos;
@@ -261,6 +265,7 @@ public:
     void CycleFireControlAmmo();
     void DebugToggle();
     void DebugToggle2();
+    void DebugToggle3();
 
     void DebugInputVelocityZero();
     void DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
@@ -305,6 +310,7 @@ public:
 
     bool GetIsDebugToggled() const { return m_debugToggle; };
     bool GetIsDebugToggled2() const { return m_debugToggle2; };
+    bool GetIsDebugToggled3() const { return m_debugToggle3; };
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController, std::shared_ptr<Vehicle> aVehicle);
 
@@ -360,7 +366,9 @@ private:
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
 
-    Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendTorque, const float aTimeStep);  
+    //Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendTorque, const float aTimeStep);  
+    Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
+
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCyclicStick(ControlInput& aInput);
@@ -403,6 +411,7 @@ private:
 
     bool m_debugToggle = false;
     bool m_debugToggle2 = false;
+    bool m_debugToggle3 = false;
 
     DirectX::SimpleMath::Vector3 m_testPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testPos2 = DirectX::SimpleMath::Vector3::Zero;
@@ -415,6 +424,7 @@ private:
     Utility::Torque m_testTerrainNormTorque;
 
     Utility::Torque m_testDrivetrainTorque;
+    Utility::Torque m_testDrivetrainTorqueLocal;
 
     Utility::Torque m_testGravForce;
 
@@ -431,5 +441,12 @@ private:
     DirectX::SimpleMath::Vector3 m_testLongTorqueArm = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testLongTorqueForce = DirectX::SimpleMath::Vector3::Zero;
 
+    float m_testVal = 0.0f;
+    float m_testVal2 = 0.0f;
+    DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
+
+    const float m_testMass = 500.0f;
+    const float m_testForceMod1 = 100.1f;
+    const float m_testForceMod2 = 100.0f;
 };
 
