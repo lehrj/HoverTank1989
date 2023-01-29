@@ -382,13 +382,13 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     float coneSideAngle = atan((m_muzzleFlash.baseConeHeight / (m_muzzleFlash.baseConeDiameter * 0.5f)));
 
     const float coneSideAngleDegrees = Utility::ToDegrees(coneSideAngle);
-    m_debugData->DebugPushUILineDecimalNumber("coneSideAngleDegrees = ", coneSideAngleDegrees, "");
+    //m_debugData->DebugPushUILineDecimalNumber("coneSideAngleDegrees = ", coneSideAngleDegrees, "");
 
     //float lightAngle = flashDurationRatio * (Utility::GetPi() * -0.5f) + Utility::ToRadians(90.0f);
     float lightAngle = flashDurationRatio * (Utility::GetPi() * -0.5f) + coneSideAngle;
 
     const float lightAngleDegrees = Utility::ToDegrees(lightAngle);
-    m_debugData->DebugPushUILineDecimalNumber("lightAngleDegrees = ", lightAngleDegrees, "");
+    //m_debugData->DebugPushUILineDecimalNumber("lightAngleDegrees = ", lightAngleDegrees, "");
 
     //lightAngle -= coneSideAngle;
     //const float lightRotation = flashDurationRatio * 342.42f;
@@ -428,11 +428,13 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     }
     */
 
+    /*
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir0, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), weaponDir, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    
+    */
+
     DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
 
     aEffect->SetWorld(m_muzzleFlash.worldTestMatrix);
