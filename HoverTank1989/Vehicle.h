@@ -448,5 +448,9 @@ private:
     const float m_testMass = 500.0f;
     const float m_testForceMod1 = 100.1f;
     const float m_testForceMod2 = 100.0f;
+
+    const float m_inertiaModelX = 4.4f;
+    const float m_inertiaModelY = 1.0f;
+    const float m_inertiaModelZ = 3.0f;
 };
 

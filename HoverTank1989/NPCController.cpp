@@ -293,7 +293,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float zPosOffSet = 12.0f;
     float baseHeight = 10.0f;
     const int rows = 1;
-    const int columns = 8;
+    const int columns = 4;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -303,7 +303,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
             this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
             pos.x += 25.0f;
         }
-        baseHeight = 120.0f;
+        //baseHeight = 120.0f;
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
@@ -330,7 +330,7 @@ void NPCController::LoadNPCsTestFireRange(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     const float zPosSpacing = 62.0f;
     float baseHeight = 10.0f;
     const int rows = 1;
-    const int columns = 0;
+    const int columns = 4;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)

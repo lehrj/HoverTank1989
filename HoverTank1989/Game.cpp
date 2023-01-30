@@ -120,8 +120,8 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->SetDebugData(m_debugData);
     m_vehicle->PassFireControl(m_fireControl);
 
-    //m_npcController->LoadNPCs(context, m_npcController);
-    m_npcController->LoadNPCsTestFireRange(context, m_npcController);
+    m_npcController->LoadNPCs(context, m_npcController);
+    //m_npcController->LoadNPCsTestFireRange(context, m_npcController);
 
 
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_BLANK, m_texture, m_normalMap, m_specular);

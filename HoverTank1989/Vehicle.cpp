@@ -523,9 +523,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     float yExtent = 0.5f * 2.0f;
     float zExtent = 1.5f * 2.0f;
 
-    xExtent = 4.4f;
-    yExtent = 1.0f;
-    zExtent = 3.0f;
+    xExtent = m_inertiaModelX;
+    yExtent = m_inertiaModelY;
+    zExtent = m_inertiaModelZ;
 
     float mass = m_testMass;
     // cuboid
@@ -1593,7 +1593,7 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     gravityForce.Normalize();
     gravityForce = gravityForce * (4.8 * modVal);
     gravityForce = m_heli.gravity * (modVal) * m_testMass;
-    //gravityForce = m_heli.gravity * (modVal);
+
 
     Utility::Torque rotorTorque = Utility::GetTorqueForce(mainRotorTorqueArm, mainRotorForce);
     Utility::Torque tailTorque = Utility::GetTorqueForce(tailRotorTorqueArm, tailForce);

@@ -64,6 +64,8 @@ struct MotionNPC
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
     Utility::Torque              bodyTorqueForce;
+    DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
 };
 
 enum class NPCType
@@ -443,6 +445,9 @@ struct VehicleData
     DirectX::SimpleMath::Vector3 playerVelocity = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Matrix playerAlignment = DirectX::SimpleMath::Matrix::Identity;
     JumpData                     jumpData;
+
+    DirectX::SimpleMath::Matrix localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
 };
 
 struct VehicleStruct
@@ -580,7 +585,7 @@ private:
     void TerrainImpactHandling();
 
     void UpdateAlignment();
-    Utility::Torque UpdateBodyTorqueRunge();
+    Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
     void UpdateControlInput();
     void UpdateControlInputFromAi();
     void UpdateForceTorqueVecs();
