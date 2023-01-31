@@ -84,6 +84,62 @@ public:
         }
     }
 
+    static void AddForce(DirectX::SimpleMath::Vector3& aForceSum, const DirectX::SimpleMath::Vector3 aForceAdded)
+    {
+        const float tolMax = 1000000.0f;
+        const float tolMin = 0.00000001f;
+        const float forceLength = aForceAdded.Length();
+        if (forceLength > tolMin && forceLength < tolMax)
+        {
+            aForceSum += aForceAdded;
+        }
+        else
+        {
+            // add error checking
+            int errorBreak = 0;
+            errorBreak++;
+        }
+    }
+
+    static void AddTorqueToForceSum(DirectX::SimpleMath::Vector3& aForceSum, const Utility::Torque aTorque)
+    {
+        const float tolMax = 1000000.0f;
+        const float tolMin = 0.00000001f;
+        const float torqueAxisLength = aTorque.axis.Length();
+        if (torqueAxisLength > 0.9f && torqueAxisLength < 1.1f)
+        {
+            if (aTorque.magnitude > tolMin && aTorque.magnitude < tolMax)
+            {
+                aForceSum += aTorque.axis * aTorque.magnitude;
+            }
+        }
+        else
+        {
+            // add error checking
+            int errorBreak = 0;
+            errorBreak++;
+        }
+    }
+    
+    static DirectX::SimpleMath::Vector3 ProcessTorqueForce(const DirectX::SimpleMath::Vector3 aArmPos, const DirectX::SimpleMath::Vector3 aFulcrumPos, const DirectX::SimpleMath::Vector3 aForce)
+    {
+        DirectX::SimpleMath::Vector3 torqueArm = aArmPos - aFulcrumPos;
+
+        DirectX::SimpleMath::Vector3 forceVec = (aArmPos - aFulcrumPos).Cross(aForce);
+        forceVec.Normalize();
+        forceVec *= torqueArm.Length() * aForce.Length() * sin(GetAngleBetweenVectors(torqueArm, aForce));
+        //Torque torqueForce;
+        //torqueForce.axis = aArm.Cross(aForce);
+        //torqueForce.axis.Normalize();
+        //torqueForce.magnitude = aArm.Length() * aForce.Length() * sin(GetAngleBetweenVectors(aArm, aForce));
+        return forceVec;
+    }
+
+    static void ClearForceSum(DirectX::SimpleMath::Vector3& aForceSum)
+    {
+        aForceSum = DirectX::SimpleMath::Vector3::Zero;
+    }
+
     struct Waypoint
     {
         DirectX::SimpleMath::Vector3 waypointPos;

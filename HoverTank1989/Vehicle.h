@@ -246,10 +246,19 @@ struct HeliData
     DirectX::SimpleMath::Matrix localInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest;
 
+    DirectX::SimpleMath::Matrix cannonTensor = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localCannonTensor = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix inverseCannonTensor = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix toUseTensor = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Vector3 cannonPos = DirectX::SimpleMath::Vector3(3.0f, 1.0f, 0.0f);
+
     DirectX::SimpleMath::Quaternion inertiaMatrixTestQuat;
     DirectX::SimpleMath::Quaternion inverseInertiaMatrixTestQuat;
     DirectX::SimpleMath::Quaternion localInertiaMatrixTestQuat;
     DirectX::SimpleMath::Quaternion localInverseInertiaMatrixTestQuat;
+
+
 
     DirectX::SimpleMath::Quaternion alignmentQuat;
 
@@ -386,6 +395,7 @@ private:
     void UpdateTestDrivetrainTorque(const float aTimer);
     void UpdateTestDrivetrainTorque2(const float aTimer);
     void UpdateTestDrivetrainTorque3(const float aTimer);
+    void UpdateTensor();
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const*              m_environment;
