@@ -121,6 +121,22 @@ public:
         }
     }
     
+    static void TransformInertiaTensor(const DirectX::SimpleMath::Vector3& invD, const DirectX::SimpleMath::Matrix& M, DirectX::SimpleMath::Matrix& mIInv)
+    {
+        const float	axx = invD.x * M(0, 0), axy = invD.x * M(1, 0), axz = invD.x * M(2, 0);
+
+        const float	byx = invD.y * M(0, 1), byy = invD.y * M(1, 1), byz = invD.y * M(2, 1);
+        const float	czx = invD.z * M(0, 2), czy = invD.z * M(1, 2), czz = invD.z * M(2, 2);
+
+        mIInv(0, 0) = axx * M(0, 0) + byx * M(0, 1) + czx * M(0, 2);
+        mIInv(1, 1) = axy * M(1, 0) + byy * M(1, 1) + czy * M(1, 2);
+        mIInv(2, 2) = axz * M(2, 0) + byz * M(2, 1) + czz * M(2, 2);
+
+        mIInv(0, 1) = mIInv(1, 0) = axx * M(1, 0) + byx * M(1, 1) + czx * M(1, 2);
+        mIInv(0, 2) = mIInv(2, 0) = axx * M(2, 0) + byx * M(2, 1) + czx * M(2, 2);
+        mIInv(1, 2) = mIInv(2, 1) = axy * M(2, 0) + byy * M(2, 1) + czy * M(2, 2);
+    }
+
     static DirectX::SimpleMath::Vector3 ProcessTorqueForce(const DirectX::SimpleMath::Vector3 aArmPos, const DirectX::SimpleMath::Vector3 aFulcrumPos, const DirectX::SimpleMath::Vector3 aForce)
     {
         DirectX::SimpleMath::Vector3 torqueArm = aArmPos - aFulcrumPos;

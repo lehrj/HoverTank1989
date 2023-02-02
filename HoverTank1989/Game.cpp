@@ -928,6 +928,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->DebugInputVelocityZero();
         }
     }
+    if (kb.C)
+    {
+        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+        {
+            m_camera->UpdatePos(0.0f, 0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
+        }
+    }
     if (m_kbStateTracker.pressed.N)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1203,6 +1210,46 @@ void Game::Render()
         m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
         //DrawTestTrack();
+
+        
+        DirectX::SimpleMath::Vector3 pos = m_vehicle->GetPos();
+        //pos.y += 5.0f;
+        DirectX::SimpleMath::Matrix tensor = m_vehicle->GetTensorTest();
+        DirectX::SimpleMath::Vector3 scale;
+        DirectX::SimpleMath::Vector3 trans;
+        DirectX::SimpleMath::Quaternion rotQuat;
+        tensor.Decompose(scale, rotQuat, trans);
+
+        DirectX::SimpleMath::Matrix posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+        //posMat *= tensor;
+
+        DirectX::SimpleMath::Vector3 t = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 5.0f);
+
+        DirectX::SimpleMath::Matrix s = DirectX::SimpleMath::Matrix::Identity;
+
+        s.m[0][0] = 0.0f;
+        s.m[0][1] = t.z;
+        s.m[0][2] = -t.y;
+        s.m[1][0] = -t.z;
+        s.m[1][1] = 0.0f;
+        s.m[1][2] = t.x;
+        s.m[2][0] = t.y;
+        s.m[2][1] = -t.x;
+        //s.m[2][2] = 0.0f;
+        //s.m[3][3] = 0.0f;
+        DirectX::SimpleMath::Matrix testTensor = (s * s) * 1.0f;// *tensor;
+        //m_testShape3->Draw(testTensor, m_camera->GetViewMatrix(), m_proj);
+
+        DirectX::SimpleMath::Matrix translation = DirectX::SimpleMath::Matrix::CreateTranslation(t);
+        DirectX::SimpleMath::Quaternion testRotationQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicle->GetTurretYaw());
+        DirectX::SimpleMath::Matrix testTensor2;
+        testTensor2 *= translation;
+        testTensor2 *= DirectX::SimpleMath::Matrix::Transform(tensor, testRotationQuat);
+        
+        // 
+        //tensor *= translation;
+        testTensor2 = m_vehicle->GetTensorTest2();
+        //m_testShape3->Draw(testTensor2, m_camera->GetViewMatrix(), m_proj);
     }
 
 
@@ -1503,7 +1550,7 @@ void Game::CreateDeviceDependentResources()
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
-    m_testShape3 = DirectX::GeometricPrimitive::CreateCone(context, m_shape3Diameter, m_shape3Height, m_sideCount);
+    m_testShape3 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.

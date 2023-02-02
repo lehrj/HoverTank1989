@@ -37,6 +37,23 @@ void DebugData::PushDebugLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::S
     }
 }
 
+void DebugData::PushDebugLineScaled(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLengthMin, float aLengthMod,  float aYOffset, DirectX::XMVECTORF32 aColor)
+{
+    if (m_isDebugOn == true)
+    {
+        DirectX::SimpleMath::Vector3 scaledLineBase = aLineBase;
+        scaledLineBase.y += aYOffset;
+        DirectX::SimpleMath::Vector3 scaledLineEnd = aLineEnd;
+        scaledLineEnd.Normalize();
+        //scaledLineEnd *= aLengthMin;
+        //scaledLineEnd *= aLengthMod * aLineEnd.Length();
+        scaledLineEnd *= aLengthMin + (aLengthMod * aLineEnd.Length());
+        scaledLineEnd += scaledLineBase;
+        std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32> lineTup(scaledLineBase, scaledLineEnd, aColor);
+        m_debugLinesVector.push_back(lineTup);
+    }
+}
+
 void DebugData::DebugPushTestLineBetweenPoints(DirectX::SimpleMath::Vector3 aPoint1, DirectX::SimpleMath::Vector3 aPoint2, DirectX::SimpleMath::Vector4 aColor)
 {
     if (m_isDebugOn == true)

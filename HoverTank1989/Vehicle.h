@@ -25,14 +25,14 @@ struct ControlInput
     const float collectiveInputRate = 0.5f;
 
     DirectX::SimpleMath::Vector3 cyclicStick;
-    const float cyclicDecayRate = 10.3f;
+    const float cyclicDecayRate = 0.3f;
     float       cyclicInputPitch;
     bool        cyclicInputPitchIsPressed;
     float       cyclicInputRoll;
     bool        cyclicInputRollIsPressed;
     const float cyclicInputMax = Utility::ToRadians(20.0f);
     const float cyclicInputMin = -Utility::ToRadians(20.0f);
-    const float cyclicInputRate = 10.1f;
+    const float cyclicInputRate = 0.1f;
 
     DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 cyclicNormWorld = DirectX::SimpleMath::Vector3::UnitY;
@@ -176,6 +176,10 @@ struct HeliData
 
     DirectX::SimpleMath::Vector3 topPos;
     DirectX::SimpleMath::Vector3 localTopPos;
+    DirectX::SimpleMath::Vector3 topTestPos;
+    DirectX::SimpleMath::Vector3 localTopTestPos;
+    DirectX::SimpleMath::Vector3 baseTestPos;
+    DirectX::SimpleMath::Vector3 localBaseTestPos;
 
     float       mainRotorRPM;
     const float mainRotorRPMmin = 0.0f;
@@ -250,7 +254,7 @@ struct HeliData
     DirectX::SimpleMath::Matrix localCannonTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix inverseCannonTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix toUseTensor = DirectX::SimpleMath::Matrix::Identity;
-
+    DirectX::SimpleMath::Matrix testTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Vector3 cannonPos = DirectX::SimpleMath::Vector3(3.0f, 1.0f, 0.0f);
 
     DirectX::SimpleMath::Quaternion inertiaMatrixTestQuat;
@@ -311,6 +315,9 @@ public:
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_heli.muzzlePos; };
     DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_heli.localizedMuzzlePos; };
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
+
+    DirectX::SimpleMath::Matrix GetTensorTest() const { return m_heli.localInertiaMatrixTest; };
+    DirectX::SimpleMath::Matrix GetTensorTest2() const { return m_heli.testTensor; };
     float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
     DirectX::SimpleMath::Vector3 GetWeaponDirection() const { return m_heli.weaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalDirection() const { return m_heli.localWeaponDirection; };
@@ -360,8 +367,13 @@ public:
 private:
     DirectX::SimpleMath::Vector3 CalculateBuoyancyForce(const HeliData& aVehicleData);
     DirectX::SimpleMath::Vector3 CalculateHoverDriveForce(const struct HeliData& aHeli);
+
+    DirectX::SimpleMath::Vector3 CalculateHoverTorqueForce(const struct HeliData& aHeli, const float aTimeStep);
+
     float CalculateLiftCoefficient(const float aAngle);
     float CalculateWindVaningVal(const HeliData& aHeliData);
+
+    DirectX::SimpleMath::Vector3 GetThrusterLiftMagnitude(const DirectX::SimpleMath::Vector3 aLiftForce, const DirectX::SimpleMath::Vector3 aPos);
 
     void InitializeFlightControls(ControlInput& aInput);
     void InitializeRotorBlades(HeliData& aHeliData);
@@ -395,6 +407,7 @@ private:
     void UpdateTestDrivetrainTorque(const float aTimer);
     void UpdateTestDrivetrainTorque2(const float aTimer);
     void UpdateTestDrivetrainTorque3(const float aTimer);
+
     void UpdateTensor();
 
     std::shared_ptr<DebugData>      m_debugData;
@@ -458,9 +471,17 @@ private:
     const float m_testMass = 500.0f;
     const float m_testForceMod1 = 100.1f;
     const float m_testForceMod2 = 100.0f;
-
+    
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
+    
+    /*
+    const float m_inertiaModelX = 1.0f;
+    const float m_inertiaModelY = 1.0f;
+    const float m_inertiaModelZ = 1.0f;
+    */
+
+    DirectX::SimpleMath::Vector3 m_hoverTorqueForceSum = DirectX::SimpleMath::Vector3::Zero;
 };
 
