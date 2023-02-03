@@ -9,12 +9,77 @@ void ModelController::DrawModel(ID3D11DeviceContext* deviceContext, const Direct
 
 void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection)
 {
-    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
-    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
-    aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
+    aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
+    {
+        auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+        if (lights)
+        {
+            lights->EnableDefaultLighting();
+            lights->SetLightEnabled(0, true);
+            lights->SetLightEnabled(1, true);
+            lights->SetLightEnabled(2, true);
 
-    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelShadowMatrix, aView, aProjection);
+        }
+    });
+    aModel.bodyModel->Modified();
+    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
+
+    aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->EnableDefaultLighting();
+                lights->SetLightEnabled(0, true);
+                lights->SetLightEnabled(1, true);
+                lights->SetLightEnabled(2, true);
+
+            }
+        });
+    aModel.turretModel->Modified();
+    aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
+    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
+
+    aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
+    {
+        auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+        if (lights)
+        {
+            lights->SetLightEnabled(0, false);
+            lights->SetLightEnabled(1, false);
+            lights->SetLightEnabled(2, false);
+            lights->SetAmbientLightColor(DirectX::Colors::Black);
+        }
+    });
+    aModel.bodyModel->Modified();
+    aModel.barrelModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->SetLightEnabled(0, false);
+                lights->SetLightEnabled(1, false);
+                lights->SetLightEnabled(2, false);
+                lights->SetAmbientLightColor(DirectX::Colors::Black);
+            }
+        });
+    aModel.barrelModel->Modified();
+
+    aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->SetLightEnabled(0, false);
+                lights->SetLightEnabled(1, false);
+                lights->SetLightEnabled(2, false);
+                lights->SetAmbientLightColor(DirectX::Colors::Black);
+            }
+        });
+    aModel.turretModel->Modified();
+
     aModel.bodyModel->Draw(deviceContext, states, aModel.bodyShadowMatrix, aView, aProjection);
+    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelShadowMatrix, aView, aProjection);
     aModel.turretModel->Draw(deviceContext, states, aModel.turretShadowMatrix, aView, aProjection);
 }
 
@@ -25,7 +90,7 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.turretModel = aTurret;
     
     DirectX::SimpleMath::Vector3 cogOffset = m_centerOfMassOffset;
-
+    
     // body
     aModel.bodyLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.bodyLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
@@ -126,6 +191,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
     planeTrans = planeTrans.Transpose();
     groundPlane = DirectX::SimpleMath::Plane::Transform(groundPlane, planeTrans);
+    groundPlane.Normalize();
     DirectX::SimpleMath::Matrix shadowMat = DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
 
     const float maxShadowRange = m_environment->GetMaxShadowCastRange();

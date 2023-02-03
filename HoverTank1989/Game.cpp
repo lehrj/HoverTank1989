@@ -1199,7 +1199,7 @@ void Game::Render()
         //ilights->SetAmbientLightColor(Colors::Blue);
         //ilights->EnableDefaultLighting();
     }
-
+    
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj);
@@ -1211,7 +1211,7 @@ void Game::Render()
         DrawSky();
         //DrawTestTrack();
 
-        
+
         DirectX::SimpleMath::Vector3 pos = m_vehicle->GetPos();
         //pos.y += 5.0f;
         DirectX::SimpleMath::Matrix tensor = m_vehicle->GetTensorTest();
@@ -1245,7 +1245,7 @@ void Game::Render()
         DirectX::SimpleMath::Matrix testTensor2;
         testTensor2 *= translation;
         testTensor2 *= DirectX::SimpleMath::Matrix::Transform(tensor, testRotationQuat);
-        
+
         // 
         //tensor *= translation;
         testTensor2 = m_vehicle->GetTensorTest2();
