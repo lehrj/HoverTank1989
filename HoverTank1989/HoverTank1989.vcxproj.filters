@@ -168,6 +168,9 @@
     <Image Include="Art\Models\Cup\cup.jpg">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\HeightMaps\HeightmapRoughTerrain.bmp">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

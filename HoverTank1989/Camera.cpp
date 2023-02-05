@@ -719,6 +719,9 @@ void Camera::UpdateBoundingFrustum()
 	DirectX::SimpleMath::Matrix cameraWorld = DirectX::SimpleMath::Matrix::CreateWorld(m_position, m_target - m_position, m_up);
 	DirectX::SimpleMath::Matrix projectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
 	m_boundingFrustum.CreateFromMatrix(m_boundingFrustum, projectionMat, true);
+	m_boundingFrustum.TopSlope -= m_frustumPlanePaddingVertical;
+	m_boundingFrustum.RightSlope -= m_frustumPlanePaddingHorizontal;
+	m_boundingFrustum.LeftSlope += m_frustumPlanePaddingHorizontal;
 	m_boundingFrustum.Transform(m_boundingFrustum, cameraWorld);
 }
 

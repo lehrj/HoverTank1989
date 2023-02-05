@@ -444,7 +444,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_heli.q.mainRotorForceNormal = DirectX::SimpleMath::Vector3::UnitY;
     m_heli.q.mainRotorForceMagnitude = 15.0f;
-    m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
+    //m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
+    m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 20.8f, 0.0f);
 
     m_heli.q.tailRotorForceNormal = -m_heli.right;
     m_heli.q.tailRotorForceMagnitude = 0.0f;
@@ -1785,7 +1786,10 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     gravityForce = (DirectX::SimpleMath::Vector3::UnitY * gravVal) * modVal * m_testMass;
     DirectX::SimpleMath::Vector3 gravVectTest = DirectX::SimpleMath::Vector3::Zero;
 
-    
+    DirectX::SimpleMath::Vector3 terrainVec = m_testTerrainNormTorque.axis;
+    terrainVec.Normalize();
+    terrainVec *= m_testTerrainNormTorque.magnitude;
+
 
 
     //DirectX::SimpleMath::Vector3 gravityTorqueArm = rotorPos - centerMassPos;
@@ -1802,7 +1806,9 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
 
     DirectX::SimpleMath::Vector3 hoverForceVec = m_hoverTorqueForceSum;
 
-    DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
+    //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
+    //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec;
+    DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + weaponVec + terrainVec;
 
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + weaponVec + hoverForceVec;
     //DirectX::SimpleMath::Vector3 torqueVec = hoverForceVec;
@@ -2300,15 +2306,19 @@ void Vehicle::UpdateTerrainNormTorque()
     DirectX::SimpleMath::Vector3 slopeForceUpdate;
     Utility::Torque prevTorque = m_testTerrainNormTorque;
     Utility::Torque updateTorque;
+    //float forceMod = 0.00001f;
+    float forceMod = 0.01f;
+    const float mass = m_testMass;
+    m_debugData->PushDebugLinePositionIndicator(m_heli.topTestPos, 10.0f, 0.0f, DirectX::Colors::Red);
     if (m_heli.altitude > m_heli.groundNormalForceRange)
     {
         slopeForceUpdate = DirectX::SimpleMath::Vector3::Zero;
         const float forcePercentage = 1.0f;
         const DirectX::SimpleMath::Vector3 terrrainForce = DirectX::SimpleMath::Vector3::UnitY * (-m_heli.gravity.y);
-        slopeForceUpdate = (terrrainForce * forcePercentage) * m_heli.mass;
+        slopeForceUpdate = (terrrainForce * forcePercentage) * mass;
         DirectX::SimpleMath::Vector3 torqueArm = m_heli.centerOfMass - m_heli.mainRotorPos;
         updateTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
-        updateTorque.magnitude *= 0.00001f;
+        updateTorque.magnitude *= forceMod;
         updateTorque.axis = DirectX::SimpleMath::Vector3::Zero;
         updateTorque.magnitude = 0.0f;
     }
@@ -2316,10 +2326,10 @@ void Vehicle::UpdateTerrainNormTorque()
     {
         const float forcePercentage = 1.0f - (m_heli.altitude / m_heli.groundNormalForceRange);
         const DirectX::SimpleMath::Vector3 terrrainForce = m_heli.terrainNormal * (-m_heli.gravity.y);
-        slopeForceUpdate = (terrrainForce * forcePercentage) * m_heli.mass;
+        slopeForceUpdate = (terrrainForce * forcePercentage) * mass;
         DirectX::SimpleMath::Vector3 torqueArm = m_heli.centerOfMass - m_heli.mainRotorPos;
         updateTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
-        updateTorque.magnitude *= 0.00001f;
+        updateTorque.magnitude *= forceMod;
     }
     m_testTerrainNormTorque.axis = updateTorque.axis;
     m_testTerrainNormTorque.magnitude = updateTorque.magnitude;

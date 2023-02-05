@@ -178,6 +178,8 @@ private:
     DirectX::SimpleMath::Matrix     m_orthogonalMatrix;
 
     DirectX::BoundingFrustum        m_boundingFrustum;
+    const float                     m_frustumPlanePaddingVertical = Utility::ToRadians(15.0f);
+    const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
     const float                     m_posTravelSpeed = 40.0f;
     const float                     m_rotationTravelSpeed = 2.3f;
