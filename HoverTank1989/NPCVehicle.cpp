@@ -2528,7 +2528,9 @@ void NPCVehicle::UpdateAlignment()
 
         if (testAngVec != DirectX::SimpleMath::Vector3::Zero)
         {
-            DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_vehicleStruct00.vehicleData.q.angularVelocityVec, m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length());
+            DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angularVelocityVec;
+            axis.Normalize();
+            DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length());
             /////m_heli.alignment *= m_heli.q.angularVelocityMat;
             //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
             m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);

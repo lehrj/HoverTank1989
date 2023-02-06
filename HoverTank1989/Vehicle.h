@@ -262,10 +262,10 @@ struct HeliData
     DirectX::SimpleMath::Quaternion localInertiaMatrixTestQuat;
     DirectX::SimpleMath::Quaternion localInverseInertiaMatrixTestQuat;
 
-
-
     DirectX::SimpleMath::Quaternion alignmentQuat;
 
+    DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
     ControlInput  controlInput;
     Rotor         mainRotor;
     Rotor         tailRotor;
@@ -407,6 +407,8 @@ private:
     void UpdateTestDrivetrainTorque(const float aTimer);
     void UpdateTestDrivetrainTorque2(const float aTimer);
     void UpdateTestDrivetrainTorque3(const float aTimer);
+
+    void UpdateVehicleForces(const float aTimeStep);
 
     void UpdateTensor();
 
