@@ -91,12 +91,6 @@ struct Motion
 
     DirectX::SimpleMath::Vector3 parabolicMomentum;
 
-    DirectX::SimpleMath::Quaternion angularVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion angularPositionQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-    DirectX::SimpleMath::Matrix angularVelocityMat = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix angularPositionMat = DirectX::SimpleMath::Matrix::Identity;
-
     DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
 };
@@ -198,8 +192,6 @@ struct HeliData
     DirectX::SimpleMath::Vector3 physicsPointRight;
     DirectX::SimpleMath::Vector3 localPhysicsPointRight;
 
-
-
     DirectX::SimpleMath::Vector3 landingGearPos;
     DirectX::SimpleMath::Vector3 localLandingGearPos;
 
@@ -256,13 +248,6 @@ struct HeliData
     DirectX::SimpleMath::Matrix toUseTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix testTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Vector3 cannonPos = DirectX::SimpleMath::Vector3(3.0f, 1.0f, 0.0f);
-
-    DirectX::SimpleMath::Quaternion inertiaMatrixTestQuat;
-    DirectX::SimpleMath::Quaternion inverseInertiaMatrixTestQuat;
-    DirectX::SimpleMath::Quaternion localInertiaMatrixTestQuat;
-    DirectX::SimpleMath::Quaternion localInverseInertiaMatrixTestQuat;
-
-    DirectX::SimpleMath::Quaternion alignmentQuat;
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
@@ -348,7 +333,6 @@ public:
     void Jump();
 
     void PassFireControl(std::shared_ptr<FireControl>& aFireControl);
-  
 
     void ResetVehicle();
 
@@ -367,9 +351,7 @@ public:
 private:
     DirectX::SimpleMath::Vector3 CalculateBuoyancyForce(const HeliData& aVehicleData);
     DirectX::SimpleMath::Vector3 CalculateHoverDriveForce(const struct HeliData& aHeli);
-
     DirectX::SimpleMath::Vector3 CalculateHoverTorqueForce(const struct HeliData& aHeli, const float aTimeStep);
-
     float CalculateLiftCoefficient(const float aAngle);
     float CalculateWindVaningVal(const HeliData& aHeliData);
 
@@ -387,9 +369,7 @@ private:
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
 
-    //Utility::Torque UpdateBodyTorqueRunge(Utility::Torque aPendTorque, const float aTimeStep);  
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
-
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCyclicStick(ControlInput& aInput);
