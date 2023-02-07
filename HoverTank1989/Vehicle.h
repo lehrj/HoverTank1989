@@ -212,8 +212,10 @@ struct HeliData
     float   area;
     float   airResistance;
     float   airDensity;
+
     float   dragCoefficient;
-    const DirectX::SimpleMath::Vector3 gravity = DirectX::SimpleMath::Vector3(0.0f, -9.80665f, 0.0f);
+    DirectX::SimpleMath::Vector3 dimensions;
+    DirectX::SimpleMath::Vector3 gravity = DirectX::SimpleMath::Vector3(0.0f, -9.80665f, 0.0f);
     float   mainRotorMaxRPM;
     float   mass;
     float   massTest = 2000.0f;
@@ -251,6 +253,13 @@ struct HeliData
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::BoundingOrientedBox boundingBox;
+    DirectX::SimpleMath::Vector3 testPostImpactVelocity = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testCollisionVelocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    Utility::ImpulseForce testCollisionImpulseForce;
+    bool isVehicleCollisionTrue = false;
+
     ControlInput  controlInput;
     Rotor         mainRotor;
     Rotor         tailRotor;
@@ -272,7 +281,11 @@ public:
     float GetAccel() const { return m_heli.testAccel; };
     DirectX::SimpleMath::Vector3 GetAccelVec() const { return m_heli.testAccelVec; };
     float GetAirSpeed() { return m_heli.q.velocity.Length(); };
-    float GetAltitude() const { return m_heli.q.position.y - m_heli.terrainHightAtPos - 2.85f; };
+    //float GetAltitude() const { return m_heli.q.position.y - m_heli.terrainHightAtPos - 2.85f; };
+    float GetAltitude() const { return m_heli.q.position.y - m_heli.terrainHightAtPos; };
+
+    DirectX::BoundingOrientedBox GetBoundingBox() const { return m_heli.boundingBox; };
+    DirectX::SimpleMath::Vector3 GetCenterOfMassPos() const { return m_heli.centerOfMass; };
     float GetCollective() const { return m_heli.controlInput.collectiveInput; };
     DirectX::SimpleMath::Vector3 GetFollowPos() const;
     DirectX::SimpleMath::Vector3 GetForward() const { return m_heli.forward; };
@@ -284,6 +297,7 @@ public:
 
     DirectX::SimpleMath::Vector3 GetHoverLift(const DirectX::SimpleMath::Vector3 aLiftForce, const float aAltitude);
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
+    float GetMass() const { return m_heli.mass; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_heli.q.position; };
     float GetRPM() const { return m_heli.mainRotor.rpm; };
     DirectX::SimpleMath::Vector3 GetSlopeForce(const DirectX::SimpleMath::Vector3 aTerrainNorm, const float aAltitude, const float aGroundInteractionRange);
@@ -348,6 +362,11 @@ public:
     void TestFireShotgun();
     void FireWeapon();
 
+    void SetTestPostImppactVelocity(DirectX::SimpleMath::Vector3 aPostImpactVelocity);
+    void SetTestCollisionVelocityUpdate(DirectX::SimpleMath::Vector3 aCollisionVelocityUpdate);
+    void SetTestCollisionImpulseForce(Utility::ImpulseForce aCollisionImpulseForce);
+    void SetTestVehicleCollisionTrue() { m_heli.isVehicleCollisionTrue = true; };
+
 private:
     DirectX::SimpleMath::Vector3 CalculateBuoyancyForce(const HeliData& aVehicleData);
     DirectX::SimpleMath::Vector3 CalculateHoverDriveForce(const struct HeliData& aHeli);
@@ -355,6 +374,8 @@ private:
     float CalculateLiftCoefficient(const float aAngle);
     float CalculateWindVaningVal(const HeliData& aHeliData);
 
+    DirectX::SimpleMath::Vector3 CalculateImpactLinearForceSum(const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 CalculateImpactTorqueSum(const float aTimeDelta);
     DirectX::SimpleMath::Vector3 GetThrusterLiftMagnitude(const DirectX::SimpleMath::Vector3 aLiftForce, const DirectX::SimpleMath::Vector3 aPos);
 
     void InitializeFlightControls(ControlInput& aInput);
@@ -372,6 +393,7 @@ private:
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
 
     void UpdateBrakeForce(const float aTimeStep);
+    void UpdateCollisionImpulseForces(const float aTimeStep);
     void UpdateCyclicStick(ControlInput& aInput);
     void UpdateCyclicNorm();
     float UpdateGroundEffectForce(const float aLiftForce);

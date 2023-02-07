@@ -1270,6 +1270,24 @@ void Game::Render()
     m_effect3->Apply(context);
     context->IASetInputLayout(m_inputLayout3.Get());
     m_batch3->Begin();
+
+
+
+    DirectX::BoundingOrientedBox boBox = m_vehicle->GetBoundingBox();
+    const int cornerSize = 8;
+    DirectX::XMFLOAT3 testV1Corners[cornerSize];
+    DirectX::XMFLOAT3* pCorners1;
+    pCorners1 = testV1Corners;
+    boBox.GetCorners(pCorners1);
+
+    for (int i = 0; i < cornerSize - 1; ++i)
+    {
+        m_debugData->PushTestDebugBetweenPoints(pCorners1[i], pCorners1[i + 1], DirectX::Colors::Red);
+    }
+
+    pCorners1 = nullptr;
+    delete pCorners1;
+    
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         DrawDebugLinesVector();

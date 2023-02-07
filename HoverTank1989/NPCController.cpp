@@ -291,7 +291,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float low = 0.1f;
     const float high = 5.0f;
     const float zPosOffSet = 12.0f;
-    float baseHeight = 20.0f;
+    float baseHeight = 10.0f;
     const int rows = 1;
     const int columns = 4;
     for (int i = 0; i < columns; ++i)
@@ -455,6 +455,7 @@ void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const d
     }
 
     CheckNpcCollisions();
+    CheckPlayerCollisions();
     CheckNpcAvoidance();
 }
 
@@ -523,7 +524,7 @@ void NPCController::CheckNpcCollisions()
 
                             float mass1 = testV1.mass; // aVehicleHit.mass;
                             float mass2 = testV2.mass; // m_vehicleStruct00.vehicleData.mass;
-                            float e = 0.4f; // rebound coefficent 
+                            float e = Utility::GetVehicleImpactReboundCoefficient(); // rebound coefficent 
 
                             float tmp = 1.0f / (mass1 + mass2);
                             DirectX::SimpleMath::Vector3 vx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
@@ -684,6 +685,241 @@ void NPCController::CheckNpcCollisions()
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+void NPCController::CheckPlayerCollisions()
+{
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        const VehicleData& testV1 = m_npcVec[i]->GetVehicleData();
+
+        //const float distance = (m_npcVec[i]->GetPos() - m_npcVec[j]->GetPos()).Length();
+        const float distance = (m_npcVec[i]->GetPos() - m_player->GetPos()).Length();
+        const float maxCollisionRange = m_npcVec[i]->GetCollisionDetectionRange() * 2.0f;
+        // only check collisions in potential range and prevent collision checks with vehicles knocked out of play
+        if (distance < maxCollisionRange && distance > -1.0f)
+        {
+            //const VehicleData& testV2 = m_npcVec[j]->GetVehicleData();
+            const DirectX::BoundingOrientedBox playerBox = m_player->GetBoundingBox();
+
+            //if (testV1.collisionBox.Contains(testV2.collisionBox) == true || testV1.collisionBox.Intersects(testV2.collisionBox) == true)
+            if (testV1.collisionBox.Contains(playerBox) == true || testV1.collisionBox.Intersects(playerBox) == true)
+            {
+                const DirectX::SimpleMath::Vector3 playerPosition = m_player->GetPos();
+                const DirectX::SimpleMath::Vector3 playerVelocity = m_player->GetVelocity();
+                const float playerMass = m_player->GetMass();
+                DirectX::SimpleMath::Vector3 p1localizedTo2 = testV1.q.position - playerPosition;
+                DirectX::SimpleMath::Vector3 p1localizedTo2Norm = p1localizedTo2;
+                p1localizedTo2Norm.Normalize();
+                DirectX::SimpleMath::Vector3 p2localizedTo1 = playerPosition - testV1.q.position;
+                DirectX::SimpleMath::Vector3 p2localizedTo1Norm = p2localizedTo1;
+                p2localizedTo1Norm.Normalize();
+
+                float mass1 = testV1.mass; // aVehicleHit.mass;
+                float mass2 = playerMass; // m_vehicleStruct00.vehicleData.mass;
+                float e = Utility::GetVehicleImpactReboundCoefficient(); // rebound coefficent 
+
+                float tmp = 1.0f / (mass1 + mass2);
+                DirectX::SimpleMath::Vector3 vx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
+                DirectX::SimpleMath::Vector3 vx2 = playerVelocity; // m_vehicleStruct00.vehicleData.q.velocity;
+
+                DirectX::SimpleMath::Vector3 aVelocityvx1 = testV1.q.velocity; // aVehicleHit.q.velocity;
+                DirectX::SimpleMath::Vector3 aVelocityvx2 = playerVelocity; // m_vehicleStruct00.vehicleData.q.velocity;
+
+                DirectX::SimpleMath::Vector3 aNormVelocity1 = aVelocityvx1;
+                aNormVelocity1.Normalize();
+                DirectX::SimpleMath::Vector3 aNormVelocity2 = aVelocityvx2;
+                aNormVelocity2.Normalize();
+
+                DirectX::SimpleMath::Vector3 aPositionvx1 = testV1.q.position; // aVehicleHit.q.velocity;
+                DirectX::SimpleMath::Vector3 aPositionvx2 = playerPosition; // m_vehicleStruct00.vehicleData.q.velocity;
+
+                DirectX::SimpleMath::Vector3 testVelocityPre1 = vx1 - vx2;
+                DirectX::SimpleMath::Vector3 testVelocityPre2 = vx2 - vx1;
+
+                DirectX::SimpleMath::Vector3 testVelocityNorm1 = testVelocityPre1;
+                testVelocityNorm1.Normalize();
+
+                DirectX::SimpleMath::Vector3 testVelocityNorm2 = testVelocityPre2;
+                testVelocityNorm2.Normalize();
+
+                DirectX::SimpleMath::Vector3 newVx1 = (mass1 - e * mass2) * vx1 * tmp + (1.0f + e) * mass2 * vx2 * tmp;
+                DirectX::SimpleMath::Vector3 newVx2 = (1.0f + e) * mass1 * vx1 * tmp + (mass2 - e * mass1) * vx2 * tmp;
+
+                DirectX::SimpleMath::Vector3 testVelocityPost1 = newVx1 - newVx2;
+                DirectX::SimpleMath::Vector3 testVelocityPost2 = newVx2 - newVx1;
+
+                m_npcVec[i]->m_prevImpact = newVx1;
+                //m_npcVec[j]->m_prevImpact = newVx2;
+                m_player->SetTestPostImppactVelocity(newVx2);
+
+                float x1a = p1localizedTo2Norm.Dot(testVelocityNorm1);
+
+                if (x1a < 0.0f)
+                {
+                    DirectX::XMFLOAT3 testV1Corners[8];
+                    DirectX::XMFLOAT3* pCorners1;
+                    pCorners1 = testV1Corners;
+                    testV1.collisionBox.GetCorners(pCorners1);
+
+                    DirectX::XMFLOAT3 testV2Corners[8];
+                    DirectX::XMFLOAT3* pCorners2 = testV2Corners;
+                    //testV2.collisionBox.GetCorners(pCorners2);
+                    playerBox.GetCorners(pCorners2);
+                    pCorners2 = nullptr;
+
+                    DirectX::SimpleMath::Vector3 testV1ClosestCorner = DirectX::SimpleMath::Vector3::Zero;
+                    float testV1ClosestCornerDistance = 0.0f;
+                    bool isTestV1ClosestCornerFound = false;
+                    DirectX::SimpleMath::Vector3 testV1SecondClosestCorner = DirectX::SimpleMath::Vector3::Zero;
+                    float testV1ClosestSecondCornerDistance = 0.0f;
+                    bool isTestV1SecondClosestCornerFound = false;
+                    for (int l = 0; l < 8; ++l)
+                    {
+                        DirectX::SimpleMath::Vector3 cornerPos = testV1Corners[l];
+                        //float distanceToCenter = (cornerPos - testV2.collisionBox.Center).Length();
+                        float distanceToCenter = (cornerPos - playerBox.Center).Length();
+
+                        if (isTestV1ClosestCornerFound == false)
+                        {
+                            testV1ClosestCorner = cornerPos;
+                            testV1ClosestCornerDistance = distanceToCenter;
+                            isTestV1ClosestCornerFound = true;
+                        }
+                        else if (isTestV1SecondClosestCornerFound == false)
+                        {
+                            if (distanceToCenter < testV1ClosestCornerDistance)
+                            {
+                                testV1SecondClosestCorner = testV1ClosestCorner;
+                                testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                testV1ClosestCorner = cornerPos;
+                                testV1ClosestCornerDistance = distanceToCenter;
+                                isTestV1SecondClosestCornerFound = true;
+                            }
+                            else
+                            {
+                                testV1SecondClosestCorner = cornerPos;
+                                testV1ClosestSecondCornerDistance = distanceToCenter;
+                                isTestV1SecondClosestCornerFound = true;
+                            }
+                        }
+                        else
+                        {
+                            if (distanceToCenter < testV1ClosestCornerDistance)
+                            {
+                                testV1SecondClosestCorner = testV1ClosestCorner;
+                                testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                testV1ClosestCorner = cornerPos;
+                                testV1ClosestCornerDistance = distanceToCenter;
+
+                            }
+                            else if (distanceToCenter < testV1ClosestSecondCornerDistance)
+                            {
+                                testV1SecondClosestCorner = cornerPos;
+                                testV1ClosestSecondCornerDistance = distanceToCenter;
+                            }
+                        }
+                    }
+                    DirectX::SimpleMath::Vector3 testV1ImpactPos = (testV1ClosestCorner + testV1SecondClosestCorner) * 0.5f;
+                    isTestV1ClosestCornerFound = false;
+                    isTestV1SecondClosestCornerFound = false;
+                    for (int l = 0; l < 8; ++l)
+                    {
+                        DirectX::SimpleMath::Vector3 cornerPos = testV2Corners[l];
+                        float distanceToCenter = (cornerPos - testV1.collisionBox.Center).Length();
+                        if (isTestV1ClosestCornerFound == false)
+                        {
+                            testV1ClosestCorner = cornerPos;
+                            testV1ClosestCornerDistance = distanceToCenter;
+                            isTestV1ClosestCornerFound = true;
+                        }
+                        else if (isTestV1SecondClosestCornerFound == false)
+                        {
+                            if (distanceToCenter < testV1ClosestCornerDistance)
+                            {
+                                testV1SecondClosestCorner = testV1ClosestCorner;
+                                testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                testV1ClosestCorner = cornerPos;
+                                testV1ClosestCornerDistance = distanceToCenter;
+                                isTestV1SecondClosestCornerFound = true;
+                            }
+                            else
+                            {
+                                testV1SecondClosestCorner = cornerPos;
+                                testV1ClosestSecondCornerDistance = distanceToCenter;
+                                isTestV1SecondClosestCornerFound = true;
+                            }
+                        }
+                        else
+                        {
+                            if (distanceToCenter < testV1ClosestCornerDistance)
+                            {
+                                testV1SecondClosestCorner = testV1ClosestCorner;
+                                testV1ClosestSecondCornerDistance = testV1ClosestCornerDistance;
+                                testV1ClosestCorner = cornerPos;
+                                testV1ClosestCornerDistance = distanceToCenter;
+                            }
+                            else if (distanceToCenter < testV1ClosestSecondCornerDistance)
+                            {
+                                testV1SecondClosestCorner = cornerPos;
+                                testV1ClosestSecondCornerDistance = distanceToCenter;
+                            }
+                        }
+                    }
+                    DirectX::SimpleMath::Vector3 testV2ImpactPos = (testV1ClosestCorner + testV1SecondClosestCorner) * 0.5f;
+                    DirectX::SimpleMath::Vector3 impactPoint = (testV1ImpactPos + testV2ImpactPos) * 0.5f;
+
+                    pCorners1 = nullptr;
+                    pCorners2 = nullptr;
+                    delete pCorners1;
+                    delete pCorners2;
+
+                    m_npcVec[i]->TestCollisionVelocityUpdate(newVx1);
+                    //m_npcVec[j]->TestCollisionVelocityUpdate(newVx2);
+                    m_player->SetTestCollisionVelocityUpdate(newVx2);
+
+                    //m_npcVec[i]->CalculateImpulseForce(m_npcVec[j]->GetVehicleData(), newVx1, newVx2, impactPoint);
+                    //m_npcVec[j]->CalculateImpulseForce(m_npcVec[i]->GetVehicleData(), newVx2, newVx1, impactPoint);
+                    m_npcVec[i]->CalculateImpulseForceFromPlayer(m_player->GetMass(), m_player->GetVelocity(), m_player->GetCenterOfMassPos(), newVx1, newVx2, impactPoint);
+
+                    DirectX::SimpleMath::Vector3 aForceVec1 = newVx2;
+                    ////////m_lastImpactPos = aImpactPos;
+
+                    DirectX::SimpleMath::Vector3 testVecUsed = aForceVec1;
+                    Utility::ImpulseForce impulseToVec;
+                    impulseToVec.currentMagnitude = 0.0f;
+                    impulseToVec.currentTime = 0.0f;
+                    //impulseToVec.directionNorm = aVehicleHit.q.velocity;
+                    impulseToVec.directionNorm = testV1.q.velocity;
+                    impulseToVec.directionNorm = testVecUsed;
+                    impulseToVec.directionNorm.Normalize();
+                    impulseToVec.isActive = true;
+                    impulseToVec.maxMagnitude = (0.5f * testV1.mass * testV1.q.velocity * testV1.q.velocity).Length();
+                    //impulseToVec.torqueArm = aVehicleHit.hardPoints.centerOfMassPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+                    impulseToVec.torqueArm = testV1.hardPoints.centerOfMassPos - m_player->GetCenterOfMassPos();
+                    //impulseToVec.torqueArm = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos - aImpactPos;
+                    impulseToVec.torqueArm = m_player->GetCenterOfMassPos() - impactPoint;
+                    //impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+                    impulseToVec.torqueArm = impactPoint - m_player->GetCenterOfMassPos();
+                    impulseToVec.torqueArm *= 1.0f;
+                    //float impactVelocity = (aVehicleHit.q.velocity - m_vehicleStruct00.vehicleData.q.velocity).Length();
+                    float impactVelocity = (testV1.q.velocity - m_player->GetVelocity()).Length();
+                    float impactTime = 1.0f / (impactVelocity + 0.00000000001f);
+                    impulseToVec.totalTime = impactTime;
+                    impulseToVec.totalTime = 0.1f;
+
+                    impulseToVec.maxMagnitude = aForceVec1.Length() * testV1.mass;
+
+                    //PushImpulseForce(impulseToVec);
+
+                    m_player->SetTestCollisionImpulseForce(impulseToVec);
+
+                    m_player->SetTestVehicleCollisionTrue();
                 }
             }
         }

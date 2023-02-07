@@ -6,6 +6,7 @@ class Utility
 {
 public:
     static inline int GetNumericalPrecisionForUI() { return 2; }; // For setting the numerical precison displayed by UI
+    static inline float GetVehicleImpactReboundCoefficient() { return 0.4f; };
     static inline float GetPi() { return 3.1415926535897931; };
     static inline float ToDegrees(float r) { return r * 180.0f / GetPi(); };
     static inline float ToRadians(float d) { return d / 180.0f * GetPi(); };

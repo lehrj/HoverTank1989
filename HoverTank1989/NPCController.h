@@ -60,6 +60,7 @@ public:
 private:
     void CheckNpcAvoidance();
     void CheckNpcCollisions();
+    void CheckPlayerCollisions();
     unsigned int GetUniqueID();
 
     Environment const* m_environment;

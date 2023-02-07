@@ -240,6 +240,70 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     PushImpactForce(repulsionForceToVec);
 }
 
+void NPCVehicle::CalculateImpulseForceFromPlayer(const float aPlayerMass, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Vector3 aPlayerCenterOfMass, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos)
+{
+    m_lastImpactPos = aImpactPos;
+
+    DirectX::SimpleMath::Vector3 testVecUsed = aForceVec1;
+    Utility::ImpulseForce impulseToVec;
+    impulseToVec.currentMagnitude = 0.0f;
+    impulseToVec.currentTime = 0.0f;
+    //impulseToVec.directionNorm = aImpactForce.impactVelocity;
+    impulseToVec.directionNorm = aPlayerVelocity;
+    impulseToVec.directionNorm = testVecUsed;
+    impulseToVec.directionNorm.Normalize();
+    impulseToVec.isActive = true;
+    //impulseToVec.maxMagnitude = (0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity).Length();
+    impulseToVec.maxMagnitude = (0.5f * aPlayerMass * aPlayerVelocity * aPlayerVelocity).Length();
+    //impulseToVec.maxMagnitude *= 0.9f;
+    //impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    impulseToVec.torqueArm = aPlayerCenterOfMass - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    impulseToVec.torqueArm = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos - aImpactPos;
+    impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    //impulseToVec.torqueArm = DirectX::SimpleMath::Vector3::Zero;
+    //impulseToVec.torqueArm = m_vehicleStruct00.vehicleData.up * 5.0f;
+    //impulseToVec.torqueArm = aForceVec2;
+    //impulseToVec.torqueArm.Normalize();
+    impulseToVec.torqueArm *= 1.0f;
+    float impactVelocity = (aPlayerVelocity - m_vehicleStruct00.vehicleData.q.velocity).Length();
+    float impactTime = 1.0f / (impactVelocity + 0.00000000001f);
+    impulseToVec.totalTime = impactTime;
+    impulseToVec.totalTime = 0.1f;
+
+    impulseToVec.maxMagnitude = aForceVec1.Length() * aPlayerMass;
+
+    PushImpulseForce(impulseToVec);
+
+    /*
+    Utility::ImpulseForce repulsorToVec;
+    DirectX::SimpleMath::Vector3 repulsionForce = GetRepulsionForce(aVehicleHit);
+    repulsorToVec.currentMagnitude = 0.0f;
+    repulsorToVec.currentTime = 0.0f;
+    //repulsorToVec.directionNorm = aVehicleHit.q.velocity;
+    //repulsorToVec.directionNorm = aVehicleHit.q.position - m_vehicleStruct00.vehicleData.q.position;
+    //repulsorToVec.directionNorm = m_vehicleStruct00.vehicleData.q.position - aVehicleHit.q.position;
+    repulsorToVec.directionNorm = repulsionForce;
+    //repulsorToVec.directionNorm = aForceVec1;
+    repulsorToVec.directionNorm.Normalize();
+    repulsorToVec.isActive = true;
+    //repulsorToVec.maxMagnitude = GetRepulsionForce(aVehicleHit).Length() * 10000.0f;
+    repulsorToVec.maxMagnitude = repulsionForce.Length() * 10000.0f;
+    repulsorToVec.torqueArm = DirectX::SimpleMath::Vector3::Zero;
+    repulsorToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    repulsorToVec.totalTime = 0.1f;
+
+    //PushImpulseForce(repulsorToVec);
+
+    Utility::ImpactForce repulsionForceToVec;
+    repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
+    repulsionForceToVec.impactMass = aVehicleHit.mass;
+
+    repulsionForceToVec.impactVelocity *= 150.0f;
+    repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
+    PushImpactForce(repulsionForceToVec);
+    */
+}
+
 void NPCVehicle::CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos)
 {
     const float mass1 = aImpactForce.impactMass;
@@ -2462,7 +2526,6 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
 
     aVehicle->q.angularVelocityVec = q.angularVelocityVec;
     aVehicle->q.angPosVec = q.angPosVec;
-
 }
 
 void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)

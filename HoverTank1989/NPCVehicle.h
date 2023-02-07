@@ -474,6 +474,8 @@ public:
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
+    void CalculateImpulseForceFromPlayer(const float aPlayerMass, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Vector3 aPlayerCenterOfMass, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
+    
     void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateSelfRightingTorque();
 
