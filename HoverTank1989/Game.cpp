@@ -1209,7 +1209,7 @@ void Game::Render()
         //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
-        //DrawTestTrack();
+        DrawTestTrack();
 
 
         DirectX::SimpleMath::Vector3 pos = m_vehicle->GetPos();
@@ -1272,7 +1272,7 @@ void Game::Render()
     m_batch3->Begin();
 
 
-
+    /*
     DirectX::BoundingOrientedBox boBox = m_vehicle->GetBoundingBox();
     const int cornerSize = 8;
     DirectX::XMFLOAT3 testV1Corners[cornerSize];
@@ -1287,7 +1287,8 @@ void Game::Render()
 
     pCorners1 = nullptr;
     delete pCorners1;
-    
+    */
+
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         DrawDebugLinesVector();

@@ -438,6 +438,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.mainRotorMaxRPM = 1000.0f;
     m_heli.numEqns = 6;
     m_heli.mass = 1700.0f;
+ 
     m_heli.massTest = 2000.0f;
     m_heli.area = 14.67;
     m_heli.dimensions = DirectX::SimpleMath::Vector3(8.0f, 4.0f, 4.0f);
@@ -1711,8 +1712,8 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec;
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + weaponVec + terrainVec;
-    DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
-    //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec;
+    //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
+    DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec;
 
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + weaponVec + hoverForceVec;
     //DirectX::SimpleMath::Vector3 torqueVec = hoverForceVec;
@@ -3145,7 +3146,8 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
         velocityUpdate += m_testImpulseForce.directionNorm * m_testImpulseForce.currentMagnitude;
     }
 
-    velocityUpdate += CalculateHoverDriveForce(m_heli);
+    DirectX::SimpleMath::Vector3 calcHoverDriveForce = CalculateHoverDriveForce(m_heli);
+    velocityUpdate += calcHoverDriveForce;
 
     DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), m_heli.mass);
     //velocityUpdate += damperForce;
@@ -3153,7 +3155,8 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     gravForce = m_heli.gravity * m_heli.mass;
     velocityUpdate += gravForce;
 
-    velocityUpdate += GetJetThrust(m_heli.forward, m_heli.controlInput.jetInput, m_heli.jetThrustMax);
+    DirectX::SimpleMath::Vector3 jetThrust = GetJetThrust(m_heli.forward, m_heli.controlInput.jetInput, m_heli.jetThrustMax);
+    velocityUpdate += jetThrust;
     DirectX::SimpleMath::Vector3 rotorForce = m_heli.hoverFloat;
     rotorForce = DirectX::SimpleMath::Vector3::Transform(rotorForce, m_heli.alignment);
     rotorForce = rotorForce * m_heli.mass;
@@ -3161,7 +3164,8 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     velocityUpdate += rotorForce;
 
     velocityUpdate += m_heli.buoyancyForce;
-    velocityUpdate += GetSlopeForce(m_heli.terrainNormal, GetAltitude(), m_heli.groundNormalForceRange);
+    DirectX::SimpleMath::Vector3 slopeForce = GetSlopeForce(m_heli.terrainNormal, GetAltitude(), m_heli.groundNormalForceRange);
+    velocityUpdate += slopeForce;
     velocityUpdate += m_heli.controlInput.brakeForce;
 
 
@@ -3195,7 +3199,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     if (m_heli.isVehicleCollisionTrue == true)
     {
         impactTorque = CalculateImpactTorqueSum(aTimeStep);
-        accelVecUpdate += impactTorque * 0.01f;
+        accelVecUpdate += impactTorque * 0.05f;
     }
     m_debugData->DebugPushUILineDecimalNumber("impactTorque = ", impactTorque.Length(), "");
     m_debugData->PushDebugLine(m_heli.q.position, impactTorque, 10.0f, 0.0f, DirectX::Colors::Blue);

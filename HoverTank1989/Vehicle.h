@@ -154,10 +154,14 @@ struct HeliData
     const float groundNormalForceRange = hoverRangeUpper;
     const float hoverNeutralBoyantAlt = hoverRangeMid;
     */
-    
+    /*
     const float hoverRangeLower = 1.0f;
     const float hoverRangeMid = 3.0f;
     const float hoverRangeUpper = 5.0f;
+    */
+    const float hoverRangeLower = 2.0f;
+    const float hoverRangeMid = 4.0f;
+    const float hoverRangeUpper = 8.0f;
     const float groundNormalForceRange = hoverRangeUpper + 5.0f;
     const float hoverNeutralBoyantAlt = hoverRangeMid;
 
