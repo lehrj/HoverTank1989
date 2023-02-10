@@ -179,6 +179,9 @@ struct HeliData
     DirectX::SimpleMath::Vector3 baseTestPos;
     DirectX::SimpleMath::Vector3 localBaseTestPos;
 
+    DirectX::SimpleMath::Vector3 gravityTorqueArmPos;
+    DirectX::SimpleMath::Vector3 localGravityTorqueArmPos;
+
     float       mainRotorRPM;
     const float mainRotorRPMmin = 0.0f;
     const float mainRotorRPMmax = 500.0f;
