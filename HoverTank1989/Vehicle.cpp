@@ -1136,6 +1136,13 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.alignment);
     */
 
+    /*
+    DirectX::SimpleMath::Vector3 preAngVec = angAccelVecTensorUpdate;
+    m_debugData->PushDebugLine(m_heli.q.position, preAngVec, 10.0f, 0.0, DirectX::Colors::Blue);
+    m_debugData->PushDebugLine(m_heli.q.position, angDampeningVec, 10.0f, 0.0, DirectX::Colors::Red);
+    m_debugData->DebugPushUILineDecimalNumber("preAngVec.Length()       = ", preAngVec.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("angDampeningVec.Length() = ", angDampeningVec.Length(), "");
+    */
     angAccelVecTensorUpdate += angDampeningVec;
 
     aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (angAccelVecTensorUpdate);
@@ -1547,7 +1554,7 @@ DirectX::SimpleMath::Vector3 Vehicle::GetThrusterLiftMagnitude(const DirectX::Si
     if (altitudeAtPos < lowerCurveBound)
     {
         liftForce *= 2.0f;
-        m_debugData->DebugPushUILineDecimalNumber("liftMod < = ", 2.0f, "");
+        //m_debugData->DebugPushUILineDecimalNumber("liftMod < = ", 2.0f, "");
     }
     else if (altitudeAtPos > upperCurveBound)
     {
@@ -1736,6 +1743,8 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     //m_debugData->DebugPushUILineDecimalNumber("gravVectTest.Length() = ", gravVectTest.Length(), "");
 
 
+
+    /*
     DirectX::SimpleMath::Matrix inverseAlignment = m_heli.alignment;
     inverseAlignment = inverseAlignment.Invert();
     
@@ -1754,9 +1763,9 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     DirectX::SimpleMath::Vector3 weaponVecLine = weaponVec;
     weaponVecLine = DirectX::SimpleMath::Vector3::Transform(weaponVecLine, inverseAlignment);
     m_debugData->PushDebugLine(m_heli.q.position, weaponVecLine, 10.0f, 0.0f, DirectX::Colors::White);
-    
+    */
 
-    DirectX::SimpleMath::Vector3 hoverForceVec = m_hoverTorqueForceSum;
+
 
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec;
@@ -1764,14 +1773,21 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     // //DirectX::SimpleMath::Vector3 torqueVec = tailVec + weaponVec + hoverForceVec;
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
 
-    //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec;
-    DirectX::SimpleMath::Vector3 torqueVec = gravVec + driveVec;
-
-
+    DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec;
+    
+    /*
+    DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec + pendulumForce;
+    DirectX::SimpleMath::Vector3 hoverForceVec = m_hoverTorqueForceSum;
+    DirectX::SimpleMath::Vector3 pendulumForce = aPendTorque.axis * aPendTorque.magnitude * 100.0f;
+    DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec + pendulumForce;
+    m_debugData->PushDebugLine(m_heli.q.position, pendulumForce, 10.0f, 0.0f, DirectX::Colors::White);
+    m_debugData->PushDebugLine(m_heli.q.position, gravVec, 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->DebugPushUILineDecimalNumber("pendulumForce.Length() = ", pendulumForce.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("terrainVec.Length() = ", terrainVec.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("gravVec.Length() = ", gravVec.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("driveVec.Length() = ", driveVec.Length(), "");
-
     m_debugData->DebugPushUILineDecimalNumber("gravVec.Length() - driveVec.Length() = ", gravVec.Length() - driveVec.Length(), "");
+    */
 
     //DirectX::SimpleMath::Vector3 torqueVec = hoverForceVec;
     //DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVectTest + driveVec + weaponVec;
@@ -1928,6 +1944,7 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
     float rodLength = (m_heli.q.mainRotorForceMagnitude * m_heli.controlInput.collectiveInput);
     DirectX::SimpleMath::Vector3 testRod = m_heli.localMainRotorPos - m_heli.localCenterOfMass;
     testRod = m_heli.mainRotorPos - m_heli.centerOfMass;
+    testRod = m_heli.gravityTorqueArmPos - m_heli.centerOfMass;
     rodLength = testRod.Length();
     
 
@@ -1977,15 +1994,17 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
     accelerationDirection = accelerationDirection.Cross(-rod);
     accelerationDirection.Normalize();
     float accelerationMag = -((m_heli.gravity.y) / rodLength) * sin(thetaAngle);
+    accelerationMag *= 10.0f;
     //m_debugData->DebugPushUILineDecimalNumber("accelerationMag =", accelerationMag, "");
     //m_debugData->DebugPushTestLine(m_heli.q.position, accelerationDirection, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
+    
     // only update with viable data and if not aligned with gravity direction
     if (accelerationMag > 0.00001f && accelerationMag < 20.0f)
     {
         accelerationDirection *= accelerationMag * aTimeStep;
         accelerationDirection *= accelerationMag;
         //m_debugData->DebugPushTestLine(m_heli.q.position, accelerationDirection, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+        //m_debugData->DebugPushUILineDecimalNumber("Pendulum on =", 0.0f, "");
         aVelocity += accelerationDirection;
     }
 }
@@ -2289,7 +2308,10 @@ void Vehicle::UpdateTerrainNormTorque()
     float forceMod = 0.01f;
     const float mass = m_testMass;
     //m_debugData->PushDebugLinePositionIndicator(m_heli.topTestPos, 10.0f, 0.0f, DirectX::Colors::Red);
-    if (m_heli.altitude > m_heli.groundNormalForceRange)
+    float groundNormalForceRange = m_heli.groundNormalForceRange;
+    //m_debugData->DebugPushUILineDecimalNumber("groundNormalForceRange = " , groundNormalForceRange, "");
+    //if (m_heli.altitude > m_heli.groundNormalForceRange)
+    if (m_heli.altitude > groundNormalForceRange)
     {
         slopeForceUpdate = DirectX::SimpleMath::Vector3::Zero;
         const float forcePercentage = 1.0f;
@@ -2303,13 +2325,16 @@ void Vehicle::UpdateTerrainNormTorque()
     }
     else
     {
-        const float forcePercentage = 1.0f - (m_heli.altitude / m_heli.groundNormalForceRange);
+        //const float forcePercentage = 1.0f - (m_heli.altitude / m_heli.groundNormalForceRange);
+        const float forcePercentage = 1.0f - (m_heli.altitude / groundNormalForceRange);
         const DirectX::SimpleMath::Vector3 terrrainForce = m_heli.terrainNormal * (-m_heli.gravity.y);
         slopeForceUpdate = (terrrainForce * forcePercentage) * mass;
         DirectX::SimpleMath::Vector3 torqueArm = m_heli.centerOfMass - m_heli.mainRotorPos;
         updateTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
         updateTorque.magnitude *= forceMod;
     }
+    updateTorque.magnitude *= 1.5f;
+    //m_debugData->DebugPushUILineDecimalNumber("m_testTerrainNormTorque.magnitude = ", m_testTerrainNormTorque.magnitude, "");
     m_testTerrainNormTorque.axis = updateTorque.axis;
     m_testTerrainNormTorque.magnitude = updateTorque.magnitude;
 }
@@ -2845,7 +2870,7 @@ void Vehicle::UpdateTestDrivetrainTorque3(const float aTimer)
 
 
 
-    if (m_debugToggle == true && 1 == 0)
+    if (m_debugToggle == true && 1 == 1)
     {
         if (m_heli.controlInput.cyclicInputRoll > 0.0f) // left
         {
@@ -3242,6 +3267,33 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
 
     m_heli.vehicleLinearForcesSum = velocityUpdate;
 
+
+    m_debugData->DebugPushUILineDecimalNumber("calcHoverDriveForce = ", calcHoverDriveForce.Length(), "");
+    //m_debugData->PushDebugLine(m_heli.q.position, calcHoverDriveForce, 10.0f, 0.0f, DirectX::Colors::Blue);
+
+    m_debugData->DebugPushUILineDecimalNumber("damperForce         = ", damperForce.Length(), "");
+    m_debugData->PushDebugLine(m_heli.q.position, damperForce, 10.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->DebugPushUILineDecimalNumber("gravForce           = ", gravForce.Length(), "");
+    m_debugData->PushDebugLine(m_heli.q.position, gravForce, 10.0f, 0.0f, DirectX::Colors::Lime);
+
+    m_debugData->DebugPushUILineDecimalNumber("jetThrust           = ", jetThrust.Length(), "");
+    //m_debugData->PushDebugLine(m_heli.q.position, jetThrust, 10.0f, 0.0f, DirectX::Colors::Orange);
+
+    m_debugData->DebugPushUILineDecimalNumber("rotorForce          = ", rotorForce.Length(), "");
+    m_debugData->PushDebugLine(m_heli.q.position, rotorForce, 10.0f, 0.0f, DirectX::Colors::Yellow);
+
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.buoyancyForce = ", m_heli.buoyancyForce.Length(), "");
+    m_debugData->PushDebugLine(m_heli.q.position, m_heli.buoyancyForce, 10.0f, 0.0f, DirectX::Colors::Blue);
+
+    m_debugData->DebugPushUILineDecimalNumber("slopeForce            = ", slopeForce.Length(), "");
+    //m_debugData->PushDebugLine(m_heli.q.position, slopeForce, 10.0f, 0.0f, DirectX::Colors::Salmon);
+
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.brakeForce = ", m_heli.controlInput.brakeForce.Length(), "");
+    //m_debugData->PushDebugLine(m_heli.q.position, m_heli.controlInput.brakeForce, 10.0f, 0.0f, DirectX::Colors::Gray);
+
+    DirectX::SimpleMath::Vector3 preVelocityUpdate = velocityUpdate;
+
     // angular
     Utility::Torque pendTorque;
     pendTorque.axis = DirectX::SimpleMath::Vector3::Zero;
@@ -3249,6 +3301,15 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     DirectX::SimpleMath::Vector3 tempVel = DirectX::SimpleMath::Vector3::Zero;
     UpdatePendulumMotion(pendTorque, velocityUpdate, static_cast<float>(aTimeStep));
     //UpdatePendulumMotion(pendTorque, tempVel, static_cast<float>(aTimeDelta));
+    DirectX::SimpleMath::Vector3 postVelocityUpdate = velocityUpdate;
+    
+    /*
+    m_debugData->DebugPushUILineDecimalNumber("preVelocityUpdate.Length()", preVelocityUpdate.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("postVelocityUpdate.Length()", postVelocityUpdate.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("Delta   = ", postVelocityUpdate.Length() - preVelocityUpdate.Length(), "");
+    m_debugData->PushDebugLine(m_heli.q.position, preVelocityUpdate, 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_heli.q.position, postVelocityUpdate, 10.0f, 0.0f, DirectX::Colors::Blue);
+    */
 
     DirectX::SimpleMath::Vector3 accelVecUpdate = DirectX::SimpleMath::Vector3::Zero;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(accelVecUpdate, pendTorque, static_cast<float>(aTimeStep));
@@ -3258,7 +3319,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     inverseAlignment = inverseAlignment.Invert();
 
 
-
+    /*
     DirectX::SimpleMath::Vector3 calcHoverDriveForceLine = calcHoverDriveForce;
     calcHoverDriveForceLine = DirectX::SimpleMath::Vector3::Transform(calcHoverDriveForceLine, inverseAlignment);
     m_debugData->PushDebugLine(m_heli.q.position, calcHoverDriveForceLine, 10.0f, 0.0f, DirectX::Colors::Red);
@@ -3300,14 +3361,14 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     DirectX::SimpleMath::Vector3 driveTrainTorque = m_testDrivetrainTorque.axis * m_testDrivetrainTorque.magnitude;
     //driveTrainTorque = DirectX::SimpleMath::Vector3::Transform(driveTrainTorque, inverseAlignment);
     //m_debugData->PushDebugLine(m_heli.q.position, driveTrainTorque, 10.0f, 0.0f, DirectX::Colors::Blue);
-
-
+    */
+  
 
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.toUseTensor);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.alignment);
     accelVecUpdate = angAccelVecTensorUpdate;
-    m_debugData->DebugPushUILineDecimalNumber("accelVecUpdate = ", accelVecUpdate.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("accelVecUpdate = ", accelVecUpdate.Length(), "");
     m_heli.vehicleAngularForcesSum = accelVecUpdate;
 }
 
