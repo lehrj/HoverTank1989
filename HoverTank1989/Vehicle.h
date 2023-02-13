@@ -483,19 +483,20 @@ private:
     float m_testVal2 = 0.0f;
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
 
-    const float m_testMass = 500.0f;
-    const float m_testForceMod1 = 100.1f;
-    const float m_testForceMod2 = 100.0f;
+    const float m_testMass = 1500.0f;
+    const float m_testForceMod1 = 300.1f;
+    const float m_testForceMod2 = 300.0f;
     
+    /*
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
-    
-    /*
-    const float m_inertiaModelX = 1.0f;
-    const float m_inertiaModelY = 1.0f;
-    const float m_inertiaModelZ = 1.0f;
     */
+    
+    const float m_inertiaModelX = 8.0f;
+    const float m_inertiaModelY = 2.0f;
+    const float m_inertiaModelZ = 6.0f;
+    
 
     DirectX::SimpleMath::Vector3 m_hoverTorqueForceSum = DirectX::SimpleMath::Vector3::Zero;
 };
