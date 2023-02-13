@@ -267,6 +267,8 @@ struct HeliData
     Utility::ImpulseForce testCollisionImpulseForce;
     bool isVehicleCollisionTrue = false;
 
+    DirectX::SimpleMath::Vector3 windVaningTorueForce = DirectX::SimpleMath::Vector3::Zero;
+
     ControlInput  controlInput;
     Rotor         mainRotor;
     Rotor         tailRotor;
@@ -380,6 +382,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateHoverTorqueForce(const struct HeliData& aHeli, const float aTimeStep);
     float CalculateLiftCoefficient(const float aAngle);
     float CalculateWindVaningVal(const HeliData& aHeliData);
+    DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const HeliData& aHeliData);
 
     DirectX::SimpleMath::Vector3 CalculateImpactLinearForceSum(const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateImpactTorqueSum(const float aTimeDelta);
@@ -416,6 +419,7 @@ private:
     void UpdateTestDrivetrainTorque(const float aTimer);
     void UpdateTestDrivetrainTorque2(const float aTimer);
     void UpdateTestDrivetrainTorque3(const float aTimer);
+    void UpdateTestDrivetrainTorque4(const float aTimer);
 
     void UpdateVehicleForces(const float aTimeStep);
 
