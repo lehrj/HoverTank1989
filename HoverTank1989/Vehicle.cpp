@@ -1055,6 +1055,14 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     velocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
 
+    DirectX::SimpleMath::Vector3 velocityNorm2 = newQ.velocity;
+    velocityNorm2.Normalize();
+    DirectX::SimpleMath::Vector3 airResistance2 = velocityNorm2 * (-frontDragResistance);
+
+    m_debugData->DebugPushUILineDecimalNumber("airResistance   = ", airResistance.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("airResistance2  = ", airResistance2.Length(), "");
+    float delta = airResistance.Length() - airResistance2.Length();
+    m_debugData->DebugPushUILineDecimalNumber("delta  = ", delta, "");
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
 
     if (m_testImpulseForce.isActive == true)
@@ -1113,28 +1121,133 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
     aDQ->bodyTorqueForce = bodyTorqueUpdate;
 
-    float angDragCoefficient = 10.3f;
-    float angAirDensity = m_environment->GetAirDensity();
-    float angFrontSurfaceArea = aHeli->area;
+
     DirectX::SimpleMath::Vector3 angVelocityNorm = newQ.angularVelocityVec;
     float angVelocity = angVelocityNorm.Length();
     angVelocityNorm.Normalize();
-    float angFrontDragResistance = 0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity;
+
+    /////////////////////////////////////////////////////////
+
+    DirectX::SimpleMath::Matrix inverseAlignment2 = m_heli.alignment;
+    inverseAlignment2 = inverseAlignment2.Invert();
+
+    DirectX::SimpleMath::Vector3 localAngVelocityNorm = angVelocityNorm;
+    localAngVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localAngVelocityNorm, inverseAlignment2);
     
+    DirectX::SimpleMath::Vector3 localVelocityNorm = velocityNorm;
+    localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, inverseAlignment2);
+    /*
+    DirectX::SimpleMath::Vector3 longCross = localAngVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitX);
+    DirectX::SimpleMath::Vector3 latCross = localAngVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitZ);
+    DirectX::SimpleMath::Vector3 horizCross = localAngVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
+    */
+    DirectX::SimpleMath::Vector3 longCross = localVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitX);
+    DirectX::SimpleMath::Vector3 latCross = localVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitZ);
+    DirectX::SimpleMath::Vector3 horizCross = localVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
+
+    /*
+    DirectX::SimpleMath::Vector3 longCross = localAngVelocityNorm.Cross(m_heli.forward);
+    DirectX::SimpleMath::Vector3 latCross = localAngVelocityNorm.Cross(m_heli.right);
+    DirectX::SimpleMath::Vector3 horizCross = localAngVelocityNorm.Cross(m_heli.up);
+    */
+    m_debugData->PushDebugLine(m_heli.q.position, longCross, 10.0f, 0.0, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_heli.q.position, latCross, 10.0f, 0.0, DirectX::Colors::Blue);
+    m_debugData->PushDebugLine(m_heli.q.position, horizCross, 10.0f, 0.0, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(m_heli.q.position, newQ.angularVelocityVec, 10.0f, 0.0, DirectX::Colors::White);
+
+    DirectX::SimpleMath::Vector3 testRotPath = horizCross * 10.0f;
+    if (testRotPath.x > m_inertiaModelX)
+    {
+        testRotPath.x = m_inertiaModelX;
+    }
+    else if (testRotPath.x < -m_inertiaModelX)
+    {
+        testRotPath.x = -m_inertiaModelX;
+    }
+
+    if (testRotPath.y > m_inertiaModelY)
+    {
+        testRotPath.y = m_inertiaModelY;
+    }
+    else if (testRotPath.y < -m_inertiaModelY)
+    {
+        testRotPath.y = -m_inertiaModelY;
+    }
+
+    if (testRotPath.z > m_inertiaModelZ)
+    {
+        testRotPath.z = m_inertiaModelZ;
+    }
+    else if (testRotPath.z < -m_inertiaModelZ)
+    {
+        testRotPath.z = -m_inertiaModelZ;
+    }
+    m_debugData->DebugPushUILineDecimalNumber("testRotPath  = ", testRotPath.Length(), "");
+    m_debugData->PushDebugLine(m_heli.q.position, testRotPath, 10.0f, 0.0, DirectX::Colors::Orange);
+
+    float frontSurfaceArea2 = m_inertiaModelY * m_inertiaModelZ;
+    float sideSurfaceArea = m_inertiaModelX * m_inertiaModelY;
+    float topSurfaceArea = m_inertiaModelX * m_inertiaModelZ;
+    /*
+    float frontDot = horizCross.Dot(DirectX::SimpleMath::Vector3::UnitX);
+    float sideDot = horizCross.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    //float topDot = horizCross.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    //float topDot = latCross.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    float topDot = longCross.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    */
+    float frontDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX);
+    float sideDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    //float topDot = horizCross.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    //float topDot = latCross.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    float topDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
+
+    m_debugData->DebugPushUILineDecimalNumber("frontDot  = ", frontDot, "");
+    m_debugData->DebugPushUILineDecimalNumber("sideDot   = ", sideDot, "");
+    m_debugData->DebugPushUILineDecimalNumber("topDot    = ", topDot, "");
+    /////////////////////////////////////////////////////////
+
+    //float angDragCoefficient = 1.3f;
+    float angDragCoefficient = 0.8f;
+    float angAirDensity = m_environment->GetAirDensity();
+    float angFrontSurfaceArea = aHeli->area;
+
+    float angFrontDragResistance = 0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity;
+    float radius = 4.0f;
+    radius = testRotPath.Length();
+    float testDragVal = angAirDensity * angFrontSurfaceArea * angDragCoefficient;
+    float testDragVal2 = (angDragCoefficient * (radius * radius * radius)) * (angFrontSurfaceArea * angAirDensity);
+
+    const float cyclicInputSum = abs(m_heli.controlInput.cyclicInputPitch) + abs(m_heli.controlInput.cyclicInputRoll);
+    const float cyclicInputMax = m_heli.controlInput.cyclicInputMax * 2.0f;
+    const float inputRatio = cyclicInputSum / cyclicInputMax;
+    const float inverseRatio = 1.0f - inputRatio;
+    //testDragVal *= 1.0f + inverseRatio;
+    //m_debugData->DebugPushUILineDecimalNumber("testDragVal     = ", testDragVal, "");
+    //m_debugData->DebugPushUILineDecimalNumber("testDragVal2    = ", testDragVal2, "");
+    angFrontDragResistance = 0.5f * testDragVal * angVelocity * angVelocity;
     DirectX::SimpleMath::Vector3 angVelNormVec = m_heli.q.angularVelocityVec;
     angVelNormVec.Normalize();
     DirectX::SimpleMath::Vector3 angDampeningVec = angVelNormVec * (-angFrontDragResistance);
 
+    DirectX::SimpleMath::Vector3 angDampeningVecTest1 = angVelNormVec * (-(0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity));
+    DirectX::SimpleMath::Vector3 angDampeningVecTest2 = angVelNormVec * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocity * angVelocity) * angFrontSurfaceArea * angAirDensity)));
+    m_debugData->DebugPushUILineDecimalNumber("angDampeningVecTest1  = ", angDampeningVecTest1.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("angDampeningVecTest2  = ", angDampeningVecTest2.Length(), "");
     DirectX::SimpleMath::Vector3 angAccelVecTensorUpdate = accelVecUpdate;
-
+    //m_debugData->DebugPushUILineDecimalNumber("angAccelVecTensorUpdate  = ", angAccelVecTensorUpdate.Length(), "");
     DirectX::SimpleMath::Matrix inverseAlignment = m_heli.alignment;
     inverseAlignment = inverseAlignment.Invert();
 
+    DirectX::SimpleMath::Vector3 testAngDampingVec = angDampeningVec;
     /*
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.toUseTensor);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.alignment);
     */
+
+    testAngDampingVec = DirectX::SimpleMath::Vector3::Transform(testAngDampingVec, inverseAlignment);
+    testAngDampingVec = DirectX::SimpleMath::Vector3::Transform(testAngDampingVec, m_heli.toUseTensor);
+    testAngDampingVec = DirectX::SimpleMath::Vector3::Transform(testAngDampingVec, m_heli.alignment);
 
     /*
     DirectX::SimpleMath::Vector3 preAngVec = angAccelVecTensorUpdate;
@@ -1143,7 +1256,10 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     m_debugData->DebugPushUILineDecimalNumber("preAngVec.Length()       = ", preAngVec.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("angDampeningVec.Length() = ", angDampeningVec.Length(), "");
     */
-    angAccelVecTensorUpdate += angDampeningVec;
+
+    //angAccelVecTensorUpdate += angDampeningVec;
+    //angAccelVecTensorUpdate += testAngDampingVec;
+    angAccelVecTensorUpdate += angDampeningVecTest2;
 
     aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (angAccelVecTensorUpdate);
     aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
@@ -1595,6 +1711,13 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     DirectX::SimpleMath::Vector3 gravityTorqueArm = centerMassPos - m_heli.topPos;
     //gravityTorqueArm = m_heli.gravityTorqueArmPos - centerMassPos;
     gravityTorqueArm = centerMassPos - m_heli.gravityTorqueArmPos;
+
+    const float cyclicInputSum = abs(m_heli.controlInput.cyclicInputPitch) + abs(m_heli.controlInput.cyclicInputRoll);
+    const float cyclicInputMax = m_heli.controlInput.cyclicInputMax * 2.0f;
+    const float inputRatio = cyclicInputSum / cyclicInputMax;
+    const float inverseRatio = 1.0f - inputRatio;
+    const float torqueArmLengthMod = 5.0f;
+    //gravityTorqueArm *= (inverseRatio * torqueArmLengthMod);
 
     //m_debugData->PushDebugLine(m_heli.q.position, gravityTorqueArm, 10.0f, 0.0f, DirectX::Colors::Red);
 
@@ -3796,6 +3919,8 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.alignment);
     accelVecUpdate = angAccelVecTensorUpdate;
     //m_debugData->DebugPushUILineDecimalNumber("accelVecUpdate = ", accelVecUpdate.Length(), "");
+
+    m_debugData->DebugClearUI();
     m_heli.vehicleAngularForcesSum = accelVecUpdate;
 }
 
