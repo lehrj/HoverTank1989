@@ -381,6 +381,9 @@ private:
     DirectX::SimpleMath::Vector3 CalculateHoverDriveForce(const struct HeliData& aHeli);
     DirectX::SimpleMath::Vector3 CalculateHoverTorqueForce(const struct HeliData& aHeli, const float aTimeStep);
     float CalculateLiftCoefficient(const float aAngle);
+    DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity, DirectX::SimpleMath::Vector3 aTestVec);
+    DirectX::SimpleMath::Vector3 CalculateDragLinear(const DirectX::SimpleMath::Vector3 aVelocity, const DirectX::SimpleMath::Vector3 aNewQVelocity, const float aSurfaceArea);
+    DirectX::SimpleMath::Vector3 CalculateDragLinear2(const DirectX::SimpleMath::Vector3 aVelocity, const DirectX::SimpleMath::Vector3 aNewQVelocity);
     float CalculateWindVaningVal(const HeliData& aHeliData);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const HeliData& aHeliData);
 
