@@ -277,7 +277,52 @@ float Vehicle::CalculateLiftCoefficient(const float aAngle)
 
 DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity)
 {
-    m_debugData->DebugClearUI();
+    DirectX::SimpleMath::Vector3 angVelocityNorm = aAngVelocity;
+    angVelocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 localAngVelocityNorm = angVelocityNorm;
+    localAngVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localAngVelocityNorm, m_heli.alignmentInverse);
+
+    const float length = 8.0f;
+    const float width = 4.0f;
+    const float height = 2.0f;
+    float frontSurfaceArea = width * height;
+    float sideSurfaceArea = length * height;
+    float topSurfaceArea = length * width;
+
+    float yawDot = localAngVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    float pitchDot = localAngVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    float rollDot = localAngVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX);
+
+    float yawSurface = (width * abs(yawDot)) + (height * abs(yawDot));
+    float pitchSurface = (length * abs(pitchDot)) + (width * abs(pitchDot));
+    float rollSurface = (length * abs(rollDot)) + (height * abs(rollDot));
+
+    float yawRadius = (length * abs(yawDot)) * 0.5f;
+    float pitchRadius = (length * abs(pitchDot)) * 0.5f;
+    float rollRadius = (width * abs(rollDot)) * 0.5f;
+   
+    float airSurfaceArea = yawSurface + pitchSurface + rollSurface;
+    float radiusSum = yawRadius + pitchRadius + rollRadius;
+
+    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea    = ", airSurfaceArea, "");
+    m_debugData->DebugPushUILineDecimalNumber("radiusSum         = ", radiusSum, "");
+
+    float angVelocityF = aAngVelocity.Length();
+    float angDragCoefficient = 0.8f;
+    float angAirDensity = m_environment->GetAirDensity();
+    float angFrontSurfaceArea = m_heli.area;
+    float radius = 4.0f;
+    angFrontSurfaceArea = airSurfaceArea;
+    radius = radiusSum;
+
+    DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * angFrontSurfaceArea * angAirDensity)));
+
+    m_debugData->DebugPushUILineDecimalNumber("angularDrag.L = ", angularDrag.Length(), "");
+    return angularDrag;
+}
+
+DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity)
+{
     DirectX::SimpleMath::Vector3 angVelocityNorm = aAngVelocity;
     angVelocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 localAngVelocityNorm = angVelocityNorm;
@@ -346,7 +391,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular(const DirectX::Simple
     float yawRadius = (height * abs(yawDot)) * 0.5f;
     float pitchRadius = (length * abs(pitchDot)) * 0.5f;
     float rollRadius = (width * abs(rollDot)) * 0.5f;
-    
+
     m_debugData->DebugPushUILineDecimalNumber("yawSurface         = ", yawSurface, "");
     m_debugData->DebugPushUILineDecimalNumber("pitchSurface       = ", pitchSurface, "");
     m_debugData->DebugPushUILineDecimalNumber("rollSurface        = ", rollSurface, "");
@@ -354,7 +399,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular(const DirectX::Simple
     m_debugData->DebugPushUILineDecimalNumber("yawRadius         = ", yawRadius, "");
     m_debugData->DebugPushUILineDecimalNumber("pitchRadius       = ", pitchRadius, "");
     m_debugData->DebugPushUILineDecimalNumber("rollRadius        = ", rollRadius, "");
-    
+
     float frontSurface = abs(frontSurfaceArea * frontDot);
     float sideSurface = abs(sideSurfaceArea * sideDot);
     float topSurface = abs(topSurfaceArea * topDot);
@@ -419,23 +464,23 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular(const DirectX::Simple
         m_debugData->PushDebugLine(m_heli.q.position, localAngVelocityNorm, 10.0f, 0.0, DirectX::Colors::Red);
         m_debugData->PushDebugLine(m_heli.q.position, horizCross, 7.0f, 1.0, DirectX::Colors::Blue);
         m_debugData->PushDebugLine(m_heli.q.position, testVec, 5.0f, 0.0, DirectX::Colors::Yellow);
-        
+
         int testBreak = 0;
     }
     */
 
     /*
-    
+
     m_debugData->DebugPushUILineDecimalNumber("localAngVelocityNorm.x", localAngVelocityNorm.x, "");
     m_debugData->DebugPushUILineDecimalNumber("localAngVelocityNorm.y", localAngVelocityNorm.y, "");
     m_debugData->DebugPushUILineDecimalNumber("localAngVelocityNorm.z", localAngVelocityNorm.z, "");
-    
+
     m_debugData->DebugPushUILineDecimalNumber("horizCross.x", horizCross.x, "");
     m_debugData->DebugPushUILineDecimalNumber("horizCross.y", horizCross.y, "");
     m_debugData->DebugPushUILineDecimalNumber("horizCross.z", horizCross.z, "");
-    
+
     */
-    
+
     /*
     m_debugData->PushDebugLine(m_heli.q.position, longCross, 10.0f, 0.0, DirectX::Colors::Red);
     m_debugData->PushDebugLine(m_heli.q.position, latCross, 10.0f, 1.0, DirectX::Colors::Blue);
@@ -443,7 +488,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular(const DirectX::Simple
     m_debugData->PushDebugLine(m_heli.q.position, aAngVelocity, 10.0f, 0.0, DirectX::Colors::White);
     */
 
-    
+
     DirectX::SimpleMath::Vector3 testRotPath = horizCross * 10.0f;
     if (testRotPath.x > m_inertiaModelX)
     {
@@ -482,9 +527,9 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular(const DirectX::Simple
 
 
     radius = radiusSum;
-    //angFrontSurfaceArea = airSurfaceArea;
+    angFrontSurfaceArea = airSurfaceArea;
     //angFrontSurfaceArea = m_heli.area;
-    radius = 4.0f;
+    //radius = 4.0f;
     DirectX::SimpleMath::Vector3 angDampeningVecTest2 = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * angFrontSurfaceArea * angAirDensity)));
     //DirectX::SimpleMath::Vector3 angDampeningVecTest2 = angVelNormVec * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocity * angVelocity) * angFrontSurfaceArea * angAirDensity)));
     /*
@@ -1336,6 +1381,40 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     newQ.angularVelocityVec = aQ->angularVelocityVec + static_cast<float>(aQScale) * aDeltaQ->angularVelocityVec;
     newQ.angPosVec = aQ->angPosVec + static_cast<float>(aQScale) * aDeltaQ->angPosVec;
 
+    DirectX::SimpleMath::Vector3 velocityUpdate = m_heli.vehicleLinearForcesSum;
+    DirectX::SimpleMath::Vector3 airResistance = CalculateDragLinear(newQ.velocity);
+    velocityUpdate += airResistance;
+
+    //  Assign right-hand side values.
+    aDQ->airResistance = airResistance;
+    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_heli.mass);
+    aDQ->totalVelocity = velocityUpdate;
+    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
+    
+    // angular updates
+    DirectX::SimpleMath::Vector3 angVelocityNorm = newQ.angularVelocityVec;
+    float angVelocity = angVelocityNorm.Length();
+    angVelocityNorm.Normalize();
+
+    DirectX::SimpleMath::Vector3 accelVecUpdate = m_heli.vehicleAngularForcesSum;
+    DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(newQ.angularVelocityVec);
+    accelVecUpdate += angDampTest;
+
+    aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (accelVecUpdate);
+    aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
+    //aDQ->bodyTorqueForce = angAccelVecTensorUpdate;
+}
+
+void Vehicle::RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ)
+{
+    //  Compute the intermediate values of the 
+    //  dependent variables.
+    Motion newQ;
+    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+    newQ.angularVelocityVec = aQ->angularVelocityVec + static_cast<float>(aQScale) * aDeltaQ->angularVelocityVec;
+    newQ.angPosVec = aQ->angPosVec + static_cast<float>(aQScale) * aDeltaQ->angPosVec;
+
     DirectX::SimpleMath::Vector3 rotorForce = aQ->mainRotorForceNormal * aQ->mainRotorForceMagnitude * m_heli.controlInput.collectiveInput;
     rotorForce = UpdateRotorForceRunge();
     rotorForce *= (m_heli.mainRotor.bladeVec[0].liftForcePerSecond + m_heli.mainRotor.bladeVec[1].liftForcePerSecond);
@@ -1565,8 +1644,8 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     //angAccelVecTensorUpdate += testAngDampingVec;
     //angAccelVecTensorUpdate += angDampeningVecTest2;
 
-    DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(m_heli.q.angularVelocityVec);
-    //DirectX::SimpleMath::Vector3 angDampTest2 = CalculateDragAngular(newQ.angularVelocityVec);
+    //DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(m_heli.q.angularVelocityVec);
+    DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(newQ.angularVelocityVec);
 
     angAccelVecTensorUpdate += angDampTest;
 
@@ -1586,6 +1665,11 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     Motion dq3;
     Motion dq4;
 
+    Motion q2 = aHeli->q;
+    Motion dq12;
+    Motion dq22;
+    Motion dq32;
+    Motion dq42;
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
     // of delta-q values for each of the four steps.
@@ -1593,6 +1677,11 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     RightHandSide(aHeli, &q, &dq1, aTimeDelta, 0.5, &dq2);
     RightHandSide(aHeli, &q, &dq2, aTimeDelta, 0.5, &dq3);
     RightHandSide(aHeli, &q, &dq3, aTimeDelta, 1.0, &dq4);
+
+    RightHandSide2(aHeli, &q2, &q2, aTimeDelta, 0.0, &dq12);
+    RightHandSide2(aHeli, &q2, &dq12, aTimeDelta, 0.5, &dq22);
+    RightHandSide2(aHeli, &q2, &dq22, aTimeDelta, 0.5, &dq32);
+    RightHandSide2(aHeli, &q2, &dq32, aTimeDelta, 1.0, &dq42);
 
     aHeli->time = aHeli->time + aTimeDelta;
     DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
@@ -1602,12 +1691,47 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     DirectX::SimpleMath::Vector3 airResistnaceVelocityUpdate = (dq1.airResistance + 2.0 * dq2.airResistance + 2.0 * dq3.airResistance + dq4.airResistance) / numEqns;
     DirectX::SimpleMath::Vector3 totalVelocityUpdate = (dq1.totalVelocity + 2.0 * dq2.totalVelocity + 2.0 * dq3.totalVelocity + dq4.totalVelocity) / numEqns;
 
+
+
+
     Utility::Torque bodyTorqueUpdate;
     bodyTorqueUpdate.axis = (dq1.bodyTorqueForce.axis + 2.0 * dq2.bodyTorqueForce.axis + 2.0 * dq3.bodyTorqueForce.axis + dq4.bodyTorqueForce.axis) / numEqns;
     bodyTorqueUpdate.magnitude = (dq1.bodyTorqueForce.magnitude + 2.0f * dq2.bodyTorqueForce.magnitude + 2.0f * dq3.bodyTorqueForce.magnitude + dq4.bodyTorqueForce.magnitude) / numEqns;
 
     DirectX::SimpleMath::Vector3 angularPosVecUpdate = (dq1.angPosVec + 2.0 * dq2.angPosVec + 2.0 * dq3.angPosVec + dq4.angPosVec) / numEqns;
     DirectX::SimpleMath::Vector3 angularVelocityVecUpdate = (dq1.angularVelocityVec + 2.0 * dq2.angularVelocityVec + 2.0 * dq3.angularVelocityVec + dq4.angularVelocityVec) / numEqns;
+
+
+    DirectX::SimpleMath::Vector3 posUpdate2 = (dq12.position + 2.0 * dq22.position + 2.0 * dq32.position + dq42.position) / numEqns;
+    DirectX::SimpleMath::Vector3 velocityUpdate2 = (dq12.velocity + 2.0 * dq22.velocity + 2.0 * dq32.velocity + dq42.velocity) / numEqns;
+    DirectX::SimpleMath::Vector3 angularPosVecUpdate2 = (dq12.angPosVec + 2.0 * dq22.angPosVec + 2.0 * dq32.angPosVec + dq42.angPosVec) / numEqns;
+    DirectX::SimpleMath::Vector3 angularVelocityVecUpdate2 = (dq12.angularVelocityVec + 2.0 * dq22.angularVelocityVec + 2.0 * dq32.angularVelocityVec + dq42.angularVelocityVec) / numEqns;
+
+    if (posUpdate != posUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (velocityUpdate != velocityUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (angularPosVecUpdate != angularPosVecUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (angularVelocityVecUpdate != angularVelocityVecUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+
 
     q.velocity += velocityUpdate;
     q.engineForce += engineVelocityUpdate;
