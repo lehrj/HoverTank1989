@@ -139,7 +139,7 @@ struct HeliData
     float hoverDriveMag = 0.0f;
     const float hoverDriveMagMax = 100000.0f;
     const float brakeMagMax = 3000.0f;
-    const float yawForce = 50.0f;
+    const float yawForce = 30.0f;
     /*
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
@@ -407,6 +407,7 @@ private:
     void UpdateBladeLiftForce(const float aTimeStep);
 
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
+    Utility::Torque UpdateBodyTorqueRunge2(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCollisionImpulseForces(const float aTimeStep);
@@ -422,6 +423,7 @@ private:
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
     void UpdateTerrainNorm();
     void UpdateTerrainNormTorque();
+    void UpdateTerrainNormTorque2();
     void UpdateTestDrivetrainTorque(const float aTimer);
     void UpdateTestDrivetrainTorque2(const float aTimer);
     void UpdateTestDrivetrainTorque3(const float aTimer);
