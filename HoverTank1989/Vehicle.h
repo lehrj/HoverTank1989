@@ -428,6 +428,7 @@ private:
     void UpdateTestDrivetrainTorque2(const float aTimer);
     void UpdateTestDrivetrainTorque3(const float aTimer);
     void UpdateTestDrivetrainTorque4(const float aTimer);
+    void UpdateTestDrivetrainTorque5(const float aTimer);
 
     void UpdateVehicleForces(const float aTimeStep);
 
@@ -501,11 +502,19 @@ private:
     const float m_inertiaModelZ = 3.0f;
     
     /*
+    const float m_inertiaModelX = 4.4f;
+    const float m_inertiaModelY = 4.0f;
+    const float m_inertiaModelZ = 4.0f;
+    */
+    /*
     const float m_inertiaModelX = 8.0f;
     const float m_inertiaModelY = 2.0f;
     const float m_inertiaModelZ = 6.0f;
     */
 
     DirectX::SimpleMath::Vector3 m_hoverTorqueForceSum = DirectX::SimpleMath::Vector3::Zero;
+
+    bool m_testBoolFlipRot = false;
+
 };
 
