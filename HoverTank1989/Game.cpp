@@ -501,7 +501,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
 
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
-        m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw());
+        m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw(), m_vehicle->GetGroundPlane());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
         m_npcController->UpdateNPCController(m_camera->GetCameraFrustum() , aTimer.GetElapsedSeconds());
 

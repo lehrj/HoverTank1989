@@ -2261,6 +2261,11 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.terrainHightAtPos = 0.0f;
     aVehicleStruct.vehicleData.altitude = 0.0f;
     aVehicleStruct.vehicleData.terrainNormal = DirectX::SimpleMath::Vector3::UnitY;
+    aVehicleStruct.vehicleData.groundPlane.x = 0.0f;
+    aVehicleStruct.vehicleData.groundPlane.y = -1.0f;
+    aVehicleStruct.vehicleData.groundPlane.z = 0.0f;
+    aVehicleStruct.vehicleData.groundPlane.w = 0.5f;
+   
     aVehicleStruct.vehicleData.time = 0.0f;
     aVehicleStruct.vehicleData.forward = aHeading;
     aVehicleStruct.vehicleData.up = DirectX::SimpleMath::Vector3::UnitY;
@@ -3075,17 +3080,17 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 preThrust = m_vehicleStruct00.vehicleData.controlInput.steeringVec * (m_vehicleStruct00.vehicleData.hoverData.forwardThrust);
   
-    
-    bool isVehicleInPlayUpdate = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, m_vehicleStruct00.vehicleData.terrainHightAtPos);
+    bool isVehicleInPlayUpdate = m_vehicleStruct00.environment->GetVehicleUpdateData(m_vehicleStruct00.vehicleData.q.position, m_vehicleStruct00.vehicleData.terrainNormal, 
+        m_vehicleStruct00.vehicleData.terrainHightAtPos, m_vehicleStruct00.vehicleData.groundPlane);
     if (isVehicleInPlayUpdate == false)
     {
         // to do: add error handling if out of play
     }
-    
+
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
 
-    m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-    UpdateControlInputFromAi();
+    //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+    //UpdateControlInputFromAi();
 
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked == true)
     {
@@ -3569,13 +3574,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldVentMatrix9 *= updateMat;
 
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
-    DirectX::SimpleMath::Plane groundPlane;
-    bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, m_vehicleStruct00.vehicleData.q.position);
-    if (isPlaneFound == false)
-    {
-        // todo: add error handling
-    }
-
+    DirectX::SimpleMath::Plane groundPlane = m_vehicleStruct00.vehicleData.groundPlane;
     DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
     planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);

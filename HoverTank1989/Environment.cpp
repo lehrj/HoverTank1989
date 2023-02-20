@@ -629,7 +629,7 @@ bool Environment::GetTerrainTriangleData(DirectX::SimpleMath::Vector3& aTriVerte
     return isTriFound;
 }
 
-bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3& aNorm, float& aHeight) const
+bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, DirectX::SimpleMath::Vector3& aNorm, float& aHeight, DirectX::SimpleMath::Plane& aPlane) const
 {
     bool foundHeight = false;
 
@@ -655,7 +655,8 @@ bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, Direct
             if (foundHeight == true)
             {
                 aHeight = aPos.y;
- 
+                aPlane = DirectX::SimpleMath::Plane(vertex1, vertex2, vertex3);
+
                 DirectX::SimpleMath::Vector3 p3 = vertex1;
                 DirectX::SimpleMath::Vector3 p2 = vertex2;
                 DirectX::SimpleMath::Vector3 p1 = vertex3;
@@ -668,13 +669,15 @@ bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, Direct
                 terrainNormal.z = (U.x * V.y) - (U.y * V.x);
                 terrainNormal.Normalize();
                 aNorm = terrainNormal;
+                
                 i = static_cast<unsigned int>(m_heightMapGamePlayData.terrainModel.size());
             }
             else if (CheckTerrainTriangleHeight(aPos, vertex6, vertex5, vertex4) == true)
             {
                 foundHeight = true;
                 aHeight = aPos.y;
-
+                aPlane = DirectX::SimpleMath::Plane(vertex4, vertex5, vertex6);
+                
                 DirectX::SimpleMath::Vector3 p3 = vertex4;
                 DirectX::SimpleMath::Vector3 p2 = vertex5;
                 DirectX::SimpleMath::Vector3 p1 = vertex6;
@@ -687,6 +690,7 @@ bool Environment::GetVehicleUpdateData(DirectX::SimpleMath::Vector3 aPos, Direct
                 terrainNormal.z = (U.x * V.y) - (U.y * V.x);
                 terrainNormal.Normalize();
                 aNorm = terrainNormal;
+                
                 i = static_cast<unsigned int>(m_heightMapGamePlayData.terrainModel.size());
             }
             else

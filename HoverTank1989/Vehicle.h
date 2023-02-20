@@ -133,6 +133,7 @@ struct Rotor
 struct HeliData
 {
     float altitude = 0.0f;
+    DirectX::SimpleMath::Plane groundPlane; 
     DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
     const DirectX::SimpleMath::Vector3 hoverFloat = DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f);
     DirectX::SimpleMath::Vector3 hoverDriveNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -268,6 +269,7 @@ struct HeliData
     bool isVehicleCollisionTrue = false;
 
     DirectX::SimpleMath::Vector3 windVaningTorueForce = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 selfRightingForce = DirectX::SimpleMath::Vector3::Zero;
 
     ControlInput  controlInput;
     Rotor         mainRotor;
@@ -303,7 +305,7 @@ public:
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
     DirectX::SimpleMath::Vector3 GetAntiMassGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
     DirectX::SimpleMath::Vector3 GetDamperForce(const float aAltitude, const float aMass);
-
+    DirectX::SimpleMath::Plane GetGroundPlane() const { return m_heli.groundPlane; };
     DirectX::SimpleMath::Vector3 GetHoverLift(const DirectX::SimpleMath::Vector3 aLiftForce, const float aAltitude);
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
     float GetMass() const { return m_heli.mass; };
@@ -386,6 +388,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinear(const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinear2(const DirectX::SimpleMath::Vector3 aVelocity, const DirectX::SimpleMath::Vector3 aNewQVelocity);
     float CalculateWindVaningVal(const HeliData& aHeliData);
+    DirectX::SimpleMath::Vector3 CalculateSelfRightingForce(const HeliData& aHeliData);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const HeliData& aHeliData);
 
     DirectX::SimpleMath::Vector3 CalculateImpactLinearForceSum(const float aTimeDelta);
@@ -421,6 +424,7 @@ private:
     void UpdateRotorData(HeliData& aHeliData, const double aTimer);
     void UpdateRotorPitch(HeliData& aHeliData);
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
+    void UpdateTerrainData();
     void UpdateTerrainNorm();
     void UpdateTerrainNormTorque();
     void UpdateTerrainNormTorque2();

@@ -134,7 +134,7 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.muzzleWorldMatrix = aModel.muzzleLocalMatrix;
 }
 
-void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)
+void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
 {
     DirectX::SimpleMath::Matrix updateMat = aAlignment;
     updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(aPos);
@@ -178,13 +178,15 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
   
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
-    DirectX::SimpleMath::Plane groundPlane;
+    DirectX::SimpleMath::Plane groundPlane = aPlane;
     DirectX::SimpleMath::Vector3 modelPos = aPos;
+    /*
     bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, modelPos);
     if(isPlaneFound == false)
     {
         // add error handleing
     }
+    */
 
     DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
@@ -237,9 +239,9 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.turretShadowMatrix *= shadowMat;
 }
 
-void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation)
+void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
 {
-    UpdateModel(m_playerModel, aAlignment, aAltitude, aPos, aBarrelPitch, aTurretRotation);
+    UpdateModel(m_playerModel, aAlignment, aAltitude, aPos, aBarrelPitch, aTurretRotation, aPlane);
 }
 
 void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)

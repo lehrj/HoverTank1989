@@ -415,6 +415,8 @@ struct VehicleData
     DirectX::SimpleMath::Vector3 right;
     DirectX::SimpleMath::Vector3 up;
 
+    DirectX::SimpleMath::Plane  groundPlane;
+
     VehicleHardPoints           hardPoints;
     NPCType                     npcType;
     DirectX::BoundingOrientedBox        collisionBox;
@@ -437,7 +439,7 @@ struct VehicleData
     Utility::Torque              collisionImpulseTorqueSum;
 
     DirectX::SimpleMath::Vector3 testProjectileImpulse;
-    Utility::Torque       testProjectileTorque;
+    Utility::Torque              testProjectileTorque;
 
     HoverData                    hoverData;
     NpcControlInput              controlInput;
