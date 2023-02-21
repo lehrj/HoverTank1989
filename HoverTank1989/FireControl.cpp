@@ -1261,13 +1261,29 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
 
 void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
 {
+    /*
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MIRV;
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.cooldown = 1.9f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
-    aAmmo.ammoData.impactModifier = 4.0f;
-    aAmmo.ammoData.launchVelocity =765.0f;
+    //aAmmo.ammoData.impactModifier = 4.0f;
+    aAmmo.ammoData.impactModifier = 1.0f;
+    aAmmo.ammoData.launchVelocity = 65.0f;
+    aAmmo.ammoData.length = 1.0f;
+    aAmmo.ammoData.mass = 65.0f;
+    aAmmo.ammoData.radius = 0.2f;
+    aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
+    aAmmo.ammoData.tickDownCounter = 1;
+    */
+    aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MIRV;
+    aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 1.9f;
+    aAmmo.ammoData.dragCoefficient = 0.3f;
+    aAmmo.ammoData.impactDurration = 0.4f;
+    //aAmmo.ammoData.impactModifier = 4.0f;
+    aAmmo.ammoData.impactModifier = 1.0f;
+    aAmmo.ammoData.launchVelocity = 65.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 65.0f;
     aAmmo.ammoData.radius = 0.2f;
@@ -1329,6 +1345,8 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.isLifeTimeExpired = false;
 
     m_explosionStruct.maxExplosionForce = 10000000.0f;
+    //m_explosionStruct.maxExplosionForce = 100.0f;
+    //m_explosionStruct.maxExplosionForce = 1000000.0f;
     m_explosionStruct.maxExplosionImpactRadius = aExplosionData.maxRadius * 2.0f;
 
     m_explosionStruct.explosionVec.clear();
@@ -1343,6 +1361,8 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_projectileVec.clear();
     m_environment = aEnvironment;
     m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
+    m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
+
 
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);

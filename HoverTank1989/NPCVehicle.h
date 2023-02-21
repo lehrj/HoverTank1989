@@ -450,6 +450,8 @@ struct VehicleData
 
     DirectX::SimpleMath::Matrix localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+
+    int testExplodingStepCount = 0;
 };
 
 struct VehicleStruct
@@ -487,6 +489,7 @@ public:
     void DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawNPC2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawNPC3(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawNPC4(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
     void InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
@@ -537,8 +540,10 @@ public:
     float GetTestTimer() const { return static_cast<float>(m_testTimer); };
     void PushAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle) { m_npcAI->PushAiAvoidanceTarget(aAvoidancePos, aVehicle); };
     void PushImpactForce(Utility::ImpactForce aImpact) { m_vehicleStruct00.vehicleData.impactForceVec.push_back(aImpact); };
-    void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
-    void PushImpulseForce(Utility::ImpulseForce aImpulse) { m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); };
+    //void PushImpactTorque(Utility::Torque aTorque) { m_vehicleStruct00.vehicleData.impactTorqueVec.push_back(aTorque); };
+    //void PushImpulseForce(Utility::ImpulseForce aImpulse) { m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); };
+    void PushImpactTorque(Utility::Torque aTorque);
+    void PushImpulseForce(Utility::ImpulseForce aImpulse);
 
     void SetCollisionVal(const bool aIsCollisionTrue);
     void SetExplosionTrue() { m_vehicleStruct00.vehicleData.isExploding = true; };

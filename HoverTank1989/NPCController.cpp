@@ -71,6 +71,22 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     const float maxExplosionRange = m_fireControl->GetMaxExplosionImpactRadius();
                     const float distanceToExplosion = DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos());
                     float distanceMod = 1.0f - (distanceToExplosion / maxExplosionRange);
+                    if (distanceMod > 1.0f || distanceMod < 0.0f)
+                    {
+                        if (distanceMod > 1.0f)
+                        {
+                            distanceMod = 1.0f;
+                            int testBreak = 0;
+                            testBreak++;
+                        }
+                        if (distanceMod < 0.0f)
+                        {
+                            distanceMod = 0.0f;
+                            int testBreak = 0;
+                            testBreak++;
+                        }
+ 
+                    }
                     const float maxExplosionForce = m_fireControl->GetMaxExplosionForce();
                     const float explosionForce = maxExplosionForce * distanceMod;
                     const float impulseTimeTotal = 1.0f;
