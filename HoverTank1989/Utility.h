@@ -43,6 +43,7 @@ public:
         float maxMagnitude = 0.0f;
         DirectX::SimpleMath::Vector3 torqueArm = DirectX::SimpleMath::Vector3::Zero;
         float totalTime = 0.0f;
+        int tickCount = 0;
     };
 
     static void UpdateImpulseForceBellCurve(ImpulseForce& aImpulseForce, const float aTimeDelta)
@@ -53,6 +54,12 @@ public:
         {
             aImpulseForce.isActive = false;
             aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+        }
+        else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) > aImpulseForce.totalTime)
+        {
+            aImpulseForce.isActive = false;
+            const float magMod = 0.5f;
+            aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
         }
         else
         {
@@ -82,6 +89,19 @@ public:
                 }
                 aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
             }
+        }
+        if (aImpulseForce.isActive == true)
+        {
+            aImpulseForce.tickCount++;
+        }
+        else
+        {
+            aImpulseForce.tickCount = 0;
+        }
+        if (aImpulseForce.tickCount > 30)
+        {
+            int testBreak = 0;
+            testBreak++;
         }
     }
 

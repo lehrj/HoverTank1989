@@ -2635,14 +2635,10 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.playerPos = DirectX::SimpleMath::Vector3::Zero;
 
-    float xExtent = dimensions.x; 
-    float yExtent = dimensions.y;
-    float zExtent = dimensions.z;
-    xExtent = 2.2f * 2.0f;
-    yExtent = 0.5f * 2.0f;
-    zExtent = 1.5f * 2.0f;
-
-    float mass = 7.0f;
+    const float xExtent = aVehicleStruct.vehicleData.tensorDimensions.x; 
+    const float yExtent = aVehicleStruct.vehicleData.tensorDimensions.y;
+    const float zExtent = aVehicleStruct.vehicleData.tensorDimensions.z;
+    const float mass = aVehicleStruct.vehicleData.tensorMass;
     // cuboid
     aVehicleStruct.vehicleData.localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
     aVehicleStruct.vehicleData.localInertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
@@ -2775,39 +2771,20 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
 
     velocityUpdate += m_vehicleStruct00.vehicleData.collisionImpulseForceSum;
 
-    DirectX::SimpleMath::Vector3 testAngAccelVec = angAccelVecTensorUpdate;
-
-    float angAirDensity = m_environment->GetAirDensity();
-    //float angDragCoefficient = aHeli->dragCoefficient;
-    float angDragCoefficient = 0.3f;
-    float angFrontSurfaceArea = aVehicle->frontalArea;
-    float angVelocity = newQ.angularVelocityVec.Length();
-    float angFrontDragResistance = 0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity;
-    angVelocity = newQ.angularVelocityVec.Length();
-    angDragCoefficient = 10.3f;
-    angDragCoefficient = 1.3f;
-    angAirDensity = m_environment->GetAirDensity();
-    angFrontDragResistance = 0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity;
+    const float angAirDensity = m_environment->GetAirDensity();
+    const float angDragCoefficient = aVehicle->angularDragCoefficient;
+    const float angFrontSurfaceArea = aVehicle->frontalArea;
+    const float angVelocity = newQ.angularVelocityVec.Length();
+    const float angFrontDragResistance = 0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity;
     DirectX::SimpleMath::Vector3 angVelNormVec = aVehicle->q.angularVelocityVec;
     angVelNormVec.Normalize();
-  
     DirectX::SimpleMath::Vector3 angDampeningVec = angVelNormVec * (-angFrontDragResistance);
-
     DirectX::SimpleMath::Matrix inverseAlignment = aVehicle->alignment;
     inverseAlignment = inverseAlignment.Invert();
- 
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->localInverseInertiaMatrixTest);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->alignment);
-
     angAccelVecTensorUpdate += angDampeningVec;
-
-
-    if (angAccelVecTensorUpdate.Length() > 100000000.0f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
 
     aDQ->bodyTorqueForce = bodyTorqueUpdate;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);

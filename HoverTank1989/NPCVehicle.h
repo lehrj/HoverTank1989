@@ -451,6 +451,14 @@ struct VehicleData
     DirectX::SimpleMath::Matrix localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
 
+    const float angularDragCoefficient = 0.8f;
+    const float tensorMass = 700.0f;
+    //aVehicleStruct.vehicleData.mass = 700.0f;
+    //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(4.4f, 1.0f, 3.0f);
+    //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
+    const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(7.0f, 3.5f, 5.0f);
+    //DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
+
     int testExplodingStepCount = 0;
 };
 
@@ -655,6 +663,8 @@ private:
 
     float m_testLightRotation = 0.0f;
     float m_testShapeRotation = 0.0f;
+
+
 
 public:
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

@@ -158,7 +158,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.directionNorm = impactNorm;
 
                     explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
-                    explosionImpulseForce.torqueArm *= 5.0f;
+                    //explosionImpulseForce.torqueArm *= 5.0f;
                     explosionImpulseForce.totalTime = impulseTimeTotal;
 
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
@@ -186,6 +186,12 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                 projectileForce.impactMass = aProjectile.mass;
                 projectileForce.impactVelocity = aProjectile.velocity;
                 m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
+
+                float testDuration1 = (aProjectile.collisionSphere.Radius * 1.0f) / aProjectile.velocity.Length();
+                float testDuration2 = (aProjectile.collisionSphere.Radius * 2.0f) / aProjectile.velocity.Length();
+                float testDuration3 = (aProjectile.collisionSphere.Radius * 3.0f) / aProjectile.velocity.Length();
+                float testDuration4 = (aProjectile.collisionSphere.Radius * 4.0f) / aProjectile.velocity.Length();
+
                 isCollisionTrue = true;
                 aVehicleHitId = m_npcVec[i]->GetID();
             }
