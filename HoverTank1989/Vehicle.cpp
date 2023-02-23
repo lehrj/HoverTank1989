@@ -3282,8 +3282,6 @@ void Vehicle::UpdateTerrainNormTorque()
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(testVal);
     //terrainNorm = DirectX::SimpleMath::Vector3::Transform(terrainNorm, rotMat);
 
-    m_debugData->DebugPushUILineDecimalNumber("m_testTimer2 = ", m_testTimer2, "");
-    m_debugData->PushDebugLine(m_heli.q.position, terrainNorm, 20.00f, 0.0f, DirectX::Colors::Blue);
 
     float forcePercentage = 1.0f - (m_heli.altitude / groundNormalForceRange);
     forcePercentage = 0.5f;
@@ -4150,13 +4148,13 @@ void Vehicle::UpdateTestDrivetrainTorque4(const float aTimer)
 
     //lateralForce = (m_heli.controlInput.cyclicInputRoll * torqueMax) * DirectX::SimpleMath::Vector3::UnitY;
     //longitudinalForce = (m_heli.controlInput.cyclicInputPitch * torqueMax) * DirectX::SimpleMath::Vector3::UnitY;
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputRoll = ", m_heli.controlInput.cyclicInputRoll, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputPitch = ", m_heli.controlInput.cyclicInputPitch, "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputRoll = ", m_heli.controlInput.cyclicInputRoll, "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputPitch = ", m_heli.controlInput.cyclicInputPitch, "");
 
     //m_heli.controlInput.cyclicInputRoll, m_heli.controlInput.cyclicInputPitch
     //lateralForce = (m_heli.controlInput.cyclicNormWorld.z * torqueMax) * m_heli.up;
     //longitudinalForce = (-m_heli.controlInput.cyclicNormWorld.x * torqueMax) * m_heli.up;
-
+    /*
     m_debugData->DebugPushUILineDecimalNumber("longitudinalForce.Length() = ", longitudinalForce.Length(), "");
     m_debugData->PushDebugLineScaled(m_heli.centerOfMass, longitudinalForce, 2.0f, 1.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->DebugPushUILineDecimalNumber("lateralForce.Length() = ", lateralForce.Length(), "");
@@ -4164,7 +4162,7 @@ void Vehicle::UpdateTestDrivetrainTorque4(const float aTimer)
 
     m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicNormWorld.Length() = ", m_heli.controlInput.cyclicNormWorld.Length(), "");
     m_debugData->PushDebugLineScaled(m_heli.centerOfMass, m_heli.controlInput.cyclicNormWorld, 2.0f, 1.0f, 0.0f, DirectX::Colors::Red);
-
+    */
     Utility::Torque lateralTorque = Utility::GetTorqueForce(torqueArmLateral, lateralForce);
     Utility::Torque longitudinalTorque = Utility::GetTorqueForce(torqueArmLongitudinal, longitudinalForce);
 
@@ -4767,8 +4765,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     }
 
     //m_debugData->DebugClearUI();
-    m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
-    m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
+    //m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
 
     if (m_heli.forward.Dot(m_heli.q.velocity) < 0.0)
     {
@@ -5017,7 +5014,7 @@ void Vehicle::FireWeapon()
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
 
         m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
-        m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
+        //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
     }
 }
 

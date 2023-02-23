@@ -2972,7 +2972,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& 
     DirectX::SimpleMath::Vector3 gravityForce = -m_vehicleStruct00.environment->GetGravityVec();
     DirectX::SimpleMath::Vector3 gravityTorqueArm = rotorPos - centerMassPos;
     Utility::Torque gravTorque = Utility::GetTorqueForce(gravityTorqueArm, gravityForce);
-    gravTorque.magnitude *= aTimeStep;
+    //gravTorque.magnitude *= aTimeStep;
 
     DirectX::SimpleMath::Vector3 tailRotorTorqueArm = m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos - centerMassPos;
     DirectX::SimpleMath::Vector3 tailForce = -m_vehicleStruct00.vehicleData.right * (m_vehicleStruct00.vehicleData.controlInput.steeringInput) * 1.0f;
@@ -3216,10 +3216,15 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
     torqueSum.magnitude = 0.0f;
     for (int i = 0; i < m_vehicleStruct00.vehicleData.impulseForceVec.size(); ++i)
     {
+        Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
+        Utility::UpdateImpulseForceBellCurve2(testImpulse, static_cast<float>(aTimeDelta));
+
         Utility::UpdateImpulseForceBellCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        Utility::ImpulseForce testImpulse2 = m_vehicleStruct00.vehicleData.impulseForceVec[i];
+
         if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)
         {
-            m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude *= aTimeDelta;
+            //m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude *= aTimeDelta;
             forceSum += m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm;
 
             Utility::Torque torqueImpulse = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueArm,
@@ -3433,8 +3438,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
 
-    //m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-    //UpdateControlInputFromAi();
+    m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+    UpdateControlInputFromAi();
 
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked == true)
     {

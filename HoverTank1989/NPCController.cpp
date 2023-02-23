@@ -181,11 +181,27 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
             if (m_npcVec[i]->GetCollisionData().Intersects(aProjectile.collisionSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aProjectile.collisionSphere) == true)
             {
                 m_npcVec[i]->SetCollisionVal(true);
+                /*
                 Utility::ImpactForce projectileForce;
-                projectileForce.impactModifier = aProjectile.collisionModifier;
+                projectileForce.impactModifier = aProjectile.collisionMagnitudeMod;
                 projectileForce.impactMass = aProjectile.mass;
                 projectileForce.impactVelocity = aProjectile.velocity;
                 m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
+                */
+
+                Utility::ImpulseForce impulseToVec;
+                impulseToVec.currentMagnitude = 0.0f;
+                impulseToVec.currentTime = 0.0f;
+                impulseToVec.directionNorm = aProjectile.velocity;
+                impulseToVec.directionNorm.Normalize();
+                impulseToVec.isActive = true;
+                impulseToVec.maxMagnitude = (0.5f * aProjectile.mass * aProjectile.velocity * aProjectile.velocity).Length();
+                impulseToVec.maxMagnitude *= aProjectile.collisionMagnitudeMod;
+                impulseToVec.torqueArm = aProjectile.collisionSphere.Center - m_npcVec[i]->GetCenterOfMass();
+                impulseToVec.totalTime = (aProjectile.collisionDurationMod) / aProjectile.velocity.Length();
+
+                impulseToVec.totalTime = 0.05f;
+                m_npcVec[i]->PushImpulseForce(impulseToVec);
 
                 float testDuration1 = (aProjectile.collisionSphere.Radius * 1.0f) / aProjectile.velocity.Length();
                 float testDuration2 = (aProjectile.collisionSphere.Radius * 2.0f) / aProjectile.velocity.Length();
@@ -312,10 +328,13 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 0.1f;
     const float high = 5.0f;
-    const float zPosOffSet = 12.0f;
+    //const float zPosOffSet = 12.0f;
+    const float zPosOffSet = 20.0f;
     float baseHeight = 10.0f;
-    const int rows = 6;
-    const int columns = 4;
+    //const int rows = 6;
+    //const int columns = 4;
+    const int rows = 1;
+    const int columns = 5;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)

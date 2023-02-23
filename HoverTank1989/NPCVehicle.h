@@ -512,6 +512,8 @@ public:
     float GetAvoidanceRadius() const { return m_npcAI->GetAvoidanceRadius(); };
     NPCVehicle const* GetAvoidanceNPCTarget() { return m_npcAI->GetAvoidanceTarget(); };
 
+    const DirectX::SimpleMath::Vector3 GetCenterOfMass() const { return m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos; };
+
     const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     float GetCollisionDetectionRange() const { return m_vehicleStruct00.vehicleData.maxCollisionDetectionRange; };
     float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
