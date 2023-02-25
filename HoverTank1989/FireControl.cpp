@@ -633,13 +633,15 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
         firedProjectile.isCollisionTrue = false;
         firedProjectile.isDeleteTrue = false;
         firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
-
+        
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
         firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
-
         firedProjectile.time = 0.0f;
 
         m_projectileVec.push_back(firedProjectile);
@@ -689,17 +691,20 @@ void FireControl::FireDefaultProjectile(const AmmoType aAmmoType, const DirectX:
         
         firedProjectile.ammoData = firedAmmo;
         firedProjectile.q.position = aLaunchPos;
-        firedProjectile.q.velocity = (m_ammoExplosive.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.q.velocity = (firedAmmo.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
         firedProjectile.isCollisionTrue = false;
         firedProjectile.isDeleteTrue = false;
         firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
         firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
-
+        
         firedProjectile.time = 0.0f;
 
         m_projectileVec.push_back(firedProjectile);
@@ -722,7 +727,10 @@ void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLa
         firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
         firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
@@ -753,7 +761,10 @@ void FireControl::FireProjectileMachineGun(const DirectX::SimpleMath::Vector3 aL
         firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
         firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
@@ -780,7 +791,10 @@ void FireControl::FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchP
         firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
 
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
         firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
@@ -812,6 +826,10 @@ void FireControl::FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaun
         firedProjectile.time = 0.0f;
 
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
+        firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
@@ -860,6 +878,10 @@ void FireControl::FireProjectileShotGun2(const DirectX::SimpleMath::Vector3 aLau
         firedProjectile.time = 0.0f;
 
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
+        firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
@@ -991,6 +1013,10 @@ void FireControl::FireProjectileShotGun3(const DirectX::SimpleMath::Vector3 aLau
         firedProjectile.time = 0.0f;
 
         // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
+        firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
@@ -1218,7 +1244,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.cooldown = 0.9f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
-    aAmmo.ammoData.impactModifier = 4.0f;
+    aAmmo.ammoData.impactModifier = 14.0f;
     aAmmo.ammoData.launchVelocity = 165.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
@@ -1362,7 +1388,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_environment = aEnvironment;
     m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
     //m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
-
+    m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
 
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
@@ -1718,7 +1744,7 @@ void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelt
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)
 {
-    CheckCollisions();
+    //CheckCollisions();
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
         RungeKutta4(&m_projectileVec[i], aTimeDelta);
@@ -1731,6 +1757,8 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
             UpdateMirv(m_projectileVec[i], aTimeDelta);
         }
     }
+
+    CheckCollisions();
 
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)

@@ -88,11 +88,21 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
  
                     }
                     const float maxExplosionForce = m_fireControl->GetMaxExplosionForce();
-                    const float explosionForce = maxExplosionForce * distanceMod;
+                    float explosionForce = maxExplosionForce * distanceMod;
+                    if (explosionForce > maxExplosionForce)
+                    {
+                        int testBreak = 0;
+                        testBreak++;
+                    }
+                    explosionForce = maxExplosionForce;
                     const float impulseTimeTotal = 1.0f;
                     DirectX::SimpleMath::Vector3 impactNorm = m_npcVec[i]->GetPos() - aBoundingSphere.Center;
                     impactNorm.Normalize();
-
+                    if (impactNorm.Length() < 0.9f)
+                    {
+                        int testBreak = 0;
+                        testBreak++;
+                    }
                     Utility::ImpulseForce explosionImpulseForce;
                     explosionImpulseForce.currentMagnitude = 0.0f;
                     explosionImpulseForce.currentTime = 0.0f;
@@ -155,6 +165,12 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
 
                     impactNorm = impactPos - aBoundingSphere.Center;
                     impactNorm.Normalize();
+                    //impactNorm = DirectX::SimpleMath::Vector3::Zero;
+                    if (impactNorm.Length() < 0.9f)
+                    {
+                        int testBreak = 0;
+                        testBreak++;
+                    }
                     explosionImpulseForce.directionNorm = impactNorm;
 
                     explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
@@ -198,9 +214,17 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                 impulseToVec.maxMagnitude = (0.5f * aProjectile.mass * aProjectile.velocity * aProjectile.velocity).Length();
                 impulseToVec.maxMagnitude *= aProjectile.collisionMagnitudeMod;
                 impulseToVec.torqueArm = aProjectile.collisionSphere.Center - m_npcVec[i]->GetCenterOfMass();
-                impulseToVec.totalTime = (aProjectile.collisionDurationMod) / aProjectile.velocity.Length();
+                const float velocityF = aProjectile.velocity.Length();
+                if (velocityF != 0.0f)
+                {
+                    impulseToVec.totalTime = (aProjectile.collisionDurationMod) / aProjectile.velocity.Length();
+                }
+                else
+                {
+                    const float tol = 0.01f;
+                    impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
+                }
 
-                impulseToVec.totalTime = 0.05f;
                 m_npcVec[i]->PushImpulseForce(impulseToVec);
 
                 float testDuration1 = (aProjectile.collisionSphere.Radius * 1.0f) / aProjectile.velocity.Length();

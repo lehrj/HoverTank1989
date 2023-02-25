@@ -2705,7 +2705,6 @@ void NPCVehicle::PushImpactTorque(Utility::Torque aTorque)
 
 void NPCVehicle::PushImpulseForce(Utility::ImpulseForce aImpulse)
 {
-    
     m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); 
 }
 
@@ -2733,7 +2732,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     velocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 impactForceSum = m_vehicleStruct00.vehicleData.impactForceSum;
+    //DirectX::SimpleMath::Vector3 impactForceSum = m_vehicleStruct00.vehicleData.impactForceSum;
 
     DirectX::SimpleMath::Vector3 angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Zero;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(angAccelVecTensorUpdate, static_cast<float>(aTimeDelta));
@@ -2804,9 +2803,11 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     MotionNPC dq4;
 
     //aVehicle->impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
-    aVehicle->impactForceSum = m_vehicleStruct00.vehicleData.testProjectileImpulse;
-    aVehicle->impactForceSum += GetImpactForceSum(m_vehicleStruct00.vehicleData);
-
+    //aVehicle->impactForceSum = m_vehicleStruct00.vehicleData.testProjectileImpulse;
+    //aVehicle->impactForceSum += GetImpactForceSum(m_vehicleStruct00.vehicleData);
+    //m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.testProjectileImpulse.Length() ", m_vehicleStruct00.vehicleData.testProjectileImpulse.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("GetImpactForceSum(m_vehicleStruct00.vehicleData).Length() ", GetImpactForceSum(m_vehicleStruct00.vehicleData).Length(), "");
+    
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
     // of delta-q values for each of the four steps.
@@ -3216,11 +3217,11 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
     torqueSum.magnitude = 0.0f;
     for (int i = 0; i < m_vehicleStruct00.vehicleData.impulseForceVec.size(); ++i)
     {
-        Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
-        Utility::UpdateImpulseForceBellCurve2(testImpulse, static_cast<float>(aTimeDelta));
-
-        Utility::UpdateImpulseForceBellCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         Utility::ImpulseForce testImpulse2 = m_vehicleStruct00.vehicleData.impulseForceVec[i];
+        Utility::UpdateImpulseForceBellCurve2(testImpulse2, static_cast<float>(aTimeDelta));
+
+        Utility::UpdateImpulseForceBellCurve2(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
         if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)
         {
@@ -3249,6 +3250,19 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
     }
 
     torqueSum.axis.Normalize();
+
+
+    if (forceSum.Length() > 1600000.0f)
+    {
+        float forceSumLength = forceSum.Length();
+        int testBreak = 0.0f;
+        testBreak++;
+    }
+    if (torqueSum.magnitude > 1.0f)
+    {
+        int testBreak = 0.0f;
+        testBreak++;
+    }
     m_vehicleStruct00.vehicleData.testProjectileImpulse = forceSum;
     m_vehicleStruct00.vehicleData.testProjectileTorque = torqueSum;
     m_vehicleStruct00.vehicleData.collisionImpulseForceSum = forceSum;

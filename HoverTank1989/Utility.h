@@ -19,7 +19,7 @@ public:
 
     struct CollisionData
     {
-        float                        collisionDurationMod = 1.0f;
+        float                        collisionDurationMod = 5.0f;
         float                        collisionMagnitudeMod = 1.0f;
         DirectX::BoundingSphere      collisionSphere;
         DirectX::SimpleMath::Vector3 velocity;
@@ -119,13 +119,11 @@ public:
             // so force occurs if impact time is very low
             if (aImpulseForce.currentTime == 0.0f && aTimeDelta > aImpulseForce.totalTime)
             {
-                //aImpulseForce.isActive = false;
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
                 aImpulseForce.currentTime += aTimeDelta;
             }
             else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) > aImpulseForce.totalTime)
             {
-                //aImpulseForce.isActive = false;
                 const float magMod = 0.5f;
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
                 aImpulseForce.currentTime += aTimeDelta;
@@ -159,6 +157,7 @@ public:
                     aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
                 }
             }
+
             if (aImpulseForce.isActive == true)
             {
                 aImpulseForce.tickCount++;
