@@ -187,7 +187,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
     return isCollisionTrue;
 }
 
-bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId)
+bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive)
 {
     bool isCollisionTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
