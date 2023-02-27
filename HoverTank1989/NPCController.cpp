@@ -94,7 +94,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                         int testBreak = 0;
                         testBreak++;
                     }
-                    explosionForce = maxExplosionForce;
+                    //explosionForce = maxExplosionForce;
                     const float impulseTimeTotal = 1.0f;
                     DirectX::SimpleMath::Vector3 impactNorm = m_npcVec[i]->GetPos() - aBoundingSphere.Center;
                     impactNorm.Normalize();
@@ -103,6 +103,12 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                         int testBreak = 0;
                         testBreak++;
                     }
+                    else
+                    {
+                        int testBreak = 0;
+                        testBreak++;
+                    }
+
                     Utility::ImpulseForce explosionImpulseForce;
                     explosionImpulseForce.currentMagnitude = 0.0f;
                     explosionImpulseForce.currentTime = 0.0f;
@@ -197,6 +203,12 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
             if (m_npcVec[i]->GetCollisionData().Intersects(aProjectile.collisionSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aProjectile.collisionSphere) == true)
             {
                 m_npcVec[i]->SetCollisionVal(true);
+                if (aIsExplosive == true)
+                {
+                    m_npcVec[i]->SetExplosionTrue();
+                    m_fireControl->PushVehicleExplosion(m_npcVec[i]->GetPos(), m_npcVec[i]->GetID());
+                }
+
                 /*
                 Utility::ImpactForce projectileForce;
                 projectileForce.impactModifier = aProjectile.collisionMagnitudeMod;
