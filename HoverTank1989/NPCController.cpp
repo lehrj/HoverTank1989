@@ -180,7 +180,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.directionNorm = impactNorm;
 
                     explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
-                    //explosionImpulseForce.torqueArm *= 5.0f;
+                    explosionImpulseForce.torqueArm *= m_fireControl->GetExplosiveTorqueArmMod();
                     explosionImpulseForce.totalTime = impulseTimeTotal;
 
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);

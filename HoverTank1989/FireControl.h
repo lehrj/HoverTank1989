@@ -262,7 +262,9 @@ private:
     AmmoType m_currentAmmoType;
     MuzzleFlash m_muzzleFlash;
 
+    const float m_explosiveTorqueArmMod = 5.0f;
 public:
+    float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
     float GetMaxExplosionForce() const { return m_explosionStruct.maxExplosionForce; };
     float GetMaxExplosionImpactRadius() const { return m_explosionStruct.maxExplosionImpactRadius; };

@@ -177,6 +177,9 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
   
+
+    m_debugData->PushDebugLine(aModel.muzzlePosWorld, aModel.weaponDirWorld, 200.0f, 0.0, DirectX::Colors::Red);
+
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane = aPlane;
     DirectX::SimpleMath::Vector3 modelPos = aPos;
