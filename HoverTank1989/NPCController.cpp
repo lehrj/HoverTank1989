@@ -54,14 +54,15 @@ void NPCController::AirDropNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     }
 }
 
-bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere)
+bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere, const double aTimeDelta, const float aRemainingDuration)
 {
     bool isCollisionTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         if (DirectX::SimpleMath::Vector3::Distance(aBoundingSphere.Center, m_npcVec[i]->GetPos()) < (m_npcVec[i]->GetCollisionDetectionRange() + aBoundingSphere.Radius) && m_npcVec[i]->GetIsExploding() == false && m_npcVec[i]->GetIsDead() == false)
         {
-            if (m_npcVec[i]->GetIsExploding() == false)
+            //if (m_npcVec[i]->GetIsExploding() == false)
+            if (m_npcVec[i]->GetIsExploding() == false || 1 == 1)
             {
                 if (m_npcVec[i]->GetCollisionData().Intersects(aBoundingSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aBoundingSphere) == true)
                 {
@@ -95,7 +96,9 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                         testBreak++;
                     }
                     //explosionForce = maxExplosionForce;
-                    const float impulseTimeTotal = 1.0f;
+                    //const float impulseTimeTotal = 1.0f;
+                    const float impulseTimeTotal = aRemainingDuration;
+                    //const float impulseTimeTotal = static_cast<float>(aTimeDelta);
                     DirectX::SimpleMath::Vector3 impactNorm = m_npcVec[i]->GetPos() - aBoundingSphere.Center;
                     impactNorm.Normalize();
                     if (impactNorm.Length() < 0.9f)
@@ -184,6 +187,15 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.totalTime = impulseTimeTotal;
 
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
+
+                    Utility::ImpulseForce testForce = explosionImpulseForce;
+                    Utility::UpdateImpulseForceBellCurve(testForce, static_cast<float>(aTimeDelta));
+                    float testMag1 = testForce.currentMagnitude;
+                    Utility::UpdateImpulseForceBellCurve(testForce, static_cast<float>(aTimeDelta));
+                    float testMag2 = testForce.currentMagnitude;
+                    Utility::UpdateImpulseForceBellCurve(testForce, static_cast<float>(aTimeDelta));
+                    float testMag3 = testForce.currentMagnitude;
+
 
                     isCollisionTrue = true;
                 }

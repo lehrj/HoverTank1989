@@ -1382,8 +1382,8 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 
     //m_explosionStruct.maxExplosionForce = 10000000.0f;
     //m_explosionStruct.maxExplosionForce = 100.0f;
-    //m_explosionStruct.maxExplosionForce = 1000000.0f;
-    m_explosionStruct.maxExplosionForce = 100000.0f;
+    m_explosionStruct.maxExplosionForce = 1000000.0f;
+    //m_explosionStruct.maxExplosionForce = 100000.0f;
     m_explosionStruct.maxExplosionImpactRadius = aExplosionData.maxRadius * 2.0f;
 
     m_explosionStruct.explosionVec.clear();
@@ -1709,7 +1709,8 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             m_explosionStruct.explosionVec[i].explosionMatrix8 *= m_explosionStruct.explosionVec[i].rotationVariationMatrix;
             m_explosionStruct.explosionVec[i].explosionMatrix8 *= m_explosionStruct.explosionVec[i].localExplosionMatrix;
 
-            bool isNpcCollisionTrue = m_npcController->CheckExplosionCollisions(m_explosionStruct.explosionVec[i].collisionSphere);
+            const float remainingDuration = m_explosionStruct.explosionVec[i].totalDuration - m_explosionStruct.explosionVec[i].currentDuration;
+            bool isNpcCollisionTrue = m_npcController->CheckExplosionCollisions(m_explosionStruct.explosionVec[i].collisionSphere, aTimeDelta, remainingDuration);
             if (isNpcCollisionTrue == true)
             {
                 // to do : add collision detonation to vehicle

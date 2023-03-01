@@ -51,7 +51,7 @@ public:
     {
         // check if tick time is less than total time and set to max magnatiude if so
         // so force occurs if impact time is very low
-        if (aImpulseForce.currentTime == 0.0f && aTimeDelta > aImpulseForce.totalTime)
+        if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
         {
             aImpulseForce.isActive = false;
             aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
