@@ -1382,7 +1382,8 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
 
     //m_explosionStruct.maxExplosionForce = 10000000.0f;
     //m_explosionStruct.maxExplosionForce = 100.0f;
-    m_explosionStruct.maxExplosionForce = 1000000.0f;
+    //m_explosionStruct.maxExplosionForce = 1000000.0f;
+    m_explosionStruct.maxExplosionForce = 100000.0f;
     m_explosionStruct.maxExplosionImpactRadius = aExplosionData.maxRadius * 2.0f;
 
     m_explosionStruct.explosionVec.clear();

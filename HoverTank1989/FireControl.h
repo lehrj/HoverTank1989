@@ -262,7 +262,7 @@ private:
     AmmoType m_currentAmmoType;
     MuzzleFlash m_muzzleFlash;
 
-    const float m_explosiveTorqueArmMod = 5.0f;
+    const float m_explosiveTorqueArmMod = 7.0f;
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
