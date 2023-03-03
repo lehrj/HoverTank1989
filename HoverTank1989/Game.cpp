@@ -495,6 +495,15 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     //UpdateInput(aTimer);
 
+    if (m_npcController->GetIsDebugPauseToggleTrue() == true)
+    {
+        m_isPauseOn = true;
+    }
+    else
+    {
+        m_isPauseOn = false;
+    }
+
     if (m_isPauseOn == false)
     {
         m_debugData->DebugClearUI();
@@ -525,6 +534,10 @@ void Game::Update(DX::StepTimer const& aTimer)
     if (m_isSlowMoOn == true)
     {
         m_isPauseOn = true;
+    }
+    else if (m_isSlowMoOn == false)
+    {
+        m_isPauseOn = false;
     }
 
     //m_shapeScaleMod = Utility::WrapAngle(m_shapeScaleMod + cos(aTimer.GetElapsedSeconds() * 9.0f));
@@ -1020,7 +1033,17 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_isSlowMoOn = false;
+            if (m_isSlowMoOn == true)
+            {
+                //m_isSlowMoOn = false;
+            }
+            else if (m_isSlowMoOn == false)
+            {
+                //m_isSlowMoOn = true;
+            }
+
+            m_npcController->ResetNpcDebugPauseToggle();
+            //m_isSlowMoOn = false;
             //m_camera->ReturnToOverwatchPosition();
         }
     }

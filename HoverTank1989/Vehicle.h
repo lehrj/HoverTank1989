@@ -13,9 +13,9 @@ struct ControlInput
     const float inputDeadZone = 0.001f;  // small deadzone to ignore nominal control input
 
     float       brakeInput = 0.0f;
-    const float breakInputMax = 1.0f;
-    const float breakInputMin = 0.0f;
-    const float breakInputRate = 1.9f;
+    const float brakeInputMax = 1.0f;
+    const float brakeInputMin = 0.0f;
+    const float brakeInputRate = 1.9f;
     bool        brakeIsPressed = false;
     DirectX::SimpleMath::Vector3 brakeForce = DirectX::SimpleMath::Vector3::Zero;
 
@@ -57,12 +57,14 @@ struct ControlInput
     const float yawPedalInputRate = 10.15f;
 
     float weaponPitch;
-    const float weaponPitchInputRate = 0.7f;
+    //const float weaponPitchInputRate = 0.7f;
+    const float weaponPitchInputRate = 0.3f;
     const float weaponPitchMax = Utility::ToRadians(20.0f);
     const float weaponPitchMin = Utility::ToRadians(-20.0f);
 
     float turretYaw;
-    const float turretYawInputRate = 0.7f;
+    //const float turretYawInputRate = 0.7f;
+    const float turretYawInputRate = 0.3f;
     const float turretYawMax = Utility::ToRadians(110.0f);
     const float turretYawMin = Utility::ToRadians(-110.0f);
 };

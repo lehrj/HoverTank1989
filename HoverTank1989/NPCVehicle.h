@@ -525,6 +525,7 @@ public:
     bool GetIsActivated() const { return m_vehicleStruct00.vehicleData.isActivated; };
     bool GetIsExploding() const { return m_vehicleStruct00.vehicleData.isExploding; };
     bool GetIsDead() const { return m_vehicleStruct00.vehicleData.isDead; };
+    bool GetIsDebugPauseToggleTrue() const { return m_isDebugPauseToggleTrue; };
     bool GetIsJumpActive() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpActive; };
     bool GetIsJumpOnCoolDown() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpOnCoolDown; };
     bool GetIsJumpReady() const { return m_vehicleStruct00.vehicleData.jumpData.isJumpReady; };
@@ -666,9 +667,11 @@ private:
     float m_testLightRotation = 0.0f;
     float m_testShapeRotation = 0.0f;
 
+    bool m_isDebugPauseToggleTrue = false;
 
 
 public:
+    void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
 
 };

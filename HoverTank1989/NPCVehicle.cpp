@@ -2706,6 +2706,11 @@ void NPCVehicle::PushImpactTorque(Utility::Torque aTorque)
 void NPCVehicle::PushImpulseForce(Utility::ImpulseForce aImpulse)
 {
     m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); 
+    if (aImpulse.impulseType == Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE)
+    {
+        m_isDebugPauseToggleTrue = true;
+        //m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, DirectX::SimpleMath::Vector3::UnitY, 20.0f, 0.0f, DirectX::Colors::Red);
+    }
 }
 
 void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
@@ -3023,6 +3028,10 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& 
     DirectX::SimpleMath::Vector3 gravVec = gravTorque.axis * gravTorque.magnitude;
     DirectX::SimpleMath::Vector3 impactVec = impactTorque.axis * impactTorque.magnitude;
     DirectX::SimpleMath::Vector3 torqueVec = steeringVec + gravVec + impactVec;
+    if (m_vehicleStruct00.vehicleData.isExploding == true)
+    {
+        torqueVec = steeringVec + impactVec;
+    }
 
     if (impactTorque.axis.Length() < 1.5f && impactTorque.axis.Length() > 0.5f)
     {
@@ -3220,7 +3229,10 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         Utility::ImpulseForce testImpulse2 = m_vehicleStruct00.vehicleData.impulseForceVec[i];
         Utility::UpdateImpulseForceBellCurve2(testImpulse2, static_cast<float>(aTimeDelta));
 
-        Utility::UpdateImpulseForceBellCurve2(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        //Utility::UpdateImpulseForceBellCurve2(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        //Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
+
+        Utility::UpdateImpulseForceCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
         if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)

@@ -185,8 +185,19 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
                     explosionImpulseForce.torqueArm *= m_fireControl->GetExplosiveTorqueArmMod();
                     explosionImpulseForce.totalTime = impulseTimeTotal;
+                    explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
 
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
+                    
+                    m_debugData->PushDebugLine(impactPos, explosionImpulseForce.torqueArm, 20.0f, 0.0f, DirectX::Colors::Red);
+                    m_debugData->PushDebugLinePositionIndicator(impactPos, 10.0f, 0.0f, DirectX::Colors::Blue);
+                    m_debugData->DebugPushUILineDecimalNumber("aBoundingSphere.Radius", aBoundingSphere.Radius, "");
+
+                    DirectX::SimpleMath::Vector3 sphereCenter = aBoundingSphere.Center;
+                    DirectX::SimpleMath::Vector3 sphereTop = aBoundingSphere.Center;
+                    sphereTop.y += (aBoundingSphere.Radius * 0.5f);
+                    m_debugData->PushDebugLinePositionIndicator(sphereCenter, 10.0f, 0.0f, DirectX::Colors::Green);
+                    m_debugData->PushDebugLinePositionIndicator(sphereTop, 10.0f, 0.0f, DirectX::Colors::Teal);
 
                     Utility::ImpulseForce testForce = explosionImpulseForce;
                     Utility::UpdateImpulseForceBellCurve(testForce, static_cast<float>(aTimeDelta));
@@ -292,6 +303,19 @@ void NPCController::DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const Dir
             m_npcVec[i]->DrawNPC3(aView, aProj, aEffect, aInputLayout);
         }
     }
+}
+
+bool NPCController::GetIsDebugPauseToggleTrue()
+{
+    bool isDebugPauseTrue = false;
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetIsDebugPauseToggleTrue() == true)
+        {
+            isDebugPauseTrue = true;
+        }
+    }
+    return isDebugPauseTrue;
 }
 
 DirectX::SimpleMath::Vector3 NPCController::GetNpcAccelVecTest(const unsigned int aId)
@@ -466,6 +490,14 @@ void NPCController::LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition
     }
 }
 
+void NPCController::ResetNpcDebugPauseToggle()
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        m_npcVec[i]->ResetDebugPauseToggle();
+    }
+}
+
 void NPCController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 {
     m_debugData = aDebugPtr;
@@ -488,7 +520,7 @@ void NPCController::SetPlayer(std::shared_ptr<Vehicle> aVehicle)
 
 void NPCController::SetVehicleDeath(const unsigned int aVehicleId)
 {
-    for (int i = 0; i < m_npcVec.size(); ++i)
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         if (m_npcVec[i]->GetID() == aVehicleId)
         {

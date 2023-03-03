@@ -2571,23 +2571,23 @@ void Vehicle::UpdateBrakeForce(const float aTimeStep)
 {
     if (m_heli.controlInput.brakeIsPressed == true)
     {
-        m_heli.controlInput.brakeInput += m_heli.controlInput.breakInputRate * aTimeStep;
-        if (m_heli.controlInput.brakeInput > m_heli.controlInput.breakInputMax)
+        m_heli.controlInput.brakeInput += m_heli.controlInput.brakeInputRate * aTimeStep;
+        if (m_heli.controlInput.brakeInput > m_heli.controlInput.brakeInputMax)
         {
-            m_heli.controlInput.brakeInput = m_heli.controlInput.breakInputMax;
+            m_heli.controlInput.brakeInput = m_heli.controlInput.brakeInputMax;
         }
     }
     else if (m_heli.controlInput.brakeIsPressed == false)
     {
-        m_heli.controlInput.brakeInput -= m_heli.controlInput.breakInputRate * aTimeStep;
-        if (m_heli.controlInput.brakeInput < m_heli.controlInput.breakInputMin)
+        m_heli.controlInput.brakeInput -= m_heli.controlInput.brakeInputRate * aTimeStep;
+        if (m_heli.controlInput.brakeInput < m_heli.controlInput.brakeInputMin)
         {
-            m_heli.controlInput.brakeInput = m_heli.controlInput.breakInputMin;
+            m_heli.controlInput.brakeInput = m_heli.controlInput.brakeInputMin;
         }
     }
     m_heli.controlInput.brakeIsPressed = false;
 
-    if (m_heli.controlInput.brakeInput > m_heli.controlInput.breakInputMin)
+    if (m_heli.controlInput.brakeInput > m_heli.controlInput.brakeInputMin)
     {
         DirectX::SimpleMath::Vector3 antiVelocity = m_heli.q.velocity * -1.0f;
         DirectX::SimpleMath::Vector3 brakeNorm = antiVelocity;

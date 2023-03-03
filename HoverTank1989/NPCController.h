@@ -35,6 +35,8 @@ public:
     void InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment);
     void InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
+    bool GetIsDebugPauseToggleTrue();
+
     DirectX::SimpleMath::Vector3 GetNpcAccelVecTest(const unsigned int aId);
     DirectX::SimpleMath::Matrix GetNpcAlignment(const unsigned int aId);
     int GetNpcCount() { return static_cast<int>(m_npcVec.size()); };
@@ -46,6 +48,7 @@ public:
     void LoadNPCsTestFireRange(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController);
     void LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing);
 
+    void ResetNpcDebugPauseToggle();
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
     void SetNPCEnvironment(Environment const* aEnvironment);
