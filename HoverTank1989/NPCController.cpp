@@ -195,7 +195,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
 
                     DirectX::SimpleMath::Vector3 sphereCenter = aBoundingSphere.Center;
                     DirectX::SimpleMath::Vector3 sphereTop = aBoundingSphere.Center;
-                    sphereTop.y += (aBoundingSphere.Radius * 0.5f);
+                    sphereTop.y += (aBoundingSphere.Radius * 1.0f);
                     m_debugData->PushDebugLinePositionIndicator(sphereCenter, 10.0f, 0.0f, DirectX::Colors::Green);
                     m_debugData->PushDebugLinePositionIndicator(sphereTop, 10.0f, 0.0f, DirectX::Colors::Teal);
 

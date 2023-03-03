@@ -2708,7 +2708,7 @@ void NPCVehicle::PushImpulseForce(Utility::ImpulseForce aImpulse)
     m_vehicleStruct00.vehicleData.impulseForceVec.push_back(aImpulse); 
     if (aImpulse.impulseType == Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE)
     {
-        m_isDebugPauseToggleTrue = true;
+        //m_isDebugPauseToggleTrue = true;
         //m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, DirectX::SimpleMath::Vector3::UnitY, 20.0f, 0.0f, DirectX::Colors::Red);
     }
 }

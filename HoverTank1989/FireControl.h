@@ -263,7 +263,7 @@ private:
     MuzzleFlash m_muzzleFlash;
 
     const float m_explosiveTorqueArmMod = 7.0f;
-    const float m_maxExplosiveForce = 1000000.0f;
+    const float m_maxExplosiveForce = 100000.0f;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
