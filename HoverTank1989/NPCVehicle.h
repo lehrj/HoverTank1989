@@ -578,6 +578,7 @@ public:
 
 private:
     void ActivateJumpLanding();
+    DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity);
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
@@ -669,6 +670,7 @@ private:
 
     bool m_isDebugPauseToggleTrue = false;
 
+    DirectX::SimpleMath::Vector3 m_testTorqueVec = DirectX::SimpleMath::Vector3::Zero;
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

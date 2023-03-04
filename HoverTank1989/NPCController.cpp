@@ -187,17 +187,55 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.totalTime = impulseTimeTotal;
                     explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
 
+                    //m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
+
+                    //////////
+    
+                    DirectX::SimpleMath::Vector3 impactPosToCoM = impactPos - m_npcVec[i]->GetCenterOfMass();
+                    DirectX::SimpleMath::Vector3 testForceNorm = impactPos - aBoundingSphere.Center;
+                    testForceNorm += impactPosToCoM;
+                    DirectX::SimpleMath::Vector3 testForceNorm3 = impactPos - aBoundingSphere.Center;
+                    testForceNorm3 -= impactPosToCoM;
+                    DirectX::SimpleMath::Vector3 testForceNorm4 = impactPos - aBoundingSphere.Center;
+                    testForceNorm4.Normalize();
+                    testForceNorm4 -= impactPosToCoM;
+                    testForceNorm4.Normalize();
+                    DirectX::SimpleMath::Vector3 testForceNorm2 = impactPos - aBoundingSphere.Center;
+                    testForceNorm2.Normalize();
+                    impactPosToCoM.Normalize();
+                    testForceNorm2 += impactPosToCoM;
+                    testForceNorm2.Normalize();
+                    testForceNorm.Normalize();
+                    DirectX::SimpleMath::Vector3 forcePoint = m_npcVec[i]->GetPos() + explosionImpulseForce.torqueArm;
+
+                    explosionImpulseForce.directionNorm = testForceNorm;
+                    explosionImpulseForce.torqueArm.Normalize();
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
-                    
-                    m_debugData->PushDebugLine(impactPos, explosionImpulseForce.torqueArm, 20.0f, 0.0f, DirectX::Colors::Red);
+
+                    m_debugData->PushDebugLineScaled(m_npcVec[i]->GetPos(), explosionImpulseForce.torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
+                   // m_debugData->PushDebugLineScaled(forcePoint, explosionImpulseForce.torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
+                    m_debugData->PushDebugLine(forcePoint, explosionImpulseForce.directionNorm, 20.0f, 0.0f, DirectX::Colors::Blue);
+                    m_debugData->PushDebugLine(forcePoint, impactNorm, 20.0f, 0.0f, DirectX::Colors::Coral);
+                    m_debugData->PushDebugLine(forcePoint, testForceNorm, 25.0f, 0.0f, DirectX::Colors::Teal);
+                    m_debugData->PushDebugLine(forcePoint, testForceNorm2, 20.0f, 0.0f, DirectX::Colors::Yellow);
+                    m_debugData->PushDebugLine(forcePoint, testForceNorm3, 20.0f, 0.0f, DirectX::Colors::Orange);
+                    m_debugData->PushDebugLine(forcePoint, testForceNorm4, 20.0f, 0.0f, DirectX::Colors::HotPink);
+                    m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.x = ", explosionImpulseForce.directionNorm.x, "");
+                    m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.y = ", explosionImpulseForce.directionNorm.y, "");
+                    m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.z = ", explosionImpulseForce.directionNorm.z, "");
+                    /*
+                    m_debugData->PushDebugLine(impactPos, explosionImpulseForce.torqueArm, 20.0f, 0.0f, DirectX::Colors::White);
                     m_debugData->PushDebugLinePositionIndicator(impactPos, 10.0f, 0.0f, DirectX::Colors::Blue);
                     m_debugData->DebugPushUILineDecimalNumber("aBoundingSphere.Radius", aBoundingSphere.Radius, "");
-
+                    m_debugData->PushDebugLine(impactPos, explosionImpulseForce.directionNorm, 20.0f, 0.0f, DirectX::Colors::Teal);
+                    */
+                    /*
                     DirectX::SimpleMath::Vector3 sphereCenter = aBoundingSphere.Center;
                     DirectX::SimpleMath::Vector3 sphereTop = aBoundingSphere.Center;
                     sphereTop.y += (aBoundingSphere.Radius * 1.0f);
                     m_debugData->PushDebugLinePositionIndicator(sphereCenter, 10.0f, 0.0f, DirectX::Colors::Green);
                     m_debugData->PushDebugLinePositionIndicator(sphereTop, 10.0f, 0.0f, DirectX::Colors::Teal);
+                    */
 
                     Utility::ImpulseForce testForce = explosionImpulseForce;
                     Utility::UpdateImpulseForceBellCurve(testForce, static_cast<float>(aTimeDelta));

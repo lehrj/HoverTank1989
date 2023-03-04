@@ -303,9 +303,9 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_explosionStruct.explosionVec[i].lightDir2, lightDir2, t);
         m_explosionStruct.explosionVec[i].lightDir2 = lightDir2;
 
-        aEffect->SetLightDirection(0, m_explosionStruct.explosionVec[i].lightDir0);
-        aEffect->SetLightDirection(1, m_explosionStruct.explosionVec[i].lightDir1);
-        aEffect->SetLightDirection(2, m_explosionStruct.explosionVec[i].lightDir2);
+        //aEffect->SetLightDirection(0, m_explosionStruct.explosionVec[i].lightDir0);
+        //aEffect->SetLightDirection(1, m_explosionStruct.explosionVec[i].lightDir1);
+        //aEffect->SetLightDirection(2, m_explosionStruct.explosionVec[i].lightDir2);
 
 
         //aEffect->SetNormalTexture(m_explosionStruct.normalMapExplosion.Get());
@@ -313,10 +313,10 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
 
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix0);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].explosionCurrentColor);
-        //m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
      
         
-        
+        /*
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix1);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color1);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -349,7 +349,7 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix8);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color8);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
-        
+        */
     }
 }
 
