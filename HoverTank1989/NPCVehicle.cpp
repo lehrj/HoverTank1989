@@ -2837,7 +2837,8 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     const float angFrontSurfaceArea = aVehicle->frontalArea;
     const float angVelocity = newQ.angularVelocityVec.Length();
     const float angFrontDragResistance = 0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity;
-    DirectX::SimpleMath::Vector3 angVelNormVec = aVehicle->q.angularVelocityVec;
+    //DirectX::SimpleMath::Vector3 angVelNormVec = aVehicle->q.angularVelocityVec;
+    DirectX::SimpleMath::Vector3 angVelNormVec = newQ.angularVelocityVec;
     angVelNormVec.Normalize();
     DirectX::SimpleMath::Vector3 angDampeningVec = angVelNormVec * (-angFrontDragResistance);
 
@@ -3060,7 +3061,7 @@ Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& 
 
     impactTorque.axis = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.axis;
     impactTorque.magnitude = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.magnitude;
-    //impactTorque.magnitude *= .0000392f;
+    impactTorque.magnitude *= .0000392f;
 
     DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude);
     float torqueMag = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude;
@@ -3317,10 +3318,10 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         Utility::ImpulseForce testImpulse2 = m_vehicleStruct00.vehicleData.impulseForceVec[i];
         Utility::UpdateImpulseForceBellCurve2(testImpulse2, static_cast<float>(aTimeDelta));
 
-        //Utility::UpdateImpulseForceBellCurve2(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        Utility::UpdateImpulseForceBellCurve2(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         //Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
-        Utility::UpdateImpulseForceCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        //Utility::UpdateImpulseForceCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
         if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)

@@ -455,8 +455,8 @@ struct VehicleData
     const float tensorMass = 700.0f;
     //aVehicleStruct.vehicleData.mass = 700.0f;
     //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(4.4f, 1.0f, 3.0f);
-    //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
-    const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(7.0f, 3.5f, 5.0f);
+    const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
+    //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(7.0f, 3.5f, 5.0f);
     //DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
 
     int testExplodingStepCount = 0;
