@@ -453,7 +453,6 @@ struct VehicleData
 
     const float angularDragCoefficient = 0.8f;
     const float tensorMass = 700.0f;
-    //aVehicleStruct.vehicleData.mass = 700.0f;
     //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(4.4f, 1.0f, 3.0f);
     const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
     //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(7.0f, 3.5f, 5.0f);
@@ -579,6 +578,7 @@ public:
 private:
     void ActivateJumpLanding();
     DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity);
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
@@ -672,6 +672,8 @@ private:
 
     DirectX::SimpleMath::Vector3 m_testTorqueVec = DirectX::SimpleMath::Vector3::Zero;
 
+    //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 118.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;

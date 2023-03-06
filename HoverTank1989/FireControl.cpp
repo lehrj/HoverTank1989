@@ -1255,7 +1255,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.cooldown = 0.9f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
-    aAmmo.ammoData.impactModifier = 14.0f;
+    aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 165.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 45.0f;
@@ -1271,7 +1271,7 @@ void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
     aAmmo.ammoData.cooldown = 1.7f;
     aAmmo.ammoData.dragCoefficient = 0.4f;
     aAmmo.ammoData.impactDurration = 0.3f;
-    aAmmo.ammoData.impactModifier = 4.0f;
+    aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 115.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 55.0f;
@@ -1401,7 +1401,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_environment = aEnvironment;
     m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
     //m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
-    m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
+    //m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
 
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
@@ -1516,7 +1516,7 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
     float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
     DirectX::SimpleMath::Vector3 velocityNorm = newQ.velocity;
     velocityNorm.Normalize();
-    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (frontDragResistance);
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
 
     DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec() * mass;
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
@@ -1768,6 +1768,7 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
         RungeKutta4(&m_projectileVec[i], aTimeDelta);
+        m_debugData->DebugPushUILineDecimalNumber("proj velocity = ", m_projectileVec[i].q.velocity.Length(), "");
     }
 
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)

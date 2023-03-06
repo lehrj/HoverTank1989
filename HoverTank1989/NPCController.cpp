@@ -284,6 +284,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                 impulseToVec.directionNorm = aProjectile.velocity;
                 impulseToVec.directionNorm.Normalize();
                 impulseToVec.isActive = true;
+                float impactVelocity = aProjectile.velocity.Length();
                 impulseToVec.maxMagnitude = (0.5f * aProjectile.mass * aProjectile.velocity * aProjectile.velocity).Length();
                 impulseToVec.maxMagnitude *= aProjectile.collisionMagnitudeMod;
                 impulseToVec.torqueArm = aProjectile.collisionSphere.Center - m_npcVec[i]->GetCenterOfMass();
@@ -298,6 +299,12 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                     impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
                 }
 
+                float forceByDistance = (1.0f / (2.0f * 1.0f)) * aProjectile.mass * (impactVelocity * impactVelocity);
+                float collisionTime = 1.0f / impactVelocity;
+                float forceByTime = (aProjectile.mass * impactVelocity) / impulseToVec.totalTime;
+                float forceByTime2 = (aProjectile.mass * impactVelocity) / collisionTime;
+                //impulseToVec.maxMagnitude = forceByTime2;
+                //impulseToVec.totalTime = collisionTime;
                 m_npcVec[i]->PushImpulseForce(impulseToVec);
 
                 float testDuration1 = (aProjectile.collisionSphere.Radius * 1.0f) / aProjectile.velocity.Length();
@@ -434,7 +441,8 @@ void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Mic
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
     const float xOrgVal = 70.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 0.1f;
     const float high = 5.0f;
@@ -444,7 +452,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
-    const int columns = 5;
+    const int columns = 1;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
