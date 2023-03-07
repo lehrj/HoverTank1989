@@ -1025,8 +1025,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             //m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
             //m_isSlowMoOn = true;
-            m_camera->TransitionToNpcSpringCamera();
+            //m_camera->TransitionToNpcSpringCamera();
             //m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERANPC);
+            m_npcController->ToggleDebugBool();
         }
     }
     if (m_kbStateTracker.pressed.V)

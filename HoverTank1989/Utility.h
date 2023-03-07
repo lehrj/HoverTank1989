@@ -52,6 +52,7 @@ public:
         bool isActive = false;
         float maxMagnitude = 0.0f;
         DirectX::SimpleMath::Vector3 torqueArm = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::Zero;
         float totalTime = 0.0f;
         int tickCount = 0;
     };

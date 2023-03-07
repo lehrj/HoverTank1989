@@ -180,7 +180,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                         int testBreak = 0;
                         testBreak++;
                     }
-                    explosionImpulseForce.directionNorm = impactNorm;
+                    //explosionImpulseForce.directionNorm = impactNorm;
 
                     explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
                     explosionImpulseForce.torqueArm *= m_fireControl->GetExplosiveTorqueArmMod();
@@ -207,9 +207,12 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     testForceNorm2.Normalize();
                     testForceNorm.Normalize();
                     DirectX::SimpleMath::Vector3 forcePoint = m_npcVec[i]->GetPos() + explosionImpulseForce.torqueArm;
+                    explosionImpulseForce.torqueForceNorm = testForceNorm;
+                    explosionImpulseForce.torqueForceNorm.Normalize();
 
-                    explosionImpulseForce.directionNorm = testForceNorm;
-                    explosionImpulseForce.torqueArm.Normalize();
+                    //explosionImpulseForce.directionNorm = testForceNorm;
+
+                    //explosionImpulseForce.torqueArm.Normalize();
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
 
                     m_debugData->PushDebugLineScaled(m_npcVec[i]->GetPos(), explosionImpulseForce.torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
@@ -288,6 +291,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                 impulseToVec.maxMagnitude = (0.5f * aProjectile.mass * aProjectile.velocity * aProjectile.velocity).Length();
                 impulseToVec.maxMagnitude *= aProjectile.collisionMagnitudeMod;
                 impulseToVec.torqueArm = aProjectile.collisionSphere.Center - m_npcVec[i]->GetCenterOfMass();
+                impulseToVec.torqueForceNorm = impulseToVec.directionNorm;
                 const float velocityF = aProjectile.velocity.Length();
                 if (velocityF != 0.0f)
                 {
@@ -443,7 +447,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float xOrgVal = 70.0f;
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
     const float low = 0.1f;
     const float high = 5.0f;
     //const float zPosOffSet = 12.0f;
@@ -452,7 +456,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
-    const int columns = 1;
+    const int columns = 2;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -1098,5 +1102,13 @@ void NPCController::TestPositionChange()
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->TestPositionChange();
+    }
+}
+
+void NPCController::ToggleDebugBool()
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        m_npcVec[i]->ToggleDebugBool();
     }
 }

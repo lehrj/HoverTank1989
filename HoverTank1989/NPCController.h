@@ -55,6 +55,7 @@ public:
     void SetPlayer(std::shared_ptr<Vehicle> aVehicle);
     void SetVehicleDeath(const unsigned int aVehicleId);
     void TestPositionChange();
+    void ToggleDebugBool();
     void UnlockJumpAbility();
     void UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const double aTimeDelta);
     void UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta);

@@ -579,6 +579,7 @@ private:
     void ActivateJumpLanding();
     DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragAngular3(const DirectX::SimpleMath::Vector3 aAngVelocity);
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
@@ -606,7 +607,10 @@ private:
     void TerrainImpactHandling();
 
     void UpdateAlignment();
+    void UpdateAngularDrag(const float aTimeDelta);
+
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
+    Utility::Torque UpdateBodyTorqueRungeOld(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
     void UpdateControlInput();
     void UpdateControlInputFromAi();
     void UpdateForceTorqueVecs();
@@ -669,13 +673,21 @@ private:
     float m_testShapeRotation = 0.0f;
 
     bool m_isDebugPauseToggleTrue = false;
-
+    bool m_isDebugToggleTrue = false;
     DirectX::SimpleMath::Vector3 m_testTorqueVec = DirectX::SimpleMath::Vector3::Zero;
 
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 118.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+
+    DirectX::SimpleMath::Vector3 m_angDampTest1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_angDampTest2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_angDampTest3 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_angDampTest4 = DirectX::SimpleMath::Vector3::Zero;
+
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };
+    void ToggleDebugBool();
     DirectX::SimpleMath::Vector3 m_prevImpact = DirectX::SimpleMath::Vector3::Zero;
 
 };

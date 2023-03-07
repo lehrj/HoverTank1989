@@ -1258,7 +1258,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 165.0f;
     aAmmo.ammoData.length = 1.0f;
-    aAmmo.ammoData.mass = 45.0f;
+    aAmmo.ammoData.mass = 1.5f;
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
