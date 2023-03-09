@@ -11,6 +11,21 @@ public:
     static inline float ToDegrees(float r) { return r * 180.0f / GetPi(); };
     static inline float ToRadians(float d) { return d / 180.0f * GetPi(); };
 
+    static void AddScaledVectorToQuat(const DirectX::SimpleMath::Vector3& aVector, const float aScale, DirectX::SimpleMath::Quaternion& aQuat)
+    {
+        DirectX::SimpleMath::Quaternion q;
+        q.w = 0.0f;
+        q.x = aVector.x * aScale;
+        q.y = aVector.y * aScale;
+        q.z = aVector.z * aScale;
+
+        q *= aQuat;
+        aQuat.w += q.w * (0.5f);
+        aQuat.x += q.x * (0.5f);
+        aQuat.y += q.y * (0.5f);
+        aQuat.z += q.z * (0.5f);
+    };
+
     struct Torque
     {
         DirectX::SimpleMath::Vector3 axis;

@@ -447,7 +447,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float xOrgVal = 70.0f;
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitZ;
     const float low = 0.1f;
     const float high = 5.0f;
     //const float zPosOffSet = 12.0f;

@@ -66,6 +66,11 @@ struct MotionNPC
     Utility::Torque              bodyTorqueForce;
     DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
+
+    //DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::Identity;
+    //DirectX::SimpleMath::Matrix orientationMat = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Quaternion orientationQuat;
+    DirectX::SimpleMath::Matrix orientationMat;
 };
 
 enum class NPCType
@@ -608,6 +613,8 @@ private:
     void TerrainImpactHandling();
 
     void UpdateAlignment();
+    void UpdateAlignment2();
+
     void UpdateAngularDrag(const float aTimeDelta);
 
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
@@ -680,7 +687,7 @@ private:
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 118.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 5000.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 90.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(1.0f, 90.0f, 1.0f);
 
     DirectX::SimpleMath::Vector3 m_angDampTest1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_angDampTest2 = DirectX::SimpleMath::Vector3::Zero;
