@@ -450,6 +450,7 @@ struct VehicleData
 
     DirectX::SimpleMath::Matrix localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix worldInertiaTensorMatrixTest = DirectX::SimpleMath::Matrix::Identity;
 
     const float angularDragCoefficient = 0.8f;
     const float tensorMass = 700.0f;
@@ -678,7 +679,8 @@ private:
 
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 118.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 5000.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 90.0f, 0.0f);
 
     DirectX::SimpleMath::Vector3 m_angDampTest1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_angDampTest2 = DirectX::SimpleMath::Vector3::Zero;

@@ -250,7 +250,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::CalculateDragAngular3(const DirectX::Si
 
     DirectX::SimpleMath::Vector3 angVel = m_vehicleStruct00.vehicleData.q.angularVelocityVec;
     //DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * angFrontSurfaceArea * angAirDensity)));
-    DirectX::SimpleMath::Vector3 angularDrag = (((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVel * angVel) * angFrontSurfaceArea * angAirDensity)));
+    DirectX::SimpleMath::Vector3 angularDrag =   angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVel * angVel) * angFrontSurfaceArea * angAirDensity)));
 
     //m_debugData->DebugPushUILineDecimalNumber("angularDrag.L = ", angularDrag.Length(), "");
     return angularDrag;
@@ -2809,11 +2809,60 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.playerPos = DirectX::SimpleMath::Vector3::Zero;
 
-    const float xExtent = aVehicleStruct.vehicleData.tensorDimensions.x; 
-    const float yExtent = aVehicleStruct.vehicleData.tensorDimensions.y;
-    const float zExtent = aVehicleStruct.vehicleData.tensorDimensions.z;
-    const float mass = aVehicleStruct.vehicleData.tensorMass;
+    /*
+    if (aVehicleStruct.vehicleData.id % 2 == 0)
+    {
+        //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
+        float xExtent = aVehicleStruct.vehicleData.tensorDimensions.x;
+        float yExtent = aVehicleStruct.vehicleData.tensorDimensions.y;
+        float zExtent = aVehicleStruct.vehicleData.tensorDimensions.z;
+        float mass = aVehicleStruct.vehicleData.tensorMass;
+
+        // cuboid
+        aVehicleStruct.vehicleData.localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+
+        aVehicleStruct.vehicleData.localInverseInertiaMatrixTest = aVehicleStruct.vehicleData.localInertiaMatrixTest;
+        aVehicleStruct.vehicleData.localInverseInertiaMatrixTest = aVehicleStruct.vehicleData.localInverseInertiaMatrixTest.Invert();
+    }
+
+    else
+    {
+        float xExtent = aVehicleStruct.vehicleData.tensorDimensions.x;
+        float yExtent = aVehicleStruct.vehicleData.tensorDimensions.y;
+        float zExtent = aVehicleStruct.vehicleData.tensorDimensions.z;
+        float mass = aVehicleStruct.vehicleData.tensorMass + 1500.0f;
+
+        
+        // cuboid
+        aVehicleStruct.vehicleData.localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+        
+
+        //sphere
+        /*
+        float radius = 5.0f;
+        aVehicleStruct.vehicleData.localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
+        aVehicleStruct.vehicleData.localInertiaMatrixTest._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
+        
+        aVehicleStruct.vehicleData.localInverseInertiaMatrixTest = aVehicleStruct.vehicleData.localInertiaMatrixTest;
+        aVehicleStruct.vehicleData.localInverseInertiaMatrixTest = aVehicleStruct.vehicleData.localInverseInertiaMatrixTest.Invert();
+    }
+    */
+    
     // cuboid
+    
+    float xExtent = aVehicleStruct.vehicleData.tensorDimensions.x; 
+    float yExtent = aVehicleStruct.vehicleData.tensorDimensions.y;
+    float zExtent = aVehicleStruct.vehicleData.tensorDimensions.z;
+    float mass = aVehicleStruct.vehicleData.tensorMass;
+
     aVehicleStruct.vehicleData.localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
     aVehicleStruct.vehicleData.localInertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
     aVehicleStruct.vehicleData.localInertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
@@ -2821,6 +2870,7 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     aVehicleStruct.vehicleData.localInverseInertiaMatrixTest = aVehicleStruct.vehicleData.localInertiaMatrixTest;
     aVehicleStruct.vehicleData.localInverseInertiaMatrixTest = aVehicleStruct.vehicleData.localInverseInertiaMatrixTest.Invert();
+    
 }
 
 void NPCVehicle::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap)
@@ -2939,7 +2989,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     velocityUpdate += airResistance;
 
     // adds some floating flutter movement to vehicles when stationary 
-    if (m_npcAI->GetAiToggle() == false)
+    if (m_npcAI->GetAiToggle() == false && 1 == 0)
     {
         DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
         float flutterMod = (((cos((static_cast<float>(m_testTimer) * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
@@ -2956,7 +3006,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     }
     else
     {
-        angAccelVecTensorUpdate += m_torqueDebugTest;
+        //angAccelVecTensorUpdate += m_torqueDebugTest;
     }
     
 
@@ -2974,12 +3024,62 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //DirectX::SimpleMath::Vector3 testAngularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * angFrontSurfaceArea * angAirDensity)));
     DirectX::SimpleMath::Vector3 testAngularDrag = angVelNormVec * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocity * angVelocity) * angFrontSurfaceArea * angAirDensity)));
     testAngularDrag *= aTimeDelta;
-    DirectX::SimpleMath::Matrix inverseAlignment = aVehicle->alignment;
-    inverseAlignment = inverseAlignment.Invert();
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->localInverseInertiaMatrixTest);
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->alignment);
-    angAccelVecTensorUpdate += angDampeningVec;
+
+    /*
+    DirectX::SimpleMath::Vector3 testDamp = DirectX::SimpleMath::Vector3::Zero;
+    const float dampFloat = 1.0f;
+    testDamp = newQ.angularVelocityVec;
+    testDamp = aVehicle->q.angularVelocityVec;;
+    testDamp *= dampFloat;// *aTimeDelta;
+    */
+    if (m_vehicleStruct00.vehicleData.id % 2 == 0 && 1 == 1)
+    {
+        //angDampeningVec = m_angDampTest1;
+        //angDampeningVec = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 testDamp = DirectX::SimpleMath::Vector3::Zero;
+        const float dampFloat = 0.8f;
+        testDamp = newQ.angularVelocityVec;
+        testDamp = aVehicle->q.angularVelocityVec;;
+        testDamp *= dampFloat;// *aTimeDelta;
+        angDampeningVec = -testDamp;
+        angDampeningVec = m_angDampTest1;
+    }
+    else
+    {
+        //angDampeningVec = m_angDampTest1;
+        DirectX::SimpleMath::Vector3 testDamp = DirectX::SimpleMath::Vector3::Zero;
+        const float dampFloat = 0.8f;
+        testDamp = newQ.angularVelocityVec;
+        testDamp = aVehicle->q.angularVelocityVec;;
+        testDamp *= dampFloat;// *aTimeDelta;
+        angDampeningVec = -testDamp;
+        angDampeningVec = m_angDampTest1;
+    }
+    
+    if (m_vehicleStruct00.vehicleData.id % 2 == 0 && 1 == 1)
+    {
+        DirectX::SimpleMath::Matrix inverseAlignment = aVehicle->alignment;
+        inverseAlignment = inverseAlignment.Invert();
+        angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
+        angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->localInverseInertiaMatrixTest);
+        angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->alignment);
+        angAccelVecTensorUpdate += angDampeningVec;
+    }
+    else
+    {
+        //angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->worldInertiaTensorMatrixTest);
+        DirectX::SimpleMath::Matrix inverseAlignment = aVehicle->alignment;
+        inverseAlignment = inverseAlignment.Invert();
+        angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
+        //angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->worldInertiaTensorMatrixTest);
+        angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->localInverseInertiaMatrixTest);
+        angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->alignment);
+        angAccelVecTensorUpdate += angDampeningVec;
+    }
+    
+
+
+
     /*
     const float angTest = angAccelVecTensorUpdate.Length();
     //DirectX::SimpleMath::Vector3 testAngularDrag = angVelNormVec * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angTest * angTest) * angFrontSurfaceArea * angAirDensity)));
@@ -3030,6 +3130,10 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
     aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (angAccelVecTensorUpdate);
     aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
+    if (m_vehicleStruct00.vehicleData.id % 2 == 0)
+    {
+        //aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
+    }
 }
 
 void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
@@ -3051,6 +3155,19 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     //m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.testProjectileImpulse.Length() ", m_vehicleStruct00.vehicleData.testProjectileImpulse.Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("GetImpactForceSum(m_vehicleStruct00.vehicleData).Length() ", GetImpactForceSum(m_vehicleStruct00.vehicleData).Length(), "");
     
+    // m_vehicleStruct00.vehicleData.localInverseInertiaMatrixTest
+    // m_vehicleStruct00.vehicleData.localInertiaMatrixTest
+    DirectX::SimpleMath::Matrix worldInertiaTensor;
+    DirectX::SimpleMath::Matrix localToWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
+    DirectX::SimpleMath::Matrix localToWorldInverse = localToWorld;
+    localToWorldInverse = localToWorldInverse.Invert();
+    DirectX::SimpleMath::Matrix localInertiaTensor = m_vehicleStruct00.vehicleData.localInertiaMatrixTest;
+    DirectX::SimpleMath::Matrix localToWorldInverseTranspose = localToWorldInverse;
+    localToWorldInverseTranspose = localToWorldInverseTranspose.Transpose();
+
+    worldInertiaTensor = localToWorldInverseTranspose * localToWorld * localToWorldInverse;
+    m_vehicleStruct00.vehicleData.worldInertiaTensorMatrixTest = worldInertiaTensor;
+
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
     // of delta-q values for each of the four steps.
@@ -3089,20 +3206,21 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     aVehicle->q.angPosVec = q.angPosVec;
 
     m_debugData->DebugPushUILineDecimalNumber("angularVelocityVec = ", aVehicle->q.angularVelocityVec.Length(), "");
-    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, aVehicle->q.angularVelocityVec, 25.0f, 0.0f, DirectX::Colors::White);
+    //m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, aVehicle->q.angularVelocityVec, 25.0f, 0.0f, DirectX::Colors::White);
     m_debugData->DebugPushUILineDecimalNumber("angPosVec = ", aVehicle->q.angPosVec.Length(), "");
-    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, aVehicle->q.angPosVec, 25.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, aVehicle->q.angPosVec, 25.0f, 0.0f, DirectX::Colors::Red);
 
     DirectX::SimpleMath::Vector3 postAngVelocity = aVehicle->q.angularVelocityVec;
     
     DirectX::SimpleMath::Vector3 angAccelVec = postAngVelocity - preAngVelocity;
     DirectX::SimpleMath::Vector3 angAccel = postAngVelocity - preAngVelocity;
     //angAccelVec /= static_cast<float>(aTimeDelta);
-    m_debugData->DebugPushUILineDecimalNumber("angAccelVec = ", angAccelVec.Length(), "");
-
+    //m_debugData->DebugPushUILineDecimalNumber("angAccelVec = ", angAccelVec.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("aVehicle->q.angularVelocityVec = ", aVehicle->q.angularVelocityVec.Length(), "");
     DirectX::SimpleMath::Vector3 postAngPos = aVehicle->q.angPosVec;
     DirectX::SimpleMath::Vector3 angAccelPos = postAngPos - preAngPos;
-    m_debugData->DebugPushUILineDecimalNumber("angAccelPos = ", angAccelPos.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("angAccelPos = ", angAccelPos.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("aVehicle->q.angPosVec = ", aVehicle->q.angPosVec.Length(), "");
 }
 
 void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
@@ -3182,7 +3300,7 @@ void NPCVehicle::UpdateAlignment()
         {
             if (testAngVec.Length() < 100000000.0f)
             {
-                if (m_vehicleStruct00.vehicleData.id % 2 == 0)
+                if (m_vehicleStruct00.vehicleData.id % 2 == 0 && 1 ==  0)
                 {
                     DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angularVelocityVec;
                     //DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angPosVec;
@@ -3191,14 +3309,35 @@ void NPCVehicle::UpdateAlignment()
                     //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angPosVec.Length());
                     m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);
                 }
+                else if (m_vehicleStruct00.vehicleData.id % 2 == 0 && 1 == 1)
+                {
+                    //DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angularVelocityVec;
+                    DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angPosVec;
+                    axis.Normalize();
+                    if (axis.Length() < 0.9f)
+                    {
+                        axis = DirectX::SimpleMath::Vector3::UnitY;
+                    }
+                    //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length());
+                    DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angPosVec.Length());
+                    m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);
+                    //DirectX::SimpleMath::Matrix testAlignMat = DirectX::SimpleMath::Matrix::Transform(DirectX::SimpleMath::Matrix::Identity, testQuat);
+                    //m_vehicleStruct00.vehicleData.alignment *= testAlignMat;
+                }
                 else
                 {
                     //DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angularVelocityVec;
                     DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angPosVec;
                     axis.Normalize();
+                    if (axis.Length() < 0.9f)
+                    {
+                        axis = DirectX::SimpleMath::Vector3::UnitY;
+                    }
                     //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length());
                     DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angPosVec.Length());
-                    m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);
+                    //m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);
+                    DirectX::SimpleMath::Matrix testAlignMat = DirectX::SimpleMath::Matrix::Transform(DirectX::SimpleMath::Matrix::Identity, testQuat);
+                    m_vehicleStruct00.vehicleData.alignment *= testAlignMat;
                 }
 
             }
@@ -3279,23 +3418,36 @@ void NPCVehicle::UpdateAngularDrag(const float aTimeDelta)
     angVelNormVec.Normalize();
     DirectX::SimpleMath::Vector3 angDampeningVec = angVelNormVec * (-angFrontDragResistance);
 
-    DirectX::SimpleMath::Vector3 testAngDampVec1 = CalculateDragAngular(m_vehicleStruct00.vehicleData.q.angularVelocityVec);
-    DirectX::SimpleMath::Vector3 testAngDampVec2 = CalculateDragAngular2(m_vehicleStruct00.vehicleData.q.angularVelocityVec);
-    DirectX::SimpleMath::Vector3 testAngDampVec3 = CalculateDragAngular3(m_vehicleStruct00.vehicleData.q.angularVelocityVec);
+    DirectX::SimpleMath::Vector3 testAngDampVec1 = angDampeningVec;
+    DirectX::SimpleMath::Vector3 testAngDampVec2 = CalculateDragAngular(m_vehicleStruct00.vehicleData.q.angularVelocityVec);
+    DirectX::SimpleMath::Vector3 testAngDampVec3 = CalculateDragAngular2(m_vehicleStruct00.vehicleData.q.angularVelocityVec);
+    DirectX::SimpleMath::Vector3 testAngDampVec4 = CalculateDragAngular3(m_vehicleStruct00.vehicleData.q.angularVelocityVec);
 
     const float modVal = aTimeDelta;
-    testAngDampVec1 *= modVal;
-    testAngDampVec2 *= modVal;
-    testAngDampVec3 *= modVal;
+    //testAngDampVec1 *= modVal;
+    //testAngDampVec2 *= modVal;
+    //testAngDampVec3 *= modVal;
+    //testAngDampVec4 *= modVal;
 
-    m_debugData->DebugPushUILineDecimalNumber("angDampeningVec = ", angDampeningVec.Length(), "");
-    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, angDampeningVec, 20.0f, 0.0f, DirectX::Colors::Blue);
+    DirectX::SimpleMath::Vector3 testDamp = DirectX::SimpleMath::Vector3::Zero;
+    const float dampFloat = 2.0f;
+    testDamp = m_vehicleStruct00.vehicleData.q.angularVelocityVec;;
+    testDamp *= dampFloat;
+    testAngDampVec4 = testDamp;
+
+    m_angDampTest1 = testAngDampVec1;
+    m_angDampTest2 = testAngDampVec2;
+    m_angDampTest3 = testAngDampVec3;
+    m_angDampTest4 = testAngDampVec4;
+
     m_debugData->DebugPushUILineDecimalNumber("testAngDampVec1 = ", testAngDampVec1.Length(), "");
-    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, testAngDampVec1, 18.0f, 0.0f, DirectX::Colors::Pink);
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, testAngDampVec1, 18.0f, 0.0f, DirectX::Colors::Blue);
     m_debugData->DebugPushUILineDecimalNumber("testAngDampVec2 = ", testAngDampVec2.Length(), "");
-    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, testAngDampVec2, 16.0f, 0.0f, DirectX::Colors::Teal);
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, testAngDampVec2, 16.0f, 0.0f, DirectX::Colors::Pink);
     m_debugData->DebugPushUILineDecimalNumber("testAngDampVec3 = ", testAngDampVec3.Length(), "");
-    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, testAngDampVec3, 14.0f, 0.0f, DirectX::Colors::Lavender);
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, testAngDampVec3, 14.0f, 0.0f, DirectX::Colors::Teal);
+    m_debugData->DebugPushUILineDecimalNumber("testAngDampVec4 = ", testAngDampVec4.Length(), "");
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, testAngDampVec4, 20.0f, 0.0f, DirectX::Colors::Yellow);
 
     m_debugData->DebugPushUILineDecimalNumber("Currant ang Vel    = ", m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length(), "");
 }

@@ -1994,7 +1994,7 @@ void Vehicle::UpdateAlignmentTorque()
         else
         {
             DirectX::SimpleMath::Vector3 testAngVec = m_heli.q.angularVelocityVec;
-
+            
             if (testAngVec != DirectX::SimpleMath::Vector3::Zero)
             {
                 DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_heli.q.angularVelocityVec, m_heli.q.angularVelocityVec.Length());
@@ -2002,6 +2002,19 @@ void Vehicle::UpdateAlignmentTorque()
                 //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
                 m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, testQuat);
             }
+            
+
+            /*
+            DirectX::SimpleMath::Vector3 axis = m_heli.q.angPosVec;
+            axis.Normalize();
+            if (axis.Length() < 0.9f)
+            {
+                axis = DirectX::SimpleMath::Vector3::UnitY;
+            }
+            //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length());
+            DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_heli.q.angPosVec.Length());
+            m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, testQuat);
+            */
         }
 
         //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
