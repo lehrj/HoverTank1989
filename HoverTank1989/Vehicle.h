@@ -25,14 +25,18 @@ struct ControlInput
     const float collectiveInputRate = 0.5f;
 
     DirectX::SimpleMath::Vector3 cyclicStick;
-    const float cyclicDecayRate = 0.3f;
+    //const float cyclicDecayRate = 0.3f;
+    const float cyclicDecayRate = 1.0f;
     float       cyclicInputPitch;
     bool        cyclicInputPitchIsPressed;
     float       cyclicInputRoll;
     bool        cyclicInputRollIsPressed;
-    const float cyclicInputMax = Utility::ToRadians(20.0f);
-    const float cyclicInputMin = -Utility::ToRadians(20.0f);
-    const float cyclicInputRate = 0.1f;
+    //const float cyclicInputMax = Utility::ToRadians(20.0f);
+    //const float cyclicInputMin = -Utility::ToRadians(20.0f);
+    const float cyclicInputMax = 1.0f;
+    const float cyclicInputMin = - 1.0f;
+    //const float cyclicInputRate = 0.1f;
+    const float cyclicInputRate = 1.0f;
 
     DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 cyclicNormWorld = DirectX::SimpleMath::Vector3::UnitY;
@@ -51,10 +55,12 @@ struct ControlInput
 
     bool        yawPedalIsPressed;
     float       yawPedalInput;
-    const float yawPedalDecayRate = 10.2f;
+    //const float yawPedalDecayRate = 10.2f;
+    const float yawPedalDecayRate = 1.0f;
     const float yawPedalInputMax = 1.0f;
     const float yawPedalInputMin = -1.0f;
-    const float yawPedalInputRate = 10.15f;
+    //const float yawPedalInputRate = 10.15f;
+    const float yawPedalInputRate = 1.0f;
 
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
@@ -264,6 +270,8 @@ struct HeliData
     DirectX::SimpleMath::Matrix localInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest;
 
+    DirectX::SimpleMath::Matrix localSphereInverseInertiaMatrix;
+
     DirectX::SimpleMath::Matrix cannonTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localCannonTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix inverseCannonTensor = DirectX::SimpleMath::Matrix::Identity;
@@ -274,6 +282,8 @@ struct HeliData
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSumRaw = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 vehicleAngularForcesSumLocal = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 vehicleAngularForcesSumRawLocal = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::BoundingOrientedBox boundingBox;
     DirectX::SimpleMath::Vector3 testPostImpactVelocity = DirectX::SimpleMath::Vector3::Zero;
@@ -452,6 +462,7 @@ private:
     void UpdateTestDrivetrainTorque5(const float aTimer);
 
     void UpdateVehicleForces(const float aTimeStep);
+    void UpdateVehicleForces2(const float aTimeStep);
 
     void UpdateTensor();
 
@@ -517,11 +528,16 @@ private:
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
     
-    
+    /*
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
-    
+    */
+    const float m_inertiaModelX = 4.4f;
+    const float m_inertiaModelY = 1.0f;
+    const float m_inertiaModelZ = 53.0f;
+
+    const float m_testMaxTorqueForce = 100.0f;
     /*
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 4.0f;
