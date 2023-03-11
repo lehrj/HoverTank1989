@@ -1061,7 +1061,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle2();
+            m_vehicle->DebugInputVelocityZero();
+            //m_vehicle->DebugToggle2();
         }
     }
     if (m_kbStateTracker.pressed.C)

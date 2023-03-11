@@ -3229,8 +3229,7 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     DirectX::SimpleMath::Vector3 angularPosVecUpdate = (dq1.angPosVec + 2.0 * dq2.angPosVec + 2.0 * dq3.angPosVec + dq4.angPosVec) / numEqns;
     DirectX::SimpleMath::Vector3 angularVelocityVecUpdate = (dq1.angularVelocityVec + 2.0 * dq2.angularVelocityVec + 2.0 * dq3.angularVelocityVec + dq4.angularVelocityVec) / numEqns;
 
-    //DirectX::SimpleMath::Quaternion orientationQuatUpdate = (dq1.orientationQuat + 2.0 * dq2.orientationQuat + 2.0 * dq3.orientationQuat + dq4.orientationQuat) / numEqns;
-    DirectX::SimpleMath::Quaternion orientationQuatUpdate = (dq1.orientationQuat + 2.0 * dq2.orientationQuat + 2.0 * dq3.orientationQuat + dq4.orientationQuat);// / numEqns;
+    DirectX::SimpleMath::Quaternion orientationQuatUpdate = (dq1.orientationQuat + 2.0 * dq2.orientationQuat + 2.0 * dq3.orientationQuat + dq4.orientationQuat);
     orientationQuatUpdate *= (1.0f / numEqns);
     DirectX::SimpleMath::Matrix orientationMatUpdate = (dq1.orientationMat + 2.0 * dq2.orientationMat + 2.0 * dq3.orientationMat + dq4.orientationMat) / numEqns;
 

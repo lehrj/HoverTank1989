@@ -95,6 +95,14 @@ struct Motion
 
     DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Quaternion orientationQuat;
+    DirectX::SimpleMath::Matrix orientationMat;
+
+    DirectX::SimpleMath::Quaternion orientation;
+    DirectX::SimpleMath::Vector3 angularMomentum;
+    DirectX::SimpleMath::Quaternion spin;
+    DirectX::SimpleMath::Vector3 angularVelocity;
 };
 
 struct Rotor
@@ -242,6 +250,8 @@ struct HeliData
     DirectX::SimpleMath::Vector3 right;
     DirectX::SimpleMath::Matrix alignment;
     DirectX::SimpleMath::Matrix alignmentInverse;
+    DirectX::SimpleMath::Quaternion alignmentQuat;
+    DirectX::SimpleMath::Quaternion alignmentQuatInverse;
     DirectX::SimpleMath::Matrix cameraOrientation;
     DirectX::SimpleMath::Matrix cameraOrientationPrevious;
     float   terrainHightAtPos;
@@ -263,6 +273,7 @@ struct HeliData
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 vehicleAngularForcesSumRaw = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::BoundingOrientedBox boundingBox;
     DirectX::SimpleMath::Vector3 testPostImpactVelocity = DirectX::SimpleMath::Vector3::Zero;
@@ -288,6 +299,7 @@ public:
     void DebugToggle3();
 
     void DebugInputVelocityZero();
+    void DebugInputVelocityZero2();
     void DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawVehicleProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
@@ -405,9 +417,12 @@ private:
 
     void RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
+    void RightHandSide3(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
     void UpdateAlignmentTorque();
+    void UpdateAlignmentTorque2();
+
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
 
