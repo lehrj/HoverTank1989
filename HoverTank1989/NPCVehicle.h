@@ -66,11 +66,6 @@ struct MotionNPC
     Utility::Torque              bodyTorqueForce;
     DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
-
-    //DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::Identity;
-    //DirectX::SimpleMath::Matrix orientationMat = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Quaternion orientationQuat;
-    DirectX::SimpleMath::Matrix orientationMat;
 };
 
 enum class NPCType
@@ -112,7 +107,7 @@ struct NPCModel
 
     DirectX::SimpleMath::Matrix jetMatLeft = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix jetMatRight = DirectX::SimpleMath::Matrix::Identity;
-    
+
     float maxDelta = 0.0f;
 
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
@@ -455,7 +450,6 @@ struct VehicleData
 
     DirectX::SimpleMath::Matrix localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix worldInertiaTensorMatrixTest = DirectX::SimpleMath::Matrix::Identity;
 
     const float angularDragCoefficient = 0.8f;
     const float tensorMass = 700.0f;
@@ -492,7 +486,7 @@ public:
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpulseForceFromPlayer(const float aPlayerMass, const DirectX::SimpleMath::Vector3 aPlayerVelocity, const DirectX::SimpleMath::Vector3 aPlayerCenterOfMass, DirectX::SimpleMath::Vector3 aForceVec1, DirectX::SimpleMath::Vector3 aForceVec2, const DirectX::SimpleMath::Vector3 aImpactPos);
-    
+
     void CalculateImpulseForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateSelfRightingTorque();
 
@@ -614,7 +608,6 @@ private:
 
     void UpdateAlignment();
     void UpdateAlignment2();
-
     void UpdateAngularDrag(const float aTimeDelta);
 
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
@@ -686,8 +679,7 @@ private:
 
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 118.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
-    //const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 5000.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(1.0f, 90.0f, 1.0f);
+    const DirectX::SimpleMath::Vector3 m_torqueDebugTest = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
     DirectX::SimpleMath::Vector3 m_angDampTest1 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_angDampTest2 = DirectX::SimpleMath::Vector3::Zero;

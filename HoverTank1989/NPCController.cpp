@@ -185,8 +185,9 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
                     explosionImpulseForce.torqueArm *= m_fireControl->GetExplosiveTorqueArmMod();
                     explosionImpulseForce.totalTime = impulseTimeTotal;
-                    explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
-
+                    //explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
+                    explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
+                    explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
                     //m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
 
                     //////////
@@ -291,6 +292,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                 impulseToVec.maxMagnitude = (0.5f * aProjectile.mass * aProjectile.velocity * aProjectile.velocity).Length();
                 impulseToVec.maxMagnitude *= aProjectile.collisionMagnitudeMod;
                 impulseToVec.torqueArm = aProjectile.collisionSphere.Center - m_npcVec[i]->GetCenterOfMass();
+                impulseToVec.torqueArm *= m_fireControl->GetExplosiveTorqueArmMod();
                 impulseToVec.torqueForceNorm = impulseToVec.directionNorm;
                 const float velocityF = aProjectile.velocity.Length();
                 if (velocityF != 0.0f)
@@ -302,7 +304,9 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                     const float tol = 0.01f;
                     impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
                 }
-
+                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
+                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
+                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
                 float forceByDistance = (1.0f / (2.0f * 1.0f)) * aProjectile.mass * (impactVelocity * impactVelocity);
                 float collisionTime = 1.0f / impactVelocity;
                 float forceByTime = (aProjectile.mass * impactVelocity) / impulseToVec.totalTime;
@@ -445,8 +449,8 @@ void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Mic
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
     const float xOrgVal = 70.0f;
-    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitZ;
     const float low = 0.1f;
     const float high = 5.0f;
@@ -456,7 +460,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
-    const int columns = 0;
+    const int columns = 5;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)

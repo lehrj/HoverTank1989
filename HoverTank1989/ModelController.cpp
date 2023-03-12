@@ -18,7 +18,6 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
             lights->SetLightEnabled(0, true);
             lights->SetLightEnabled(1, true);
             lights->SetLightEnabled(2, true);
-
         }
     });
     aModel.bodyModel->Modified();
@@ -177,7 +176,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
   
-
     m_debugData->PushDebugLine(aModel.muzzlePosWorld, aModel.weaponDirWorld, 200.0f, 0.0, DirectX::Colors::Red);
 
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();

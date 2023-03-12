@@ -301,7 +301,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngular(const DirectX::Simple
     float yawRadius = (length * abs(yawDot)) * 0.5f;
     float pitchRadius = (length * abs(pitchDot)) * 0.5f;
     float rollRadius = (width * abs(rollDot)) * 0.5f;
-   
+
     float airSurfaceArea = yawSurface + pitchSurface + rollSurface;
     float radiusSum = yawRadius + pitchRadius + rollRadius;
 
@@ -580,7 +580,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragLinear(const DirectX::SimpleM
     float dragCoefficient = m_heli.dragCoefficient;
     float velocity = aVelocity.Length();
     //float velocity = aNewQVelocity.Length();
-    float dragResistance      = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
+    float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
@@ -911,7 +911,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.mainRotorMaxRPM = 1000.0f;
     m_heli.numEqns = 6;
     m_heli.mass = 1700.0f;
- 
+
     m_heli.massTest = 2000.0f;
     m_heli.area = 14.67;
     m_heli.dimensions = DirectX::SimpleMath::Vector3(8.0f, 4.0f, 4.0f);
@@ -928,25 +928,12 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.up = DirectX::SimpleMath::Vector3::UnitY;
     m_heli.right = m_heli.forward.Cross(m_heli.up);
     m_heli.alignment = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_heli.forward, m_heli.up);
-    //m_heli.alignment = DirectX::SimpleMath::Matrix::Identity;
+    m_heli.alignment = DirectX::SimpleMath::Matrix::Identity;
     m_heli.alignmentInverse = m_heli.alignment;
     m_heli.alignmentInverse = m_heli.alignmentInverse.Invert();
     //m_heli.alignment = m_heli.alignmentInverse;
 
     //m_heli.alignmentInverse = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, -m_heli.forward, -m_heli.up);
-    m_heli.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
-    m_heli.alignmentQuat.Normalize();
-    m_heli.alignmentQuatInverse = m_heli.alignmentQuat;
-    m_heli.alignmentQuatInverse.Inverse(m_heli.alignmentQuatInverse);
-
-    m_heli.q.orientationMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
-    m_heli.q.orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.q.orientationMat);
-    m_heli.q.orientationQuat.Normalize();
-
-    m_heli.q.orientation = m_heli.q.orientationQuat;
-    m_heli.q.angularMomentum = DirectX::SimpleMath::Vector3::Zero;
-    m_heli.q.spin = DirectX::SimpleMath::Quaternion::Identity;
-    m_heli.q.angularVelocity = DirectX::SimpleMath::Vector3::Zero;
 
     m_heli.cameraOrientation = m_heli.alignment;
     m_heli.cameraOrientationPrevious = m_heli.cameraOrientation;
@@ -1083,21 +1070,16 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.inertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
     m_heli.inertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_heli.inertiaMatrixTest._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
-    //m_heli.inertiaMatrixTest._44 = 0.0f;
+
     //m_heli.inertiaMatrixTest.Translation(DirectX::SimpleMath::Vector3(0.0, 0.0, 50.0f));
 
     float radius = 4.0f;
     //sphere
-    
+
     //m_heli.inertiaMatrixTest._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
     //m_heli.inertiaMatrixTest._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
     //m_heli.inertiaMatrixTest._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    
-    m_heli.localSphereInverseInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
-    m_heli.localSphereInverseInertiaMatrix._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    m_heli.localSphereInverseInertiaMatrix._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    m_heli.localSphereInverseInertiaMatrix._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    m_heli.localSphereInverseInertiaMatrix = m_heli.localSphereInverseInertiaMatrix.Invert();
+
 
     //DirectX::SimpleMath::Vector3 testTrans = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 testTrans = DirectX::SimpleMath::Vector3(xExtent, yExtent, zExtent);
@@ -1120,7 +1102,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     //Utility::TransformInertiaTensor(testTrans, testTransTensor, m_heli.toUseTensor);
     //m_heli.toUseTensor = m_heli.toUseTensor.Invert();
     //m_heli.toUseTensor = m_heli.inverseInertiaMatrixTest;
-    
+
 
     mass = 1.0f;
     const float cannonRadius = 1.0f;
@@ -1152,9 +1134,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     aTestMatInvert = aTestMat;
     aTestMatInvert.Invert();
-    
+
     aTestMatInvert = aTestMatInvert.Invert();
-    
+
     DirectX::SimpleMath::Vector3 posShift(0.0f, 0.0f, 0.0f);
     posShift = -m_heli.localCenterOfMass;
 
@@ -1164,7 +1146,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_testTerrainNormTorque.axis = DirectX::SimpleMath::Vector3::UnitY;
     m_testTerrainNormTorque.magnitude = 0.0f;
-    
+
     m_fireControl = std::make_shared<FireControl>();
     m_fireControl->InitializeFireControl(aContext, m_heli.localWeaponPos, m_heli.localWeaponDirection, m_environment, aVehicle);
     m_fireControl->SetNPCController(aNPCController);
@@ -1178,7 +1160,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_testGravForce.axis = DirectX::SimpleMath::Vector3::UnitY;
     m_testGravForce.magnitude = 0.0f;
-    
+
 }
 
 void Vehicle::InputCollective(const float aCollectiveInput)
@@ -1519,6 +1501,7 @@ void Vehicle::ResetVehicle()
     m_heli.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
 
+
 //  This method loads the right-hand sides for the vehicle ODEs
 void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ)
 {
@@ -1530,17 +1513,15 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     newQ.angularVelocityVec = aQ->angularVelocityVec + static_cast<float>(aQScale) * aDeltaQ->angularVelocityVec;
     newQ.angPosVec = aQ->angPosVec + static_cast<float>(aQScale) * aDeltaQ->angPosVec;
 
-    newQ.orientationQuat = aQ->orientationQuat + static_cast<float>(aQScale) * aDeltaQ->orientationQuat;
-    newQ.orientationMat = aQ->orientationMat + static_cast<float>(aQScale) * aDeltaQ->orientationMat;
-
-    newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
-    newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
-    newQ.orientation = aQ->orientation + static_cast<float>(aQScale) * aDeltaQ->orientation;
-    newQ.spin = aQ->spin + static_cast<float>(aQScale) * aDeltaQ->spin;
-
     DirectX::SimpleMath::Vector3 velocityUpdate = m_heli.vehicleLinearForcesSum;
     DirectX::SimpleMath::Vector3 airResistance = CalculateDragLinear(newQ.velocity);
     velocityUpdate += airResistance;
+
+    //  Assign right-hand side values.
+    aDQ->airResistance = airResistance;
+    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_heli.mass);
+    aDQ->totalVelocity = velocityUpdate;
+    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
 
     // angular updates
     DirectX::SimpleMath::Vector3 angVelocityNorm = newQ.angularVelocityVec;
@@ -1551,148 +1532,9 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(newQ.angularVelocityVec);
     accelVecUpdate += angDampTest;
 
-    //accelVecUpdate = DirectX::SimpleMath::Vector3::Transform(accelVecUpdate, m_heli.alignmentQuatInverse);
-
-    /////////////////////////////////////////////
-    const float inertia = (1.666667f) * (m_heli.dimensions.x * m_heli.dimensions.x) * (m_heli.mass);
-    const float inverseInertia = 1.0f / inertia;
-    DirectX::SimpleMath::Vector3 updateAngularVelocity = DirectX::SimpleMath::Vector3::Zero; //
-    DirectX::SimpleMath::Quaternion updateSpin = DirectX::SimpleMath::Quaternion::Identity; //
-    DirectX::SimpleMath::Vector3 updateAngularMomentum = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Quaternion updateOrientation = DirectX::SimpleMath::Quaternion::Identity;
-
-    DirectX::SimpleMath::Matrix testTransposeMat = m_heli.toUseTensor;
-    testTransposeMat.Transpose(testTransposeMat);
-
-    /*
-    DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
-    //DirectX::SimpleMath::Matrix worldInvTensor = m_heli.toUseTensor;
-    DirectX::SimpleMath::Matrix worldInvTensor = m_heli.inertiaMatrixTest;
-    worldInvTensor *= worldTransform;
-    worldInvTensor = worldInvTensor.Invert();
-    accelVecUpdate = m_heli.vehicleAngularForcesSumRaw;
-    accelVecUpdate += angDampTest;
-    //accelVecUpdate *= inverseInertia;
-    //DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.toUseTensor);
-    accelVecUpdate = DirectX::SimpleMath::Vector3::Transform(accelVecUpdate, worldInvTensor);
-    */
-    
-    updateAngularMomentum = newQ.angularVelocity;
-    updateAngularMomentum = m_heli.q.angularMomentum;
-    updateOrientation = newQ.orientation;
-    //updateOrientation = m_heli.q.orientation;
-
-    updateAngularVelocity = updateAngularMomentum * inverseInertia;
-    updateAngularVelocity = m_heli.vehicleAngularForcesSumRaw * inverseInertia;
-    updateAngularVelocity = m_heli.vehicleAngularForcesSumRaw;
-    updateOrientation.Normalize();
-
-    DirectX::SimpleMath::Quaternion q;
-    q.w = 0.0f;
-    q.x = updateAngularVelocity.x;
-    q.y = updateAngularVelocity.y;
-    q.z = updateAngularVelocity.z;
-    updateSpin = 0.5f * q * updateOrientation;
-
-    aDQ->angularMomentum = static_cast<float>(aTimeDelta) * newQ.angularVelocity;
-    aDQ->angularVelocity = static_cast<float>(aTimeDelta) * updateAngularVelocity;
-    //aDQ->orientation = static_cast<float>(aTimeDelta) * newQ.orientation;
-    aDQ->orientation = static_cast<float>(aTimeDelta) * newQ.spin;
-    aDQ->spin = static_cast<float>(aTimeDelta) * updateSpin;
-
-    //  Assign right-hand side values.
-    aDQ->airResistance = airResistance;
-    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_heli.mass);
-    aDQ->totalVelocity = velocityUpdate;
-    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
     aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (accelVecUpdate);
     aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //DirectX::SimpleMath::Vector3 quatAxis = angAccelVecTensorUpdate;
-    DirectX::SimpleMath::Vector3 quatAxis = newQ.angularVelocityVec;
-    float quatMag = quatAxis.Length();
-    quatAxis.Normalize();
-    if (quatAxis.Length() > 1.0f || quatAxis.Length() < 0.9f)
-    {
-        quatAxis = DirectX::SimpleMath::Vector3::UnitX;
-        quatMag = 0.0f;
-    }
-    DirectX::SimpleMath::Quaternion orientationQuatUpdate = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(quatAxis, quatMag);
-    DirectX::SimpleMath::Quaternion orientationQuatUpdate2 = aDQ->orientationQuat;
-    orientationQuatUpdate2 = DirectX::SimpleMath::Quaternion::Identity;
-    //Utility::AddScaledVectorToQuat(newQ.angularVelocityVec, static_cast<float>(aTimeDelta), orientationQuatUpdate2);
-    Utility::AddScaledVectorToQuat(newQ.angularVelocityVec, 1.0f, orientationQuatUpdate2);
-    orientationQuatUpdate2.Normalize();
-
-    DirectX::SimpleMath::Matrix orientationMatUpdate = DirectX::SimpleMath::Matrix::Identity;
-    orientationMatUpdate += DirectX::SimpleMath::Matrix::CreateFromAxisAngle(quatAxis, quatMag);
-
-    aDQ->orientationQuat = orientationQuatUpdate2;
-    aDQ->orientationMat = static_cast<float>(aTimeDelta) * orientationMatUpdate;
-
-}
-
-//  This method loads the right-hand sides for the vehicle ODEs
-void Vehicle::RightHandSide3(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ)
-{
-    //  Compute the intermediate values of the 
-    //  dependent variables.
-    Motion newQ;
-    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
-    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-    newQ.angularVelocityVec = aQ->angularVelocityVec + static_cast<float>(aQScale) * aDeltaQ->angularVelocityVec;
-    newQ.angPosVec = aQ->angPosVec + static_cast<float>(aQScale) * aDeltaQ->angPosVec;
-
-    newQ.orientationQuat = aQ->orientationQuat + static_cast<float>(aQScale) * aDeltaQ->orientationQuat;
-    newQ.orientationMat = aQ->orientationMat + static_cast<float>(aQScale) * aDeltaQ->orientationMat;
-
-    DirectX::SimpleMath::Vector3 velocityUpdate = m_heli.vehicleLinearForcesSum;
-    DirectX::SimpleMath::Vector3 airResistance = CalculateDragLinear(newQ.velocity);
-    velocityUpdate += airResistance;
-
-
-    
-    // angular updates
-    DirectX::SimpleMath::Vector3 angVelocityNorm = newQ.angularVelocityVec;
-    float angVelocity = angVelocityNorm.Length();
-    angVelocityNorm.Normalize();
-
-    DirectX::SimpleMath::Vector3 accelVecUpdate = m_heli.vehicleAngularForcesSum;
-    DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(newQ.angularVelocityVec);
-    accelVecUpdate += angDampTest;
-
-    //  Assign right-hand side values.
-    aDQ->airResistance = airResistance;
-    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_heli.mass);
-    aDQ->totalVelocity = velocityUpdate;
-    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
-    aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (accelVecUpdate);
-    aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //DirectX::SimpleMath::Vector3 quatAxis = angAccelVecTensorUpdate;
-    DirectX::SimpleMath::Vector3 quatAxis = newQ.angularVelocityVec;
-    float quatMag = quatAxis.Length();
-    quatAxis.Normalize();
-    if (quatAxis.Length() > 1.0f || quatAxis.Length() < 0.9f)
-    {
-        quatAxis = DirectX::SimpleMath::Vector3::UnitX;
-        quatMag = 0.0f;
-    }
-    DirectX::SimpleMath::Quaternion orientationQuatUpdate = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(quatAxis, quatMag);
-    DirectX::SimpleMath::Quaternion orientationQuatUpdate2 = aDQ->orientationQuat;
-    Utility::AddScaledVectorToQuat(newQ.angularVelocityVec, static_cast<float>(aTimeDelta), orientationQuatUpdate2);
-    orientationQuatUpdate2.Normalize();
-
-    DirectX::SimpleMath::Matrix orientationMatUpdate = DirectX::SimpleMath::Matrix::Identity;
-    orientationMatUpdate += DirectX::SimpleMath::Matrix::CreateFromAxisAngle(quatAxis, quatMag);
-
-    aDQ->orientationQuat = orientationQuatUpdate;
-    aDQ->orientationMat = static_cast<float>(aTimeDelta) * orientationMatUpdate;
-
+    //aDQ->bodyTorqueForce = angAccelVecTensorUpdate;
 }
 
 void Vehicle::RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ)
@@ -1990,16 +1832,37 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     DirectX::SimpleMath::Vector3 angularPosVecUpdate = (dq1.angPosVec + 2.0 * dq2.angPosVec + 2.0 * dq3.angPosVec + dq4.angPosVec) / numEqns;
     DirectX::SimpleMath::Vector3 angularVelocityVecUpdate = (dq1.angularVelocityVec + 2.0 * dq2.angularVelocityVec + 2.0 * dq3.angularVelocityVec + dq4.angularVelocityVec) / numEqns;
 
-    DirectX::SimpleMath::Quaternion orientationQuatUpdate = (dq1.orientationQuat + 2.0 * dq2.orientationQuat + 2.0 * dq3.orientationQuat + dq4.orientationQuat);
-    orientationQuatUpdate *= (1.0f / numEqns);
-    DirectX::SimpleMath::Matrix orientationMatUpdate = (dq1.orientationMat + 2.0 * dq2.orientationMat + 2.0 * dq3.orientationMat + dq4.orientationMat) / numEqns;
+    /*
+    DirectX::SimpleMath::Vector3 posUpdate2 = (dq12.position + 2.0 * dq22.position + 2.0 * dq32.position + dq42.position) / numEqns;
+    DirectX::SimpleMath::Vector3 velocityUpdate2 = (dq12.velocity + 2.0 * dq22.velocity + 2.0 * dq32.velocity + dq42.velocity) / numEqns;
+    DirectX::SimpleMath::Vector3 angularPosVecUpdate2 = (dq12.angPosVec + 2.0 * dq22.angPosVec + 2.0 * dq32.angPosVec + dq42.angPosVec) / numEqns;
+    DirectX::SimpleMath::Vector3 angularVelocityVecUpdate2 = (dq12.angularVelocityVec + 2.0 * dq22.angularVelocityVec + 2.0 * dq32.angularVelocityVec + dq42.angularVelocityVec) / numEqns;
 
-    DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
-    DirectX::SimpleMath::Vector3 angularMomentumUpdate = (dq1.angularMomentum + 2.0 * dq2.angularMomentum + 2.0 * dq3.angularMomentum + dq4.angularMomentum) / numEqns;
-    DirectX::SimpleMath::Quaternion orientationUpdate = (dq1.orientation + 2.0 * dq2.orientation + 2.0 * dq3.orientation + dq4.orientation) * (1.0f / numEqns);
-    DirectX::SimpleMath::Quaternion spinUpdate = (dq1.spin + 2.0 * dq2.spin + 2.0 * dq3.spin + dq4.spin) * (1.0f / numEqns);
-    orientationUpdate.Normalize();
-    spinUpdate.Normalize();
+    if (posUpdate != posUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (velocityUpdate != velocityUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (angularPosVecUpdate != angularPosVecUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    if (angularVelocityVecUpdate != angularVelocityVecUpdate2)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+    */
+
 
     q.velocity += velocityUpdate;
     q.engineForce += engineVelocityUpdate;
@@ -2010,48 +1873,6 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.position += posUpdate;
     q.angPosVec += angularPosVecUpdate;
     q.angularVelocityVec += angularVelocityVecUpdate;
-    
-    q.orientationQuat += orientationQuatUpdate;
-    q.orientationQuat.Normalize();
-    q.orientationMat += orientationMatUpdate;
-
-    q.angularVelocity += angularVelocityUpdate;
-    q.angularMomentum += angularMomentumUpdate;
-    q.orientation += orientationUpdate;
-    q.spin += spinUpdate;
-
-
-    m_debugData->DebugPushUILineDecimalNumber("angularVelocityUpdate.Length() ", angularVelocityUpdate.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("angularMomentumUpdate.Length() ", angularMomentumUpdate.Length(), "");
-
-    m_debugData->DebugPushUILineDecimalNumber("orientationUpdate.w = ", orientationUpdate.w, "");
-    m_debugData->DebugPushUILineDecimalNumber("orientationUpdate.x = ", orientationUpdate.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("orientationUpdate.y = ", orientationUpdate.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("orientationUpdate.z = ", orientationUpdate.z, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("spinUpdatew = ", spinUpdate.w, "");
-    m_debugData->DebugPushUILineDecimalNumber("spinUpdate.x = ", spinUpdate.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("spinUpdate.y = ", spinUpdate.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("spinUpdatez = ", spinUpdate.z, "");
-
-
-    DirectX::SimpleMath::Vector3 angPosVecTest = q.angPosVec;
-    //DirectX::SimpleMath::Vector3 angPosVecTest = q.angularVelocityVec;
-    //angPosVecTest = DirectX::SimpleMath::Vector3::Transform(angPosVecTest, m_heli.alignmentQuatInverse);
-    DirectX::SimpleMath::Quaternion testQuat = aHeli->q.orientationQuat;
-    testQuat = m_heli.alignmentQuatInverse;
-    testQuat = DirectX::SimpleMath::Quaternion::Identity;
-    //DirectX::SimpleMath::Quaternion testQuat = q.orientationQuat;
-    //Utility::AddScaledVectorToQuat(q.angularVelocityVec, 1.0f, testQuat);
-    Utility::AddScaledVectorToQuat(angPosVecTest, 1.0f, testQuat);
-    //Utility::AddScaledVectorToQuat(q.angPosVec, static_cast<float>(aTimeDelta), testQuat);
-
-    //testQuat.Inverse(testQuat);
-    testQuat *= m_heli.alignmentQuat;
-
-    //aHeli->q.orientationQuat = testQuat;
-    aHeli->q.orientationQuat = q.orientationQuat;
-    aHeli->q.orientationMat = q.orientationMat;
 
     aHeli->q.velocity = q.velocity;
     aHeli->q.position = q.position;
@@ -2059,82 +1880,6 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     aHeli->q.bodyTorqueForce = q.bodyTorqueForce;
     aHeli->q.angularVelocityVec = q.angularVelocityVec;
     aHeli->q.angPosVec = q.angPosVec;
-
-    aHeli->q.angularVelocity = q.angularVelocity;
-    aHeli->q.angularMomentum = q.angularMomentum;
-    aHeli->q.orientation = q.orientation;
-    aHeli->q.spin = q.spin;
-}
-
-void Vehicle::UpdateAlignmentTorque()
-{
-    m_heli.cameraOrientationPrevious = m_heli.cameraOrientation;
-
-    /*
-        if (m_debugToggle2 == true)
-        {
-            //m_heli.alignment *= m_heli.q.angularVelocityMat;
-            /////m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
-        }
-        else
-        {
-            DirectX::SimpleMath::Vector3 testAngVec = m_heli.q.angularVelocityVec;
-
-            if (testAngVec != DirectX::SimpleMath::Vector3::Zero)
-            {
-                DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_heli.q.angularVelocityVec, m_heli.q.angularVelocityVec.Length());
-                /////m_heli.alignment *= m_heli.q.angularVelocityMat;
-                //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
-                m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, testQuat);
-            }
-        }
-        */
-
-        //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
-        //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularPositionQuat);
-
-        //m_heli.alignment *= m_heli.q.angularVelocityMat;
-        //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityMat);
-
-    //m_heli.q.orientationQuat.Normalize();
-    //m_heli.alignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_heli.q.orientationQuat);
-
-    
-    //m_heli.q.orientation.Normalize();
-    //m_heli.alignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_heli.q.orientation);
-    //m_heli.q.spin.Normalize();
-    //m_heli.alignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_heli.q.spin);
-    
-    DirectX::SimpleMath::Vector3 testAngVec = m_heli.q.angularVelocityVec;
-    //DirectX::SimpleMath::Vector3 testAngVec = m_heli.q.angPosVec;
-    if (testAngVec != DirectX::SimpleMath::Vector3::Zero)
-    {
-        DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_heli.q.angularVelocityVec, m_heli.q.angularVelocityVec.Length());
-        //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_heli.q.angPosVec, m_heli.q.angPosVec.Length());
-        /////m_heli.alignment *= m_heli.q.angularVelocityMat;
-        //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
-        m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, testQuat);
-    }
-    else
-    {
-    }
-
-    m_heli.up = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_heli.alignment);
-    m_heli.right = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ, m_heli.alignment);
-    m_heli.forward = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, m_heli.alignment);
-
-    m_heli.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
-    //m_heli.alignmentInverse = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, m_heli.right, -m_heli.up);
-    m_heli.alignmentInverse = m_heli.alignment.Invert();
-
-    m_heli.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
-    m_heli.alignmentQuat.Normalize();
-    m_heli.alignmentQuatInverse = m_heli.alignmentQuat;
-    m_heli.alignmentQuatInverse.Inverse(m_heli.alignmentQuatInverse);
-    
-
-    m_heli.cameraOrientation = DirectX::XMMatrixLookAtRH(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
-    m_heli.cameraOrientation = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
 }
 
 void Vehicle::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
@@ -2180,7 +1925,7 @@ void Vehicle::UpdateBladeLiftForce(const float aTimeStep)
     // L = .5 * rho * omega^2 * Cl * y integral(r1 -> r2)  r^2 * dr    
 }
 
-void Vehicle::UpdateAlignmentTorque2()
+void Vehicle::UpdateAlignmentTorque()
 {
     m_heli.cameraOrientationPrevious = m_heli.cameraOrientation;
 
@@ -2257,19 +2002,6 @@ void Vehicle::UpdateAlignmentTorque2()
                 //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
                 m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, testQuat);
             }
-
-
-            /*
-            DirectX::SimpleMath::Vector3 axis = m_heli.q.angPosVec;
-            axis.Normalize();
-            if (axis.Length() < 0.9f)
-            {
-                axis = DirectX::SimpleMath::Vector3::UnitY;
-            }
-            //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length());
-            DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_heli.q.angPosVec.Length());
-            m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, testQuat);
-            */
         }
 
         //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
@@ -2559,7 +2291,7 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     DirectX::SimpleMath::Vector3 windVanVec = m_heli.windVaningTorueForce;
     DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec;
     //torqueVec = tailVec + gravVec + driveVec + weaponVec;
- 
+
     /*
     m_debugData->PushDebugLine(m_heli.q.position, torqueVec, 20.0f, 0.0f, DirectX::Colors::Teal);
     //m_debugData->PushDebugLine(m_heli.q.position, tailVec, 10.0f, 0.0f, DirectX::Colors::Red);
@@ -2802,7 +2534,7 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge2(DirectX::SimpleMath::Vector3& aA
     m_debugData->DebugPushUILineDecimalNumber("terrainVec.Length() ", terrainVec.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("torqueVec.Length()  ", torqueVec.Length(), "");
     */
-        
+
     /*
     DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec + pendulumForce;
     DirectX::SimpleMath::Vector3 hoverForceVec = m_hoverTorqueForceSum;
@@ -2966,7 +2698,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateWindVaningTorqueForce(const HeliD
         longitudeTorqueArm = aHeliData.localPhysicsPointFront - aHeliData.localCenterOfMass;
         //longitudeTorqueArm = aHeliData.physicsPointFront - aHeliData.centerOfMass;
     }
-    
+
     DirectX::SimpleMath::Vector3 latTorqueArm;
     if (isVelocityLeft == true)
     {
@@ -2994,7 +2726,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateWindVaningTorqueForce(const HeliD
     Utility::Torque longitudeTorque = Utility::GetTorqueForce(longitudeTorqueArm, (localizedAirVelocityLongitudinal * longDotMod));
     //Utility::Torque lateralTorque = Utility::GetTorqueForce(latTorqueArm, (-aHeliData.q.velocity * latDotMod));
     //Utility::Torque longitudeTorque = Utility::GetTorqueForce(longitudeTorqueArm, (-aHeliData.q.velocity * longDotMod));
-    
+
     //m_debugData->PushDebugLine(m_heli.q.position, latTorqueArm, 10.0f, 0.0f, DirectX::Colors::Red);
     //m_debugData->PushDebugLine(m_heli.q.position, longitudeTorqueArm, 10.0f, 0.0f, DirectX::Colors::Blue);
 
@@ -3024,8 +2756,8 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateWindVaningTorqueForce(const HeliD
     //m_debugData->PushDebugLine(m_heli.q.position, windVaningUpdateForce, 10.0f, 0.0f, DirectX::Colors::Red);
 
     windVaningUpdateForce = (lateralTorque.axis * lateralTorque.magnitude) + (longitudeTorque.axis * longitudeTorque.magnitude);
-    windVaningUpdateForce = (testLatTorque) + (testLongTorque);
-    
+    windVaningUpdateForce = (testLatTorque)+(testLongTorque);
+
     //windVaningUpdateForce = DirectX::SimpleMath::Vector3::Transform(windVaningUpdateForce, updateMat);
     //m_debugData->PushDebugLine(m_heli.q.position, windVaningUpdateForce, 10.0f, 0.0f, DirectX::Colors::Yellow);
     //windVaningUpdateForce = DirectX::SimpleMath::Vector3::Zero;
@@ -3068,7 +2800,7 @@ void Vehicle::UpdateCyclicNorm()
     updatedCyclic = DirectX::SimpleMath::Vector3::Transform(updatedCyclic, m_heli.alignment);
     m_heli.controlInput.cyclicNormWorld = updatedCyclic;
 
-    
+
     //m_debugData->PushDebugLine(m_heli.q.position, m_heli.controlInput.cyclicNormWorld, 10.0f, 0.0f, DirectX::Colors::Yellow);
     //m_debugData->PushDebugLine(m_heli.q.position, m_heli.controlInput.cyclicNormLocal, 10.0f, 0.0f, DirectX::Colors::Blue);
 
@@ -3118,13 +2850,13 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
     testRod = m_heli.mainRotorPos - m_heli.centerOfMass;
     testRod = m_heli.gravityTorqueArmPos - m_heli.centerOfMass;
     rodLength = testRod.Length();
-    
+
 
     DirectX::SimpleMath::Quaternion cyclicQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, m_heli.controlInput.cyclicInputRoll, m_heli.controlInput.cyclicInputPitch);
     cyclicQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
     DirectX::SimpleMath::Vector3 updatedCyclic = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, cyclicQuat);
     //DirectX::SimpleMath::Vector3 updatedCyclic = DirectX::SimpleMath::Vector3::Transform(m_heli.up, cyclicQuat);
-    
+
 
     float cyclicAngle = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitY, updatedCyclic);
     if (cyclicAngle > m_heli.controlInput.cyclicInputMax)
@@ -3135,7 +2867,7 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
     }
 
 
-    
+
     DirectX::SimpleMath::Vector3 rodUp = m_heli.up;
     rodUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 rodRotor = m_heli.q.mainRotorForceNormal;
@@ -3170,7 +2902,7 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
     //accelerationMag *= m_heli.mass;
     //m_debugData->DebugPushUILineDecimalNumber("accelerationMag =", accelerationMag, "");
     //m_debugData->DebugPushTestLine(m_heli.q.position, accelerationDirection, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-    
+
     // only update with viable data and if not aligned with gravity direction
     if (accelerationMag > 0.00001f && accelerationMag < 20.0f && 1 == 0)
     {
@@ -3182,7 +2914,7 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
         m_debugData->DebugPushUILineDecimalNumber("accelerationMag = ", accelerationMag, "");
         aVelocity += accelerationDirection;
     }
-    
+
     //accelerationDirection *= accelerationMag * aTimeStep;
     accelerationDirection *= accelerationMag;
     /*
@@ -3238,7 +2970,7 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle)
 
     aVehicle.physicsPointRight = m_heli.localPhysicsPointRight;
     aVehicle.physicsPointRight = DirectX::SimpleMath::Vector3::Transform(aVehicle.physicsPointRight, updateMat);
-  
+
     // update with new model
     DirectX::SimpleMath::Matrix yawMat = DirectX::SimpleMath::Matrix::CreateRotationY(aVehicle.controlInput.turretYaw);
     DirectX::SimpleMath::Matrix pitchMat = DirectX::SimpleMath::Matrix::CreateRotationZ(aVehicle.controlInput.weaponPitch);
@@ -3465,7 +3197,7 @@ void Vehicle::UpdateTensor()
     testTensor.Translation(m_heli.cannonPos);
 
     DirectX::SimpleMath::Quaternion testRotationQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_heli.controlInput.turretYaw);
-    
+
     testTensor = DirectX::SimpleMath::Matrix::Transform(testTensor, testRotationQuat);
     testTensor *= m_heli.localInertiaMatrixTest;
     m_heli.testTensor = testTensor;
@@ -3484,7 +3216,7 @@ void Vehicle::UpdateTensor()
 
 void Vehicle::UpdateTerrainData()
 {
-    
+
     bool isVehicleInPlayUpdate = m_environment->GetVehicleUpdateData(m_heli.q.position, m_heli.terrainNormal,
         m_heli.terrainHightAtPos, m_heli.groundPlane);
     if (isVehicleInPlayUpdate == false)
@@ -3494,9 +3226,7 @@ void Vehicle::UpdateTerrainData()
 
     //m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
     m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
-    m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
-
-
+    //m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
     //m_heli.terrainNormal = m_environment->GetTerrainNormal(m_heli.q.position);
 }
 
@@ -3546,7 +3276,7 @@ void Vehicle::UpdateTerrainNormTorque()
     {
         //m_testTimer = -DirectX::XM_PI * 0.5f;
     }
- 
+
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(testVal);
     //terrainNorm = DirectX::SimpleMath::Vector3::Transform(terrainNorm, rotMat);
 
@@ -3827,7 +3557,7 @@ void Vehicle::UpdateTestDrivetrainTorque(const float aTimer)
 
     float rollBack = 0.0f;
     float rollForward = 0.0f;
-    
+
     if (m_heli.controlInput.cyclicInputPitch > 0.0f)
     {
         rollForward = constTorque;
@@ -3845,7 +3575,7 @@ void Vehicle::UpdateTestDrivetrainTorque(const float aTimer)
     }
 
 
-    
+
     m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputPitch = ", m_heli.controlInput.cyclicInputPitch, "");
     DirectX::SimpleMath::Vector3 leftForce = rollLeft * liftDirection;
     DirectX::SimpleMath::Vector3 rightForce = rollRight * liftDirection;
@@ -3859,12 +3589,12 @@ void Vehicle::UpdateTestDrivetrainTorque(const float aTimer)
     frontForce = GetThrusterLiftMagnitude(frontForce, m_heli.physicsPointFront);
     rearForce = GetThrusterLiftMagnitude(rearForce, m_heli.physicsPointRear);
 
-    
+
     m_debugData->DebugPushUILineDecimalNumber("leftForce.Length() = ", leftForce.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("rightForce.Length() = ", rightForce.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("frontForce.Length() = ", frontForce.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("rearForce.Length() = ", rearForce.Length(), "");
-    
+
 
     m_debugData->PushDebugLineScaled(m_heli.physicsPointLeft, leftForce, 1.0f, 0.4f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLineScaled(m_heli.physicsPointRight, rightForce, 1.0f, 0.4f, 0.0f, DirectX::Colors::Red);
@@ -3901,7 +3631,7 @@ void Vehicle::UpdateTestDrivetrainTorque(const float aTimer)
     DirectX::SimpleMath::Vector3 forcePartRight = Utility::ProcessTorqueForce(m_heli.physicsPointRight, centerMassPos, rightForce);
     DirectX::SimpleMath::Vector3 forcePartFront = Utility::ProcessTorqueForce(m_heli.physicsPointFront, centerMassPos, frontForce);
     DirectX::SimpleMath::Vector3 forcePartBack = Utility::ProcessTorqueForce(m_heli.physicsPointRear, centerMassPos, rearForce);
-    
+
     m_debugData->DebugPushUILineDecimalNumber("forcePartLeft.Length() = ", forcePartLeft.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("forcePartRight.Length() = ", forcePartRight.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("forcePartFront.Length() = ", forcePartFront.Length(), "");
@@ -4969,9 +4699,6 @@ void Vehicle::UpdateTestDrivetrainTorque5(const float aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimeDelta)
 {
-    DirectX::SimpleMath::Vector3 prevForward = m_heli.forward;
-    DirectX::SimpleMath::Vector3 prevUp = m_heli.up;
-    DirectX::SimpleMath::Vector3 prevRight = m_heli.right;
 
     if (m_testTimer2 > DirectX::XM_PI)
     {
@@ -4999,7 +4726,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdatePhysicsPoints(m_heli);
     //UpdateCyclicNorm();
     UpdateTestDrivetrainTorque4(static_cast<float>(aTimeDelta));
-    
+
     //m_hoverTorqueForceSum = CalculateHoverTorqueForce(m_heli, static_cast<float>(aTimeDelta));
 
 
@@ -5028,7 +4755,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateTerrainNormTorque();
     Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
     UpdateCollisionImpulseForces(static_cast<float>(aTimeDelta));
-    
+
     UpdateVehicleForces(static_cast<float>(aTimeDelta));
     if (m_isRungeOn == true)
     {
@@ -5050,7 +4777,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 speed = m_heli.q.velocity;
     //speed.y = 0.0f;
     m_heli.speed = speed.Length();
-    m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
+    //m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
     //m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
     InputDecay(aTimeDelta);
 
@@ -5097,72 +4824,6 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
     //m_heli.isVehicleCollisionTrue = false;
     m_isFiredTest = false;
-
-
-
-    DirectX::SimpleMath::Vector3 postForward = m_heli.forward;
-    DirectX::SimpleMath::Vector3 postRight = m_heli.right;
-    DirectX::SimpleMath::Vector3 postUp = m_heli.up;
-
-    float fowardDelta = Utility::ToDegrees(Utility::GetAngleBetweenVectors(prevForward, postForward)) / static_cast<float>(aTimeDelta);
-    float rightDelta = Utility::ToDegrees(Utility::GetAngleBetweenVectors(prevRight, postRight)) / static_cast<float>(aTimeDelta);
-    float upDelta = Utility::ToDegrees(Utility::GetAngleBetweenVectors(prevUp, postUp)) / static_cast<float>(aTimeDelta);
-    m_debugData->DebugPushUILineDecimalNumber("fowardDelta = ", fowardDelta, "");
-    m_debugData->DebugPushUILineDecimalNumber("rightDelta = ", rightDelta, "");
-    m_debugData->DebugPushUILineDecimalNumber("upDelta = ", upDelta, "");
-    m_debugData->DebugPushUILineDecimalNumber("Total = ", upDelta + rightDelta + upDelta, "");
-
-
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.angularVelocity.Length() ", m_heli.q.angularVelocity.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.angularMomentum.Length() ", m_heli.q.angularMomentum.Length(), "");
-
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.orientation.w = ", m_heli.q.orientation.w, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.orientation.x = ", m_heli.q.orientation.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.orientation.y = ", m_heli.q.orientation.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.orientation.z = ", m_heli.q.orientation.z, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.spin.w = ", m_heli.q.spin.w, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.spin.x = ", m_heli.q.spin.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.spin.y = ", m_heli.q.spin.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.spin.z = ", m_heli.q.spin.z, "");
-
-    //m_heli.q.orientation = DirectX::SimpleMath::Quaternion::Identity;
-    //m_heli.q.spin = DirectX::SimpleMath::Quaternion::Identity;
-
-    DirectX::SimpleMath::Vector3 spinForward = m_heli.forward;
-    spinForward = DirectX::SimpleMath::Vector3::Transform(spinForward, m_heli.q.spin);
-    DirectX::SimpleMath::Vector3 spinRight = m_heli.right;
-    spinRight = DirectX::SimpleMath::Vector3::Transform(spinRight, m_heli.q.spin);
-    DirectX::SimpleMath::Vector3 spinUp = m_heli.up;
-    spinUp = DirectX::SimpleMath::Vector3::Transform(spinUp, m_heli.q.spin);
-
-    DirectX::SimpleMath::Vector3 orientForward = m_heli.forward;
-    orientForward = DirectX::SimpleMath::Vector3::Transform(orientForward, m_heli.q.orientation);
-    DirectX::SimpleMath::Vector3 orientRight = m_heli.right;
-    orientRight = DirectX::SimpleMath::Vector3::Transform(orientRight, m_heli.q.orientation);
-    DirectX::SimpleMath::Vector3 orientUp = m_heli.up;
-    orientUp = DirectX::SimpleMath::Vector3::Transform(orientUp, m_heli.q.orientation);
-
-    /*
-    m_debugData->PushDebugLine(m_heli.q.position, m_heli.up, 15.0f, 0.0f, DirectX::Colors::White);
-    m_debugData->PushDebugLine(m_heli.q.position, m_heli.forward, 1.0f, 0.0f, DirectX::Colors::White);
-    m_debugData->PushDebugLine(m_heli.q.position, m_heli.right, 15.0f, 0.0f, DirectX::Colors::White);
-    */
-    
-    m_debugData->PushDebugLine(m_heli.q.position, spinForward, 11.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(m_heli.q.position, spinRight, 11.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(m_heli.q.position, spinUp, 11.0f, 0.0f, DirectX::Colors::Blue);
-    
-    m_debugData->PushDebugLine(m_heli.q.position, orientForward, 8.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_heli.q.position, orientRight, 8.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_heli.q.position, orientUp, 8.0f, 0.0f, DirectX::Colors::White);
-
-
-    //m_debugData->PushDebugLine(m_heli.q.position, DirectX::SimpleMath::Vector3::UnitZ, 11.0f, 0.0f, DirectX::Colors::Blue);
-
-    DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitZ;
-    testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_heli.q.orientation);
-    m_debugData->PushDebugLine(m_heli.q.position, testLine, 11.0f, 0.0f, DirectX::Colors::Blue);
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
@@ -5171,82 +4832,6 @@ void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
 }
 
 void Vehicle::UpdateVehicleForces(const float aTimeStep)
-{
-    // linear
-    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-
-    if (m_testImpulseForce.isActive == true)
-    {
-        velocityUpdate += m_testImpulseForce.directionNorm * m_testImpulseForce.currentMagnitude;
-    }
-
-    DirectX::SimpleMath::Vector3 calcHoverDriveForce = CalculateHoverDriveForce(m_heli);
-    DirectX::SimpleMath::Vector3 damperForce = GetDamperForce(GetAltitude(), m_heli.mass);
-    DirectX::SimpleMath::Vector3 gravForce = GetAntiGravGravityForce(GetAltitude(), m_heli.gravity, m_heli.mass);
-    gravForce = m_heli.gravity * m_heli.mass;  
-    DirectX::SimpleMath::Vector3 jetThrust = GetJetThrust(m_heli.forward, m_heli.controlInput.jetInput, m_heli.jetThrustMax);
-    DirectX::SimpleMath::Vector3 rotorForce = m_heli.hoverFloat;
-    rotorForce = DirectX::SimpleMath::Vector3::Transform(rotorForce, m_heli.alignment);
-    rotorForce = rotorForce * m_heli.mass;
-    rotorForce = GetHoverLift(rotorForce, GetAltitude());
-    DirectX::SimpleMath::Vector3 slopeForce = GetSlopeForce(m_heli.terrainNormal, GetAltitude(), m_heli.groundNormalForceRange);
-    m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
-
-    velocityUpdate += calcHoverDriveForce;
-    //velocityUpdate += damperForce;
-    velocityUpdate += gravForce;
-    velocityUpdate += jetThrust;
-    velocityUpdate += rotorForce;
-    velocityUpdate += m_heli.buoyancyForce;
-    velocityUpdate += slopeForce;
-    velocityUpdate += m_heli.controlInput.brakeForce;
-
-    DirectX::SimpleMath::Vector3 preVelocityUpdate = velocityUpdate;
-    m_heli.vehicleLinearForcesSum = velocityUpdate;
-    m_heli.vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
-
-    // angular
-    const float maxForce = m_testMaxTorqueForce;
-    float yaw = m_heli.controlInput.yawPedalInput;
-    float pitch = m_heli.controlInput.cyclicInputPitch;
-    float roll = m_heli.controlInput.cyclicInputRoll;
-
-    Utility::Torque pitchTorque = Utility::GetTorqueForce(DirectX::SimpleMath::Vector3::UnitX, (-DirectX::SimpleMath::Vector3::UnitY * (pitch * maxForce)));
-    Utility::Torque rollTorque = Utility::GetTorqueForce(DirectX::SimpleMath::Vector3::UnitY, (-DirectX::SimpleMath::Vector3::UnitZ * (roll * maxForce)));
-    Utility::Torque yawTorque = Utility::GetTorqueForce(DirectX::SimpleMath::Vector3::UnitZ, (-DirectX::SimpleMath::Vector3::UnitX * (yaw * maxForce)));
-    DirectX::SimpleMath::Vector3 pitchVec = pitchTorque.axis * pitchTorque.magnitude;
-    DirectX::SimpleMath::Vector3 rollVec = rollTorque.axis * rollTorque.magnitude;
-    DirectX::SimpleMath::Vector3 yawVec = yawTorque.axis * yawTorque.magnitude;
-    DirectX::SimpleMath::Vector3 sumForceVec = pitchVec + rollVec + yawVec;
-    m_debugData->DebugPushUILineDecimalNumber("yaw ", yaw, "");
-    m_debugData->DebugPushUILineDecimalNumber("pitch ", pitch, "");
-    m_debugData->DebugPushUILineDecimalNumber("roll ", roll, "");
-
-
-    DirectX::SimpleMath::Vector3 accelVecUpdate = DirectX::SimpleMath::Vector3::Zero;
-    accelVecUpdate = sumForceVec;
-
-    m_heli.vehicleAngularForcesSumRawLocal = accelVecUpdate;
-    m_heli.vehicleAngularForcesSumRaw = accelVecUpdate;
-    m_heli.vehicleAngularForcesSumRaw = DirectX::SimpleMath::Vector3::Transform(m_heli.vehicleAngularForcesSumRaw, m_heli.alignment);
-    m_heli.vehicleAngularForcesSumLocal = accelVecUpdate;
-    m_heli.vehicleAngularForcesSumLocal = DirectX::SimpleMath::Vector3::Transform(m_heli.vehicleAngularForcesSumLocal, m_heli.toUseTensor);
-
-    DirectX::SimpleMath::Vector3 angAccelVecTensorUpdate = accelVecUpdate;
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.alignment);
-    DirectX::SimpleMath::Matrix inverseAlignment = m_heli.alignment;
-    inverseAlignment = inverseAlignment.Invert();
- 
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
-    //angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.toUseTensor);
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.localSphereInverseInertiaMatrix);
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.alignment);
-    accelVecUpdate = angAccelVecTensorUpdate;
-
-    m_heli.vehicleAngularForcesSum = accelVecUpdate;
-}
-
-void Vehicle::UpdateVehicleForces2(const float aTimeStep)
 {
     // linear
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
@@ -5346,8 +4931,6 @@ void Vehicle::UpdateVehicleForces2(const float aTimeStep)
         testBreak++;
     }
 
-    m_heli.vehicleAngularForcesSumRaw = accelVecUpdate;
-
     DirectX::SimpleMath::Vector3 angAccelVecTensorUpdate = accelVecUpdate;
     DirectX::SimpleMath::Matrix inverseAlignment = m_heli.alignment;
     inverseAlignment = inverseAlignment.Invert();
@@ -5412,18 +4995,9 @@ void Vehicle::DebugInputVelocityZero()
     brakeNorm.Normalize();
     const float brakeVal = 0.02f;
 
-    DirectX::SimpleMath::Vector3 brakeForce = antiVelocity  * brakeVal;
+    DirectX::SimpleMath::Vector3 brakeForce = antiVelocity * brakeVal;
     //m_heli.q.velocity += brakeForce;
     m_heli.controlInput.brakeIsPressed = true;
-
-    m_heli.q.angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
-    m_heli.q.angPosVec = DirectX::SimpleMath::Vector3::Zero;
-    //m_heli.q.orientationQuat = DirectX::SimpleMath::Quaternion::Identity;
-}
-
-void Vehicle::DebugInputVelocityZero2()
-{
-    m_heli.q.orientationQuat = DirectX::SimpleMath::Quaternion::Identity;
 }
 
 void Vehicle::FireWeapon()
@@ -5450,7 +5024,7 @@ void Vehicle::TestFireCannon()
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
         DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
         m_fireControl->FireProjectileCannon(pos, launchDir, velocity);
-        
+
         m_isFiredTest = true;
         m_fireForceTest = -launchDir;
         m_fireForceTest.Normalize();
@@ -5463,7 +5037,7 @@ void Vehicle::TestFireCannon()
         m_testImpulseForce.maxMagnitude = 50000.0f;
         m_testImpulseForce.directionNorm = -launchDir;
         m_testImpulseForce.directionNorm.Normalize();
-        m_testImpulseForce.isActive = true;     
+        m_testImpulseForce.isActive = true;
         */
         m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
     }
