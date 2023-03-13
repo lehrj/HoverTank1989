@@ -69,9 +69,14 @@ public:
         bool isActive = false;
         float maxMagnitude = 0.0f;
         DirectX::SimpleMath::Vector3 torqueArm = DirectX::SimpleMath::Vector3::Zero;
+        float currentTorqueMagnitude = 0.0f;
+        float torqueForceMod = 0.1f;
         DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::Zero;
         float totalTime = 0.0f;
         int tickCount = 0;
+
+        float forceRemaining = 0.0f;
+        float forceSum = 0.0f;
     };
 
     static void UpdateImpulseForceCurve(ImpulseForce& aImpulseForce, const float aTimeDelta)
@@ -82,6 +87,7 @@ public:
             {
                 aImpulseForce.isActive = false;
                 aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
             }
             else
             {
@@ -90,12 +96,14 @@ public:
                 if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
                 {
                     aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                    aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                     aImpulseForce.currentTime += aTimeDelta;
                 }
                 else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) > aImpulseForce.totalTime)
                 {
                     const float magMod = 0.5f;
                     aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+                    aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                     aImpulseForce.currentTime += aTimeDelta;
                 }
                 else
@@ -109,6 +117,7 @@ public:
                     {
                         aImpulseForce.isActive = false;
                         aImpulseForce.currentMagnitude = 0.0f;
+                        aImpulseForce.currentTorqueMagnitude = 0.0f;
                     }
                     if (aImpulseForce.isActive == true)
                     {
@@ -125,6 +134,7 @@ public:
                             ratio = 1.0f - ratio;
                         }
                         aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
+                        aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                     }
                 }
 
@@ -144,11 +154,17 @@ public:
             {
                 aImpulseForce.isActive = false;
                 aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
             }
             if (aImpulseForce.isActive == true)
             {
                 aImpulseForce.currentTime += aTimeDelta;
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                float magMod = aTimeDelta / aImpulseForce.totalTime;
+                //aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+                aImpulseForce.forceRemaining -= aImpulseForce.currentMagnitude;
+
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                 ++aImpulseForce.tickCount;
             }
         }
@@ -158,10 +174,12 @@ public:
             {
                 aImpulseForce.isActive = false;
                 aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
             }
             if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
             {
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                 aImpulseForce.currentTime += aTimeDelta;
                 ++aImpulseForce.tickCount;
             }
@@ -169,6 +187,7 @@ public:
             {
                 const float magMod = 0.5f;
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                 aImpulseForce.currentTime += aTimeDelta;
                 ++aImpulseForce.tickCount;
             }
@@ -188,6 +207,7 @@ public:
                     ratio = 0.0f;
                 }
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * ratio;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                 aImpulseForce.currentTime += aTimeDelta;
                 ++aImpulseForce.tickCount;
             }
@@ -198,10 +218,12 @@ public:
             {
                 aImpulseForce.isActive = false;
                 aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
             }
             if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
             {
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                 aImpulseForce.currentTime += aTimeDelta;
                 ++aImpulseForce.tickCount;
             }
@@ -209,6 +231,7 @@ public:
             {
                 const float magMod = 0.5f;
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                 aImpulseForce.currentTime += aTimeDelta;
                 ++aImpulseForce.tickCount;
             }
@@ -228,9 +251,184 @@ public:
                     ratio = 0.0f;
                 }
                 aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * ratio;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
                 aImpulseForce.currentTime += aTimeDelta;
                 ++aImpulseForce.tickCount;
+            }
+        }
+    }
 
+    static void UpdateImpulseForceCurve2(ImpulseForce& aImpulseForce, const float aTimeDelta)
+    {
+        if (aImpulseForce.impulseType == ImpulseType::IMPULSETYPE_BELLCURVE)
+        {
+            if (aImpulseForce.currentTime >= aImpulseForce.totalTime)
+            {
+                aImpulseForce.isActive = false;
+                aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
+            }
+            else
+            {
+                // check if tick time is less than total time and set to max magnatiude if so
+                // so force occurs if impact time is very low
+                if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
+                {
+                    aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                    aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                    aImpulseForce.currentTime += aTimeDelta;
+                }
+                else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) > aImpulseForce.totalTime)
+                {
+                    const float magMod = 0.5f;
+                    aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+                    aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                    aImpulseForce.currentTime += aTimeDelta;
+                }
+                else
+                {
+                    aImpulseForce.currentTime += aTimeDelta;
+                    if (aImpulseForce.currentTime < aImpulseForce.totalTime && aImpulseForce.currentTime >= 0.0f)
+                    {
+                        aImpulseForce.isActive = true;
+                    }
+                    else
+                    {
+                        aImpulseForce.isActive = false;
+                        aImpulseForce.currentMagnitude = 0.0f;
+                        aImpulseForce.currentTorqueMagnitude = 0.0f;
+                    }
+                    if (aImpulseForce.isActive == true)
+                    {
+                        const float maxForceTime = aImpulseForce.totalTime * 0.5f;
+                        float ratio;
+
+                        if (aImpulseForce.currentTime <= maxForceTime)
+                        {
+                            ratio = aImpulseForce.currentTime / maxForceTime;
+                        }
+                        else
+                        {
+                            ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime - maxForceTime);
+                            ratio = 1.0f - ratio;
+                        }
+                        aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
+                        aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                    }
+                }
+
+                if (aImpulseForce.isActive == true)
+                {
+                    aImpulseForce.tickCount++;
+                }
+                else
+                {
+                    aImpulseForce.tickCount = 0;
+                }
+            }
+        }
+        else if (aImpulseForce.impulseType == ImpulseType::IMPULSETYPE_FLAT)
+        {
+            if (aImpulseForce.currentTime >= aImpulseForce.totalTime)
+            {
+                aImpulseForce.isActive = false;
+                aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
+            }
+            if (aImpulseForce.isActive == true)
+            {
+                aImpulseForce.currentTime += aTimeDelta;
+                aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                ++aImpulseForce.tickCount;
+            }
+        }
+        else if (aImpulseForce.impulseType == ImpulseType::IMPULSETYPE_FRONTLOADCURVE)
+        {
+            if (aImpulseForce.currentTime >= aImpulseForce.totalTime)
+            {
+                aImpulseForce.isActive = false;
+                aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
+            }
+            if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
+            {
+                aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                aImpulseForce.currentTime += aTimeDelta;
+                ++aImpulseForce.tickCount;
+            }
+            else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) >= aImpulseForce.totalTime)
+            {
+                const float magMod = 0.5f;
+                aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                aImpulseForce.currentTime += aTimeDelta;
+                ++aImpulseForce.tickCount;
+            }
+            else if (aImpulseForce.isActive == true)
+            {
+                float ratio;
+                if (aImpulseForce.totalTime != 0.0f)
+                {
+                    ratio = 1.0f - (aImpulseForce.currentTime / aImpulseForce.totalTime);
+                    if (ratio < 0.0f)
+                    {
+                        ratio = 0.0f;
+                    }
+                }
+                else
+                {
+                    ratio = 0.0f;
+                }
+                aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * ratio;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                aImpulseForce.currentTime += aTimeDelta;
+                ++aImpulseForce.tickCount;
+            }
+        }
+        else if (aImpulseForce.impulseType == ImpulseType::IMPULSETYPE_LAGCURVE)
+        {
+            if (aImpulseForce.currentTime >= aImpulseForce.totalTime)
+            {
+                aImpulseForce.isActive = false;
+                aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;
+            }
+            if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
+            {
+                aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                aImpulseForce.currentTime += aTimeDelta;
+                ++aImpulseForce.tickCount;
+            }
+            else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) >= aImpulseForce.totalTime)
+            {
+                const float magMod = 0.5f;
+                aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                aImpulseForce.currentTime += aTimeDelta;
+                ++aImpulseForce.tickCount;
+            }
+            else if (aImpulseForce.isActive == true)
+            {
+                float ratio;
+                if (aImpulseForce.totalTime != 0.0f)
+                {
+                    ratio = aImpulseForce.currentTime / aImpulseForce.totalTime;
+                    if (ratio > 1.0f)
+                    {
+                        ratio = 1.0f;
+                    }
+                }
+                else
+                {
+                    ratio = 0.0f;
+                }
+                aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * ratio;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+                aImpulseForce.currentTime += aTimeDelta;
+                ++aImpulseForce.tickCount;
             }
         }
     }

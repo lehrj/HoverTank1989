@@ -120,6 +120,9 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.maxMagnitude = explosionForce;
                     explosionImpulseForce.torqueArm = impactNorm;
 
+                    explosionImpulseForce.forceSum = explosionForce;
+                    explosionImpulseForce.forceRemaining = explosionImpulseForce.forceSum;
+
                     DirectX::SimpleMath::Matrix worldMatrix = DirectX::SimpleMath::Matrix::CreateWorld(m_npcVec[i]->GetPos(), -m_npcVec[i]->GetRight(), m_npcVec[i]->GetUp());
                     DirectX::SimpleMath::Matrix localizationMatrix = worldMatrix;
                     localizationMatrix = localizationMatrix.Invert();
@@ -188,6 +191,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     //explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
                     explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
                     explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
+                    explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
                     //m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
 
                     //////////
@@ -305,8 +309,11 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                     impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
                 }
                 impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
-                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
-                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
+                //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
+                //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
+
+                impulseToVec.forceSum = (aProjectile.mass * impactVelocity);
+                impulseToVec.forceRemaining = impulseToVec.forceSum;
                 float forceByDistance = (1.0f / (2.0f * 1.0f)) * aProjectile.mass * (impactVelocity * impactVelocity);
                 float collisionTime = 1.0f / impactVelocity;
                 float forceByTime = (aProjectile.mass * impactVelocity) / impulseToVec.totalTime;
