@@ -383,7 +383,7 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     impulseToVec.totalTime = 0.1f;
 
     impulseToVec.maxMagnitude = aForceVec1.Length() * aVehicleHit.mass;
-
+    impulseToVec.torqueForceNorm = impulseToVec.directionNorm;
     PushImpulseForce(impulseToVec);
 
     Utility::ImpulseForce repulsorToVec;
@@ -409,8 +409,10 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     repulsionForceToVec.impactVelocity = GetRepulsionForce(aVehicleHit);
     repulsionForceToVec.impactMass = aVehicleHit.mass;
 
-    repulsionForceToVec.impactVelocity *= 150.0f;
+    //repulsionForceToVec.impactVelocity *= 150.0f;
+    repulsionForceToVec.impactVelocity *= 100.0f;
     repulsionForceToVec.kineticEnergy = repulsionForceToVec.impactVelocity;
+
     PushImpactForce(repulsionForceToVec);
 }
 
@@ -2911,13 +2913,13 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     velocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    //DirectX::SimpleMath::Vector3 impactForceSum = m_vehicleStruct00.vehicleData.impactForceSum;
+    DirectX::SimpleMath::Vector3 impactForceSum = m_vehicleStruct00.vehicleData.impactForceSum;
 
     DirectX::SimpleMath::Vector3 angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Zero;
     Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(angAccelVecTensorUpdate, static_cast<float>(aTimeDelta));
 
     velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-
+    velocityUpdate += impactForceSum;
     if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
     {
         float jumpMag = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude;
@@ -3727,42 +3729,13 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
             m_testTorqueVec += (testAxis * torqueImpulse.magnitude);
             //m_isDebugPauseToggleTrue = true;
 
-
             DirectX::SimpleMath::Vector3 directionNorm = m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm;
             DirectX::SimpleMath::Vector3 torqueArm = m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueArm;
             DirectX::SimpleMath::Vector3 forcePoint = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos + m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueArm;
             m_debugData->PushDebugLineScaled(m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
             m_debugData->PushDebugLine(forcePoint, directionNorm, 20.0f, 0.0f, DirectX::Colors::White);
-
-
-            /*
-        DirectX::SimpleMath::Vector3 impactPosToCoM = impactPos - m_npcVec[i]->GetCenterOfMass();
-        DirectX::SimpleMath::Vector3 testForceNorm = impactPos - aBoundingSphere.Center;
-        testForceNorm += impactPosToCoM;
-        DirectX::SimpleMath::Vector3 testForceNorm3 = impactPos - aBoundingSphere.Center;
-        testForceNorm3 -= impactPosToCoM;
-        DirectX::SimpleMath::Vector3 testForceNorm2 = impactPos - aBoundingSphere.Center;
-        testForceNorm2.Normalize();
-        impactPosToCoM.Normalize();
-        testForceNorm2 += impactPosToCoM;
-        testForceNorm.Normalize();
-        DirectX::SimpleMath::Vector3 forcePoint = m_npcVec[i]->GetPos() + explosionImpulseForce.torqueArm;
-
-
-        m_debugData->PushDebugLineScaled(m_npcVec[i]->GetPos(), explosionImpulseForce.torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
-        // m_debugData->PushDebugLineScaled(forcePoint, explosionImpulseForce.torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
-        m_debugData->PushDebugLine(forcePoint, explosionImpulseForce.directionNorm, 20.0f, 0.0f, DirectX::Colors::Blue);
-        m_debugData->PushDebugLine(forcePoint, testForceNorm, 20.0f, 0.0f, DirectX::Colors::Teal);
-        m_debugData->PushDebugLine(forcePoint, testForceNorm2, 20.0f, 0.0f, DirectX::Colors::Yellow);
-        m_debugData->PushDebugLine(forcePoint, testForceNorm3, 20.0f, 0.0f, DirectX::Colors::Orange);
-        m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.x = ", explosionImpulseForce.directionNorm.x, "");
-        m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.y = ", explosionImpulseForce.directionNorm.y, "");
-        m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.z = ", explosionImpulseForce.directionNorm.z, "");
-        */
         }
     }
-
-
 
     if (torqueSum.axis.Length() > 1.1f || torqueSum.axis.Length() < 0.9f)
     {
@@ -3779,7 +3752,6 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
     }
 
     torqueSum.axis.Normalize();
-
 
     if (forceSum.Length() > 1600000.0f)
     {
@@ -4002,6 +3974,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         UpdateJumpData(m_vehicleStruct00.vehicleData.jumpData, static_cast<float>(aTimeDelta));
     }
 
+    
+    m_vehicleStruct00.vehicleData.impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
     UpdateImpulseForces(static_cast<float>(aTimeDelta));
 
     m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData);

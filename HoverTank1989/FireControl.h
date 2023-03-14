@@ -262,6 +262,7 @@ private:
     AmmoType m_currentAmmoType;
     MuzzleFlash m_muzzleFlash;
 
+    const float m_gravityMod = 1.0f;
     const float m_explosiveTorqueArmMod = 1.0f;
     const float m_maxExplosiveForce = 100000.0f;
 

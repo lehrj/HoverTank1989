@@ -4699,7 +4699,6 @@ void Vehicle::UpdateTestDrivetrainTorque5(const float aTimer)
 
 void Vehicle::UpdateVehicle(const double aTimeDelta)
 {
-
     if (m_testTimer2 > DirectX::XM_PI)
     {
         m_testBoolFlipRot = true;
@@ -5004,9 +5003,6 @@ void Vehicle::FireWeapon()
 {
     if (m_fireControl->GetIsCoolDownActive() == false)
     {
-        //DirectX::SimpleMath::Vector3 pos = m_heli.weaponPos;
-        //DirectX::SimpleMath::Vector3 launchDir = m_heli.weaponDirection;
-
         DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
         DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDir();
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;

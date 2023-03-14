@@ -311,6 +311,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                 impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
                 //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
                 //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
+                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
 
                 impulseToVec.forceSum = (aProjectile.mass * impactVelocity);
                 impulseToVec.forceRemaining = impulseToVec.forceSum;
