@@ -2951,7 +2951,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
 
     velocityUpdate += m_vehicleStruct00.vehicleData.collisionImpulseForceSum;
 
-
+    /*
     if (m_isDebugToggleTrue == true)
     {
         angAccelVecTensorUpdate -= m_torqueDebugTest;
@@ -2960,6 +2960,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     {
         angAccelVecTensorUpdate += m_torqueDebugTest;
     }
+    */
 
     const float angAirDensity = m_environment->GetAirDensity();
     const float angDragCoefficient = aVehicle->angularDragCoefficient;
@@ -3980,7 +3981,24 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     m_buoyancyTestForce = GetBuoyancyForce(m_vehicleStruct00.vehicleData);
 
-    RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    if (m_vehicleStruct00.vehicleData.id != 0 )
+    {
+        RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    }
+    else if (m_isDebugToggleTrue == true)
+    {
+        int testBreak = 0;
+        //m_vehicleStruct00.vehicleData.q.velocity = DirectX::SimpleMath::Vector3(10.0f, 0.0f, 0.0f);
+
+        RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+    }
+
+    if (m_vehicleStruct00.vehicleData.id == 0)
+    {
+        m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.x ", m_vehicleStruct00.vehicleData.q.velocity.x, "");
+        m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.y ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
+        m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.z ", m_vehicleStruct00.vehicleData.q.velocity.z, "");
+    }
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 

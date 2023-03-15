@@ -1061,8 +1061,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugInputVelocityZero();
-            //m_vehicle->DebugToggle2();
+            m_vehicle->DebugToggle2();
         }
     }
     if (m_kbStateTracker.pressed.C)
@@ -1070,13 +1069,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->DebugToggle3();
-        }
-    }
-    if (m_kbStateTracker.pressed.P)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            TogglePause();
         }
     }
     if (m_kbStateTracker.pressed.P)
@@ -1096,7 +1088,29 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const float rowSpacing = 25.0f;
             const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(-90.0f, 10.0f, -40.0f);
             const DirectX::SimpleMath::Vector3 orientation = DirectX::SimpleMath::Vector3::UnitX;
-            m_npcController->LoadToQueue(dropPosition, orientation,  columnCount, rowCount, columSpaceing, rowSpacing);
+            m_npcController->LoadToQueueAxisAligned(dropPosition, orientation,  columnCount, rowCount, columSpaceing, rowSpacing);
+        }
+    }
+    if (m_kbStateTracker.pressed.D2)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            const unsigned int columnCount = 5;
+            const unsigned int rowCount = 3;
+            const float columSpaceing = 15.0f;
+            const float rowSpacing = 20.0f;
+  
+            const DirectX::SimpleMath::Vector2 spacing = DirectX::SimpleMath::Vector2(columSpaceing, rowSpacing);
+            DirectX::SimpleMath::Vector3 dropDirection = m_vehicle->GetForward();
+            const float dropDistance = 200.0f;
+            dropDirection *= dropDistance;
+            DirectX::SimpleMath::Vector3 dropPosition = m_vehicle->GetPos();
+            dropPosition += dropDirection;
+
+            const DirectX::SimpleMath::Vector3 orientation = -m_vehicle->GetForward();
+            const DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicle->GetAlignment());
+
+            m_npcController->LoadToQueue(dropPosition, orientation, columnCount, rowCount, spacing, alignQuat);
         }
     }
 

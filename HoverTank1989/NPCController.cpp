@@ -467,8 +467,8 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     float baseHeight = 10.0f;
     //const int rows = 6;
     //const int columns = 4;
-    const int rows = 1;
-    const int columns = 5;
+    const int rows = 0;
+    const int columns = 1;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -530,7 +530,34 @@ void NPCController::LoadNPCsTestFireRange(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 }
 
-void NPCController::LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing)
+void NPCController::LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aHeading, const unsigned int aColumnCount, const unsigned int aRowCount,
+    const DirectX::SimpleMath::Vector2 aSpacing, const DirectX::SimpleMath::Quaternion aQuat)
+{
+    DirectX::SimpleMath::Vector3 heading = aHeading;
+    DirectX::SimpleMath::Vector3 columnOffset = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(0.0f, 0.0f, aSpacing.x), aQuat);
+    DirectX::SimpleMath::Vector3 rowOffset = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(aSpacing.y, 0.0f, 0.0f), aQuat);
+    DirectX::SimpleMath::Vector3 pos = aLoadPosition;
+    pos -= columnOffset * (static_cast<float>(aColumnCount - 1) * 0.5f);
+    pos -= rowOffset * (static_cast<float>(aRowCount - 1) * 0.5f);
+    const DirectX::SimpleMath::Vector3 originPos = pos;
+    LoadQueue loadData;
+    loadData.deployType = NPCType::NPCTYPE_NPC00;
+    for (unsigned int i = 0; i < aRowCount; ++i)
+    {
+        for (unsigned int j = 0; j < aColumnCount; ++j)
+        {
+            loadData.deployOrientation = heading;
+            loadData.deployPosition = pos;
+            m_loadQueue.push_back(loadData);
+            pos += columnOffset;
+        }
+        pos = originPos;
+        pos += (rowOffset * static_cast<float>(i + 1));
+    }
+}
+
+void NPCController::LoadToQueueAxisAligned(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, 
+    const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing)
 {
     DirectX::SimpleMath::Vector3 pos = aLoadPosition;
     DirectX::SimpleMath::Vector3 heading = aOrientation;
@@ -623,6 +650,16 @@ void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const d
 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
+        if (m_npcVec[i]->GetID() == 0 && m_npcVec[i]->GetDebugVal() == false)
+        {
+            DirectX::SimpleMath::Vector3 playerPos = m_player->GetPos();
+            const DirectX::SimpleMath::Matrix playerAlignment = m_player->GetAlignment();
+            const DirectX::SimpleMath::Vector3 playerVelocity = m_player->GetVelocity();
+            m_npcVec[i]->SetPos(playerPos);
+            m_npcVec[i]->SetAlignment(playerAlignment);
+            m_npcVec[i]->SetVelocity(playerVelocity);
+        }
+
         m_npcVec[i]->CheckIfInCameraFrustum(aFrustum);
         m_npcVec[i]->UpdateNPC(aTimeDelta);
     }
@@ -638,7 +675,7 @@ void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const d
     }
 
     CheckNpcCollisions();
-    CheckPlayerCollisions();
+    //CheckPlayerCollisions();
     CheckNpcAvoidance();
 }
 
@@ -1081,6 +1118,7 @@ void NPCController::CheckPlayerCollisions()
                     impulseToVec.directionNorm = testV1.q.velocity;
                     impulseToVec.directionNorm = testVecUsed;
                     impulseToVec.directionNorm.Normalize();
+                    impulseToVec.torqueForceNorm = impulseToVec.directionNorm;
                     impulseToVec.isActive = true;
                     impulseToVec.maxMagnitude = (0.5f * testV1.mass * testV1.q.velocity * testV1.q.velocity).Length();
                     //impulseToVec.torqueArm = aVehicleHit.hardPoints.centerOfMassPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;

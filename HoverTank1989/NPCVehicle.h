@@ -555,6 +555,11 @@ public:
     void PushImpactTorque(Utility::Torque aTorque);
     void PushImpulseForce(Utility::ImpulseForce aImpulse);
 
+    void SetAlignment(const DirectX::SimpleMath::Matrix aMat) { m_vehicleStruct00.vehicleData.alignment = aMat; };
+    void SetPos(const DirectX::SimpleMath::Vector3 aPos) { m_vehicleStruct00.vehicleData.q.position = aPos; };
+    void SetVelocity(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
+    bool GetDebugVal() { return m_isDebugToggleTrue; };
+
     void SetCollisionVal(const bool aIsCollisionTrue);
     void SetExplosionTrue() { m_vehicleStruct00.vehicleData.isExploding = true; };
     void SetDeadTrue() { m_vehicleStruct00.vehicleData.isDead = true; };

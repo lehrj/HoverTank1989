@@ -2290,7 +2290,6 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
 
     DirectX::SimpleMath::Vector3 windVanVec = m_heli.windVaningTorueForce;
     DirectX::SimpleMath::Vector3 torqueVec = tailVec + gravVec + driveVec + weaponVec + terrainVec;
-    //torqueVec = tailVec + gravVec + driveVec + weaponVec;
 
     /*
     m_debugData->PushDebugLine(m_heli.q.position, torqueVec, 20.0f, 0.0f, DirectX::Colors::Teal);
@@ -2596,6 +2595,7 @@ void Vehicle::UpdateBrakeForce(const float aTimeStep)
         brakeNorm.Normalize();
         DirectX::SimpleMath::Vector3 brakeForce = brakeNorm * ((m_heli.controlInput.brakeInput * m_heli.brakeMagMax) * brakableVelocity);
         m_heli.controlInput.brakeForce = brakeForce;
+
     }
     else
     {
@@ -4934,48 +4934,6 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     DirectX::SimpleMath::Matrix inverseAlignment = m_heli.alignment;
     inverseAlignment = inverseAlignment.Invert();
 
-    /*
-    DirectX::SimpleMath::Vector3 calcHoverDriveForceLine = calcHoverDriveForce;
-    calcHoverDriveForceLine = DirectX::SimpleMath::Vector3::Transform(calcHoverDriveForceLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, calcHoverDriveForceLine, 10.0f, 0.0f, DirectX::Colors::Red);
-
-    DirectX::SimpleMath::Vector3 damperForceLine = damperForce;
-    damperForceLine = DirectX::SimpleMath::Vector3::Transform(damperForceLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, damperForceLine, 10.0f, 0.0f, DirectX::Colors::Green);
-
-    DirectX::SimpleMath::Vector3 gravForceLine = gravForce;
-    gravForceLine = DirectX::SimpleMath::Vector3::Transform(gravForceLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, gravForceLine, 10.0f, 0.0f, DirectX::Colors::Blue);
-
-    DirectX::SimpleMath::Vector3 jetThrustLine = jetThrust;
-    jetThrustLine = DirectX::SimpleMath::Vector3::Transform(jetThrustLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, jetThrustLine, 10.0f, 0.0f, DirectX::Colors::Yellow);
-
-    DirectX::SimpleMath::Vector3 rotorForceLine = rotorForce;
-    rotorForceLine = DirectX::SimpleMath::Vector3::Transform(rotorForceLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, rotorForceLine, 10.0f, 0.0f, DirectX::Colors::Orange);
-
-    DirectX::SimpleMath::Vector3 buoyancyForceLine = m_heli.buoyancyForce;
-    buoyancyForceLine = DirectX::SimpleMath::Vector3::Transform(buoyancyForceLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, buoyancyForceLine, 10.0f, 0.0f, DirectX::Colors::Purple);
-
-    DirectX::SimpleMath::Vector3 slopeForceLine = slopeForce;
-    slopeForceLine = DirectX::SimpleMath::Vector3::Transform(slopeForceLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, slopeForceLine, 10.0f, 0.0f, DirectX::Colors::Gray);
-
-    DirectX::SimpleMath::Vector3 brakeForceLine = m_heli.controlInput.brakeForce;
-    brakeForceLine = DirectX::SimpleMath::Vector3::Transform(brakeForceLine, inverseAlignment);
-    m_debugData->PushDebugLine(m_heli.q.position, brakeForceLine, 10.0f, 0.0f, DirectX::Colors::White);
-
-    DirectX::SimpleMath::Vector3 accelTorqueLine = accelVecUpdate;
-    accelTorqueLine = DirectX::SimpleMath::Vector3::Transform(accelTorqueLine, inverseAlignment);
-    //m_debugData->PushDebugLine(m_heli.q.position, accelTorqueLine, 10.0f, 0.0f, DirectX::Colors::Red);
-
-    DirectX::SimpleMath::Vector3 driveTrainTorque = m_testDrivetrainTorque.axis * m_testDrivetrainTorque.magnitude;
-    //driveTrainTorque = DirectX::SimpleMath::Vector3::Transform(driveTrainTorque, inverseAlignment);
-    //m_debugData->PushDebugLine(m_heli.q.position, driveTrainTorque, 10.0f, 0.0f, DirectX::Colors::Blue);
-    */
-
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.toUseTensor);
     angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, m_heli.alignment);
@@ -4997,6 +4955,9 @@ void Vehicle::DebugInputVelocityZero()
     DirectX::SimpleMath::Vector3 brakeForce = antiVelocity * brakeVal;
     //m_heli.q.velocity += brakeForce;
     m_heli.controlInput.brakeIsPressed = true;
+
+    //m_heli.q.angPosVec = DirectX::SimpleMath::Vector3::Zero;
+    m_heli.q.angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void Vehicle::FireWeapon()

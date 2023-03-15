@@ -224,7 +224,8 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamPosOffsetTest = DirectX::SimpleMath::Vector3(-15.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 5.0, 0.0);
     float                       m_followCamDistance = 1.0;
-    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
+    //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
+    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-45.0, 17.0f, 20.0f);
 
     Environment const* m_environment;
     std::shared_ptr<Vehicle> m_vehicleFocus;
@@ -240,7 +241,9 @@ private:
     float m_fDistance;
     float m_vDistance;
 
-    const float m_springConstantSet = 10.0f;
+    //const float m_springConstantSet = 10.0f;
+    const float m_springConstantSet = 1000.0f;
+
     float m_springConstant;
     float m_dampConstant;
     DirectX::SimpleMath::Vector3 m_velocity;

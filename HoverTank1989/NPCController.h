@@ -26,14 +26,16 @@ public:
     void AirDropNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const DirectX::SimpleMath::Vector3 aDropPosition,
         const DirectX::SimpleMath::Vector3 aOrientation, const float aAltitude, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing);
     
-
     bool CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere, const double aTimeDelta, const float aRemainingDuration);
     bool CheckProjectileCollisions(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive);
     void DebugToggleAI();
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
-    void DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, 
+        Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+
     void InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment);
-    void InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
+    void InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, 
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
     bool GetIsDebugPauseToggleTrue();
 
@@ -46,7 +48,10 @@ public:
 
     void LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController);
     void LoadNPCsTestFireRange(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController);
-    void LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing);
+    void LoadToQueue(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aHeading, const unsigned int aColumnCount, const unsigned int aRowCount, 
+        const DirectX::SimpleMath::Vector2 aSpacing, const DirectX::SimpleMath::Quaternion aQuat);
+    void LoadToQueueAxisAligned(const DirectX::SimpleMath::Vector3 aLoadPosition, const DirectX::SimpleMath::Vector3 aOrientation, const unsigned int aColumnCount, const unsigned int aRowCount, 
+        const float aColumnSpacing, const float aRowSpacing);
 
     void ResetNpcDebugPauseToggle();
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
@@ -54,6 +59,7 @@ public:
     void SetNPCEnvironment(Environment const* aEnvironment);
     void SetPlayer(std::shared_ptr<Vehicle> aVehicle);
     void SetVehicleDeath(const unsigned int aVehicleId);
+
     void TestPositionChange();
     void ToggleDebugBool();
     void UnlockJumpAbility();
