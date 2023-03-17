@@ -555,6 +555,26 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
 {
     DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
+    
+    DirectX::SimpleMath::Plane groundPlane;
+    groundPlane.x = 0.0f;
+    groundPlane.y = -1.0f;
+    groundPlane.z = 0.0f;
+    groundPlane.w = 0.5f;
+
+    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
+    DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
+    planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
+    planeTrans = planeTrans.Transpose();
+    groundPlane = DirectX::SimpleMath::Plane::Transform(groundPlane, planeTrans);
+    groundPlane.Normalize();
+    DirectX::SimpleMath::Matrix shadowMat = DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
+
+    const float maxShadowRange = m_environment->GetMaxShadowCastRange();
+    float shadowScale;
+    float inverseShadowScale;
+    
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
         DirectX::SimpleMath::Matrix projMat;
@@ -583,6 +603,26 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
             projMat = m_ammoCannon.ammoModel.localProjectileMatrix;
         }
         
+        const float altitude = m_projectileVec[i].q.position.y;
+        if (altitude > maxShadowRange)
+        {
+            shadowScale = 0.0f;
+            inverseShadowScale = 1.0f;
+        }
+        else
+        {
+            inverseShadowScale = altitude / maxShadowRange;
+            shadowScale = 1.0f - inverseShadowScale;
+
+            const float tol = 0.00001f;
+            if (inverseShadowScale < tol)
+            {
+                inverseShadowScale = tol;
+            }
+        }
+        DirectX::SimpleMath::Matrix shadowScaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(shadowScale, shadowScale, shadowScale));
+        DirectX::SimpleMath::Matrix shadowDrawMat = projMat;
+
         DirectX::SimpleMath::Vector3 forward = m_projectileVec[i].q.velocity;
         if (forward.Length() < 0.00001f)
         {
@@ -594,6 +634,91 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
         DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -right, up);
         projMat *= alignMat;
        
+        projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_projectileVec[i].q.position);
+
+        shadowDrawMat = shadowDrawMat;
+        shadowDrawMat *= alignMat;
+        shadowDrawMat *=  inverseShadowScale;
+        shadowDrawMat *= shadowScaleMat;
+        shadowDrawMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_projectileVec[i].q.position);;
+        shadowDrawMat *= shadowMat;
+
+        if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_CANNON)
+        {
+            m_ammoCannon.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
+            m_ammoCannon.ammoModel.projectileShape->Draw(shadowDrawMat, aView, aProj, projectileColor);
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+        {
+            m_ammoExplosive.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
+            m_ammoExplosive.ammoModel.projectileShape->Draw(shadowDrawMat, aView, aProj, projectileColor);
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_MACHINEGUN)
+        {
+            m_ammoMachineGun.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
+            m_ammoMachineGun.ammoModel.projectileShape->Draw(shadowDrawMat, aView, aProj, projectileColor);
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_MIRV)
+        {
+            m_ammoMirv.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
+            m_ammoMirv.ammoModel.projectileShape->Draw(shadowDrawMat, aView, aProj, projectileColor);
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_SHOTGUN)
+        {
+            m_ammoShotgun.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
+            m_ammoShotgun.ammoModel.projectileShape->Draw(shadowDrawMat, aView, aProj, projectileColor);
+        }
+        else
+        {
+            m_ammoCannon.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
+            m_ammoCannon.ammoModel.projectileShape->Draw(shadowDrawMat, aView, aProj, projectileColor);
+        }      
+    }
+}
+
+void FireControl::DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
+{
+    DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    {
+        DirectX::SimpleMath::Matrix projMat;
+        if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_CANNON)
+        {
+            projMat = m_ammoCannon.ammoModel.localProjectileMatrix;
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE)
+        {
+            projMat = m_ammoExplosive.ammoModel.localProjectileMatrix;
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_MACHINEGUN)
+        {
+            projMat = m_ammoMachineGun.ammoModel.localProjectileMatrix;
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_MIRV)
+        {
+            projMat = m_ammoMirv.ammoModel.localProjectileMatrix;
+        }
+        else if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_SHOTGUN)
+        {
+            projMat = m_ammoShotgun.ammoModel.localProjectileMatrix;
+        }
+        else
+        {
+            projMat = m_ammoCannon.ammoModel.localProjectileMatrix;
+        }
+
+        DirectX::SimpleMath::Vector3 forward = m_projectileVec[i].q.velocity;
+        if (forward.Length() < 0.00001f)
+        {
+            forward = DirectX::SimpleMath::Vector3::UnitX;
+        }
+        forward.Normalize();
+        DirectX::SimpleMath::Vector3 right = DirectX::SimpleMath::Vector3::UnitY.Cross(forward);
+        DirectX::SimpleMath::Vector3 up = right.Cross(forward);
+        DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -right, up);
+        projMat *= alignMat;
+
         projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_projectileVec[i].q.position);
 
         if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_CANNON)
@@ -619,7 +744,7 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
         else
         {
             m_ammoCannon.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
-        }      
+        }
     }
 }
 
@@ -1313,7 +1438,6 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.cooldown = 1.9f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
-    //aAmmo.ammoData.impactModifier = 4.0f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 65.0f;
     aAmmo.ammoData.length = 1.0f;
