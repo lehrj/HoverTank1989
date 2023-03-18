@@ -1474,7 +1474,7 @@ void Vehicle::Jump()
 {
     DirectX::SimpleMath::Vector3 jumpVec(50.0f, 0.0f, 0.0f);
     jumpVec = DirectX::SimpleMath::Vector3::Transform(jumpVec, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(45.0f)));
-    const float jumpHeight = 10.0f;
+    const float jumpHeight = 40.0f;
     m_heli.q.position.y += jumpHeight;
 }
 
@@ -1875,10 +1875,10 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.angularVelocityVec += angularVelocityVecUpdate;
 
     aHeli->q.velocity = q.velocity;
-    aHeli->q.position = q.position;
+    //aHeli->q.position = q.position;
     aHeli->q.engineForce = q.engineForce;
     aHeli->q.bodyTorqueForce = q.bodyTorqueForce;
-    aHeli->q.angularVelocityVec = q.angularVelocityVec;
+    //aHeli->q.angularVelocityVec = q.angularVelocityVec;
     aHeli->q.angPosVec = q.angPosVec;
 }
 
@@ -2199,6 +2199,13 @@ DirectX::SimpleMath::Vector3 Vehicle::GetJetThrust(const DirectX::SimpleMath::Ve
 {
     DirectX::SimpleMath::Vector3 thrustUpdate = aForward * (aInput * aThrustMax);
     return thrustUpdate;
+}
+
+DirectX::SimpleMath::Vector4 Vehicle::GetRearGlowColor()
+{
+    DirectX::SimpleMath::Vector4 updateColor = DirectX::SimpleMath::Vector4::Zero;
+
+    return updateColor;
 }
 
 DirectX::SimpleMath::Vector3 Vehicle::GetSlopeForce(const DirectX::SimpleMath::Vector3 aTerrainNorm, const float aAltitude, const float aGroundInteractionRange)
@@ -2841,6 +2848,141 @@ float Vehicle::UpdateGroundEffectForce(const float aLiftForce)
     float groundEffectLift = aLiftForce * liftMod;
 
     return groundEffectLift;
+}
+
+void Vehicle::UpdateModelColors()
+{
+    float baseColor = 0.6f;
+    DirectX::SimpleMath::Vector4 testGlowColor = DirectX::SimpleMath::Vector4(baseColor, baseColor, baseColor, 1.0f);
+
+    float colorY = 0.6f;
+
+    float testVal = abs(m_heli.controlInput.cyclicInputPitch /  m_heli.controlInput.cyclicInputMax);
+    float invsBaseColor = 1.0f - baseColor;
+    testVal *= baseColor;
+    //m_debugData->DebugPushUILineDecimalNumber("testVal = ", testVal, "");
+
+    float invsColorY = 1.0f - colorY;
+
+    float colorVal = testVal + invsBaseColor;
+    testGlowColor.x = colorVal;
+    //m_debugData->DebugPushUILineDecimalNumber("colorVal = ", colorVal, "");
+
+    float colorVal2 = invsBaseColor - testVal;
+    //colorVal2 = colorVal;
+    testGlowColor.y = colorVal2;
+    testGlowColor.z = colorVal2;
+
+    //testGlowColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+
+
+    const float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
+
+    float leftYawVal = m_heli.controlInput.yawPedalInput / m_heli.controlInput.yawPedalInputMax;
+    if (leftYawVal <= 0.0f)
+    {
+        leftYawVal = 0.0f;
+    }
+    float leftVal = m_heli.controlInput.cyclicInputRoll / m_heli.controlInput.cyclicInputMin;
+    if (leftVal <= 0.0f)
+    {
+        leftVal = 0.0f;
+    }
+    leftVal += leftYawVal;
+
+    float rightYawVal = m_heli.controlInput.yawPedalInput / m_heli.controlInput.yawPedalInputMin;
+    if (rightYawVal <= 0.0f)
+    {
+        rightYawVal = 0.0f;
+    }
+
+    float rightVal = m_heli.controlInput.cyclicInputRoll / m_heli.controlInput.cyclicInputMax;
+    if (rightVal <= 0.0f)
+    {
+        rightVal = 0.0f;
+    }
+    rightVal += rightYawVal;
+    m_modelController->SetGlowVals(centerVal, leftVal, rightVal, m_heli.q.position);
+    //m_modelController->SetGlowVals(centerVal, centerVal, centerVal, m_heli.q.position);
+
+    m_debugData->DebugPushUILineDecimalNumber(" = ", centerVal, "");
+    m_debugData->DebugPushUILineDecimalNumber(" = ", leftVal, "");
+    m_debugData->DebugPushUILineDecimalNumber(" = ", rightVal, "");
+
+    if (centerVal != leftVal || centerVal != rightVal)
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+    DirectX::SimpleMath::Vector4 centerGlowColor = testGlowColor;
+    colorVal = centerVal + invsBaseColor;
+    colorVal2 = invsBaseColor - centerVal;
+    //colorVal2 = colorVal;
+    float colorVal3 = colorVal2 + (centerVal * colorY);
+
+    baseColor = 0.0f;
+    float redBaseVal = 0.7f;
+    float invsRedVal = 1.0f - redBaseVal;
+    float redMax = 1.0f - baseColor;
+    colorVal = baseColor + (centerVal * redMax);
+    float blueBaseVal = 0.0f;
+    float blueMaxVal = 0.1 - baseColor;
+    colorVal3 = baseColor + (centerVal * blueMaxVal);
+
+    float greenBaseVal = 0.0f;
+    float greenMaxVal = 0.0f - baseColor;
+    colorVal2 = baseColor + (centerVal * greenMaxVal);
+
+
+    m_debugData->DebugPushUILineDecimalNumber("centerVal = ", centerVal, "");
+    m_debugData->DebugPushUILineDecimalNumber("colorVal = ", colorVal, "");
+    m_debugData->DebugPushUILineDecimalNumber("colorVal3 = ", colorVal3, "");
+    m_debugData->DebugPushUILineDecimalNumber("colorVal2 = ", colorVal2, "");
+    centerGlowColor = DirectX::SimpleMath::Vector4(colorVal, colorVal3, colorVal2, 1.0f);
+    
+    colorVal = leftVal + invsBaseColor;
+    colorVal2 = invsBaseColor - leftVal;
+    //colorVal2 = colorVal;
+    colorVal = baseColor + (leftVal * redMax);
+    colorVal2 = baseColor + (leftVal * greenMaxVal);
+    colorVal3 = baseColor + (leftVal * blueMaxVal);
+    DirectX::SimpleMath::Vector4 leftGlowColor = DirectX::SimpleMath::Vector4(colorVal, colorVal2, colorVal2, 1.0f);
+
+
+
+    colorVal = rightVal + invsBaseColor;
+    colorVal2 = invsBaseColor - rightVal;
+    //colorVal2 = colorVal;
+    //colorVal = baseColor + (rightVal * redMax);
+    //colorVal2 = baseColor + (rightVal * greenMaxVal);
+    //colorVal3 = baseColor + (rightVal * blueMaxVal);
+    DirectX::SimpleMath::Vector4 rightGlowColor = DirectX::SimpleMath::Vector4(colorVal, colorVal2, colorVal2, 1.0f);
+
+
+    DirectX::SimpleMath::Vector3 lightDirection = m_heli.forward;
+
+    //centerGlowColor = DirectX::SimpleMath::Vector4(baseColor, baseColor, baseColor, 1.0f);
+    //leftGlowColor = DirectX::SimpleMath::Vector4(baseColor, baseColor, baseColor, 1.0f);
+    //rightGlowColor = DirectX::SimpleMath::Vector4(baseColor, baseColor, baseColor, 1.0f);
+    m_modelController->SetGlowColors(centerGlowColor, leftGlowColor, rightGlowColor, lightDirection);
+    //m_modelController->SetGlowColors(centerGlowColor, centerGlowColor, centerGlowColor, lightDirection);
+
+    if (leftGlowColor != rightGlowColor)
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+    if(centerGlowColor != leftGlowColor)
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+    if (centerGlowColor != rightGlowColor)
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+
 }
 
 void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep)
@@ -4126,7 +4268,8 @@ void Vehicle::UpdateTestDrivetrainTorque4(const float aTimer)
     float upDot = m_heli.up.Dot(DirectX::SimpleMath::Vector3::UnitY);
     //m_debugData->DebugPushUILineDecimalNumber("upDot      = ", upDot, "");
 
-    const float torqueMax = m_testForceMod1;
+    //const float torqueMax = m_testForceMod1;
+    const float torqueMax = m_testForceMod3;
     DirectX::SimpleMath::Vector3 centerMassPos = m_heli.centerOfMass;
     DirectX::SimpleMath::Vector3 torqueArmLateral = m_heli.physicsPointRight - centerMassPos;
     DirectX::SimpleMath::Vector3 torqueArmLongitudinal = m_heli.physicsPointRear - centerMassPos;
@@ -4817,6 +4960,14 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_debugData->PushDebugLinePositionIndicator(m_heli.q.position + m_heli.dimensions, 5.0f, 0.0f, DirectX::Colors::White);
     */
 
+    if (m_heli.boundingBox.Intersects(m_heli.groundPlane) == true)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    UpdateModelColors();
+
     UpdateResistance();
     UpdateAlignmentTorque();
     UpdateAlignmentCamera();
@@ -4941,6 +5092,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     //m_debugData->DebugPushUILineDecimalNumber("accelVecUpdate = ", accelVecUpdate.Length(), "");
 
     m_heli.vehicleAngularForcesSum = accelVecUpdate;
+    //m_heli.vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void Vehicle::DebugInputVelocityZero()

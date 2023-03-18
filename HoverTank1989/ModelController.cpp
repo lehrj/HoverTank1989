@@ -2,13 +2,146 @@
 #include "ModelController.h"
 
 
-void ModelController::DrawModel(ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection)
+void ModelController::DrawModel(ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
-    DrawTank(m_playerModel, deviceContext, states, aView, aProjection);
+    DrawTank(m_playerModel, deviceContext, states, aView, aProjection, aEffect, aInputLayout);
 }
 
-void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection)
+void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
+    //aModel.rearGlowCenterColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+    m_debugData->DebugPushUILineDecimalNumber("m_playerModel.glowCenterVal = ", m_playerModel.glowCenterVal, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_playerModel.glowLeftVal = ", m_playerModel.glowLeftVal, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_playerModel.glowRightVal = ", m_playerModel.glowRightVal, "");
+
+    const DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
+    const DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
+    const DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
+
+    m_debugData->DebugPushUILineDecimalNumber("defaultLightDir0 = ", defaultLightDir0.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("defaultLightDir1 = ", defaultLightDir1.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("defaultLightDir2 = ", defaultLightDir2.Length(), "");
+
+    m_debugData->DebugPushUILineDecimalNumber("m_glowLightDirection = ", m_glowLightDirection.Length(), "");
+
+
+    auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
+    if (ilights)
+    {
+        ilights->EnableDefaultLighting();
+        ilights->SetLightEnabled(0, true);
+        ilights->SetLightEnabled(1, true);
+        ilights->SetLightEnabled(2, true);
+        
+        //ilights->SetLightDirection(0, m_glowLightDirection);
+        //ilights->SetLightDirection(1, m_glowLightDirection);
+        //ilights->SetLightDirection(2, m_glowLightDirection);
+        
+        //ilights->SetDiffuseColor(Colors::Blue);
+        //ilights->SetAmbientLightColor(Colors::Blue);
+        //ilights->EnableDefaultLighting();
+    }
+    aEffect->Apply(deviceContext);
+    
+    DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
+    DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
+    DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
+
+    lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_glowLightDirection, m_playerModel.glowCenterVal);
+
+    //lightDir0.Normalize();
+    //lightDir1.Normalize();
+    //lightDir2.Normalize();
+
+    aEffect->SetLightDirection(0, lightDir0);
+    aEffect->SetLightDirection(1, lightDir1);
+    aEffect->SetLightDirection(2, lightDir2);
+    aEffect->SetWorld(aModel.worldRearGlowCenterMatrix);
+    aEffect->SetColorAndAlpha(aModel.rearGlowCenterColor);
+    //aEffect->SetSpecularPower(aModel.glowCenterVal);
+    //aEffect->SetSpecularColor(aModel.rearGlowCenterColor);
+    aModel.rearGlowCenterShape->Draw(aEffect.get(), aInputLayout.Get());
+
+
+
+    /*
+    lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, -m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, -m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, -m_glowLightDirection, m_playerModel.glowCenterVal);
+    */
+    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(m_glowLightDirection, -m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(m_glowLightDirection, -m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_glowLightDirection, -m_glowLightDirection, m_playerModel.glowCenterVal);
+
+    aEffect->SetLightDirection(0, lightDir0);
+    aEffect->SetLightDirection(1, lightDir1);
+    aEffect->SetLightDirection(2, lightDir2);
+    aEffect->SetWorld(aModel.worldFrontGlowCenterMatrix);
+    aEffect->SetColorAndAlpha(aModel.frontGlowCenterColor);
+    aModel.frontGlowCenterShape->Draw(aEffect.get(), aInputLayout.Get());
+    //aModel.frontGlowCenterShape->Draw(aModel.worldFrontGlowCenterMatrix, aView, aProjection, aModel.frontGlowCenterColor);
+
+
+    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_glowLightDirection, m_playerModel.glowLeftVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_glowLightDirection, m_playerModel.glowLeftVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_glowLightDirection, m_playerModel.glowLeftVal);
+
+    //lightDir0.Normalize();
+    //lightDir1.Normalize();
+    //lightDir2.Normalize();
+
+    m_debugData->PushDebugLine(m_testPos, lightDir0, 10.0f, 0.0f, DirectX::Colors::LightBlue);
+    m_debugData->PushDebugLine(m_testPos, lightDir1, 10.0f, 0.0f, DirectX::Colors::LightBlue);
+    m_debugData->PushDebugLine(m_testPos, lightDir2, 10.0f, 0.0f, DirectX::Colors::LightBlue);
+
+    m_debugData->DebugPushUILineDecimalNumber("left lightDir0 = ", lightDir0.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("left lightDir1 = ", lightDir1.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("left lightDir2 = ", lightDir2.Length(), "");
+
+    aEffect->SetLightDirection(0, lightDir0);
+    aEffect->SetLightDirection(1, lightDir1);
+    aEffect->SetLightDirection(2, lightDir2);
+    aEffect->SetWorld(aModel.worldRearGlowLeftMatrix);
+    aEffect->SetColorAndAlpha(aModel.rearGlowLeftColor);
+    //aEffect->SetColorAndAlpha(aModel.rearGlowCenterColor);
+    aModel.rearGlowSideShape->Draw(aEffect.get(), aInputLayout.Get());
+
+    //lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_glowLightDirection, m_playerModel.glowRightVal);
+    //lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_glowLightDirection, m_playerModel.glowRightVal);
+    //lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_glowLightDirection, m_playerModel.glowRightVal);
+
+    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_glowLightDirection, m_playerModel.glowRightVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_glowLightDirection, m_playerModel.glowRightVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_glowLightDirection, m_playerModel.glowRightVal);
+
+    m_debugData->PushDebugLine(m_testPos, lightDir0, 7.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_testPos, lightDir1, 7.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_testPos, lightDir2, 7.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->DebugPushUILineDecimalNumber("rite lightDir0 = ", lightDir0.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("rite lightDir1 = ", lightDir1.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("rite lightDir2 = ", lightDir2.Length(), "");
+
+
+    aEffect->SetLightDirection(0, lightDir0);
+    aEffect->SetLightDirection(1, lightDir1);
+    aEffect->SetLightDirection(2, lightDir2);
+    aEffect->SetWorld(aModel.worldRearGlowRightMatrix);
+    aEffect->SetColorAndAlpha(aModel.rearGlowRightColor);
+    //aEffect->SetColorAndAlpha(aModel.rearGlowCenterColor);
+    aModel.rearGlowSideShape->Draw(aEffect.get(), aInputLayout.Get());
+
+    /*
+    aModel.rearGlowCenterShape->Draw(aModel.worldRearGlowCenterMatrix, aView, aProjection, aModel.rearGlowCenterColor);
+    aModel.rearGlowSideShape->Draw(aModel.worldRearGlowLeftMatrix, aView, aProjection, aModel.rearGlowLeftColor);
+    aModel.rearGlowSideShape->Draw(aModel.worldRearGlowRightMatrix, aView, aProjection, aModel.rearGlowRightColor);
+    aModel.frontGlowCenterShape->Draw(aModel.worldFrontGlowCenterMatrix, aView, aProjection, aModel.frontGlowCenterColor);
+    */
+
+    
+
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
     {
         auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
@@ -18,11 +151,17 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
             lights->SetLightEnabled(0, true);
             lights->SetLightEnabled(1, true);
             lights->SetLightEnabled(2, true);
+            //lights->SetLightDirection(0, DirectX::SimpleMath::Vector3::UnitZ);
+            //lights->SetLightDirection(1, DirectX::SimpleMath::Vector3::UnitZ);
+            //lights->SetLightDirection(2, DirectX::SimpleMath::Vector3::UnitZ);
+
         }
     });
     aModel.bodyModel->Modified();
+    
     aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
 
+    
     aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
         {
             auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
@@ -36,9 +175,11 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
             }
         });
     aModel.turretModel->Modified();
+    
     aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
 
+    
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
     {
         auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
@@ -82,7 +223,88 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aModel.turretModel->Draw(deviceContext, states, aModel.turretShadowMatrix, aView, aProjection);
 }
 
-void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
+void ModelController::DrawTank2(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection)
+{
+
+    aModel.rearGlowCenterShape->Draw(aModel.worldRearGlowCenterMatrix, aView, aProjection, aModel.rearGlowCenterColor);
+    aModel.rearGlowSideShape->Draw(aModel.worldRearGlowLeftMatrix, aView, aProjection, aModel.rearGlowLeftColor);
+    aModel.rearGlowSideShape->Draw(aModel.worldRearGlowRightMatrix, aView, aProjection, aModel.rearGlowRightColor);
+
+    aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->EnableDefaultLighting();
+                lights->SetLightEnabled(0, true);
+                lights->SetLightEnabled(1, true);
+                lights->SetLightEnabled(2, true);
+            }
+        });
+    aModel.bodyModel->Modified();
+    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
+
+    aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->EnableDefaultLighting();
+                lights->SetLightEnabled(0, true);
+                lights->SetLightEnabled(1, true);
+                lights->SetLightEnabled(2, true);
+
+            }
+        });
+    aModel.turretModel->Modified();
+    aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
+    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
+
+    aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->SetLightEnabled(0, false);
+                lights->SetLightEnabled(1, false);
+                lights->SetLightEnabled(2, false);
+                lights->SetAmbientLightColor(DirectX::Colors::Black);
+            }
+        });
+    aModel.bodyModel->Modified();
+    aModel.barrelModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->SetLightEnabled(0, false);
+                lights->SetLightEnabled(1, false);
+                lights->SetLightEnabled(2, false);
+                lights->SetAmbientLightColor(DirectX::Colors::Black);
+            }
+        });
+    aModel.barrelModel->Modified();
+
+    aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
+        {
+            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+            if (lights)
+            {
+                lights->SetLightEnabled(0, false);
+                lights->SetLightEnabled(1, false);
+                lights->SetLightEnabled(2, false);
+                lights->SetAmbientLightColor(DirectX::Colors::Black);
+            }
+        });
+    aModel.turretModel->Modified();
+
+    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyShadowMatrix, aView, aProjection);
+    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelShadowMatrix, aView, aProjection);
+    aModel.turretModel->Draw(deviceContext, states, aModel.turretShadowMatrix, aView, aProjection);
+}
+
+//void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
+void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     aModel.barrelModel = aBarrel;
     aModel.bodyModel = aBody;
@@ -103,7 +325,7 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
     DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
     aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
-    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0);
+    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0f);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
     aModel.turretWorldMatrix = aModel.turretLocalMatrix;
@@ -131,12 +353,88 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.muzzleLocalMatrix = aModel.barrelLocalMatrix;
     aModel.muzzleLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
     aModel.muzzleWorldMatrix = aModel.muzzleLocalMatrix;
+
+    // front center glow
+    DirectX::SimpleMath::Vector3 frontGlowCenterSize = DirectX::SimpleMath::Vector3(0.2f, 0.5f, 1.75f);
+    aModel.frontGlowCenterShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), frontGlowCenterSize);
+    DirectX::SimpleMath::Vector3 frontGlowCenterTranslation = DirectX::SimpleMath::Vector3(2.666f, -0.35f, 0.0f);
+    float glowFrontRotationZ = Utility::ToRadians(41.0);
+    aModel.localFrontGlowCenterMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localFrontGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(glowFrontRotationZ);
+    //aModel.localFrontGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
+    //aModel.localFrontGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0f));
+    aModel.localFrontGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(frontGlowCenterTranslation);
+    aModel.localFrontGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
+    aModel.worldFrontGlowCenterMatrix = aModel.localFrontGlowCenterMatrix;
+
+    aModel.frontGlowCenterColor = DirectX::Colors::Red;
+
+    // rear center glow
+    //DirectX::SimpleMath::Vector3 rearGlowCenterSize = DirectX::SimpleMath::Vector3(0.2f, 1.0f, 2.6f);
+    DirectX::SimpleMath::Vector3 rearGlowCenterSize = DirectX::SimpleMath::Vector3(0.2f, 0.5f, 0.6f);
+    aModel.rearGlowCenterShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rearGlowCenterSize);
+    DirectX::SimpleMath::Vector3 rearGlowCenterTranslation = DirectX::SimpleMath::Vector3(-2.35f, -0.15f, 0.0f);
+    //DirectX::SimpleMath::Vector3 rearGlowCenterTranslation = DirectX::SimpleMath::Vector3(-2.6f, -0.2f, 0.0f);
+    float glowRotationZ = Utility::ToRadians(21.8f);
+    aModel.localRearGlowCenterMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localRearGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(glowRotationZ);
+    //aModel.localRearGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
+    //aModel.localRearGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0f));
+    aModel.localRearGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rearGlowCenterTranslation);
+    aModel.localRearGlowCenterMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
+    aModel.worldRearGlowCenterMatrix = aModel.localRearGlowCenterMatrix;
+
+    aModel.rearGlowCenterColor = DirectX::Colors::Red;
+
+    // rear left glow
+    DirectX::SimpleMath::Vector3 rearGlowSideSize = DirectX::SimpleMath::Vector3(0.2f, 0.8f, 0.98f);
+    aModel.rearGlowSideShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), rearGlowSideSize);
+    //DirectX::SimpleMath::Vector3 rearGlowLeftTranslation = DirectX::SimpleMath::Vector3(-2.248f, -0.15f, -0.83f);
+    DirectX::SimpleMath::Vector3 rearGlowLeftTranslation = DirectX::SimpleMath::Vector3(-2.26f, -0.15f, -0.83f);
+
+    aModel.localRearGlowLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localRearGlowLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(glowRotationZ);
+    //aModel.localRearGlowLeftMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
+    //aModel.localRearGlowLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0f));
+    aModel.localRearGlowLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rearGlowLeftTranslation);
+    aModel.localRearGlowLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
+    aModel.worldRearGlowLeftMatrix = aModel.localRearGlowLeftMatrix;
+
+    aModel.rearGlowLeftColor = DirectX::Colors::Red;
+
+    // rear right glow
+    DirectX::SimpleMath::Vector3 rearGlowRightTranslation = rearGlowLeftTranslation;
+    rearGlowRightTranslation.z *= -1.0f;
+
+    aModel.localRearGlowRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localRearGlowRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(glowRotationZ);
+    //aModel.localRearGlowRightMatrix *= DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
+    //aModel.localRearGlowRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(0.0f));
+    aModel.localRearGlowRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rearGlowRightTranslation);
+    aModel.localRearGlowRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
+    aModel.worldRearGlowRightMatrix = aModel.localRearGlowRightMatrix;
+
+    aModel.rearGlowRightColor = DirectX::Colors::Yellow;
+
 }
 
 void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
 {
     DirectX::SimpleMath::Matrix updateMat = aAlignment;
     updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(aPos);
+
+    aModel.worldFrontGlowCenterMatrix = aModel.localFrontGlowCenterMatrix;
+    aModel.worldFrontGlowCenterMatrix *= updateMat;
+
+    aModel.worldRearGlowCenterMatrix = aModel.localRearGlowCenterMatrix;
+    aModel.worldRearGlowCenterMatrix *= updateMat;
+
+    aModel.worldRearGlowLeftMatrix = aModel.localRearGlowLeftMatrix;
+    aModel.worldRearGlowLeftMatrix *= updateMat;
+
+    aModel.worldRearGlowRightMatrix = aModel.localRearGlowRightMatrix;
+    aModel.worldRearGlowRightMatrix *= updateMat;
+
     aModel.bodyWorldMatrix = aModel.bodyLocalMatrix;
     aModel.bodyWorldMatrix *= updateMat;
 
@@ -176,7 +474,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
   
-    m_debugData->PushDebugLine(aModel.muzzlePosWorld, aModel.weaponDirWorld, 200.0f, 0.0, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(aModel.muzzlePosWorld, aModel.weaponDirWorld, 200.0f, 0.0, DirectX::Colors::Red);
 
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane = aPlane;
@@ -245,9 +543,12 @@ void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlign
     UpdateModel(m_playerModel, aAlignment, aAltitude, aPos, aBarrelPitch, aTurretRotation, aPlane);
 }
 
-void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
+
+//void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
+void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
-    InitializeModel(m_playerModel, aBarrel, aBody, aTurret);
+    //InitializeModel(m_playerModel, aBarrel, aBody, aTurret);
+    InitializeModel(m_playerModel, aBarrel, aBody, aTurret, aContext);
 }
 
 void ModelController::SetEnvironment(Environment const* aEnviron)
@@ -258,4 +559,20 @@ void ModelController::SetEnvironment(Environment const* aEnviron)
 void ModelController::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 {
     m_debugData = aDebugPtr;
+}
+
+void ModelController::SetGlowColors(const DirectX::SimpleMath::Vector4 aColorCenter, const DirectX::SimpleMath::Vector4 aColorLeft, const DirectX::SimpleMath::Vector4 aColorRight, const DirectX::SimpleMath::Vector3 aLightDir)
+{
+    m_playerModel.rearGlowCenterColor = aColorCenter;
+    m_playerModel.rearGlowLeftColor = aColorLeft;
+    m_playerModel.rearGlowRightColor = aColorRight;
+    m_glowLightDirection = aLightDir;
+}
+
+void ModelController::SetGlowVals(const float aCenterVal, const float aLeftVal, const float aRightVal, const DirectX::SimpleMath::Vector3 aPos)
+{
+    m_playerModel.glowCenterVal = aCenterVal;
+    m_playerModel.glowLeftVal = aLeftVal;
+    m_playerModel.glowRightVal = aRightVal;
+    m_testPos = aPos;
 }

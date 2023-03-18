@@ -1224,6 +1224,7 @@ void Game::Render()
     m_effect->SetView(m_camera->GetViewMatrix());
     m_effect->SetWorld(m_world);
 
+    /*
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
     if (ilights)
     {
@@ -1238,10 +1239,27 @@ void Game::Render()
         //ilights->SetAmbientLightColor(Colors::Blue);
         //ilights->EnableDefaultLighting();
     }
+    */
     
+    auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
+    if (ilights)
+    {
+        ilights->EnableDefaultLighting();
+        ilights->SetLightEnabled(0, true);
+        ilights->SetLightEnabled(1, true);
+        ilights->SetLightEnabled(2, true);
+        //ilights->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
+        //ilights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
+        //ilights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
+        //ilights->SetDiffuseColor(Colors::Blue);
+        //ilights->SetAmbientLightColor(Colors::Blue);
+        //ilights->EnableDefaultLighting();
+    }
+
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj);
+        m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+
         //m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
@@ -1604,7 +1622,8 @@ void Game::CreateDeviceDependentResources()
             */
         });
 
-    m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret);
+    //m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret);
+    m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret, context);
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));

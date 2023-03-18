@@ -51,10 +51,10 @@ struct ControlInput
 
     bool        yawPedalIsPressed;
     float       yawPedalInput;
-    const float yawPedalDecayRate = 10.2f;
+    const float yawPedalDecayRate = 1.2f;
     const float yawPedalInputMax = 1.0f;
     const float yawPedalInputMin = -1.0f;
-    const float yawPedalInputRate = 10.15f;
+    const float yawPedalInputRate = 1.15f;
 
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
@@ -340,6 +340,8 @@ public:
     bool GetIsDebugToggled2() const { return m_debugToggle2; };
     bool GetIsDebugToggled3() const { return m_debugToggle3; };
 
+    DirectX::SimpleMath::Vector4 GetRearGlowColor();
+
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController, std::shared_ptr<Vehicle> aVehicle);
 
     // helicopter functions
@@ -419,6 +421,7 @@ private:
     void UpdateCyclicStick(ControlInput& aInput);
     void UpdateCyclicNorm();
     float UpdateGroundEffectForce(const float aLiftForce);
+    void UpdateModelColors();
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle);
     void UpdateResistance();
@@ -501,7 +504,7 @@ private:
     const float m_testMass = 1500.0f;
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
-
+    const float m_testForceMod3 = 400.0f;
 
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
