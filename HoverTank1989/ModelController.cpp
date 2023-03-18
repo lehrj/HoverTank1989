@@ -22,7 +22,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     m_debugData->DebugPushUILineDecimalNumber("defaultLightDir1 = ", defaultLightDir1.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("defaultLightDir2 = ", defaultLightDir2.Length(), "");
 
-    m_debugData->DebugPushUILineDecimalNumber("m_glowLightDirection = ", m_glowLightDirection.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_glowLightDirection = ", m_playerModel.glowLightDirectionBase.Length(), "");
 
 
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
@@ -47,9 +47,9 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
     DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
 
-    lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_glowLightDirection, m_playerModel.glowCenterVal);
-    lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_glowLightDirection, m_playerModel.glowCenterVal);
-    lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
 
     //lightDir0.Normalize();
     //lightDir1.Normalize();
@@ -71,9 +71,9 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, -m_glowLightDirection, m_playerModel.glowCenterVal);
     lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, -m_glowLightDirection, m_playerModel.glowCenterVal);
     */
-    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(m_glowLightDirection, -m_glowLightDirection, m_playerModel.glowCenterVal);
-    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(m_glowLightDirection, -m_glowLightDirection, m_playerModel.glowCenterVal);
-    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_glowLightDirection, -m_glowLightDirection, m_playerModel.glowCenterVal);
+    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -84,9 +84,9 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     //aModel.frontGlowCenterShape->Draw(aModel.worldFrontGlowCenterMatrix, aView, aProjection, aModel.frontGlowCenterColor);
 
 
-    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_glowLightDirection, m_playerModel.glowLeftVal);
-    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_glowLightDirection, m_playerModel.glowLeftVal);
-    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_glowLightDirection, m_playerModel.glowLeftVal);
+    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
 
     //lightDir0.Normalize();
     //lightDir1.Normalize();
@@ -112,9 +112,9 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     //lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_glowLightDirection, m_playerModel.glowRightVal);
     //lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_glowLightDirection, m_playerModel.glowRightVal);
 
-    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_glowLightDirection, m_playerModel.glowRightVal);
-    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_glowLightDirection, m_playerModel.glowRightVal);
-    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_glowLightDirection, m_playerModel.glowRightVal);
+    lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
+    lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
+    lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
 
     m_debugData->PushDebugLine(m_testPos, lightDir0, 7.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLine(m_testPos, lightDir1, 7.0f, 0.0f, DirectX::Colors::Red);
@@ -419,7 +419,42 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
 }
 
 void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
-{
+{ 
+    //////// Update Glow Colors;
+    float baseColor = m_playerModel.glowColorMin.x;
+    float redBase = m_playerModel.glowColorMin.x;
+    float blueBase = m_playerModel.glowColorMin.y;
+    float greenBase = m_playerModel.glowColorMin.z;
+
+    float redMaxMod = m_playerModel.glowColorMax.x - baseColor;
+    float blueMaxMod = m_playerModel.glowColorMax.y - baseColor;
+    float greenMaxMod = m_playerModel.glowColorMax.z - baseColor;
+
+    // center rear
+    float redVal = baseColor + (m_playerModel.glowCenterVal * redMaxMod);
+    float blueVal = baseColor + (m_playerModel.glowCenterVal * blueMaxMod);
+    float greenVal = baseColor + (m_playerModel.glowCenterVal * greenMaxMod);
+    m_playerModel.rearGlowCenterColor = DirectX::SimpleMath::Vector4(redVal, blueVal, greenVal, 1.0f);
+
+    // center front
+    redVal = baseColor + (m_playerModel.glowCenterVal * redMaxMod);
+    blueVal = baseColor + (m_playerModel.glowCenterVal * blueMaxMod);
+    greenVal = baseColor + (m_playerModel.glowCenterVal * greenMaxMod);
+    m_playerModel.frontGlowCenterColor = DirectX::SimpleMath::Vector4(redVal, blueVal, greenVal, 1.0f);
+
+    // left
+    redVal = baseColor + (m_playerModel.glowLeftVal * redMaxMod);
+    blueVal = baseColor + (m_playerModel.glowLeftVal * blueMaxMod);
+    greenVal = baseColor + (m_playerModel.glowLeftVal * greenMaxMod);
+    m_playerModel.rearGlowLeftColor = DirectX::SimpleMath::Vector4(redVal, blueVal, greenVal, 1.0f);
+
+    // right
+    redVal = baseColor + (m_playerModel.glowRightVal * redMaxMod);
+    blueVal = baseColor + (m_playerModel.glowRightVal * blueMaxMod);
+    greenVal = baseColor + (m_playerModel.glowRightVal * greenMaxMod);
+    m_playerModel.rearGlowRightColor = DirectX::SimpleMath::Vector4(redVal, blueVal, greenVal, 1.0f);
+
+    //////// Update Shapes
     DirectX::SimpleMath::Matrix updateMat = aAlignment;
     updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(aPos);
 
@@ -566,13 +601,14 @@ void ModelController::SetGlowColors(const DirectX::SimpleMath::Vector4 aColorCen
     m_playerModel.rearGlowCenterColor = aColorCenter;
     m_playerModel.rearGlowLeftColor = aColorLeft;
     m_playerModel.rearGlowRightColor = aColorRight;
-    m_glowLightDirection = aLightDir;
+    m_playerModel.glowLightDirectionBase = aLightDir;
 }
 
-void ModelController::SetGlowVals(const float aCenterVal, const float aLeftVal, const float aRightVal, const DirectX::SimpleMath::Vector3 aPos)
+void ModelController::SetGlowVals(const float aCenterVal, const float aLeftVal, const float aRightVal, const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aDir)
 {
     m_playerModel.glowCenterVal = aCenterVal;
     m_playerModel.glowLeftVal = aLeftVal;
     m_playerModel.glowRightVal = aRightVal;
     m_testPos = aPos;
+    m_playerModel.glowLightDirectionBase = aDir;
 }

@@ -421,7 +421,7 @@ private:
     void UpdateCyclicStick(ControlInput& aInput);
     void UpdateCyclicNorm();
     float UpdateGroundEffectForce(const float aLiftForce);
-    void UpdateModelColors();
+    void UpdateModelColorVals();
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle);
     void UpdateResistance();

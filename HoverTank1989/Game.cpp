@@ -2133,9 +2133,6 @@ void Game::SetUiAmmoDisplay(AmmoType aAmmoType)
         m_uiAmmoDisplayString = "Error : Unknown Ammo Type";
     }
 
-
-
-    //m_uiDisplayString = aString;
     m_uiDisplayTimer = 0.0f;
     m_isUiDisplayTrue = true;
 }
