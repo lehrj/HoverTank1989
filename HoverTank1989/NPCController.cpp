@@ -2,6 +2,7 @@
 #include "NPCController.h"
 #include "Vehicle.h"
 
+
 NPCController::NPCController()
 {
     m_npcVec.clear();
@@ -33,6 +34,11 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     newNPC->SetDebugData(m_debugData);
     newNPC->InitializeNPCVehicle(aContext, aHeading, aPosition, m_environment, aNpcController, m_player, GetUniqueID());
     newNPC->SetNpcType(aNPCType);
+    newNPC->InitializeTextureMaps(m_textureDataBlank.textureMapType, m_textureDataBlank.textureMap, m_textureDataBlank.normalMap, m_textureDataBlank.specularMap);
+    newNPC->InitializeTextureMaps(m_textureDataFlame.textureMapType, m_textureDataFlame.textureMap, m_textureDataFlame.normalMap, m_textureDataFlame.specularMap);
+    newNPC->InitializeTextureMaps(m_textureDataTest1.textureMapType, m_textureDataTest1.textureMap, m_textureDataTest1.normalMap, m_textureDataTest1.specularMap);
+    newNPC->InitializeTextureMaps(m_textureDataTest2.textureMapType, m_textureDataTest2.textureMap, m_textureDataTest2.normalMap, m_textureDataTest2.specularMap);
+
     m_npcVec.push_back(newNPC);
 }
 
@@ -448,6 +454,35 @@ void NPCController::InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceC
 
 void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap)
 {
+    if (aTextureMapType == NpcTextureMapType::TEXTUREMAPTYPE_BLANK)
+    {
+        m_textureDataBlank.textureMapType = aTextureMapType;
+        m_textureDataBlank.normalMap = aNormalMap;
+        m_textureDataBlank.specularMap = aSpecularMap;
+        m_textureDataBlank.textureMap = aTexture;
+    }
+    if (aTextureMapType == NpcTextureMapType::TEXTUREMAPTYPE_FLAME)
+    {
+        m_textureDataFlame.textureMapType = aTextureMapType;
+        m_textureDataFlame.normalMap = aNormalMap;
+        m_textureDataFlame.specularMap = aSpecularMap;
+        m_textureDataFlame.textureMap = aTexture;
+    }
+    if (aTextureMapType == NpcTextureMapType::TEXTUREMAPTYPE_TEST1)
+    {
+        m_textureDataTest1.textureMapType = aTextureMapType;
+        m_textureDataTest1.normalMap = aNormalMap;
+        m_textureDataTest1.specularMap = aSpecularMap;
+        m_textureDataTest1.textureMap = aTexture;
+    }
+    if (aTextureMapType == NpcTextureMapType::TEXTUREMAPTYPE_TEST2)
+    {
+        m_textureDataTest2.textureMapType = aTextureMapType;
+        m_textureDataTest2.normalMap = aNormalMap;
+        m_textureDataTest2.specularMap = aSpecularMap;
+        m_textureDataTest2.textureMap = aTexture;
+    }
+
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->InitializeTextureMaps(aTextureMapType, aTexture, aNormalMap, aSpecularMap);
@@ -467,7 +502,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     float baseHeight = 10.0f;
     //const int rows = 6;
     //const int columns = 4;
-    const int rows = 0;
+    const int rows = 1;
     const int columns = 1;
     for (int i = 0; i < columns; ++i)
     {

@@ -12,6 +12,14 @@ struct LoadQueue
     NPCType deployType;
 };
 
+struct TexturePack
+{
+    NpcTextureMapType textureMapType;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureMap;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMap;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularMap;
+};
+
 class NPCController
 {
 public:
@@ -82,6 +90,12 @@ private:
     std::vector<LoadQueue> m_loadQueue;
 
     unsigned int m_nextUniqueID = 0;
+
+    TexturePack m_textureDataBlank;
+    TexturePack m_textureDataFlame;
+    TexturePack m_textureDataTest1;
+    TexturePack m_textureDataTest2;
+
     float m_testTimer = 0.0f;    
 };
 

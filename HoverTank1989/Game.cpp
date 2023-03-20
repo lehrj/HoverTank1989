@@ -35,7 +35,6 @@ Game::Game() noexcept(false)
     m_camera->SetDebugData(m_debugData);
 
     m_npcController = std::make_shared<NPCController>();
-
     m_npcController->SetNPCEnvironment(m_environment);
     m_npcController->SetDebugData(m_debugData);
     m_npcController->SetPlayer(m_vehicle);
@@ -1096,8 +1095,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            const unsigned int columnCount = 5;
-            const unsigned int rowCount = 3;
+            const unsigned int columnCount = 1;
+            const unsigned int rowCount = 1;
             const float columSpaceing = 15.0f;
             const float rowSpacing = 20.0f;
   

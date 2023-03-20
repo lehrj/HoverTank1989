@@ -1533,7 +1533,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     accelVecUpdate += angDampTest;
 
     aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (accelVecUpdate);
-    aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
+    aDQ->angPosVec = static_cast<float>(aTimeDelta) * (newQ.angularVelocityVec);
     //aDQ->bodyTorqueForce = angAccelVecTensorUpdate;
 }
 
@@ -1875,7 +1875,7 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.angularVelocityVec += angularVelocityVecUpdate;
 
     aHeli->q.velocity = q.velocity;
-    aHeli->q.position = q.position;
+    //aHeli->q.position = q.position;
     aHeli->q.engineForce = q.engineForce;
     aHeli->q.bodyTorqueForce = q.bodyTorqueForce;
     aHeli->q.angularVelocityVec = q.angularVelocityVec;
@@ -1994,10 +1994,11 @@ void Vehicle::UpdateAlignmentTorque()
         else
         {
             DirectX::SimpleMath::Vector3 testAngVec = m_heli.q.angularVelocityVec;
-
+            //DirectX::SimpleMath::Vector3 testAngVec = m_heli.q.angPosVec;
             if (testAngVec != DirectX::SimpleMath::Vector3::Zero)
             {
                 DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_heli.q.angularVelocityVec, m_heli.q.angularVelocityVec.Length());
+                //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_heli.q.angPosVec, m_heli.q.angPosVec.Length());
                 /////m_heli.alignment *= m_heli.q.angularVelocityMat;
                 //m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, m_heli.q.angularVelocityQuat);
                 m_heli.alignment = DirectX::SimpleMath::Matrix::Transform(m_heli.alignment, testQuat);
@@ -2268,7 +2269,8 @@ Utility::Torque Vehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAc
     DirectX::SimpleMath::Vector3 tailRotorTorqueArm = m_heli.tailRotorPos - m_heli.centerOfMass;
     DirectX::SimpleMath::Vector3 tailForce = -m_heli.right * (m_heli.controlInput.yawPedalInput) * m_heli.yawForce;
     DirectX::SimpleMath::Vector3 gravityTorqueArm = m_heli.centerOfMass - m_heli.gravityTorqueArmPos;
-    DirectX::SimpleMath::Vector3 gravityForce = m_heli.gravity * 5.0f;
+    //DirectX::SimpleMath::Vector3 gravityForce = m_heli.gravity * 5.0f;
+    DirectX::SimpleMath::Vector3 gravityForce = m_heli.gravity * 15.0f;
 
     Utility::Torque tailTorque = Utility::GetTorqueForce(tailRotorTorqueArm, tailForce);
     Utility::Torque gravTorque = Utility::GetTorqueForce(gravityTorqueArm, gravityForce);

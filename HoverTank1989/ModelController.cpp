@@ -15,9 +15,9 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     
     m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
-    defaultLightDir0 = m_playerModel.glowLightDirectionBase;
-    defaultLightDir1 = m_playerModel.glowLightDirectionBase;
-    defaultLightDir2 = m_playerModel.glowLightDirectionBase;
+    //defaultLightDir0 = m_playerModel.glowLightDirectionBase;
+    //defaultLightDir1 = m_playerModel.glowLightDirectionBase;
+    //defaultLightDir2 = m_playerModel.glowLightDirectionBase;
 
     DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
     DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
@@ -26,6 +26,23 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+    
+    DirectX::SimpleMath::Vector4 color1 = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    //aEffect->SetLightEnabled(0, false);
+    //aEffect->SetLightEnabled(1, false);
+    //aEffect->SetLightEnabled(2, false);
+
+    //aEffect->SetAmbientLightColor(DirectX::Colors::Red);
+    aEffect->SetEmissiveColor(color2);
+    aEffect->SetLightSpecularColor(0, color2);
+    aEffect->SetLightSpecularColor(1, color2);
+    aEffect->SetLightSpecularColor(2, color2);
+
+    aEffect->SetLightDiffuseColor(0, color1);
+    aEffect->SetLightDiffuseColor(1, color1);
+    aEffect->SetLightDiffuseColor(2, color1);
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -39,6 +56,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -99,6 +117,20 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
 
     
 
+    m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
+
+    Utility::GetDispersedLightDirectionsRotation(-DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(45.0), Utility::ToRadians(0.0f), defaultLightDir0, defaultLightDir1, defaultLightDir2);
+
+    //defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
+    //defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
+    //defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
+
+
+    m_debugData->PushDebugLine(m_testPos, defaultLightDir0, 7.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_testPos, defaultLightDir1, 7.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_testPos, defaultLightDir2, 7.0f, 0.0f, DirectX::Colors::Red);
+
+
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
     {
         auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
@@ -112,10 +144,20 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
             //lights->SetLightDirection(1, DirectX::SimpleMath::Vector3::UnitZ);
             //lights->SetLightDirection(2, DirectX::SimpleMath::Vector3::UnitZ);
 
+            lights->SetLightDirection(0, defaultLightDir0);
+            lights->SetLightDirection(1, defaultLightDir1);
+            lights->SetLightDirection(2, defaultLightDir2);
         }
     });
     aModel.bodyModel->Modified();
-    
+
+    //defaultLightDir0 = DirectX::SimpleMath::Vector3::UnitY;
+    //defaultLightDir1 = DirectX::SimpleMath::Vector3::UnitY;
+    //defaultLightDir2 = DirectX::SimpleMath::Vector3::UnitY;
+    aEffect->SetLightDirection(0, defaultLightDir0);
+    aEffect->SetLightDirection(1, defaultLightDir1);
+    aEffect->SetLightDirection(2, defaultLightDir2);
+
     aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
 
     
@@ -129,10 +171,17 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
                 lights->SetLightEnabled(1, true);
                 lights->SetLightEnabled(2, true);
 
+                lights->SetLightDirection(0, defaultLightDir0);
+                lights->SetLightDirection(1, defaultLightDir1);
+                lights->SetLightDirection(2, defaultLightDir2);
             }
         });
     aModel.turretModel->Modified();
-    
+
+    aEffect->SetLightDirection(0, defaultLightDir0);
+    aEffect->SetLightDirection(1, defaultLightDir1);
+    aEffect->SetLightDirection(2, defaultLightDir2);
+
     aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
 
