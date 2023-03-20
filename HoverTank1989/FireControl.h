@@ -127,6 +127,7 @@ struct ExplosionStruct
 {
     ExplosionData explosionRefData;
     std::unique_ptr<DirectX::GeometricPrimitive> explosionShape;
+    std::unique_ptr<DirectX::GeometricPrimitive> explosionShape1;
     std::vector<ExplosionData> explosionVec;
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, int>> explosionToPushVec;
 
@@ -134,7 +135,7 @@ struct ExplosionStruct
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapExplosion;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularExplosion;
 
-    const float internalVehicleExplosionRadiusMod = 2.5f;
+    const float internalVehicleExplosionRadiusMod = 1.5f;
     float maxExplosionForce;
     float maxExplosionImpactRadius;
 };
@@ -144,8 +145,11 @@ struct MuzzleFlash
     DirectX::SimpleMath::Vector4 color1 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-    DirectX::SimpleMath::Vector4 startColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
-    DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(0.501960814f, 0.501960814f, 0.501960814f, 1.0f);
+    //DirectX::SimpleMath::Vector4 startColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 startColor = DirectX::SimpleMath::Vector4(0.7f, 0.0f, 0.0f, 1.3f);
+    //DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(0.501960814f, 0.501960814f, 0.501960814f, 0.7f);
+    //DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(1.f, 0.647058845f, 0.f, 1.f);
+    DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(1.f, 0.4f, 0.f, 0.7f);
     DirectX::SimpleMath::Vector4 currentColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive>    muzzleFlashConeShape;
@@ -208,6 +212,7 @@ private:
     void DeployMirv(ProjectileData& aProjectile);
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawExplosions3(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -266,6 +271,8 @@ private:
     const float m_gravityMod = 1.0f;
     const float m_explosiveTorqueArmMod = 1.0f;
     const float m_maxExplosiveForce = 100000.0f;
+
+    bool m_isTestBoolTrue = false;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };

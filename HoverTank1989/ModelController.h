@@ -63,7 +63,8 @@ struct TankModel
     DirectX::SimpleMath::Vector4 rearGlowRightColor;
     float glowRightVal = 0.0f;
 
-    const DirectX::SimpleMath::Vector4 glowColorMin = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
+    const float grayVal = 0.2f;
+    const DirectX::SimpleMath::Vector4 glowColorMin = DirectX::SimpleMath::Vector4(grayVal, grayVal, grayVal, 0.7f);
     const DirectX::SimpleMath::Vector4 glowColorMax = DirectX::SimpleMath::Vector4(1.0f, 0.1f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector3 glowLightDirectionBase = DirectX::SimpleMath::Vector3::UnitX;
 };

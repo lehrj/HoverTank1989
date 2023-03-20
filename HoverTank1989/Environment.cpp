@@ -1016,6 +1016,11 @@ void Environment::ScaleTerrain(HeightMap& aMap)
     }
 }
 
+void Environment::SetCameraPos(const DirectX::SimpleMath::Vector3 aCamPos)
+{
+    m_cameraPos = aCamPos;
+}
+
 void Environment::UpdateEnvironment(const int aIndex)
 {
     m_currentEnviron = m_environs[aIndex];

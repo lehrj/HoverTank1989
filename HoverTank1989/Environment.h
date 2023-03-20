@@ -120,6 +120,7 @@ public:
     float GetAirDensity() const { return m_currentEnviron.airDensity; };
     std::string GetAirDensityString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].airDensityStr; };
     float GetAirDensity(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].airDensity; };
+    DirectX::SimpleMath::Vector3 GetCameraPos() const { return m_cameraPos; };
     DirectX::XMVECTORF32 GetEnvironColor() const { return m_currentEnviron.terrainColor; };
     std::string GetEnvironName(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].name; };
     std::vector<Fixture> GetFixtureBucket() { return m_fixtureBucket; };
@@ -152,7 +153,7 @@ public:
     std::string GetWindZString(const int aEnvironmentIndex) const { return m_environs[aEnvironmentIndex].windZStr; };    
 
     bool InitializeTerrain(HeightMap& aMap);
-
+    void SetCameraPos(const DirectX::SimpleMath::Vector3 aCamPos);
     void UpdateEnvironment(const int aIndex);
 
 private:    
@@ -205,5 +206,7 @@ private:
     
     HeightMap                          m_heightMapGamePlayData;
     HeightMap                          m_heightMapStartScreenData;
+
+    DirectX::SimpleMath::Vector3       m_cameraPos = DirectX::SimpleMath::Vector3::Zero;
 };
 

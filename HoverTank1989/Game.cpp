@@ -519,6 +519,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     }
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
+    m_environment->SetCameraPos(m_camera->GetPos());
     //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
 
     m_proj = m_camera->GetProjectionMatrix();
@@ -1240,7 +1241,7 @@ void Game::Render()
         //ilights->EnableDefaultLighting();
     }
     */
-    
+
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
     if (ilights)
     {
