@@ -34,6 +34,15 @@ struct ControlInput
     const float cyclicInputMin = -Utility::ToRadians(20.0f);
     const float cyclicInputRate = 0.1f;
 
+    float cyclicInputRollRaw = 0.0f;
+    float cyclicInputPitchRaw = 0.0f;
+    const float cyclicInputRawMax = 1.0f;
+    const float cyclicInputRawMin = -1.0f;
+    DirectX::SimpleMath::Vector3 cyclicNormRaw = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 cyclicNormUpdated = DirectX::SimpleMath::Vector3::UnitY;
+    const float cyclicDecayRateRaw = 10.3f;
+    const float cyclicInputRateRaw = 10.1f;
+
     DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 cyclicNormWorld = DirectX::SimpleMath::Vector3::UnitY;
 
@@ -54,7 +63,8 @@ struct ControlInput
     const float yawPedalDecayRate = 1.2f;
     const float yawPedalInputMax = 1.0f;
     const float yawPedalInputMin = -1.0f;
-    const float yawPedalInputRate = 1.15f;
+    //const float yawPedalInputRate = 1.15f;
+    const float yawPedalInputRate = 0.5f;
 
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
@@ -95,6 +105,12 @@ struct Motion
 
     DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Quaternion angularVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion angularPosQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
 };
 
 struct Rotor
@@ -142,7 +158,9 @@ struct HeliData
     float hoverDriveMag = 0.0f;
     const float hoverDriveMagMax = 100000.0f;
     const float brakeMagMax = 3000.0f;
-    const float yawForce = 30.0f;
+    //const float yawForce = 30.0f;
+    const float yawForce = 3.0f;
+
     /*
     const float groundNormalForceRange = 5.0f;
     const float hoverNeutralBoyantAlt = 0.52f;
@@ -286,6 +304,13 @@ public:
     void DebugToggle();
     void DebugToggle2();
     void DebugToggle3();
+    void DebugToggle4();
+    void DebugToggle5();
+    void DebugToggle6();
+    void DebugToggle7();
+    void DebugToggle8();
+    void DebugToggle9();
+    void DebugToggle0();
 
     void DebugInputVelocityZero();
     void DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
@@ -347,8 +372,13 @@ public:
     // helicopter functions
     void InputCollective(const float aCollectiveInput);
     void InputCyclicPitch(const float aPitchInput);
+    void InputCyclicPitchNew(const float aPitchInput);
     void InputCyclicRoll(const float aRollInput);
+    void InputCyclicRollNew(const float aRollInput);
+    void InputCyclicRoll2(const float aRollInput);
+    void InputCyclicRoll3(const float aRollInput);
     void InputDecay(const double aTimeDelta);
+    void InputDecayNew(const double aTimeDelta);
     void InputJet(const float aJetInput);
     void InputThrottle(const float aThrottleInput);
     void InputTurretYaw(const float aTurretYawInput);
@@ -357,6 +387,7 @@ public:
 
     void InputGamePadForward(const float aForwardInput);
     void InputGamePadStrafe(const float aStrafeInput);
+    void InputGamePadStrafe2(const float aStrafeInput);
     void InputGamePadTurn(const float aTurnInput);
 
     void Jump();
@@ -410,16 +441,21 @@ private:
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
     void UpdateAlignmentTorque();
+    void UpdateAlignmentTorque2();
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
 
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     Utility::Torque UpdateBodyTorqueRunge2(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocal(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
+
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCollisionImpulseForces(const float aTimeStep);
+    void UpdateCyclicData();
     void UpdateCyclicStick(ControlInput& aInput);
     void UpdateCyclicNorm();
+    
     float UpdateGroundEffectForce(const float aLiftForce);
     void UpdateModelColorVals();
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
@@ -437,7 +473,9 @@ private:
     void UpdateTestDrivetrainTorque2(const float aTimer);
     void UpdateTestDrivetrainTorque3(const float aTimer);
     void UpdateTestDrivetrainTorque4(const float aTimer);
+    void UpdateTestDrivetrainTorqueLocal(const float aTimer);
     void UpdateTestDrivetrainTorque5(const float aTimer);
+    void UpdateTestDrivetrainTorqueLastUsed(const float aTimer);
 
     void UpdateVehicleForces(const float aTimeStep);
 
@@ -468,6 +506,13 @@ private:
     bool m_debugToggle = false;
     bool m_debugToggle2 = false;
     bool m_debugToggle3 = false;
+    bool m_debugToggle4 = false;
+    bool m_debugToggle5 = false;
+    bool m_debugToggle6 = false;
+    bool m_debugToggle7 = false;
+    bool m_debugToggle8 = false;
+    bool m_debugToggle9 = false;
+    bool m_debugToggle0 = false;
 
     DirectX::SimpleMath::Vector3 m_testPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testPos2 = DirectX::SimpleMath::Vector3::Zero;
@@ -501,11 +546,17 @@ private:
     float m_testVal2 = 0.0f;
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
 
-    const float m_testMass = 1500.0f;
+    const float m_testMass = 100.0f;
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
-    const float m_testForceMod3 = 400.0f;
+    //const float m_testForceMod3 = 150.0f;
+    const float m_testForceMod3 = 5.0f;
 
+    /*
+    const float m_inertiaModelX = 4.4f;
+    const float m_inertiaModelY = 1.5f;
+    const float m_inertiaModelZ = 2.0f;
+    */
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
@@ -525,5 +576,23 @@ private:
 
     bool m_testBoolFlipRot = false;
 
+    const float m_gravTorqueModTest = 1.0f;
+
+    float m_angleSwingMaxTest = 0.0f;
+    float m_angleSwingMaxTest2 = 0.0f;
+    float m_angleSwingMaxTest3 = 0.0f;
+    float m_angleSwingMaxTest4 = 0.0f;
+    float m_delta = 0.0f;
+    float m_delta2 = 0.0f;
+    float m_deltaDelta = 0.0f;
+    float m_prevAngle = 0.0f;
+
+    bool m_isSwingToggleTrue = false;
+    bool m_isGoingUp = false;
+    const float m_angularDampConst = 0.2f;
+
+    DirectX::XMFLOAT3X3 m_testTensor;
+
+    const DirectX::SimpleMath::Vector3 m_cordOrgTestPos = DirectX::SimpleMath::Vector3(6.0f, 10.0f, 9.0f);
 };
 

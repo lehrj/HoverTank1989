@@ -1896,7 +1896,7 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     UpdateProjectileVec(aTimeDelta);
     UpdateExplosionVec(aTimeDelta);
 
-    m_debugData->DebugPushUILineWholeNumber("m_isTestBoolTrue = ", m_isTestBoolTrue, "");
+    //m_debugData->DebugPushUILineWholeNumber("m_isTestBoolTrue = ", m_isTestBoolTrue, "");
 }
 
 void FireControl::UpdateExplosionVec(double aTimeDelta)

@@ -24,6 +24,7 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homeYaw = 0.0f;
 
 	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
+	m_cameraState = CameraState::CAMERASTATE_FIRSTPERSON;
 
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
@@ -36,9 +37,17 @@ Camera::Camera(int aWidth, int aHeight)
 	InitializeSpringCamera(springTarget, springConst, hDist, vDist);
 
 	Reset();
+
 	InitializeViewMatrix();
 	InitializeProjectionMatrix();
 	InitializeOrthoganalMatrix();
+
+	m_moveUpDown = 10.0f;
+	m_moveBackForward = -25.0f;
+	m_pitch = Utility::ToRadians(10.0f);
+	m_target = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 0.0f);
+	m_up = DirectX::SimpleMath::Vector3::UnitY;
+	m_position = DirectX::SimpleMath::Vector3(-12.0f, 10.2f, 0.0f);
 }
 
 Camera::~Camera()

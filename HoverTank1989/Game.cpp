@@ -822,21 +822,21 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCyclicRoll(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_vehicle->InputCyclicRollNew(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad5)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCyclicPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_vehicle->InputCyclicPitchNew(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad6)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCyclicRoll(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_vehicle->InputCyclicRollNew(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad7)
@@ -850,7 +850,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputCyclicPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_vehicle->InputCyclicPitchNew(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad9)
@@ -1068,7 +1068,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle3();
+            //m_vehicle->DebugToggle3();
         }
     }
     if (m_kbStateTracker.pressed.P)
@@ -1082,6 +1082,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
+            /*
             const unsigned int columnCount = 5;
             const unsigned int rowCount = 2;
             const float columSpaceing = 20.0f;
@@ -1089,12 +1090,17 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(-90.0f, 10.0f, -40.0f);
             const DirectX::SimpleMath::Vector3 orientation = DirectX::SimpleMath::Vector3::UnitX;
             m_npcController->LoadToQueueAxisAligned(dropPosition, orientation,  columnCount, rowCount, columSpaceing, rowSpacing);
+            */
+
+            m_vehicle->DebugToggle();
         }
     }
     if (m_kbStateTracker.pressed.D2)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
+            m_vehicle->DebugToggle2();
+            /*
             const unsigned int columnCount = 1;
             const unsigned int rowCount = 1;
             const float columSpaceing = 15.0f;
@@ -1111,8 +1117,68 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicle->GetAlignment());
 
             m_npcController->LoadToQueue(dropPosition, orientation, columnCount, rowCount, spacing, alignQuat);
+            */
         }
     }
+    if (m_kbStateTracker.pressed.D3)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle3();
+        }
+    }
+    if (m_kbStateTracker.pressed.D4)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle4();
+        }
+    }
+    if (m_kbStateTracker.pressed.D5)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle5();
+        }
+    }
+    if (m_kbStateTracker.pressed.D6)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle6();
+        }
+    }
+    if (m_kbStateTracker.pressed.D7)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle7();
+        }
+    }
+    if (m_kbStateTracker.pressed.D8)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle8();
+        }
+    }
+    if (m_kbStateTracker.pressed.D9)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle9();
+        }
+    }
+    if (m_kbStateTracker.pressed.D0)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->DebugToggle0();
+        }
+    }
+
+
+
 
     auto mouse = m_mouse->GetState();
 
@@ -1141,12 +1207,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (pad.thumbSticks.leftY > m_gamePadInputDeadZone || pad.thumbSticks.leftY < -m_gamePadInputDeadZone)
         {
             const float inputMod = m_gamePadInputRateBodyAccel;
-            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY* inputMod);
+            //m_vehicle->InputGamePadForward(pad.thumbSticks.leftY* inputMod);
         }
         if (pad.thumbSticks.leftX > m_gamePadInputDeadZone || pad.thumbSticks.leftX < -m_gamePadInputDeadZone)
         {
+            //m_vehicle->InputCyclicRoll(static_cast<float>(aTimer.GetElapsedSeconds()));
             const float inputMod = m_gamePadInputRateBodySideStrafe;
-            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
+            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
+            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_debugData->DebugPushUILineDecimalNumber("pad.thumbSticks.leftX  ", pad.thumbSticks.leftX * inputMod, "");
         }
         if (pad.triggers.left > m_gamePadInputDeadZone || pad.triggers.right > m_gamePadInputDeadZone)
         {

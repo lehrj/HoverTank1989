@@ -70,14 +70,6 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
     lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
-    /*
-    m_debugData->PushDebugLine(m_testPos, lightDir0, 10.0f, 0.0f, DirectX::Colors::LightBlue);
-    m_debugData->PushDebugLine(m_testPos, lightDir1, 10.0f, 0.0f, DirectX::Colors::LightBlue);
-    m_debugData->PushDebugLine(m_testPos, lightDir2, 10.0f, 0.0f, DirectX::Colors::LightBlue);
-    */
-    m_debugData->DebugPushUILineDecimalNumber("left lightDir0 = ", lightDir0.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("left lightDir1 = ", lightDir1.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("left lightDir2 = ", lightDir2.Length(), "");
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -90,15 +82,6 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
     lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
-    /*
-    m_debugData->PushDebugLine(m_testPos, lightDir0, 7.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_testPos, lightDir1, 7.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_testPos, lightDir2, 7.0f, 0.0f, DirectX::Colors::Red);
-    */
-    m_debugData->DebugPushUILineDecimalNumber("rite lightDir0 = ", lightDir0.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("rite lightDir1 = ", lightDir1.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("rite lightDir2 = ", lightDir2.Length(), "");
-
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -126,9 +109,9 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     //defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
 
 
-    m_debugData->PushDebugLine(m_testPos, defaultLightDir0, 7.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_testPos, defaultLightDir1, 7.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_testPos, defaultLightDir2, 7.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_testPos, defaultLightDir0, 7.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_testPos, defaultLightDir1, 7.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_testPos, defaultLightDir2, 7.0f, 0.0f, DirectX::Colors::Red);
 
 
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
