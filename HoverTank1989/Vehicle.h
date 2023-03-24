@@ -502,6 +502,7 @@ private:
     float m_testFPS = 0.0f;
     float m_testTimer = 0.0f;
     float m_testTimer2 = 0.0f;
+    float m_testTimer3 = 0.0f;
 
     bool m_debugToggle = false;
     bool m_debugToggle2 = false;
@@ -550,8 +551,7 @@ private:
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
     //const float m_testForceMod3 = 150.0f;
-    const float m_testForceMod3 = 5.0f;
-
+    const float m_testForceMod3 = 100.0f;
     /*
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.5f;
@@ -561,22 +561,11 @@ private:
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
 
-    /*
-    const float m_inertiaModelX = 4.4f;
-    const float m_inertiaModelY = 4.0f;
-    const float m_inertiaModelZ = 4.0f;
-    */
-    /*
-    const float m_inertiaModelX = 8.0f;
-    const float m_inertiaModelY = 2.0f;
-    const float m_inertiaModelZ = 6.0f;
-    */
-
     DirectX::SimpleMath::Vector3 m_hoverTorqueForceSum = DirectX::SimpleMath::Vector3::Zero;
 
     bool m_testBoolFlipRot = false;
 
-    const float m_gravTorqueModTest = 1.0f;
+    const float m_gravTorqueModTest = 15.0f;
 
     float m_angleSwingMaxTest = 0.0f;
     float m_angleSwingMaxTest2 = 0.0f;
@@ -593,6 +582,12 @@ private:
 
     DirectX::XMFLOAT3X3 m_testTensor;
 
-    const DirectX::SimpleMath::Vector3 m_cordOrgTestPos = DirectX::SimpleMath::Vector3(6.0f, 10.0f, 9.0f);
+    DirectX::SimpleMath::Vector3 m_cordOrgTestPos = DirectX::SimpleMath::Vector3(6.0f, 10.0f, 9.0f);
+
+    float m_testValDebug1 = 0.0f;
+    float m_testValDebug2 = 0.0f;
+    float m_testValDebug3 = 0.0f;
+    float m_testValDebug4 = 0.0f;
+    float m_testValDebug5 = 0.0f;
 };
 
