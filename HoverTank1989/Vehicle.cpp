@@ -1190,7 +1190,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.inertiaMatrixTest._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
     m_heli.inertiaMatrixTest._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
     m_heli.inertiaMatrixTest._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
-
+    
     //m_heli.inertiaMatrixTest._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
     //m_heli.inertiaMatrixTest._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
     //m_heli.inertiaMatrixTest._23 = (2.0f / 3.0f) * (mass) * (radius * radius);
@@ -1212,7 +1212,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.localInverseInertiaMatrixTest = m_heli.inverseInertiaMatrixTest;
 
     m_heli.toUseTensor = m_heli.localInertiaMatrixTest;
-    m_heli.toUseTensor = m_heli.inverseInertiaMatrixTest;
+    //m_heli.toUseTensor = m_heli.inverseInertiaMatrixTest;
+    m_heli.toUseTensor = m_heli.toUseTensor.Invert();
+    
     testTransTensor = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
     //testTransTensor = DirectX::SimpleMath::Matrix::Identity;
     //Utility::TransformInertiaTensor(testTrans, testTransTensor, m_heli.toUseTensor);
@@ -1898,6 +1900,11 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     newQ.angularVelocityQuat = aQ->angularVelocityQuat + static_cast<float>(aQScale) * aDeltaQ->angularVelocityQuat;
     newQ.angularPosQuat = aQ->angularPosQuat + static_cast<float>(aQScale) * aDeltaQ->angularPosQuat;
 
+    newQ.gOrientationQuat = aQ->gOrientationQuat + static_cast<float>(aQScale) * aDeltaQ->gOrientationQuat;
+    newQ.gAngularMomentum = aQ->gAngularMomentum + static_cast<float>(aQScale) * aDeltaQ->gAngularMomentum;
+    newQ.gSpin = aQ->gSpin + static_cast<float>(aQScale) * aDeltaQ->gSpin;
+    newQ.gAngularVelocity = aQ->gAngularVelocity + static_cast<float>(aQScale) * aDeltaQ->gAngularVelocity;
+
     DirectX::SimpleMath::Vector3 velocityUpdate = m_heli.vehicleLinearForcesSum;
     DirectX::SimpleMath::Vector3 airResistance = CalculateDragLinear(newQ.velocity);
     velocityUpdate += airResistance;
@@ -1913,7 +1920,8 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     float angVelocity = angVelocityNorm.Length();
     angVelocityNorm.Normalize();
 
-    DirectX::SimpleMath::Vector3 accelVecUpdate = m_heli.vehicleAngularForcesSum;
+    DirectX::SimpleMath::Vector3 accelVecUpdate = m_heli.q.angPosVec;
+    accelVecUpdate = m_heli.vehicleAngularForcesSum;
     DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(newQ.angularVelocityVec);
     //DirectX::SimpleMath::Vector3 angDampTest2 = newQ.angPosVec * m_angularDampConst;
     DirectX::SimpleMath::Vector3 angDampTest2 = m_heli.q.angularVelocityVec * m_angularDampConst;
@@ -1922,30 +1930,19 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     //accelVecUpdate += angDampTest;
     if (m_debugToggle3 == false)
     {
-        accelVecUpdate -= angDampTest2;
+        //accelVecUpdate -= angDampTest2;
     }
     aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (accelVecUpdate);
     aDQ->angPosVec = static_cast<float>(aTimeDelta) * (newQ.angularVelocityVec);
 
     DirectX::SimpleMath::Quaternion updateVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
+    updateVelocityQuat = m_heli.q.alignmentQuat;
+    //updateVelocityQuat = m_heli.q.angularVelocityQuat;
+    //updateVelocityQuat = m_heli.q.angularPosQuat;
+    updateVelocityQuat = newQ.angularPosQuat;
     if (accelVecUpdate.Length() != 0.0f)
     {
-        updateVelocityQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(accelVecUpdate, accelVecUpdate.Length());
-    }
-
-    if (m_debugToggle5 == true)
-    {
-        float angRate = Utility::ToRadians(3.0f);
-
-        angRate *= static_cast<float>(aTimeDelta);
-        DirectX::SimpleMath::Vector3 angAxis = DirectX::SimpleMath::Vector3::UnitX;
-
-        DirectX::SimpleMath::Quaternion angQuat = DirectX::SimpleMath::Quaternion::Identity;
-        angQuat = aHeli->q.angularPosQuat;
-        //angQuat = aHeli->q.angularVelocityQuat;
-        //angQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
-        angQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(angAxis, angRate);
-        updateVelocityQuat = angQuat;
+        updateVelocityQuat *= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(accelVecUpdate, accelVecUpdate.Length());
     }
 
     DirectX::SimpleMath::Quaternion updatePosQuat = DirectX::SimpleMath::Quaternion::Identity;
@@ -1958,13 +1955,33 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
         updatePosQuat *= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(newQ.angPosVec, newQ.angPosVec.Length());
     }
     aDQ->angularVelocityQuat = static_cast<float>(aTimeDelta) * updateVelocityQuat;
-    //aDQ->angularVelocityQuat = static_cast<float>(aTimeDelta) * newQ.angularVelocityQuat;
-    //aDQ->angularQuat = static_cast<float>(aTimeDelta) * (newQ.angularVelocityVec);
-    //aDQ->angularQuat = DirectX::SimpleMath::Quaternion::Identity;
-    //aDQ->angularPosQuat = static_cast<float>(aTimeDelta) * updatePosQuat;
     aDQ->angularPosQuat = static_cast<float>(aTimeDelta) * newQ.angularVelocityQuat;
-    //aDQ->angularPosQuat.Normalize();
-    //aDQ->bodyTorqueForce = angAccelVecTensorUpdate;
+
+    ///////////////////////////////////////////////////////////////////////////////
+
+    DirectX::SimpleMath::Vector3 angularVelocitUpdate = DirectX::SimpleMath::Vector3::Zero;
+    angularVelocitUpdate = m_heli.vehicleAngularForcesSum;
+    //angularVelocitUpdate = DirectX::SimpleMath::Vector3::Transform(angularVelocitUpdate, m_heli.alignment);
+    //angularVelocitUpdate *= 0.0001f;
+    //angularVelocitUpdate = DirectX::SimpleMath::Vector3(0.000000000000001, 0.0f, 0.0f);
+    //angularVelocitUpdate = angularVelocitUpdate - (m_heli.q.gAngularVelocity * 0.1f);
+    DirectX::SimpleMath::Quaternion orientation = DirectX::SimpleMath::Quaternion::Identity;
+    orientation = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
+    orientation = m_heli.q.gOrientationQuat;
+    orientation.Normalize();
+    DirectX::SimpleMath::Quaternion q = DirectX::SimpleMath::Quaternion::Identity;
+    q.x = angularVelocitUpdate.x;
+    q.y = angularVelocitUpdate.y;
+    q.z = angularVelocitUpdate.z;
+    q.w = 0.0f;
+    DirectX::SimpleMath::Quaternion spinUpdate = 0.5f * q * orientation;
+
+    DirectX::SimpleMath::Vector3 tempVec = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion tempQuat = DirectX::SimpleMath::Quaternion::Identity;
+    aDQ->gOrientationQuat = static_cast<float>(aTimeDelta) * newQ.gSpin;
+    aDQ->gAngularMomentum = static_cast<float>(aTimeDelta) * newQ.gAngularVelocity;
+    aDQ->gSpin            = static_cast<float>(aTimeDelta) * spinUpdate;
+    aDQ->gAngularVelocity = static_cast<float>(aTimeDelta) * angularVelocitUpdate;
 }
 
 void Vehicle::RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ)
@@ -2215,8 +2232,228 @@ void Vehicle::RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ
     aDQ->angPosVec = static_cast<float>(aTimeDelta) * newQ.angularVelocityVec;
 }
 
+void Vehicle::RightHandSide3(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ)
+{
+    //  Compute the intermediate values of the 
+    //  dependent variables.
+    Motion newQ;
+    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+    newQ.angularVelocityVec = aQ->angularVelocityVec + static_cast<float>(aQScale) * aDeltaQ->angularVelocityVec;
+    newQ.angPosVec = aQ->angPosVec + static_cast<float>(aQScale) * aDeltaQ->angPosVec;
+    newQ.angularVelocityQuat = aQ->angularVelocityQuat + static_cast<float>(aQScale) * aDeltaQ->angularVelocityQuat;
+    newQ.angularPosQuat = aQ->angularPosQuat + static_cast<float>(aQScale) * aDeltaQ->angularPosQuat;
+
+    DirectX::SimpleMath::Vector3 velocityUpdate = m_heli.vehicleLinearForcesSum;
+    DirectX::SimpleMath::Vector3 airResistance = CalculateDragLinear(newQ.velocity);
+    velocityUpdate += airResistance;
+
+    //  Assign right-hand side values.
+    aDQ->airResistance = airResistance;
+    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_heli.mass);
+    aDQ->totalVelocity = velocityUpdate;
+    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
+
+    // angular updates
+    DirectX::SimpleMath::Vector3 angVelocityNorm = newQ.angularVelocityVec;
+    float angVelocity = angVelocityNorm.Length();
+    angVelocityNorm.Normalize();
+
+    DirectX::SimpleMath::Vector3 accelVecUpdate = m_heli.vehicleAngularForcesSum;
+    DirectX::SimpleMath::Vector3 angDampTest = CalculateDragAngular(newQ.angularVelocityVec);
+    //DirectX::SimpleMath::Vector3 angDampTest2 = newQ.angPosVec * m_angularDampConst;
+    DirectX::SimpleMath::Vector3 angDampTest2 = m_heli.q.angularVelocityVec * m_angularDampConst;
+    //DirectX::SimpleMath::Vector3 angDampTest2 = newQ.angularVelocityVec * m_angularDampConst;
+    //DirectX::SimpleMath::Vector3 angDampTest3 = newQ.angPosVec * m_angularDampConst;
+    //accelVecUpdate += angDampTest;
+    if (m_debugToggle3 == false)
+    {
+        accelVecUpdate -= angDampTest2;
+    }
+    aDQ->angularVelocityVec = static_cast<float>(aTimeDelta) * (accelVecUpdate);
+    aDQ->angPosVec = static_cast<float>(aTimeDelta) * (newQ.angularVelocityVec);
+
+    DirectX::SimpleMath::Quaternion updateVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
+    if (accelVecUpdate.Length() != 0.0f)
+    {
+        updateVelocityQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(accelVecUpdate, accelVecUpdate.Length());
+    }
+
+    if (m_debugToggle5 == true)
+    {
+        float angRate = Utility::ToRadians(3.0f);
+
+        angRate *= static_cast<float>(aTimeDelta);
+        DirectX::SimpleMath::Vector3 angAxis = DirectX::SimpleMath::Vector3::UnitX;
+
+        DirectX::SimpleMath::Quaternion angQuat = DirectX::SimpleMath::Quaternion::Identity;
+        angQuat = aHeli->q.angularPosQuat;
+        //angQuat = aHeli->q.angularVelocityQuat;
+        //angQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
+        angQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(angAxis, angRate);
+        updateVelocityQuat = angQuat;
+    }
+
+    DirectX::SimpleMath::Quaternion updatePosQuat = DirectX::SimpleMath::Quaternion::Identity;
+    //updatePosQuat = m_heli.q.angularPosQuat;
+    //updatePosQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
+    //if (newQ.angularVelocityVec.Length() != 0.0f)
+    if (newQ.angPosVec.Length() != 0.0f)
+    {
+        //updatePosQuat *= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(newQ.angularVelocityVec, newQ.angularVelocityVec.Length());
+        updatePosQuat *= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(newQ.angPosVec, newQ.angPosVec.Length());
+    }
+    aDQ->angularVelocityQuat = static_cast<float>(aTimeDelta) * updateVelocityQuat;
+    //aDQ->angularVelocityQuat = static_cast<float>(aTimeDelta) * newQ.angularVelocityQuat;
+    //aDQ->angularQuat = static_cast<float>(aTimeDelta) * (newQ.angularVelocityVec);
+    //aDQ->angularQuat = DirectX::SimpleMath::Quaternion::Identity;
+    //aDQ->angularPosQuat = static_cast<float>(aTimeDelta) * updatePosQuat;
+    aDQ->angularPosQuat = static_cast<float>(aTimeDelta) * newQ.angularVelocityQuat;
+    //aDQ->angularPosQuat.Normalize();
+    //aDQ->bodyTorqueForce = angAccelVecTensorUpdate;
+}
+
 //  This method solves for the vehicle motion using a 4th-order Runge-Kutta solver
 void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
+{
+    //  Define a convenience variables
+    const float numEqns = static_cast<float>(aHeli->numEqns);
+    //  Retrieve the current values of the dependent and independent variables.
+    Motion q = aHeli->q;
+    Motion dq1;
+    Motion dq2;
+    Motion dq3;
+    Motion dq4;
+
+    // Compute the four Runge-Kutta steps, The return 
+    // value of RightHandSide method is an array
+    // of delta-q values for each of the four steps.
+    RightHandSide(aHeli, &q, &q, aTimeDelta, 0.0, &dq1);
+    RightHandSide(aHeli, &q, &dq1, aTimeDelta, 0.5, &dq2);
+    RightHandSide(aHeli, &q, &dq2, aTimeDelta, 0.5, &dq3);
+    RightHandSide(aHeli, &q, &dq3, aTimeDelta, 1.0, &dq4);
+
+    aHeli->time = aHeli->time + aTimeDelta;
+    DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
+    DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
+
+    DirectX::SimpleMath::Vector3 angularPosVecUpdate = (dq1.angPosVec + 2.0 * dq2.angPosVec + 2.0 * dq3.angPosVec + dq4.angPosVec) / numEqns;
+    DirectX::SimpleMath::Vector3 angularVelocityVecUpdate = (dq1.angularVelocityVec + 2.0 * dq2.angularVelocityVec + 2.0 * dq3.angularVelocityVec + dq4.angularVelocityVec) / numEqns;
+    DirectX::SimpleMath::Quaternion angularVelocityQuatUpdate = (dq1.angularVelocityQuat + 2.0 * dq2.angularVelocityQuat + 2.0 * dq3.angularVelocityQuat * dq3.angularVelocityQuat + dq4.angularVelocityQuat) * (1.0 / numEqns);
+    angularVelocityQuatUpdate.Normalize();
+    DirectX::SimpleMath::Quaternion angularPosQuatUpdate = (dq1.angularPosQuat + 2.0 * dq2.angularPosQuat + 2.0 * dq3.angularPosQuat * dq3.angularPosQuat + dq4.angularPosQuat) * (1.0 / numEqns);
+    angularPosQuatUpdate.Normalize();
+
+    DirectX::SimpleMath::Quaternion gOrientationUpdate = (dq1.gOrientationQuat + 2.0 * dq2.gOrientationQuat + 2.0 * dq3.gOrientationQuat * dq3.gOrientationQuat + dq4.gOrientationQuat) * (1.0 / numEqns);
+    gOrientationUpdate.Normalize();
+    DirectX::SimpleMath::Vector3 gAngularMomentumUpdate = (dq1.gAngularMomentum + 2.0 * dq2.gAngularMomentum + 2.0 * dq3.gAngularMomentum + dq4.gAngularMomentum) / numEqns;
+
+    DirectX::SimpleMath::Quaternion gSpinUpdate = (dq1.gSpin + 2.0 * dq2.gSpin + 2.0 * dq3.gSpin * dq3.gSpin + dq4.gSpin) * (1.0 / numEqns);
+    gSpinUpdate.Normalize();
+    DirectX::SimpleMath::Vector3 gAngularVelocityUpdate = (dq1.gAngularVelocity + 2.0 * dq2.gAngularVelocity + 2.0 * dq3.gAngularVelocity + dq4.gAngularVelocity) / numEqns;
+
+    DirectX::SimpleMath::Vector3 angAxis = DirectX::SimpleMath::Vector3::UnitY;
+    //angAxis = angularVelocityVecUpdate;
+    angAxis = angularPosVecUpdate;
+    angAxis.Normalize();
+    float angRate = 0.0f;
+    //angRate = angularVelocityVecUpdate.Length();
+    angRate = angularPosVecUpdate.Length();
+
+    DirectX::SimpleMath::Quaternion angQuat = DirectX::SimpleMath::Quaternion::Identity;
+    angQuat = aHeli->q.angularPosQuat;
+    if (angAxis.Length() != 0.0f)
+    {
+        angQuat *= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(angAxis, angRate);
+    }
+    //angularVelocityQuatUpdate = angQuat;
+
+
+    q.velocity += velocityUpdate;
+    q.position += posUpdate;
+    q.angPosVec += angularPosVecUpdate;
+    q.angularVelocityVec += angularVelocityVecUpdate;
+    q.angularVelocityQuat += angularVelocityQuatUpdate;
+    q.angularVelocityQuat.Normalize();
+    q.angularPosQuat += angularPosQuatUpdate;
+    q.angularPosQuat.Normalize();
+
+    q.gOrientationQuat += gOrientationUpdate;
+    //q.gOrientationQuat.Normalize();
+    q.gAngularMomentum += gAngularMomentumUpdate;
+    q.gSpin += gSpinUpdate;
+    //q.gSpin.Normalize();
+    q.gAngularVelocity += gAngularVelocityUpdate;
+
+    aHeli->q.velocity = q.velocity;
+    //aHeli->q.position = q.position;
+    aHeli->q.angularVelocityVec = q.angularVelocityVec;
+    aHeli->q.angPosVec = q.angPosVec;
+    aHeli->q.angularVelocityQuat = q.angularVelocityQuat;
+    aHeli->q.angularPosQuat = q.angularPosQuat;
+
+    aHeli->q.gOrientationQuat = q.gOrientationQuat;
+    aHeli->q.gAngularMomentum = q.gAngularMomentum;
+    aHeli->q.gSpin            = q.gSpin;
+    aHeli->q.gAngularVelocity = q.gAngularVelocity;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    DirectX::SimpleMath::Quaternion testAngularPos = m_heli.q.angularPosQuat;// *static_cast<float>(aTimeDelta);
+    testAngularPos.Normalize();
+    testAngularPos *= m_heli.q.alignmentQuat;
+    testAngularPos.Normalize();
+
+    float angRate2 = Utility::ToRadians(30.0f);
+    angRate2 *= static_cast<float>(aTimeDelta);
+    DirectX::SimpleMath::Vector3 angAxis2 = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion angQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+
+    angQuat2 *= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(angAxis2, angRate2);
+
+    testAngularPos = m_heli.q.angularPosQuat;
+    //testAngularPos = (angQuat2 * m_heli.q.alignmentQuat);// *0.5f;
+    testAngularPos = (m_heli.q.angularPosQuat * m_heli.q.alignmentQuat);// *0.5f;
+    
+    //testAngularPos = (m_heli.q.gOrientationQuat + m_heli.q.alignmentQuat);// *0.5f;
+    testAngularPos = (m_heli.q.gOrientationQuat);// *0.5f;
+    //testAngularPos = (m_heli.q.gSpin);// *0.5f;
+    //testAngularPos = (m_heli.q.angularPosQuat * DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment));// *0.5f;
+    //testAngularPos = ((m_heli.q.angularPosQuat * static_cast<float>(aTimeDelta)) * m_heli.q.alignmentQuat) * 0.5f;
+    testAngularPos.Normalize();
+
+    DirectX::SimpleMath::Quaternion prevQuat = m_heli.q.alignmentQuat;
+    //testAngularPos.Normalize();
+    //testAngularPos *= m_heli.q.alignmentQuat;
+    //testAngularPos.Normalize();
+    //m_heli.alignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_heli.q.angularPosQuat);
+    m_heli.alignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(testAngularPos);
+    m_heli.q.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_heli.alignment);
+    m_heli.q.alignmentQuat.Normalize();
+
+    float angleDelta = DirectX::SimpleMath::Quaternion::Angle(prevQuat, m_heli.q.alignmentQuat);
+    float angleDeltaDeg = angleDelta;
+    angleDeltaDeg = Utility::ToDegrees(angleDeltaDeg);
+    angleDelta /= aTimeDelta;
+    angleDeltaDeg /= aTimeDelta;
+    m_debugData->DebugPushUILineDecimalNumber("angleDeltaRadPerSecond = ", angleDelta, "");
+    m_debugData->DebugPushUILineDecimalNumber("angleDeltaDegPerSecond = ", angleDeltaDeg, "");
+    m_testValDebug3 = angleDeltaDeg;
+    m_heli.q.inverseAlignmentQuat = m_heli.q.alignmentQuat;
+    m_heli.q.inverseAlignmentQuat.Inverse(m_heli.q.inverseAlignmentQuat);
+    m_heli.q.inverseAlignmentQuat.Normalize();
+
+    m_heli.up = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_heli.alignment);
+    m_heli.right = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ, m_heli.alignment);
+    m_heli.forward = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, m_heli.alignment);
+
+    m_debugData->PushDebugLine(m_heli.q.position, m_heli.right, 20.0f, 0.0f, DirectX::Colors::Red);
+    m_heli.alignmentInverse = m_heli.alignment;
+    m_heli.alignmentInverse.Invert();
+
+}
+
+void Vehicle::RungeKutta42(struct HeliData* aHeli, double aTimeDelta)
 {
     //  Define a convenience variables
     const float numEqns = static_cast<float>(aHeli->numEqns);
@@ -2437,6 +2674,7 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     m_heli.alignmentInverse.Invert();
 
 }
+
 void Vehicle::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 {
     m_debugData = aDebugPtr;

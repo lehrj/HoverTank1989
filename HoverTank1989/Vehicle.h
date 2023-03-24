@@ -111,6 +111,15 @@ struct Motion
 
     DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    // primary
+    DirectX::SimpleMath::Quaternion gOrientationQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 gAngularMomentum = DirectX::SimpleMath::Vector3::Zero;
+
+    // secondary
+    DirectX::SimpleMath::Quaternion gSpin = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 gAngularVelocity = DirectX::SimpleMath::Vector3::Zero;
+
 };
 
 struct Rotor
@@ -438,7 +447,9 @@ private:
 
     void RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
+    void RightHandSide3(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
+    void RungeKutta42(struct HeliData* aHeli, double aTimeDelta);
 
     void UpdateAlignmentTorque();
     void UpdateAlignmentTorque2();
