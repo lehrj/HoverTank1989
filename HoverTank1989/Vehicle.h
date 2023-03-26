@@ -114,10 +114,12 @@ struct Motion
 
     // primary
     DirectX::SimpleMath::Quaternion gOrientationQuat = DirectX::SimpleMath::Quaternion::Identity;
+    //DirectX::SimpleMath::Quaternion gOrientationQuat = DirectX::SimpleMath::Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 gAngularMomentum = DirectX::SimpleMath::Vector3::Zero;
 
     // secondary
     DirectX::SimpleMath::Quaternion gSpin = DirectX::SimpleMath::Quaternion::Identity;
+    //DirectX::SimpleMath::Quaternion gSpin = DirectX::SimpleMath::Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 gAngularVelocity = DirectX::SimpleMath::Vector3::Zero;
 
 };
@@ -593,6 +595,9 @@ private:
 
     DirectX::XMFLOAT3X3 m_testTensor;
 
+    float m_floatInertia = 0.0f;
+    float m_floatInvsInertia = 0.0f;
+
     DirectX::SimpleMath::Vector3 m_cordOrgTestPos = DirectX::SimpleMath::Vector3(6.0f, 10.0f, 9.0f);
 
     float m_testValDebug1 = 0.0f;
@@ -600,5 +605,10 @@ private:
     float m_testValDebug3 = 0.0f;
     float m_testValDebug4 = 0.0f;
     float m_testValDebug5 = 0.0f;
+
+    float m_rotPerSecDeg = 0.0f;
+    float m_rotPerSecRad = 0.0f;
+
+
 };
 
