@@ -44,7 +44,7 @@ struct ControlInput
     DirectX::SimpleMath::Vector3 cyclicNormUpdated = DirectX::SimpleMath::Vector3::UnitY;
     //const float cyclicDecayRateRaw = 10.3f;
     //const float cyclicInputRateRaw = 10.1f;
-    const float cyclicDecayRateRaw = 1.0f;
+    const float cyclicDecayRateRaw = 100.0f;
     const float cyclicInputRateRaw = 1.0f;
 
     DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
@@ -455,9 +455,11 @@ private:
     void RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RightHandSide3(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
+    void RightHandSideLastUsed(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
     void RungeKutta42(struct HeliData* aHeli, double aTimeDelta);
-
+    void RungeKutta43(struct HeliData* aHeli, double aTimeDelta);
+    void RungeKutta4Working(struct HeliData* aHeli, double aTimeDelta);
     void UpdateAlignmentTorque();
     void UpdateAlignmentTorque2();
     void UpdateAlignmentCamera();
@@ -565,7 +567,7 @@ private:
     float m_testVal2 = 0.0f;
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
 
-    const float m_testMass = 100.0f;
+    const float m_testMass = 10.01f;
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
     //const float m_testForceMod3 = 150.0f;
@@ -626,6 +628,7 @@ private:
     DirectX::SimpleMath::Quaternion m_testQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_testOrientQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 m_prevInput = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_prevInput2 = DirectX::SimpleMath::Vector3::Zero;
     int m_stepCount = 0;
 };
 
