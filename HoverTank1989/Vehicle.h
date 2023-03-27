@@ -30,8 +30,10 @@ struct ControlInput
     bool        cyclicInputPitchIsPressed;
     float       cyclicInputRoll;
     bool        cyclicInputRollIsPressed;
-    const float cyclicInputMax = Utility::ToRadians(20.0f);
-    const float cyclicInputMin = -Utility::ToRadians(20.0f);
+    //const float cyclicInputMax = Utility::ToRadians(20.0f);
+    //const float cyclicInputMin = -Utility::ToRadians(20.0f);
+    const float cyclicInputMax = 1.0f;
+    const float cyclicInputMin = -1.0f;
     const float cyclicInputRate = 0.1f;
 
     float cyclicInputRollRaw = 0.0f;
@@ -40,8 +42,10 @@ struct ControlInput
     const float cyclicInputRawMin = -1.0f;
     DirectX::SimpleMath::Vector3 cyclicNormRaw = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 cyclicNormUpdated = DirectX::SimpleMath::Vector3::UnitY;
-    const float cyclicDecayRateRaw = 10.3f;
-    const float cyclicInputRateRaw = 10.1f;
+    //const float cyclicDecayRateRaw = 10.3f;
+    //const float cyclicInputRateRaw = 10.1f;
+    const float cyclicDecayRateRaw = 1.0f;
+    const float cyclicInputRateRaw = 1.0f;
 
     DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 cyclicNormWorld = DirectX::SimpleMath::Vector3::UnitY;
@@ -122,6 +126,7 @@ struct Motion
     //DirectX::SimpleMath::Quaternion gSpin = DirectX::SimpleMath::Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 gAngularVelocity = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Quaternion gTestOrientation = DirectX::SimpleMath::Quaternion::Identity;
 };
 
 struct Rotor
@@ -609,6 +614,18 @@ private:
     float m_rotPerSecDeg = 0.0f;
     float m_rotPerSecRad = 0.0f;
 
+    DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 m_testTorqueWorld = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Matrix m_testInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix m_testInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+
+    float m_testInertiaFloat = 0.0f;
+    float m_testInverseInertiaFloat = 0.0f;
+
+    DirectX::SimpleMath::Quaternion m_testQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion m_testOrientQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 m_prevInput = DirectX::SimpleMath::Vector3::Zero;
+    int m_stepCount = 0;
 };
 
