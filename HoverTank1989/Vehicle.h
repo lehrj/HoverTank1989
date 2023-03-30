@@ -134,6 +134,9 @@ struct Motion
     DirectX::SimpleMath::Quaternion toUseSpin = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 toUseAngularVelocity = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 toUseAngularMomentum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularVelocityUpdateTest = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularMomentumUpdateTest = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion angularQuatUpdateTest = DirectX::SimpleMath::Quaternion::Identity;
 };
 
 struct Rotor
@@ -442,6 +445,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateHoverTorqueForce(const struct HeliData& aHeli, const float aTimeStep);
     float CalculateLiftCoefficient(const float aAngle);
     DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinear(const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinear2(const DirectX::SimpleMath::Vector3 aVelocity, const DirectX::SimpleMath::Vector3 aNewQVelocity);
@@ -464,7 +468,7 @@ private:
     void RightHandSide3(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RightHandSideLastUsed(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RightHandSide4(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
-
+    void RightHandSide5(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void TempTestRungeKutta4(struct HeliData* aHeli, double aTimeDelta);
     void TempTestRungeKutta42(struct HeliData* aHeli, double aTimeDelta);
 
@@ -579,6 +583,7 @@ private:
     float m_testVal2 = 0.0f;
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
 
+    //const float m_testMass = 1.1f;
     const float m_testMass = 0.1f;
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
