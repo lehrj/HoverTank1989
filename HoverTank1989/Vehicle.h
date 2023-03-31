@@ -118,22 +118,6 @@ struct Motion
     DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
 
-    // primary
-    DirectX::SimpleMath::Quaternion gOrientationQuat = DirectX::SimpleMath::Quaternion::Identity;
-    //DirectX::SimpleMath::Quaternion gOrientationQuat = DirectX::SimpleMath::Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 gAngularMomentum = DirectX::SimpleMath::Vector3::Zero;
-
-    // secondary
-    DirectX::SimpleMath::Quaternion gSpin = DirectX::SimpleMath::Quaternion::Identity;
-    //DirectX::SimpleMath::Quaternion gSpin = DirectX::SimpleMath::Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 gAngularVelocity = DirectX::SimpleMath::Vector3::Zero;
-
-    DirectX::SimpleMath::Quaternion gTestOrientation = DirectX::SimpleMath::Quaternion::Identity;
-
-    DirectX::SimpleMath::Quaternion toUseOrientation = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion toUseSpin = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Vector3 toUseAngularVelocity = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 toUseAngularMomentum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocityUpdateTest = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularMomentumUpdateTest = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Quaternion angularQuatUpdateTest = DirectX::SimpleMath::Quaternion::Identity;
@@ -451,6 +435,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinear2(const DirectX::SimpleMath::Vector3 aVelocity, const DirectX::SimpleMath::Vector3 aNewQVelocity);
     float CalculateWindVaningVal(const HeliData& aHeliData);
     DirectX::SimpleMath::Vector3 CalculateSelfRightingForce(const HeliData& aHeliData);
+    DirectX::SimpleMath::Vector3 CalculateStabilityTorqueLocal(const HeliData& aHeliData, const float aTimeStep);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const HeliData& aHeliData);
 
     DirectX::SimpleMath::Vector3 CalculateImpactLinearForceSum(const float aTimeDelta);
@@ -462,20 +447,9 @@ private:
 
     void LandVehicle();
 
-
     void RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
-    void RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
-    void RightHandSide3(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
-    void RightHandSideLastUsed(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
-    void RightHandSide4(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
-    void RightHandSide5(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
-    void TempTestRungeKutta4(struct HeliData* aHeli, double aTimeDelta);
-    void TempTestRungeKutta42(struct HeliData* aHeli, double aTimeDelta);
-
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
-    void RungeKutta42(struct HeliData* aHeli, double aTimeDelta);
-    void RungeKutta43(struct HeliData* aHeli, double aTimeDelta);
-    void RungeKutta4Working(struct HeliData* aHeli, double aTimeDelta);
+
     void UpdateAlignmentTorque();
     void UpdateAlignmentTorque2();
     void UpdateAlignmentCamera();
@@ -484,7 +458,6 @@ private:
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     Utility::Torque UpdateBodyTorqueRunge2(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocal(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
-
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCollisionImpulseForces(const float aTimeStep);
@@ -584,7 +557,7 @@ private:
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
 
     //const float m_testMass = 1.1f;
-    const float m_testMass = 0.1f;
+    const float m_testMass = 10.1f;
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
     //const float m_testForceMod3 = 150.0f;
@@ -647,7 +620,6 @@ private:
     DirectX::SimpleMath::Vector3 m_prevInput = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_prevInput2 = DirectX::SimpleMath::Vector3::Zero;
     int m_stepCount = 0;
-
 
     DirectX::SimpleMath::Vector3 m_angVel = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_angMom = DirectX::SimpleMath::Vector3::Zero;
