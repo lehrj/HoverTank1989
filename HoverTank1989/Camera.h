@@ -182,7 +182,7 @@ private:
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
     //const float                     m_posTravelSpeed = 40.0f;
-    const float                     m_posTravelSpeed = 14.0f;
+    const float                     m_posTravelSpeed = 54.0f;
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
@@ -211,7 +211,7 @@ private:
     DirectX::SimpleMath::Vector3    m_targetStartPos;
     DirectX::SimpleMath::Vector3    m_targetEndPos;
 
-    float                           m_cameraTransitionSpeed = 10.9f;
+    float                           m_cameraTransitionSpeed = 5.9f;
     DX::StepTimer                   m_cameraTimer;
 
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis

@@ -8,11 +8,19 @@ public:
     static inline int GetNumericalPrecisionForUI() { return 2; }; // For setting the numerical precison displayed by UI
     static inline float GetVehicleImpactReboundCoefficient() { return 0.4f; };
     static inline float GetMaxAngularForce() { return 1000000.0f; };
-    //static inline float GetMaxAngularForce() { return 100000.0f; };
     static inline float GetPi() { return 3.1415926535897931; };
     static inline float ToDegrees(float r) { return r * 180.0f / GetPi(); };
     static inline float ToRadians(float d) { return d / 180.0f * GetPi(); };
     
+    static void AddForceAtPoint(const DirectX::SimpleMath::Vector3& aForce, const DirectX::SimpleMath::Vector3& aPoint, const DirectX::SimpleMath::Vector3& aCenterOfMass,
+        DirectX::SimpleMath::Vector3& aForceAccum, DirectX::SimpleMath::Vector3& aTorqueAccum)
+    {
+        DirectX::SimpleMath::Vector3 pt = aPoint;
+        pt -= aCenterOfMass;
+        aForceAccum += aForce;
+        aTorqueAccum += pt.Cross(aForce);
+    }
+
     static void AddScaledVectorToQuat(const DirectX::SimpleMath::Vector3& aVector, const float aScale, DirectX::SimpleMath::Quaternion& aQuat)
     {
         DirectX::SimpleMath::Quaternion q;

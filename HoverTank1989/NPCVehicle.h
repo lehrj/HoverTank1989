@@ -115,6 +115,7 @@ struct NPCModel
 
     const float burnFlickerFrequencyMod = 39.04f;
     const float burnFlickerLengthMod = 7.1f;
+
     float burnFlickerLegth = 0.0f;
 
     float afterBurnLeftFlicker;
@@ -341,6 +342,11 @@ struct NPCModel
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureTest2;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularTest2;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapTest2;
+
+    bool isLeftPlumeFlickerTrue = false;
+    bool isMainPlumeFlickerTrue = false;
+    bool isRightPlumeFlickerTrue = false;
+    const float plumeScale = 0.5f;
 };
 
 struct VehicleHardPoints

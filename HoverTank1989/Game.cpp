@@ -47,6 +47,7 @@ Game::Game() noexcept(false)
     m_testVehicleHover = std::make_shared<VehicleHover>();
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+    //m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
 }

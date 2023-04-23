@@ -44,8 +44,8 @@ struct ControlInput
     DirectX::SimpleMath::Vector3 cyclicNormUpdated = DirectX::SimpleMath::Vector3::UnitY;
     //const float cyclicDecayRateRaw = 10.3f;
     //const float cyclicInputRateRaw = 10.1f;
-    const float cyclicDecayRateRaw = 100.0f;
-    const float cyclicInputRateRaw = 1.0f;
+    const float cyclicDecayRateRaw = 0.6f;
+    const float cyclicInputRateRaw = 0.5f;
 
     DirectX::SimpleMath::Vector3 cyclicNormLocal = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 cyclicNormWorld = DirectX::SimpleMath::Vector3::UnitY;
@@ -112,7 +112,7 @@ struct Motion
     DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
 
-    DirectX::SimpleMath::Quaternion angularVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
+    //DirectX::SimpleMath::Quaternion angularVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion angularPosQuat = DirectX::SimpleMath::Quaternion::Identity;
 
     DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
@@ -169,7 +169,7 @@ struct HeliData
     const float hoverDriveMagMax = 100000.0f;
     const float brakeMagMax = 3000.0f;
     //const float yawForce = 30.0f;
-    const float yawForce = 3.0f;
+    const float yawForce = 300.0f;
 
     /*
     const float groundNormalForceRange = 5.0f;
@@ -255,7 +255,7 @@ struct HeliData
     DirectX::SimpleMath::Vector3 dimensions;
     DirectX::SimpleMath::Vector3 gravity = DirectX::SimpleMath::Vector3(0.0f, -9.80665f, 0.0f);
     float   mainRotorMaxRPM;
-    float   mass;
+    const float   mass = 1700.0f;
     float   massTest = 2000.0f;
     Motion  q;
     float   totalResistance;
@@ -300,6 +300,9 @@ struct HeliData
 
     DirectX::SimpleMath::Vector3 windVaningTorueForce = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 selfRightingForce = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 angularDrag = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularDrag2 = DirectX::SimpleMath::Vector3::Zero;
 
     ControlInput  controlInput;
     Rotor         mainRotor;
@@ -436,6 +439,7 @@ private:
     float CalculateWindVaningVal(const HeliData& aHeliData);
     DirectX::SimpleMath::Vector3 CalculateSelfRightingForce(const HeliData& aHeliData);
     DirectX::SimpleMath::Vector3 CalculateStabilityTorqueLocal(const HeliData& aHeliData, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 CalculateStabilityTorqueLocal2(const HeliData& aHeliData, const float aTimeStep);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const HeliData& aHeliData);
 
     DirectX::SimpleMath::Vector3 CalculateImpactLinearForceSum(const float aTimeDelta);
@@ -450,6 +454,7 @@ private:
     void RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
+    void UpdateAlignment(const float aTimeDelta);
     void UpdateAlignmentTorque();
     void UpdateAlignmentTorque2();
     void UpdateAlignmentCamera();
@@ -458,6 +463,7 @@ private:
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     Utility::Torque UpdateBodyTorqueRunge2(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocal(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocal2(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
 
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCollisionImpulseForces(const float aTimeStep);
@@ -588,7 +594,8 @@ private:
 
     bool m_isSwingToggleTrue = false;
     bool m_isGoingUp = false;
-    const float m_angularDampConst = 0.2f;
+    const float m_angularDampConst = 0.9f;
+    const float m_angDragCoefficient = 0.4f;
 
     DirectX::XMFLOAT3X3 m_testTensor;
 

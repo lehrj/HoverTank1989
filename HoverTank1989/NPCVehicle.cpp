@@ -4233,7 +4233,27 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     {
         afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY, 0.0f);
     }
+
+    DirectX::SimpleMath::Matrix afterBurnFlickerScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f);
+    if (m_vehicleStruct00.npcModel.isLeftPlumeFlickerTrue == true)
+    {
+        m_vehicleStruct00.npcModel.isLeftPlumeFlickerTrue = false;
+        //afterBurnFlickerScale = DirectX::SimpleMath::Matrix::CreateScale(m_vehicleStruct00.npcModel.plumeScale);
+        afterBurnFlickerScale = DirectX::SimpleMath::Matrix::CreateScale(1.0, 0.5, 1.0);
+        afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY * 0.5f, 0.0f);
+        if (afterBurnLengthModLeft <= 0.0f)
+        {
+            afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY * 0.5f, 0.0f);
+        }
+    }
+    else
+    {
+        m_vehicleStruct00.npcModel.isLeftPlumeFlickerTrue = true;
+    }
+    
+
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnScale;
+    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnFlickerScale;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnTranslation;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= m_vehicleStruct00.npcModel.localAfterBurnLeftMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= jetRotationMatLeft;
@@ -4241,6 +4261,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= updateMat;
 
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= afterBurnScale;
+    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= afterBurnFlickerScale;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= afterBurnTranslation;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= m_vehicleStruct00.npcModel.localAfterBurnLeftMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= jetRotationMatLeft;
