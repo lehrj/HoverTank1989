@@ -118,9 +118,9 @@ struct Motion
     DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
 
-    DirectX::SimpleMath::Vector3 angularVelocityUpdateTest = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 angularMomentumUpdateTest = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Quaternion angularQuatUpdateTest = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion angularQuat = DirectX::SimpleMath::Quaternion::Identity;
 };
 
 struct Rotor
@@ -489,6 +489,7 @@ private:
     void UpdateTestDrivetrainTorque3(const float aTimer);
     void UpdateTestDrivetrainTorque4(const float aTimer);
     void UpdateTestDrivetrainTorqueLocal(const float aTimer);
+    void UpdateTestDrivetrainTorqueLocal2(const float aTimer);
     void UpdateTestDrivetrainTorque5(const float aTimer);
     void UpdateTestDrivetrainTorqueLastUsed(const float aTimer);
 
