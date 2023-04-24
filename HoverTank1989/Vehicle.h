@@ -25,7 +25,7 @@ struct ControlInput
     const float collectiveInputRate = 0.5f;
 
     DirectX::SimpleMath::Vector3 cyclicStick;
-    const float cyclicDecayRate = 0.3f;
+    const float cyclicDecayRate = 0.9f;
     float       cyclicInputPitch;
     bool        cyclicInputPitchIsPressed;
     float       cyclicInputRoll;
@@ -34,7 +34,7 @@ struct ControlInput
     //const float cyclicInputMin = -Utility::ToRadians(20.0f);
     const float cyclicInputMax = 1.0f;
     const float cyclicInputMin = -1.0f;
-    const float cyclicInputRate = 0.1f;
+    const float cyclicInputRate = 0.7f;
 
     float cyclicInputRollRaw = 0.0f;
     float cyclicInputPitchRaw = 0.0f;

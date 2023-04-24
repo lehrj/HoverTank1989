@@ -2369,7 +2369,7 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.angularMomentum += angularMomentumUpdateTest;
 
     aHeli->q.velocity = q.velocity;
-    //aHeli->q.position = q.position;
+    aHeli->q.position = q.position;
 
     aHeli->q.angularVelocity = q.angularVelocity;
     aHeli->q.angularMomentum = q.angularMomentum;
@@ -6263,9 +6263,10 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocal(DirectX::SimpleMath:
     if (m_testImpulseForce.isActive == true)
     {
         DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.localWeaponPos - m_heli.localCenterOfMass;
-        DirectX::SimpleMath::Vector3 weaponForce = -m_heli.localWeaponDirection;
+        //DirectX::SimpleMath::Vector3 weaponForce = -m_heli.localWeaponDirection;
+        DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
         weaponForce.Normalize();
-        float weaponForceMag = m_testImpulseForce.currentMagnitude * 0.005f;
+        float weaponForceMag = m_testImpulseForce.currentMagnitude * 0.05f;
         weaponForce *= weaponForceMag;
         weaponTorque = Utility::GetTorqueForce(weaponTorqueArm, weaponForce);
     }
@@ -6286,7 +6287,7 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocal(DirectX::SimpleMath:
 
     gravVec = CalculateStabilityTorqueLocal(m_heli, aTimeStep);
 
-    torqueVec = tailVec + gravVec + driveVec;
+    torqueVec = tailVec + gravVec + driveVec + weaponVec;
     //torqueVec = tailVec + driveVec;
     //torqueVec = driveVec;
     aAccelVec = torqueVec;
@@ -6617,7 +6618,7 @@ void Vehicle::FireWeapon()
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
 
         m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
-        //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
+        m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
     }
 }
 

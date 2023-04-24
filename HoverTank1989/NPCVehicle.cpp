@@ -4234,16 +4234,16 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY, 0.0f);
     }
 
-    DirectX::SimpleMath::Matrix afterBurnFlickerScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f);
+    DirectX::SimpleMath::Matrix afterBurnFlickerScaleLeft = DirectX::SimpleMath::Matrix::CreateScale(1.0f);
     if (m_vehicleStruct00.npcModel.isLeftPlumeFlickerTrue == true)
     {
         m_vehicleStruct00.npcModel.isLeftPlumeFlickerTrue = false;
         //afterBurnFlickerScale = DirectX::SimpleMath::Matrix::CreateScale(m_vehicleStruct00.npcModel.plumeScale);
-        afterBurnFlickerScale = DirectX::SimpleMath::Matrix::CreateScale(1.0, 0.5, 1.0);
-        afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY * 0.5f, 0.0f);
+        afterBurnFlickerScaleLeft = DirectX::SimpleMath::Matrix::CreateScale(1.0, m_vehicleStruct00.npcModel.plumeScale, 1.0);
+        afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY * m_vehicleStruct00.npcModel.plumeScale, 0.0f);
         if (afterBurnLengthModLeft <= 0.0f)
         {
-            afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY * 0.5f, 0.0f);
+            afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY * m_vehicleStruct00.npcModel.plumeScale, 0.0f);
         }
     }
     else
@@ -4251,9 +4251,8 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         m_vehicleStruct00.npcModel.isLeftPlumeFlickerTrue = true;
     }
     
-
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnScale;
-    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnFlickerScale;
+    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnFlickerScaleLeft;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= afterBurnTranslation;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= m_vehicleStruct00.npcModel.localAfterBurnLeftMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= jetRotationMatLeft;
@@ -4261,7 +4260,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix *= updateMat;
 
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= afterBurnScale;
-    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= afterBurnFlickerScale;
+    m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= afterBurnFlickerScaleLeft;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= afterBurnTranslation;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= m_vehicleStruct00.npcModel.localAfterBurnLeftMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnLeftMatrix2 *= jetRotationMatLeft;
@@ -4305,7 +4304,25 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     {
         afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY, 0.0f);
     }
+
+    DirectX::SimpleMath::Matrix afterBurnFlickerScaleRight = DirectX::SimpleMath::Matrix::CreateScale(1.0f);
+    if (m_vehicleStruct00.npcModel.isRightPlumeFlickerTrue == true)
+    {
+        m_vehicleStruct00.npcModel.isRightPlumeFlickerTrue = false;
+        afterBurnFlickerScaleRight = DirectX::SimpleMath::Matrix::CreateScale(1.0, m_vehicleStruct00.npcModel.plumeScale, 1.0);
+        afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY * m_vehicleStruct00.npcModel.plumeScale, 0.0f);
+        if (afterBurnLengthModRight <= 0.0f)
+        {
+            afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -afterBurnY * m_vehicleStruct00.npcModel.plumeScale, 0.0f);
+        }
+    }
+    else
+    {
+        m_vehicleStruct00.npcModel.isRightPlumeFlickerTrue = true;
+    }
+
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= afterBurnScale;
+    m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= afterBurnFlickerScaleRight;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= afterBurnTranslation;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= m_vehicleStruct00.npcModel.localAfterBurnRightMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= jetRotationMatRight;
@@ -4313,6 +4330,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix *= updateMat;
 
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= afterBurnScale;
+    m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= afterBurnFlickerScaleRight;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= afterBurnTranslation;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= m_vehicleStruct00.npcModel.localAfterBurnRightMatrix;
     m_vehicleStruct00.npcModel.worldAfterBurnRightMatrix2 *= jetRotationMatRight;
@@ -4344,10 +4362,28 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     DirectX::SimpleMath::Matrix baseBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(baseBurnLength), 1.0f);
     DirectX::SimpleMath::Matrix baseBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, baseBurnY, 0.0f);
     const float baseBurnFlickerMod = 0.6f;
+
+    DirectX::SimpleMath::Matrix afterBurnFlickerScaleMain = DirectX::SimpleMath::Matrix::CreateScale(1.0f);
+    if (m_vehicleStruct00.npcModel.isMainPlumeFlickerTrue == true)
+    {
+        m_vehicleStruct00.npcModel.isMainPlumeFlickerTrue = false;
+        afterBurnFlickerScaleMain = DirectX::SimpleMath::Matrix::CreateScale(1.0, m_vehicleStruct00.npcModel.plumeScale, 1.0);
+        baseBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, baseBurnY * m_vehicleStruct00.npcModel.plumeScale, 0.0f);
+        if (baseBurnLength <= 0.0f)
+        {
+            baseBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, -baseBurnY * m_vehicleStruct00.npcModel.plumeScale, 0.0f);
+        }
+    }
+    else
+    {
+        m_vehicleStruct00.npcModel.isMainPlumeFlickerTrue = true;
+    }
+
     m_vehicleStruct00.npcModel.baseBurnFlicker1 -= (baseBurnFlickerMod * m_vehicleStruct00.npcModel.afterBurnFlickerRate);
     m_vehicleStruct00.npcModel.baseBurnFlicker1 = Utility::WrapAngle(m_vehicleStruct00.npcModel.baseBurnFlicker1);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.baseBurnFlicker1);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 *= baseBurnScale;
+    m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 *= afterBurnFlickerScaleMain;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 *= baseBurnTranslation;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 *= m_vehicleStruct00.npcModel.localBaseBurnMatrix;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix1 *= updateMat;
@@ -4356,6 +4392,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.baseBurnFlicker2 = Utility::WrapAngle(m_vehicleStruct00.npcModel.baseBurnFlicker2);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 = DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleStruct00.npcModel.baseBurnFlicker2);
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= baseBurnScale;
+    m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= afterBurnFlickerScaleMain;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= baseBurnTranslation;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= m_vehicleStruct00.npcModel.localBaseBurnMatrix;
     m_vehicleStruct00.npcModel.worldBaseBurnMatrix2 *= updateMat;
