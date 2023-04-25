@@ -23,7 +23,7 @@ struct NpcControlInput
     const float steeringInputMax = 6.0f;
     const float steeringInputMin = -6.0f;
     const float steeringInputRate = 3.0f;
-
+    const float steeringForceMod = 100.0f;
     DirectX::SimpleMath::Vector3 steeringVec;
 
     float       throttleInput;
@@ -64,8 +64,8 @@ struct MotionNPC
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
     Utility::Torque              bodyTorqueForce;
-    DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
 };
 
 enum class NPCType
@@ -410,13 +410,17 @@ struct VehicleData
     float                       dragCoefficient;
     float                       frontalArea;
     float                       hitPoints;
-    float                       mass;
+    const float                 mass = 700.0f;
     float                       topSpeedCalculated;
     MotionNPC                   q;
     float                       terrainHightAtPos;
     DirectX::SimpleMath::Vector3 terrainNormal;
     float                       time;
     DirectX::SimpleMath::Matrix alignment;
+    DirectX::SimpleMath::Matrix alignmentInverse;
+    DirectX::SimpleMath::Quaternion alignmentQuat;
+    DirectX::SimpleMath::Quaternion alignmentInverseQuat;
+
     DirectX::SimpleMath::Vector3 forward;
     DirectX::SimpleMath::Vector3 right;
     DirectX::SimpleMath::Vector3 up;
@@ -454,17 +458,17 @@ struct VehicleData
     DirectX::SimpleMath::Matrix playerAlignment = DirectX::SimpleMath::Matrix::Identity;
     JumpData                     jumpData;
 
-    DirectX::SimpleMath::Matrix localInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix localInverseInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
 
     const float angularDragCoefficient = 0.8f;
     const float tensorMass = 700.0f;
-    //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(4.4f, 1.0f, 3.0f);
     const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
-    //const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(7.0f, 3.5f, 5.0f);
-    //DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
 
-    int testExplodingStepCount = 0;
+    DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 angularDrag = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct VehicleStruct
@@ -591,6 +595,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngular3(const DirectX::SimpleMath::Vector3 aAngVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity);
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
@@ -613,15 +618,18 @@ private:
         NPCModel& aModel, VehicleHardPoints& aHardPoints, const DirectX::SimpleMath::Vector3 aDimensions);
 
     void RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ);
+    void RightHandSide2(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ);
     void RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta);
 
     void TerrainImpactHandling();
 
+    void UpdateAlignmentNew(const float aTimeDelta);
     void UpdateAlignment();
     void UpdateAlignment2();
     void UpdateAngularDrag(const float aTimeDelta);
 
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocal(const float aTimeStep);
     Utility::Torque UpdateBodyTorqueRungeOld(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
     void UpdateControlInput();
     void UpdateControlInputFromAi();
@@ -630,6 +638,7 @@ private:
     void UpdateImpulseForces(const float aTimeDelta);
     void UpdateJumpData(JumpData& aJumpData, const float aTimeDelta);
     void UpdateNPCModel(const double aTimeDelta);
+    void UpdateVehicleForces(const float aTimeStep);
 
     Environment const* m_environment;
 
@@ -696,6 +705,9 @@ private:
     DirectX::SimpleMath::Vector3 m_angDampTest2 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_angDampTest3 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_angDampTest4 = DirectX::SimpleMath::Vector3::Zero;
+
+    const float m_angularDampConst = 0.9f;
+    const float m_angDragCoefficient = 0.4f;
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

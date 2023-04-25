@@ -6094,32 +6094,6 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
 
     //m_heli.vehicleLinearForcesSum = velocityUpdate;
 
-    /*
-    m_debugData->DebugPushUILineDecimalNumber("calcHoverDriveForce = ", calcHoverDriveForce.Length(), "");
-    m_debugData->PushDebugLine(m_heli.q.position, calcHoverDriveForce, 10.0f, 0.0f, DirectX::Colors::White);
-
-    m_debugData->DebugPushUILineDecimalNumber("damperForce         = ", damperForce.Length(), "");
-    m_debugData->PushDebugLine(m_heli.q.position, damperForce, 10.0f, 0.0f, DirectX::Colors::Red);
-
-    m_debugData->DebugPushUILineDecimalNumber("gravForce           = ", gravForce.Length(), "");
-    m_debugData->PushDebugLine(m_heli.q.position, gravForce, 10.0f, 0.0f, DirectX::Colors::Lime);
-
-    m_debugData->DebugPushUILineDecimalNumber("jetThrust           = ", jetThrust.Length(), "");
-    //m_debugData->PushDebugLine(m_heli.q.position, jetThrust, 10.0f, 0.0f, DirectX::Colors::Orange);
-
-    m_debugData->DebugPushUILineDecimalNumber("rotorForce          = ", rotorForce.Length(), "");
-    m_debugData->PushDebugLine(m_heli.q.position, rotorForce, 10.0f, 0.0f, DirectX::Colors::Yellow);
-
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.buoyancyForce = ", m_heli.buoyancyForce.Length(), "");
-    m_debugData->PushDebugLine(m_heli.q.position, m_heli.buoyancyForce, 10.0f, 0.0f, DirectX::Colors::Blue);
-
-    m_debugData->DebugPushUILineDecimalNumber("slopeForce            = ", slopeForce.Length(), "");
-    //m_debugData->PushDebugLine(m_heli.q.position, slopeForce, 10.0f, 0.0f, DirectX::Colors::Salmon);
-
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.brakeForce = ", m_heli.controlInput.brakeForce.Length(), "");
-    //m_debugData->PushDebugLine(m_heli.q.position, m_heli.controlInput.brakeForce, 10.0f, 0.0f, DirectX::Colors::Gray);
-    */
-
     DirectX::SimpleMath::Vector3 preVelocityUpdate = velocityUpdate;
 
     // angular
@@ -6168,7 +6142,6 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     }
     accelVecUpdate = angAccelVecTensorUpdate;
     //m_debugData->DebugPushUILineDecimalNumber("accelVecUpdate = ", accelVecUpdate.Length(), "");
-
 
     if (m_debugToggle == false)
     {
