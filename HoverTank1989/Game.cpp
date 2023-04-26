@@ -1208,14 +1208,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (pad.thumbSticks.leftY > m_gamePadInputDeadZone || pad.thumbSticks.leftY < -m_gamePadInputDeadZone)
         {
             const float inputMod = m_gamePadInputRateBodyAccel;
-            //m_vehicle->InputGamePadForward(pad.thumbSticks.leftY* inputMod);
+            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY* inputMod);
         }
         if (pad.thumbSticks.leftX > m_gamePadInputDeadZone || pad.thumbSticks.leftX < -m_gamePadInputDeadZone)
         {
             //m_vehicle->InputCyclicRoll(static_cast<float>(aTimer.GetElapsedSeconds()));
             const float inputMod = m_gamePadInputRateBodySideStrafe;
             //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
-            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
             m_debugData->DebugPushUILineDecimalNumber("pad.thumbSticks.leftX  ", pad.thumbSticks.leftX * inputMod, "");
         }
         if (pad.triggers.left > m_gamePadInputDeadZone || pad.triggers.right > m_gamePadInputDeadZone)

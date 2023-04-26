@@ -166,7 +166,7 @@ struct HeliData
     const DirectX::SimpleMath::Vector3 hoverFloat = DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f);
     DirectX::SimpleMath::Vector3 hoverDriveNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     float hoverDriveMag = 0.0f;
-    const float hoverDriveMagMax = 100000.0f;
+    const float hoverDriveMagMax = 20000.0f;
     const float brakeMagMax = 3000.0f;
     //const float yawForce = 30.0f;
     const float yawForce = 300.0f;
@@ -596,9 +596,9 @@ private:
     bool m_isSwingToggleTrue = false;
     bool m_isGoingUp = false;
     const float m_angularDampConst = 0.9f;
-    const float m_angDragCoefficient = 0.4f;
+    const float m_angDragCoefficient = 0.04f;
 
-    DirectX::XMFLOAT3X3 m_testTensor;
+    //DirectX::XMFLOAT3X3 m_testTensor;
 
     float m_floatInertia = 0.0f;
     float m_floatInvsInertia = 0.0f;
