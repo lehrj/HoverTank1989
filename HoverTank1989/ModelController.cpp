@@ -476,9 +476,12 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.barrelWorldMatrix *= updateMat; 
 
     DirectX::SimpleMath::Matrix muzzleMat = DirectX::SimpleMath::Matrix::CreateRotationZ(aBarrelPitch);
+    aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::UnitX;
+    aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirLocal, muzzleMat);
+    aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirLocal, turretMat);
     aModel.weaponDirWorld = aModel.weaponDirLocal;
-    aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, muzzleMat);
-    aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, turretMat);
+    //aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, muzzleMat);
+    //aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, turretMat);
     aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, aAlignment);
 
     aModel.weaponPosWorld = aModel.weaponPosLocal;

@@ -564,7 +564,7 @@ private:
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
 
     //const float m_testMass = 1.1f;
-    const float m_testMass = 10.1f;
+    const float m_testMass = 200.1f;
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
     //const float m_testForceMod3 = 150.0f;

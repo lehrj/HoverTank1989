@@ -685,15 +685,25 @@ void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const d
 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
+        
         if (m_npcVec[i]->GetID() == 0 && m_npcVec[i]->GetDebugVal() == false)
         {
+            /*
             DirectX::SimpleMath::Vector3 playerPos = m_player->GetPos();
             const DirectX::SimpleMath::Matrix playerAlignment = m_player->GetAlignment();
             const DirectX::SimpleMath::Vector3 playerVelocity = m_player->GetVelocity();
             m_npcVec[i]->SetPos(playerPos);
             m_npcVec[i]->SetAlignment(playerAlignment);
             m_npcVec[i]->SetVelocity(playerVelocity);
+            */
         }
+        
+        DirectX::SimpleMath::Vector3 playerPos = m_player->GetPos();
+        const DirectX::SimpleMath::Matrix playerAlignment = m_player->GetAlignment();
+        const DirectX::SimpleMath::Vector3 playerVelocity = m_player->GetVelocity();
+        m_npcVec[i]->UpdatePlayerPos(playerPos);
+        m_npcVec[i]->UpdatePlayerAlignment(playerAlignment);
+        m_npcVec[i]->UpdatePlayerVelocity(playerVelocity);
 
         m_npcVec[i]->CheckIfInCameraFrustum(aFrustum);
         m_npcVec[i]->UpdateNPC(aTimeDelta);

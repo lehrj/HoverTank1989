@@ -4144,9 +4144,10 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     UpdateVehicleForces(static_cast<float>(aTimeDelta));
 
+    RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
     if (m_vehicleStruct00.vehicleData.id != 0 )
     {
-        RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
+        //RungeKutta4(&m_vehicleStruct00.vehicleData, aTimeDelta);
     }
     else if (m_isDebugToggleTrue == true)
     {
@@ -4155,15 +4156,16 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     if (m_vehicleStruct00.vehicleData.id == 0)
     {
-        m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.x ", m_vehicleStruct00.vehicleData.q.velocity.x, "");
-        m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.y ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
-        m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.z ", m_vehicleStruct00.vehicleData.q.velocity.z, "");
+        //m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.x ", m_vehicleStruct00.vehicleData.q.velocity.x, "");
+        //m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.y ", m_vehicleStruct00.vehicleData.q.velocity.y, "");
+        //m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.z ", m_vehicleStruct00.vehicleData.q.velocity.z, "");
     }
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
 
     UpdateAlignmentNew(static_cast<float>(aTimeDelta));
     
+    /*
     if (m_vehicleStruct00.vehicleData.id != 0)
     {
         UpdateAlignmentNew(static_cast<float>(aTimeDelta));
@@ -4177,9 +4179,12 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         m_vehicleStruct00.vehicleData.alignmentInverseQuat = m_vehicleStruct00.vehicleData.alignmentQuat;
         m_vehicleStruct00.vehicleData.alignmentInverseQuat.Inverse(m_vehicleStruct00.vehicleData.alignmentInverseQuat);
         m_vehicleStruct00.vehicleData.alignmentInverseQuat.Normalize();
-    }
-    
 
+        m_vehicleStruct00.vehicleData.up = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_vehicleStruct00.vehicleData.alignment);
+        m_vehicleStruct00.vehicleData.right = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleStruct00.vehicleData.alignment);
+        m_vehicleStruct00.vehicleData.forward = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, m_vehicleStruct00.vehicleData.alignment);
+    }
+    */
 
     if (m_vehicleStruct00.vehicleData.isVehicleInCameraFrustum == true)
     {

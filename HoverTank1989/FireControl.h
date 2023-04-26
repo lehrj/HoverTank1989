@@ -13,6 +13,7 @@ enum class AmmoType
     AMMOTYPE_MIRV,
     AMMOTYPE_MACHINEGUN,
     AMMOTYPE_SHOTGUN,
+    AMMOTYPE_GUIDEDMISSILE,
 };
 
 struct LauncherData
@@ -50,6 +51,23 @@ struct AmmoData
     float   frontSurfaceArea;
     float   radius;
     int tickDownCounter;  // value to tick down as collisions occure, to be used for penetration and ricochet 
+
+    bool isGuided = false;
+};
+
+struct GuidanceSystem
+{
+    float detonationRadius = 5.0f;
+    int targetID = 0;
+    DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
+    float targetDistance = 0.0f;
+    bool isRocketFired = false;
+    bool isTargetLocked = false;
+    float rocketFireDelay = 1.0f;
+    float steeringForce = 0.0f;
+    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
@@ -70,6 +88,7 @@ struct ProjectileData
     bool isMidAirDeployAvailable = false;
     bool isFuseTriggered = false;
     float fuseTimer = 0.0f;
+    GuidanceSystem guidance;
 };
 
 enum class ExplosionType
@@ -188,6 +207,7 @@ public:
 
     void FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
+    void FireProjectileGuidedMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileMachineGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     void FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
@@ -221,13 +241,16 @@ private:
     void DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
+    void InitializeAmmoGuidedMissile(AmmoStruct& aAmmo);
     void InitializeAmmoMachineGun(AmmoStruct& aAmmo);
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
+
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
+    void InitializeProjectileModelGuidedMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
@@ -250,6 +273,7 @@ private:
 
     AmmoStruct m_ammoCannon;
     AmmoStruct m_ammoExplosive;
+    AmmoStruct m_ammoGuidedMissile;
     AmmoStruct m_ammoMachineGun;
     AmmoStruct m_ammoMirv;
     AmmoStruct m_ammoShotgun;

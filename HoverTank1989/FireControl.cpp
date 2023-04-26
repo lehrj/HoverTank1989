@@ -1048,6 +1048,37 @@ void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLa
     }
 }
 
+void FireControl::FireProjectileGuidedMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
+{
+    if (m_isCoolDownActive == false)
+    {
+        AmmoData firedAmmo = m_ammoGuidedMissile.ammoData;
+
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
+
+        ProjectileData firedProjectile;
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (firedProjectile.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+
+        // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
+        firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+        firedProjectile.time = 0.0f;
+
+        m_projectileVec.push_back(firedProjectile);
+    }
+}
+
 void FireControl::FireProjectileMachineGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity)
 {
     if (m_isCoolDownActive == false)
@@ -1499,9 +1530,12 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
 
     if (m_currentAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
     {
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 0.1f;
         recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.currentTorqueMagnitude = 0.0f;
+        recoilImpulseForce.torqueForceMod = 0.1f;
         recoilImpulseForce.maxMagnitude = 50000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
@@ -1509,9 +1543,12 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     }
     else if (m_currentAmmoType == AmmoType::AMMOTYPE_EXPLOSIVE)
     {
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 0.2f;
         recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.currentTorqueMagnitude = 0.0f;
+        recoilImpulseForce.torqueForceMod = 0.1f;
         recoilImpulseForce.maxMagnitude = 50000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
@@ -1519,9 +1556,12 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     }
     else if (m_currentAmmoType == AmmoType::AMMOTYPE_MACHINEGUN)
     {
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 0.1f;
         recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.currentTorqueMagnitude = 0.0f;
+        recoilImpulseForce.torqueForceMod = 0.1f;
         recoilImpulseForce.maxMagnitude = 10000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
@@ -1529,9 +1569,12 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     }
     else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
     {
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 0.25f;
         recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.currentTorqueMagnitude = 0.0f;
+        recoilImpulseForce.torqueForceMod = 0.1f;
         recoilImpulseForce.maxMagnitude = 50000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
@@ -1539,9 +1582,12 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     }
     else  // Default to cannon, AmmoType::AMMOTYPE_CANNON
     {
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 0.1f;
         recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.currentTorqueMagnitude = 0.0f;
+        recoilImpulseForce.torqueForceMod = 0.1f;
         recoilImpulseForce.maxMagnitude = 50000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
@@ -1565,6 +1611,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
+    aAmmo.ammoData.isGuided = false;
 }
 
 void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
@@ -1581,6 +1628,24 @@ void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
+    aAmmo.ammoData.isGuided = false;
+}
+
+void FireControl::InitializeAmmoGuidedMissile(AmmoStruct& aAmmo)
+{
+    aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
+    aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 0.9f;
+    aAmmo.ammoData.dragCoefficient = 0.3f;
+    aAmmo.ammoData.impactDurration = 0.4f;
+    aAmmo.ammoData.impactModifier = 1.0f;
+    aAmmo.ammoData.launchVelocity = 365.0f;
+    aAmmo.ammoData.length = 1.0f;
+    aAmmo.ammoData.mass = 10.0f;
+    aAmmo.ammoData.radius = 0.15f;
+    aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
+    aAmmo.ammoData.tickDownCounter = 1;
+    aAmmo.ammoData.isGuided = true;
 }
 
 void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
@@ -1597,6 +1662,7 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.14f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
+    aAmmo.ammoData.isGuided = false;
 }
 
 void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
@@ -1628,13 +1694,14 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.2f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
+    aAmmo.ammoData.isGuided = false;
 }
 
 void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_SHOTGUN;
     aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 1.2f;
+    aAmmo.ammoData.cooldown = 0.2f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
@@ -1644,6 +1711,7 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
+    aAmmo.ammoData.isGuided = false;
 }
 
 void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData)
@@ -1708,6 +1776,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
 
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
+    InitializeAmmoGuidedMissile(m_ammoGuidedMissile);
     InitializeAmmoMachineGun(m_ammoMachineGun);
     InitializeAmmoMirv(m_ammoMirv);
     InitializeAmmoShotgun(m_ammoShotgun);
@@ -1715,6 +1784,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     InitializeMuzzleFlashModel(aContext, m_muzzleFlash);
     InitializeProjectileModelCannon(aContext, m_ammoCannon);
     InitializeProjectileModelExplosive(aContext, m_ammoExplosive);
+    InitializeProjectileModelGuidedMissile(aContext, m_ammoGuidedMissile);
     InitializeProjectileModelMachineGun(aContext, m_ammoMachineGun);
     InitializeProjectileModelMirv(aContext, m_ammoMirv);
     InitializeProjectileModelShotgun(aContext, m_ammoShotgun);
@@ -1747,6 +1817,18 @@ void FireControl::InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D
     const float ammoLength = aAmmo.ammoData.length;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
+    aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
+    aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
+}
+
+void FireControl::InitializeProjectileModelGuidedMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
+{
+    const float ammoSize = aAmmo.ammoData.radius;
+    const float ammoLength = aAmmo.ammoData.length;
+    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
+    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
@@ -2136,6 +2218,7 @@ void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelt
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)
 {
+    m_debugData->DebugPushUILineWholeNumber("m_projectileVec.size() ", m_projectileVec.size(), "");
     //CheckCollisions();
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {

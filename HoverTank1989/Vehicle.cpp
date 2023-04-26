@@ -1525,6 +1525,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     //m_heli.q.toUseAngularMomentum = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
 
+    m_testImpulseForce.isActive = false;
+    m_heli.testCollisionImpulseForce.isActive = false;
 }
 
 void Vehicle::InputCollective(const float aCollectiveInput)
@@ -3680,7 +3682,7 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle)
     aVehicle.weaponDirection = DirectX::SimpleMath::Vector3::Transform(aVehicle.weaponDirection, tempMat);
     aVehicle.weaponDirection = DirectX::SimpleMath::Vector3::Transform(aVehicle.weaponDirection, weaponMuzzleMat);
 
-    aVehicle.weaponDirection = m_modelController->GetWeaponDir();
+    aVehicle.weaponDirection = m_modelController->GetWeaponDirWorld();
     //aVehicle.weaponPos = m_modelController->GetWeaponPos();
     aVehicle.weaponPos = m_modelController->GetMuzzlePos();
     aVehicle.muzzlePos = m_modelController->GetMuzzlePos();
@@ -5934,9 +5936,45 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
     UpdateBrakeForce(static_cast<float>(aTimeDelta));
     UpdateTerrainNormTorque();
-    Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
-    UpdateCollisionImpulseForces(static_cast<float>(aTimeDelta));
+    if (m_testImpulseForce.isActive == true)
+    {
+        //Utility::UpdateImpulseForceBellCurve(m_testImpulseForce, static_cast<float>(aTimeDelta));
+        Utility::ImpulseForce preForce = m_testImpulseForce;
+        Utility::UpdateImpulseForceBellCurve3(m_testImpulseForce, static_cast<float>(aTimeDelta));
+        Utility::ImpulseForce postForce = m_testImpulseForce;
 
+        DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.localWeaponPos - m_heli.localCenterOfMass;
+        //DirectX::SimpleMath::Vector3 weaponForce = -m_heli.localWeaponDirection;
+        DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
+        weaponForce.Normalize();
+        float weaponForceMag = m_testImpulseForce.currentMagnitude * 0.05f;
+        weaponForce *= weaponForceMag;
+        Utility::Torque weaponTorque = Utility::GetTorqueForce(weaponTorqueArm, weaponForce);
+        //weaponTorque = Utility::GetTorqueForce(m_testImpulseForce.torqueArm, m_testImpulseForce.torqueForceNorm * m_testImpulseForce.currentTorqueMagnitude);
+        weaponTorque = Utility::GetTorqueForce(m_testImpulseForce.torqueArm, m_testImpulseForce.torqueForceNorm * m_testImpulseForce.currentTorqueMagnitude);
+        int testBreak = 0;
+        testBreak++;
+        if (weaponTorque.magnitude > 5000.0f)
+        {
+            testBreak++;
+        }
+        if (weaponTorque.axis.Length() > 1.1f || weaponTorque.axis.Length() < -0.9f)
+        {
+            testBreak++;
+        }
+        testBreak++;
+    }
+    if (m_testImpulseForce.isActive == true)
+    {
+        //UpdateCollisionImpulseForces(static_cast<float>(aTimeDelta));
+    }
+           //UpdateImpulseForceCurve(ImpulseForce & aImpulseForce, const float aTimeDelta)
+           //UpdateImpulseForceCurve2(ImpulseForce & aImpulseForce, const float aTimeDelta)
+           //UpdateImpulseForceBellCurve(ImpulseForce & aImpulseForce, const float aTimeDelta)
+           //UpdateImpulseForceBellCurve2(ImpulseForce & aImpulseForce, const float aTimeDelta)
+
+   
+    UpdateCollisionImpulseForces(static_cast<float>(aTimeDelta));
     m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularVelocity);
     m_heli.angularDrag2 = CalculateDragAngularLocal(m_heli.q.angularMomentum);
 
@@ -6242,6 +6280,14 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocal(DirectX::SimpleMath:
         float weaponForceMag = m_testImpulseForce.currentMagnitude * 0.05f;
         weaponForce *= weaponForceMag;
         weaponTorque = Utility::GetTorqueForce(weaponTorqueArm, weaponForce);
+        //weaponTorque = Utility::GetTorqueForce(m_testImpulseForce.torqueArm, m_testImpulseForce.torqueForceNorm * m_testImpulseForce.currentTorqueMagnitude);
+        weaponTorque = Utility::GetTorqueForce(m_testImpulseForce.torqueArm, m_testImpulseForce.torqueForceNorm * m_testImpulseForce.currentTorqueMagnitude);
+        if (weaponTorque.magnitude > 1000.0f)
+        {
+            //weaponTorque.magnitude *= 0.1f; 
+        }
+        int testBreak = 0;
+        testBreak++;
     }
 
     DirectX::SimpleMath::Vector3 tailVec = tailTorque.axis * tailTorque.magnitude;
@@ -6259,6 +6305,11 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocal(DirectX::SimpleMath:
     DirectX::SimpleMath::Vector3 torqueVec = driveVec + tailVec;
 
     gravVec = CalculateStabilityTorqueLocal(m_heli, aTimeStep);
+
+    m_debugData->DebugPushUILineDecimalNumber("tailVec.Length()", tailVec.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("gravVec.Length()", gravVec.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("driveVec.Length()", driveVec.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("weaponVec.Length()", weaponVec.Length(), "");
 
     torqueVec = tailVec + gravVec + driveVec + weaponVec;
     //torqueVec = tailVec + driveVec;
@@ -6587,11 +6638,30 @@ void Vehicle::FireWeapon()
     if (m_fireControl->GetIsCoolDownActive() == false)
     {
         DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
-        DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDir();
+        DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
 
         m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
-        m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
+        DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
+        Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
+
+        //launchDir = DirectX::SimpleMath::Vector3::Transform(launchDir, m_heli.alignmentInverse);
+
+        DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = m_heli.localWeaponPos - m_heli.localCenterOfMass;
+        weaponTorqueArmLocal = DirectX::SimpleMath::Vector3::Transform(weaponTorqueArmLocal, m_heli.alignmentInverse);
+        DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.weaponPos - m_heli.centerOfMass;
+        //DirectX::SimpleMath::Vector3 weaponForce = -m_heli.localWeaponDirection;
+        DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
+        weaponForce.Normalize();
+        DirectX::SimpleMath::Vector3 torqueForceNorm = -launchDirLocal;
+        weaponForce.Normalize();
+        //float weaponForceMag = m_testImpulseForce.currentMagnitude * 0.05f;
+        //weaponForce *= weaponForceMag;
+        //weaponTorque = Utility::GetTorqueForce(weaponTorqueArm, weaponForce);
+        recoil.torqueArm = weaponTorqueArmLocal;
+        recoil.torqueForceNorm = torqueForceNorm;
+        //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
+        m_testImpulseForce = recoil;
     }
 }
 

@@ -449,12 +449,14 @@ public:
         {
             aImpulseForce.isActive = false;
             aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+            aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
         }
         else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) > aImpulseForce.totalTime)
         {
             aImpulseForce.isActive = false;
             const float magMod = 0.5f;
             aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+            aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
         }
         else
         {
@@ -467,6 +469,7 @@ public:
             {
                 aImpulseForce.isActive = false;
                 aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;// aImpulseForce.currentMagnitude* aImpulseForce.torqueForceMod;
             }
             if (aImpulseForce.isActive == true)
             {
@@ -483,6 +486,70 @@ public:
                     ratio = 1.0f - ratio;
                 }
                 aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+            }
+        }
+        if (aImpulseForce.isActive == true)
+        {
+            aImpulseForce.tickCount++;
+        }
+        else
+        {
+            aImpulseForce.tickCount = 0;
+        }
+        if (aImpulseForce.tickCount > 30)
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
+    }
+
+    static void UpdateImpulseForceBellCurve3(ImpulseForce& aImpulseForce, const float aTimeDelta)
+    {
+        // check if tick time is less than total time and set to max magnatiude if so
+        // so force occurs if impact time is very low
+        if (aImpulseForce.currentTime == 0.0f && aTimeDelta >= aImpulseForce.totalTime)
+        {
+            aImpulseForce.isActive = false;
+            aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude;
+            aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+        }
+        else if (aImpulseForce.tickCount == 1 && (aImpulseForce.currentTime + aTimeDelta) > aImpulseForce.totalTime)
+        {
+            aImpulseForce.isActive = false;
+            const float magMod = 0.5f;
+            aImpulseForce.currentMagnitude = aImpulseForce.maxMagnitude * magMod;
+            aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
+        }
+        else
+        {
+            aImpulseForce.currentTime += aTimeDelta;
+            if (aImpulseForce.currentTime < aImpulseForce.totalTime && aImpulseForce.currentTime >= 0.0f)
+            {
+                aImpulseForce.isActive = true;
+            }
+            else
+            {
+                aImpulseForce.isActive = false;
+                aImpulseForce.currentMagnitude = 0.0f;
+                aImpulseForce.currentTorqueMagnitude = 0.0f;// aImpulseForce.currentMagnitude* aImpulseForce.torqueForceMod;
+            }
+            if (aImpulseForce.isActive == true)
+            {
+                const float maxForceTime = aImpulseForce.totalTime * 0.5f;
+                float ratio;
+
+                if (aImpulseForce.currentTime <= maxForceTime)
+                {
+                    ratio = aImpulseForce.currentTime / maxForceTime;
+                }
+                else
+                {
+                    ratio = (aImpulseForce.currentTime - maxForceTime) / (aImpulseForce.totalTime - maxForceTime);
+                    ratio = 1.0f - ratio;
+                }
+                aImpulseForce.currentMagnitude = ratio * aImpulseForce.maxMagnitude;
+                aImpulseForce.currentTorqueMagnitude = aImpulseForce.currentMagnitude * aImpulseForce.torqueForceMod;
             }
         }
         if (aImpulseForce.isActive == true)
