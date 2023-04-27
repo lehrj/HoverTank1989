@@ -87,40 +87,11 @@ struct ControlInput
 
 struct Motion
 {
-    DirectX::SimpleMath::Vector3 airResistance;
-    DirectX::SimpleMath::Vector3 bodyVelocity;
-    DirectX::SimpleMath::Vector3 engineForce;
-
-    DirectX::SimpleMath::Vector3 mainRotorForceNormal;
-    float                        mainRotorForceMagnitude;
-    DirectX::SimpleMath::Vector3 position;
-
-    float                        tailRotorForceMagnitude;
-    DirectX::SimpleMath::Vector3 tailRotorForceNormal;
-
-    DirectX::SimpleMath::Vector3 totalVelocity;
-    DirectX::SimpleMath::Vector3 velocity;
-
-    Utility::Torque              bodyTorqueForce;
-    float                        bodyTorqueMagnitude;
-    DirectX::SimpleMath::Vector3 bodyTorqueVec;
-
-    Utility::Torque              pendulumTorqueForceTest;
-
-    DirectX::SimpleMath::Vector3 parabolicMomentum;
-
-    DirectX::SimpleMath::Vector3 angPosVec = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 angularVelocityVec = DirectX::SimpleMath::Vector3::Zero;
-
-    //DirectX::SimpleMath::Quaternion angularVelocityQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion angularPosQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-    DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-    DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Quaternion angularQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 position;
+    DirectX::SimpleMath::Vector3 velocity;
 };
 
 struct Rotor
@@ -168,28 +139,8 @@ struct HeliData
     float hoverDriveMag = 0.0f;
     const float hoverDriveMagMax = 20000.0f;
     const float brakeMagMax = 3000.0f;
-    //const float yawForce = 30.0f;
     const float yawForce = 300.0f;
 
-    /*
-    const float groundNormalForceRange = 5.0f;
-    const float hoverNeutralBoyantAlt = 0.52f;
-    const float hoverRangeLower = 0.5f;
-    const float hoverRangeMid = 1.0f;
-    const float hoverRangeUpper = 3.0f;
-    */
-    /*
-    const float hoverRangeLower = 5.0f;
-    const float hoverRangeMid = 8.5f;
-    const float hoverRangeUpper = 12.0f;
-    const float groundNormalForceRange = hoverRangeUpper;
-    const float hoverNeutralBoyantAlt = hoverRangeMid;
-    */
-    /*
-    const float hoverRangeLower = 1.0f;
-    const float hoverRangeMid = 3.0f;
-    const float hoverRangeUpper = 5.0f;
-    */
     const float hoverRangeLower = 2.0f;
     const float hoverRangeMid = 4.0f;
     const float hoverRangeUpper = 8.0f;
@@ -282,13 +233,6 @@ struct HeliData
     DirectX::SimpleMath::Matrix localInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest;
 
-    DirectX::SimpleMath::Matrix cannonTensor = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix localCannonTensor = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix inverseCannonTensor = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix toUseTensor = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix testTensor = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Vector3 cannonPos = DirectX::SimpleMath::Vector3(3.0f, 1.0f, 0.0f);
-
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
 
@@ -329,56 +273,50 @@ public:
     void DrawVehicleProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawVehicleProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
+    void FireWeapon();
+
     float GetAccel() const { return m_heli.testAccel; };
     DirectX::SimpleMath::Vector3 GetAccelVec() const { return m_heli.testAccelVec; };
     float GetAirSpeed() { return m_heli.q.velocity.Length(); };
-    //float GetAltitude() const { return m_heli.q.position.y - m_heli.terrainHightAtPos - 2.85f; };
+    DirectX::SimpleMath::Matrix GetAlignment() const { return m_heli.alignment; };
     float GetAltitude() const { return m_heli.q.position.y - m_heli.terrainHightAtPos; };
-
+    DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
+    DirectX::SimpleMath::Vector3 GetAntiMassGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
     DirectX::BoundingOrientedBox GetBoundingBox() const { return m_heli.boundingBox; };
     DirectX::SimpleMath::Vector3 GetCenterOfMassPos() const { return m_heli.centerOfMass; };
     float GetCollective() const { return m_heli.controlInput.collectiveInput; };
+    DirectX::SimpleMath::Vector3 GetDamperForce(const float aAltitude, const float aMass);
     DirectX::SimpleMath::Vector3 GetFollowPos() const;
     DirectX::SimpleMath::Vector3 GetForward() const { return m_heli.forward; };
+    DirectX::SimpleMath::Plane GetGroundPlane() const { return m_heli.groundPlane; };
     float GetGroundSpeed() { return m_heli.speed; };
     DirectX::SimpleMath::Vector3 GetHoverGravForce(const float aAltitude, const float aGroundInteractionRange, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
-    DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
-    DirectX::SimpleMath::Vector3 GetAntiMassGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
-    DirectX::SimpleMath::Vector3 GetDamperForce(const float aAltitude, const float aMass);
-    DirectX::SimpleMath::Plane GetGroundPlane() const { return m_heli.groundPlane; };
     DirectX::SimpleMath::Vector3 GetHoverLift(const DirectX::SimpleMath::Vector3 aLiftForce, const float aAltitude);
+    bool GetIsDebugToggled() const { return m_debugToggle; };
+    bool GetIsDebugToggled2() const { return m_debugToggle2; };
+    bool GetIsDebugToggled3() const { return m_debugToggle3; };
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
     float GetMass() const { return m_heli.mass; };
+    DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_modelController->GetMuzzleDirMat(); };
+    DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_heli.muzzlePos; };
+    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_heli.localizedMuzzlePos; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_heli.q.position; };
     float GetRPM() const { return m_heli.mainRotor.rpm; };
+    DirectX::SimpleMath::Vector4 GetRearGlowColor();
     DirectX::SimpleMath::Vector3 GetSlopeForce(const DirectX::SimpleMath::Vector3 aTerrainNorm, const float aAltitude, const float aGroundInteractionRange);
     float GetThrottle() { return m_heli.controlInput.throttleInput; };
     double GetTime() { return m_heli.time; };
     DirectX::SimpleMath::Vector3 GetVehicleRight() const { return m_heli.right; };
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_heli.up; };
     DirectX::SimpleMath::Matrix GetVehicleOrientation() const { return m_heli.cameraOrientation; };
-    DirectX::SimpleMath::Matrix GetAlignment() const { return m_heli.alignment; };
-
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_heli.q.velocity; };
-
-    DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_modelController->GetMuzzleDirMat(); };
-    DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_heli.muzzlePos; };
-    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_heli.localizedMuzzlePos; };
-    float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
-
     DirectX::SimpleMath::Matrix GetTensorTest() const { return m_heli.localInertiaMatrixTest; };
-    DirectX::SimpleMath::Matrix GetTensorTest2() const { return m_heli.testTensor; };
+    float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
     float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
     DirectX::SimpleMath::Vector3 GetWeaponDirection() const { return m_heli.weaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalDirection() const { return m_heli.localWeaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalPos() const { return m_heli.localWeaponPos; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_heli.weaponPos; };
-
-    bool GetIsDebugToggled() const { return m_debugToggle; };
-    bool GetIsDebugToggled2() const { return m_debugToggle2; };
-    bool GetIsDebugToggled3() const { return m_debugToggle3; };
-
-    DirectX::SimpleMath::Vector4 GetRearGlowColor();
 
     void InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController, std::shared_ptr<Vehicle> aVehicle);
 
@@ -412,38 +350,28 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetEnvironment(Environment* aEnviron);
     void SetModelController(std::shared_ptr<ModelController> aModelController);
-
-    void UpdateVehicle(const double aTimeDelta);
-    void UpdateVehicleFireControl(const double aTimeDelta);
-    void TestFireCannon();
-    void TestFireExplosive();
-    void TestFireMirv();
-    void TestFireShotgun();
-    void FireWeapon();
-
     void SetTestPostImppactVelocity(DirectX::SimpleMath::Vector3 aPostImpactVelocity);
     void SetTestCollisionVelocityUpdate(DirectX::SimpleMath::Vector3 aCollisionVelocityUpdate);
     void SetTestCollisionImpulseForce(Utility::ImpulseForce aCollisionImpulseForce);
     void SetTestVehicleCollisionTrue() { m_heli.isVehicleCollisionTrue = true; };
+
+    void UpdateVehicle(const double aTimeDelta);
+    void UpdateVehicleFireControl(const double aTimeDelta);
 
 private:
     DirectX::SimpleMath::Vector3 CalculateBuoyancyForce(const HeliData& aVehicleData);
     DirectX::SimpleMath::Vector3 CalculateHoverDriveForce(const struct HeliData& aHeli);
     DirectX::SimpleMath::Vector3 CalculateHoverTorqueForce(const struct HeliData& aHeli, const float aTimeStep);
     float CalculateLiftCoefficient(const float aAngle);
-    DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity);
-    DirectX::SimpleMath::Vector3 CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinear(const DirectX::SimpleMath::Vector3 aVelocity);
-    DirectX::SimpleMath::Vector3 CalculateDragLinear2(const DirectX::SimpleMath::Vector3 aVelocity, const DirectX::SimpleMath::Vector3 aNewQVelocity);
-    float CalculateWindVaningVal(const HeliData& aHeliData);
-    DirectX::SimpleMath::Vector3 CalculateSelfRightingForce(const HeliData& aHeliData);
-    DirectX::SimpleMath::Vector3 CalculateStabilityTorqueLocal(const HeliData& aHeliData, const float aTimeStep);
-    DirectX::SimpleMath::Vector3 CalculateStabilityTorqueLocal2(const HeliData& aHeliData, const float aTimeStep);
-    DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const HeliData& aHeliData);
-
     DirectX::SimpleMath::Vector3 CalculateImpactLinearForceSum(const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateImpactTorqueSum(const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 CalculateSelfRightingForce(const HeliData& aHeliData);
+    DirectX::SimpleMath::Vector3 CalculateStabilityTorqueLocal(const HeliData& aHeliData, const float aTimeStep);
+    float CalculateWindVaningVal(const HeliData& aHeliData);
+    DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const HeliData& aHeliData);
+
     DirectX::SimpleMath::Vector3 GetThrusterLiftMagnitude(const DirectX::SimpleMath::Vector3 aLiftForce, const DirectX::SimpleMath::Vector3 aPos);
 
     void InitializeFlightControls(ControlInput& aInput);
@@ -455,22 +383,14 @@ private:
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
     void UpdateAlignment(const float aTimeDelta);
-    void UpdateAlignmentTorque();
-    void UpdateAlignmentTorque2();
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
-
-    Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
-    Utility::Torque UpdateBodyTorqueRunge2(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocal(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
-    DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocal2(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
-
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCollisionImpulseForces(const float aTimeStep);
     void UpdateCyclicData();
     void UpdateCyclicStick(ControlInput& aInput);
-    void UpdateCyclicNorm();
-    
+    void UpdateCyclicNorm(); 
     float UpdateGroundEffectForce(const float aLiftForce);
     void UpdateModelColorVals();
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
@@ -483,19 +403,8 @@ private:
     void UpdateTerrainData();
     void UpdateTerrainNorm();
     void UpdateTerrainNormTorque();
-    void UpdateTerrainNormTorque2();
-    void UpdateTestDrivetrainTorque(const float aTimer);
-    void UpdateTestDrivetrainTorque2(const float aTimer);
-    void UpdateTestDrivetrainTorque3(const float aTimer);
-    void UpdateTestDrivetrainTorque4(const float aTimer);
     void UpdateTestDrivetrainTorqueLocal(const float aTimer);
-    void UpdateTestDrivetrainTorqueLocal2(const float aTimer);
-    void UpdateTestDrivetrainTorque5(const float aTimer);
-    void UpdateTestDrivetrainTorqueLastUsed(const float aTimer);
-
     void UpdateVehicleForces(const float aTimeStep);
-
-    void UpdateTensor();
 
     std::shared_ptr<DebugData>      m_debugData;
     Environment const* m_environment;
@@ -504,18 +413,6 @@ private:
 
     HeliData                        m_heli;
 
-    DirectX::SimpleMath::Vector4    m_defaultForward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
-    DirectX::SimpleMath::Vector4    m_forward = DirectX::XMVectorSet(1.0, 0.0, 0.0, 0.0);
-    DirectX::SimpleMath::Vector4    m_defaultRight = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0.0);
-    DirectX::SimpleMath::Vector4    m_right = DirectX::XMVectorSet(0.0, 0.0, 1.0, 0.0);
-
-    float                           m_moveBackForward = 0.0;
-    float                           m_moveLeftRight = 0.0;
-    float                           m_moveUpDown = 0.0;
-
-    float m_rotorTimerTest = 0.0f;
-    float m_rotorTimerTest2 = 0.0f;
-    float m_testFPS = 0.0f;
     float m_testTimer = 0.0f;
     float m_testTimer2 = 0.0f;
     float m_testTimer3 = 0.0f;
@@ -531,13 +428,6 @@ private:
     bool m_debugToggle9 = false;
     bool m_debugToggle0 = false;
 
-    DirectX::SimpleMath::Vector3 m_testPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 m_testPos2 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 m_testPos3 = DirectX::SimpleMath::Vector3::Zero;
-
-    bool m_isFiredTest = false;
-    DirectX::SimpleMath::Vector3 m_fireForceTest = DirectX::SimpleMath::Vector3::Zero;
-
     Utility::ImpulseForce m_testImpulseForce;
     Utility::Torque m_testTerrainNormTorque;
 
@@ -546,73 +436,21 @@ private:
 
     Utility::Torque m_testGravForce;
 
-    DirectX::SimpleMath::Vector3 m_sumOfForceTest = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 m_sumOfMomentsTest = DirectX::SimpleMath::Vector3::Zero;
-
-    Utility::Torque m_bodyTorqueTest;
-
-    bool m_isRungeOn = true;
-
-    DirectX::SimpleMath::Vector3 m_testLatTorqueArm = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 m_testLatTorqueForce = DirectX::SimpleMath::Vector3::Zero;
-
-    DirectX::SimpleMath::Vector3 m_testLongTorqueArm = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 m_testLongTorqueForce = DirectX::SimpleMath::Vector3::Zero;
-
-    float m_testVal = 0.0f;
-    float m_testVal2 = 0.0f;
-    DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3::Zero;
-
-    //const float m_testMass = 1.1f;
     const float m_testMass = 200.1f;
     const float m_testForceMod1 = 300.1f;
     const float m_testForceMod2 = 300.0f;
-    //const float m_testForceMod3 = 150.0f;
     const float m_testForceMod3 = 100.0f;
-    /*
-    const float m_inertiaModelX = 4.4f;
-    const float m_inertiaModelY = 1.5f;
-    const float m_inertiaModelZ = 2.0f;
-    */
+
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
 
     DirectX::SimpleMath::Vector3 m_hoverTorqueForceSum = DirectX::SimpleMath::Vector3::Zero;
 
-    bool m_testBoolFlipRot = false;
-
     const float m_gravTorqueModTest = 15.0f;
 
-    float m_angleSwingMaxTest = 0.0f;
-    float m_angleSwingMaxTest2 = 0.0f;
-    float m_angleSwingMaxTest3 = 0.0f;
-    float m_angleSwingMaxTest4 = 0.0f;
-    float m_delta = 0.0f;
-    float m_delta2 = 0.0f;
-    float m_deltaDelta = 0.0f;
-    float m_prevAngle = 0.0f;
-
-    bool m_isSwingToggleTrue = false;
-    bool m_isGoingUp = false;
     const float m_angularDampConst = 0.9f;
     const float m_angDragCoefficient = 0.04f;
-
-    //DirectX::XMFLOAT3X3 m_testTensor;
-
-    float m_floatInertia = 0.0f;
-    float m_floatInvsInertia = 0.0f;
-
-    DirectX::SimpleMath::Vector3 m_cordOrgTestPos = DirectX::SimpleMath::Vector3(6.0f, 10.0f, 9.0f);
-
-    float m_testValDebug1 = 0.0f;
-    float m_testValDebug2 = 0.0f;
-    float m_testValDebug3 = 0.0f;
-    float m_testValDebug4 = 0.0f;
-    float m_testValDebug5 = 0.0f;
-
-    float m_rotPerSecDeg = 0.0f;
-    float m_rotPerSecRad = 0.0f;
 
     DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 m_testTorqueWorld = DirectX::SimpleMath::Vector3::Zero;
@@ -620,16 +458,5 @@ private:
     DirectX::SimpleMath::Matrix m_testInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_testInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
 
-    float m_testInertiaFloat = 0.0f;
-    float m_testInverseInertiaFloat = 0.0f;
-
-    DirectX::SimpleMath::Quaternion m_testQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion m_testOrientQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Vector3 m_prevInput = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 m_prevInput2 = DirectX::SimpleMath::Vector3::Zero;
-    int m_stepCount = 0;
-
-    DirectX::SimpleMath::Vector3 m_angVel = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 m_angMom = DirectX::SimpleMath::Vector3::Zero;
 };
 

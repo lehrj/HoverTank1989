@@ -978,27 +978,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->FireWeapon();
         }
     }
-    if (m_kbStateTracker.pressed.G)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->TestFireMirv();
-        }
-    }
-    if (m_kbStateTracker.pressed.H)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->TestFireExplosive();
-        }
-    }
-    if (m_kbStateTracker.pressed.K)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->TestFireCannon();
-        }
-    }
     if (m_kbStateTracker.pressed.J)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1242,27 +1221,22 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             m_vehicle->DebugInputVelocityZero();
         }
+        if (m_buttons.y == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                m_vehicle->CycleFireControlAmmo();
+                SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
+            }
+        }
     }
     else
     {
         m_buttons.Reset();
     }
 
-    if (m_buttons.a == GamePad::ButtonStateTracker::PRESSED)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->TestFireCannon();
-        }
-    }
-    if (m_buttons.y == GamePad::ButtonStateTracker::PRESSED)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->CycleFireControlAmmo();
-            SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
-        }
-    }
+
+
 }
 
 #pragma region Frame Render
@@ -1373,11 +1347,6 @@ void Game::Render()
         DirectX::SimpleMath::Matrix testTensor2;
         testTensor2 *= translation;
         testTensor2 *= DirectX::SimpleMath::Matrix::Transform(tensor, testRotationQuat);
-
-        // 
-        //tensor *= translation;
-        testTensor2 = m_vehicle->GetTensorTest2();
-        //m_testShape3->Draw(testTensor2, m_camera->GetViewMatrix(), m_proj);
     }
 
 
