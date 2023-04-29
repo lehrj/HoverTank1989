@@ -89,6 +89,10 @@ struct ProjectileData
     bool isFuseTriggered = false;
     float fuseTimer = 0.0f;
     GuidanceSystem guidance;
+
+    DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 right = DirectX::SimpleMath::Vector3::UnitZ;
 };
 
 enum class ExplosionType

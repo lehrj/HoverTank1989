@@ -241,7 +241,7 @@ private:
     float m_fDistance;
     float m_vDistance;
 
-    const float m_springConstantSet = 10.0f;
+    const float m_springConstantSet = 500.0f;
 
     float m_springConstant;
     float m_dampConstant;

@@ -797,7 +797,12 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
         DirectX::SimpleMath::Matrix shadowScaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(shadowScale, shadowScale, shadowScale));
         DirectX::SimpleMath::Matrix shadowDrawMat = projMat;
 
-        DirectX::SimpleMath::Vector3 forward = m_projectileVec[i].q.velocity;
+        DirectX::SimpleMath::Vector3 velocityNorm = m_projectileVec[i].q.velocity;
+        velocityNorm.Normalize();
+        m_projectileVec[i].forward = DirectX::SimpleMath::Vector3::SmoothStep(m_projectileVec[i].forward, velocityNorm, 0.05f);
+
+        //DirectX::SimpleMath::Vector3 forward = m_projectileVec[i].q.velocity;
+        DirectX::SimpleMath::Vector3 forward = m_projectileVec[i].forward;
         if (forward.Length() < 0.00001f)
         {
             forward = DirectX::SimpleMath::Vector3::UnitX;
@@ -939,6 +944,10 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
         firedProjectile.isDeleteTrue = false;
         firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
         
+        firedProjectile.forward = aLaunchDirectionForward;
+        firedProjectile.forward.Normalize();
+
+
         // collision data
         firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
         firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
@@ -1801,12 +1810,14 @@ void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX:
 
 void FireControl::InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
-    const float ammoSize = aAmmo.ammoData.radius;
-    const float ammoLength = aAmmo.ammoData.length;
+    //const float ammoSize = aAmmo.ammoData.radius;
+    //const float ammoLength = aAmmo.ammoData.length * 19.0f;
+    const float ammoSize = 0.5f;
+    const float ammoLength = 25.0f;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
     //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    //aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }

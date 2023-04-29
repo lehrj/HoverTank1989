@@ -503,7 +503,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
-    const int columns = 5;
+    const int columns = 0;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
