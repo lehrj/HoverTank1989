@@ -112,7 +112,7 @@ void DebugData::DebugPushUILineDecimalNumber(std::string aString1, float aVal, s
     if (m_isDebugOn == true)
     {
         std::string textLine = aString1 + " " + std::to_string(aVal) + " " + aString2;
-        m_debugUIVector.push_back(textLine);
+        //m_debugUIVector.push_back(textLine);
     }
 }
 
