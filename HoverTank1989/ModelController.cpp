@@ -332,6 +332,8 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
 
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::UnitX;
     aModel.weaponDirWorld = aModel.weaponDirLocal;
+    aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::UnitY;
+    aModel.weaponUpWorld = aModel.weaponUpLocal;
 
     aModel.muzzlePosLocal = aModel.weaponPosLocal;
     aModel.muzzlePosLocal += DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -483,6 +485,14 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     //aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, muzzleMat);
     //aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, turretMat);
     aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, aAlignment);
+
+    aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::UnitY;
+    aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpLocal, muzzleMat);
+    aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpLocal, turretMat);
+    aModel.weaponUpWorld = aModel.weaponUpLocal;
+    //aModel.weaponUpWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpWorld, muzzleMat);
+    //aModel.weaponUpWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpWorld, turretMat);
+    aModel.weaponUpWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpWorld, aAlignment);
 
     aModel.weaponPosWorld = aModel.weaponPosLocal;
     aModel.weaponPosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponPosWorld, aModel.barrelWorldMatrix);

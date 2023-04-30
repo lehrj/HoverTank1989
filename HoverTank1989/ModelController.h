@@ -32,6 +32,8 @@ struct TankModel
     DirectX::SimpleMath::Vector3 weaponPosWorld;
     DirectX::SimpleMath::Vector3 weaponDirLocal;
     DirectX::SimpleMath::Vector3 weaponDirWorld;
+    DirectX::SimpleMath::Vector3 weaponUpLocal;
+    DirectX::SimpleMath::Vector3 weaponUpWorld;
 
     DirectX::SimpleMath::Vector3 localizedMuzzlePos;
     DirectX::SimpleMath::Vector3 muzzlePosLocal;
@@ -81,8 +83,10 @@ public:
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_playerModel.muzzlePosWorld; };
     DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };
-    DirectX::SimpleMath::Vector3 GetWeaponDirWorld() const { return m_playerModel.weaponDirWorld; };
     DirectX::SimpleMath::Vector3 GetWeaponDirLocal() const { return m_playerModel.weaponDirLocal; };
+    DirectX::SimpleMath::Vector3 GetWeaponDirWorld() const { return m_playerModel.weaponDirWorld; };
+    DirectX::SimpleMath::Vector3 GetWeaponUpLocal() const { return m_playerModel.weaponUpLocal; };
+    DirectX::SimpleMath::Vector3 GetWeaponUpWorld() const { return m_playerModel.weaponUpWorld; };
 
     void SetEnvironment(Environment const* m_environment);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);

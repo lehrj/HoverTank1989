@@ -910,8 +910,9 @@ void Vehicle::FireWeapon()
         DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
         DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
-
-        m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
+        DirectX::SimpleMath::Vector3 up = m_modelController->GetWeaponUpWorld();
+        //DirectX::SimpleMath::Vector3 weaponUp = m_modelController->Get
+        m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);
         DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
         Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
 
@@ -940,6 +941,7 @@ void Vehicle::TestDrawFireDirection()
     DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
     DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
     DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+    DirectX::SimpleMath::Vector3 up = m_modelController->GetWeaponUpWorld();
     //velocity = DirectX::SimpleMath::Vector3::Zero;
     m_debugData->PushDebugLine(pos, launchDir, 10.0f, 0.0f, DirectX::Colors::Red);
 
@@ -947,7 +949,7 @@ void Vehicle::TestDrawFireDirection()
     m_debugData->DebugPushUILineDecimalNumber("velocity.y ", velocity.y, "");
     m_debugData->DebugPushUILineDecimalNumber("velocity.z ", velocity.z, "");
 
-    m_fireControl->FireSelectedAmmo(pos, launchDir, velocity);
+    m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);
     DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
     Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
 
@@ -3151,6 +3153,13 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     UpdateAlignmentCamera();
 
     //TestDrawFireDirection();
+    /*
+    DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
+    DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
+    DirectX::SimpleMath::Vector3 launchUp = m_modelController->GetWeaponUpWorld();
+    m_debugData->PushDebugLine(pos, launchDir, 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(pos, launchUp, 10.0f, 0.0f, DirectX::Colors::Red);
+    */
 
     //m_heli.isVehicleCollisionTrue = false;
 }
