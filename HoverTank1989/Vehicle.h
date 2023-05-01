@@ -352,7 +352,7 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetEnvironment(Environment* aEnviron);
     void SetModelController(std::shared_ptr<ModelController> aModelController);
-    void SetTestPostImppactVelocity(DirectX::SimpleMath::Vector3 aPostImpactVelocity);
+    void SetTestPostImpactVelocity(DirectX::SimpleMath::Vector3 aPostImpactVelocity);
     void SetTestCollisionVelocityUpdate(DirectX::SimpleMath::Vector3 aCollisionVelocityUpdate);
     void SetTestCollisionImpulseForce(Utility::ImpulseForce aCollisionImpulseForce);
     void SetTestVehicleCollisionTrue() { m_heli.isVehicleCollisionTrue = true; };

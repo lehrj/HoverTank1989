@@ -494,16 +494,16 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float xOrgVal = 70.0f;
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 0.1f;
     const float high = 5.0f;
     //const float zPosOffSet = 12.0f;
-    const float zPosOffSet = 20.0f;
+    const float zPosOffSet = 25.0f;
     float baseHeight = 10.0f;
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
-    const int columns = 0;
+    const int columns = 4;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -720,7 +720,7 @@ void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const d
     }
 
     CheckNpcCollisions();
-    //CheckPlayerCollisions();
+    CheckPlayerCollisions();
     CheckNpcAvoidance();
 }
 
@@ -1021,7 +1021,7 @@ void NPCController::CheckPlayerCollisions()
 
                 m_npcVec[i]->m_prevImpact = newVx1;
                 //m_npcVec[j]->m_prevImpact = newVx2;
-                m_player->SetTestPostImppactVelocity(newVx2);
+                m_player->SetTestPostImpactVelocity(newVx2);
 
                 float x1a = p1localizedTo2Norm.Dot(testVelocityNorm1);
 

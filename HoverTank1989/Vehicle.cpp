@@ -2179,7 +2179,7 @@ void Vehicle::SetTestCollisionImpulseForce(Utility::ImpulseForce aCollisionImpul
     m_heli.testCollisionImpulseForce = aCollisionImpulseForce;
 }
 
-void Vehicle::SetTestPostImppactVelocity(DirectX::SimpleMath::Vector3 aPostImpactVelocity)
+void Vehicle::SetTestPostImpactVelocity(DirectX::SimpleMath::Vector3 aPostImpactVelocity)
 {
     m_heli.testPostImpactVelocity = aPostImpactVelocity;
 }

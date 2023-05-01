@@ -1017,6 +1017,7 @@ void NPCVehicle::DrawNPC3(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector3 mainLightDirection1;
     DirectX::SimpleMath::Vector3 mainLightDirection2;
     m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
+    
     aEffect->SetLightDirection(0, mainLightDirection0);
     aEffect->SetLightDirection(1, mainLightDirection1);
     aEffect->SetLightDirection(2, mainLightDirection2);
