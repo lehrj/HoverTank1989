@@ -261,9 +261,11 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     float yawValDeg = Utility::ToDegrees(yawOrg);
     float pitchValDeg = Utility::ToDegrees(pitchOrg);
     DirectX::SimpleMath::Vector3 updateVelocity = firedProjectile.q.velocity;
-    const float deployDownAngle = Utility::ToRadians(-15.0f);
-    updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle));
-    const float velocityBoostMod = 5.0f;
+    const float deployDownAngle = Utility::ToRadians(-20.0f);
+    DirectX::SimpleMath::Quaternion deployDownQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle);
+    //updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle));
+    updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, deployDownQuat);
+    const float velocityBoostMod = 3.0f;
     updateVelocity *= velocityBoostMod;
 
     const float angleOffsetMin = Utility::ToRadians(-0.5f);
@@ -279,6 +281,20 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
             DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::Identity;
             rotMat *= rotMatYaw;
             rotMat *= rotMatPitch;
+
+            DirectX::SimpleMath::Matrix inverseRotMat = rotMat;
+            //inverseRotMat = inverseRotMat.Invert();
+            DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
+            
+            updateQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+            updateQuat *= deployDownQuat;
+            //mirv.alignmentQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+            
+            mirv.alignmentQuat *= updateQuat;
+            mirv.up = DirectX::SimpleMath::Vector3::Transform(mirv.up, updateQuat);
+            mirv.right = DirectX::SimpleMath::Vector3::Transform(mirv.right, updateQuat);
+            mirv.forward = DirectX::SimpleMath::Vector3::Transform(mirv.forward, updateQuat);
+            
             //mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(mirv.q.velocity, rotMat);
             mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, rotMat);
 
@@ -1747,9 +1763,9 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 365.0f;
-    aAmmo.ammoData.length = 1.0f;
+    aAmmo.ammoData.length = 9.0f;
     aAmmo.ammoData.mass = 10.0f;
-    aAmmo.ammoData.radius = 0.15f;
+    aAmmo.ammoData.radius = 0.2f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.isGuided = false;
@@ -1764,9 +1780,9 @@ void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactDurration = 0.3f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 215.0f;
-    aAmmo.ammoData.length = 1.0f;
+    aAmmo.ammoData.length = 25.0f;
     aAmmo.ammoData.mass = 55.0f;
-    aAmmo.ammoData.radius = 0.15f;
+    aAmmo.ammoData.radius = 0.22f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.isGuided = false;
@@ -1781,7 +1797,7 @@ void FireControl::InitializeAmmoGuidedMissile(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 365.0f;
-    aAmmo.ammoData.length = 1.0f;
+    aAmmo.ammoData.length = 5.0f;
     aAmmo.ammoData.mass = 10.0f;
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
@@ -1808,21 +1824,6 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
 
 void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
 {
-    /*
-    aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MIRV;
-    aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 1.9f;
-    aAmmo.ammoData.dragCoefficient = 0.3f;
-    aAmmo.ammoData.impactDurration = 0.4f;
-    //aAmmo.ammoData.impactModifier = 4.0f;
-    aAmmo.ammoData.impactModifier = 1.0f;
-    aAmmo.ammoData.launchVelocity = 65.0f;
-    aAmmo.ammoData.length = 1.0f;
-    aAmmo.ammoData.mass = 65.0f;
-    aAmmo.ammoData.radius = 0.2f;
-    aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
-    aAmmo.ammoData.tickDownCounter = 1;
-    */
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MIRV;
     aAmmo.ammoData.baseDamage = 1.0f;
     //aAmmo.ammoData.cooldown = 1.9f;
@@ -1833,9 +1834,9 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactModifier = 1.0f;
     //aAmmo.ammoData.launchVelocity = 165.0f;
     aAmmo.ammoData.launchVelocity = 105.0f;
-    aAmmo.ammoData.length = 1.0f;
+    aAmmo.ammoData.length = 24.5f;
     aAmmo.ammoData.mass = 65.0f;
-    aAmmo.ammoData.radius = 0.2f;
+    aAmmo.ammoData.radius = 0.22f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.isGuided = false;
@@ -1852,7 +1853,7 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
     aAmmo.ammoData.launchVelocity = 395.0f;
     aAmmo.ammoData.length = 1.0f;
     aAmmo.ammoData.mass = 1.0f;
-    aAmmo.ammoData.radius = 0.15f;
+    aAmmo.ammoData.radius = 0.1f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.isGuided = false;
@@ -1946,10 +1947,10 @@ void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX:
 
 void FireControl::InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
-    //const float ammoSize = aAmmo.ammoData.radius;
-    //const float ammoLength = aAmmo.ammoData.length * 19.0f;
-    const float ammoSize = 0.5f;
-    const float ammoLength = 25.0f;
+    const float ammoSize = aAmmo.ammoData.radius;
+    const float ammoLength = aAmmo.ammoData.length;
+    //const float ammoSize = 0.3f;
+    //const float ammoLength = 10.0f;
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
     //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -1960,12 +1961,14 @@ void FireControl::InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11D
 
 void FireControl::InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
-    const float ammoSize = aAmmo.ammoData.radius * 4.0f;
-    const float ammoLength = aAmmo.ammoData.length * 4.0f;
-    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
-    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
+    const float ammoSize = aAmmo.ammoData.radius;
+    const float ammoLength = aAmmo.ammoData.length;
+    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
+    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
+    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateDodecahedron(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    //aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, ammoLength, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
@@ -1977,7 +1980,8 @@ void FireControl::InitializeProjectileModelGuidedMissile(Microsoft::WRL::ComPtr<
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
     //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    //aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, ammoLength, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
@@ -1990,19 +1994,20 @@ void FireControl::InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateTetrahedron(aContext.Get(), ammoDiameter, ammoLength);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateOctahedron(aContext.Get(), ammoDiameter, ammoLength);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
+    //aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
 
 void FireControl::InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
-    const float ammoSize = aAmmo.ammoData.radius * 4.0f;
-    const float ammoLength = aAmmo.ammoData.length * 4.0f;
-    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
-    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
+    const float ammoSize = aAmmo.ammoData.radius;
+    const float ammoLength = aAmmo.ammoData.length;
+    //aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
+    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateDodecahedron(aContext.Get(), ammoSize);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    //aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, ammoLength, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
@@ -2365,6 +2370,7 @@ void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelt
 
 void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta)
 {
+    aProjectile.time += aTimeDelta;
     DirectX::SimpleMath::Vector3 velocityNorm = aProjectile.q.velocity;
     velocityNorm.Normalize();
     const float t = 4.0f;
@@ -2389,8 +2395,8 @@ void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float 
     DirectX::SimpleMath::Vector3 right = aProjectile.right;
     //DirectX::SimpleMath::Vector3 up = right.Cross(forward);
     DirectX::SimpleMath::Vector3 up = aProjectile.up;
-    m_debugData->PushDebugLine(pos2, up, 10.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(pos2, right, 10.0f, 0.0f, DirectX::Colors::Orange);
+    //m_debugData->PushDebugLine(pos2, up, 10.0f, 0.0f, DirectX::Colors::Blue);
+    //m_debugData->PushDebugLine(pos2, right, 10.0f, 0.0f, DirectX::Colors::Orange);
     DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -right, up);
     aProjectile.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(alignMat);
     //aProjectile.alignmentQuat.Normalize();
@@ -2401,7 +2407,6 @@ void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float 
     aProjectile.forward = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, aProjectile.alignmentQuat);
     aProjectile.right = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitZ, aProjectile.alignmentQuat);
     aProjectile.up = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aProjectile.alignmentQuat);
-
 }
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)

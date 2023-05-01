@@ -910,6 +910,7 @@ void Vehicle::FireWeapon()
         DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
         DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+        //velocity = DirectX::SimpleMath::Vector3::Zero;
         DirectX::SimpleMath::Vector3 up = m_modelController->GetWeaponUpWorld();
         //DirectX::SimpleMath::Vector3 weaponUp = m_modelController->Get
         m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);

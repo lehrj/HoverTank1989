@@ -442,7 +442,7 @@ private:
 
     Utility::Torque m_testGravForce;
 
-    const float m_testMass = 200.1f;
+    const float m_testMass = 800.1f;
     const float m_driveTorqueForceMax = 300.0f;
     const float m_stabilityTorqueForceMax = 33000.0f;
     const float m_stabilityTorqueForceMax2 = 200.0f;
@@ -457,7 +457,8 @@ private:
     const float m_gravTorqueModTest = 15.0f;
 
     const float m_angularDampConst = 0.9f;
-    const float m_angDragCoefficient = 24.9f;
+    //const float m_angDragCoefficient = 24.9f;
+    const float m_angDragCoefficient = 10.9f;
 
     DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
     //DirectX::SimpleMath::Vector3 m_testTorqueWorld = DirectX::SimpleMath::Vector3::Zero;
