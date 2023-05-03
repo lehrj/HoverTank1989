@@ -2411,7 +2411,7 @@ void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float 
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)
 {
-    m_debugData->DebugPushUILineWholeNumber("m_projectileVec.size() ", m_projectileVec.size(), "");
+    //m_debugData->DebugPushUILineWholeNumber("m_projectileVec.size() ", m_projectileVec.size(), "");
     //CheckCollisions();
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {

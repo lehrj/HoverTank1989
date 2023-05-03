@@ -207,7 +207,8 @@ struct HeliData
     DirectX::SimpleMath::Vector3 gravity = DirectX::SimpleMath::Vector3(0.0f, -9.80665f, 0.0f);
     float   mainRotorMaxRPM;
     const float   mass = 1700.0f;
-    float   massTest = 2000.0f;
+    //float   massTest = 2000.0f;
+
     Motion  q;
     float   totalResistance;
     //
@@ -396,6 +397,7 @@ private:
     float UpdateGroundEffectForce(const float aLiftForce);
     void UpdateModelColorVals();
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 UpdatePendulumMotion2(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle);
     void UpdateResistance();
     DirectX::SimpleMath::Vector3 UpdateRotorForceRunge();
@@ -434,6 +436,7 @@ private:
     bool m_debugToggle9 = false;
     bool m_debugToggle0 = false;
 
+    DirectX::SimpleMath::Vector3 m_hoverTorqueForceSum = DirectX::SimpleMath::Vector3::Zero;
     Utility::ImpulseForce m_testImpulseForce;
     Utility::Torque m_testTerrainNormTorque;
 
@@ -442,29 +445,43 @@ private:
 
     Utility::Torque m_testGravForce;
 
+    const float m_inertiaModelX = 4.4f;
+    const float m_inertiaModelY = 1.0f;
+    const float m_inertiaModelZ = 3.0f;
+
+    /*
     const float m_testMass = 800.1f;
     const float m_driveTorqueForceMax = 300.0f;
     const float m_stabilityTorqueForceMax = 33000.0f;
     const float m_stabilityTorqueForceMax2 = 200.0f;
     const float m_terrainTorqueForceMax = 1800.0f;
+    const float m_gravStabilityArmMod = 3.0f;
+    */
 
-    const float m_inertiaModelX = 4.4f;
-    const float m_inertiaModelY = 1.0f;
-    const float m_inertiaModelZ = 3.0f;
-
-    DirectX::SimpleMath::Vector3 m_hoverTorqueForceSum = DirectX::SimpleMath::Vector3::Zero;
+    const float m_testMass = 80.0f;
+    const float m_driveTorqueForceMax = 300.0f;
+    //const float m_stabilityTorqueForceMax = 33000.0f;
+    const float m_stabilityTorqueForceMax = 1800.0f;
+    const float m_stabilityTorqueForceMax2 = 200.0f;
+    const float m_terrainTorqueForceMax = 1800.0f;
+    const float m_gravStabilityArmMod = 1.0f;
 
     const float m_gravTorqueModTest = 15.0f;
 
     const float m_angularDampConst = 0.9f;
+    const float m_testAngDampConst = 0.1f;
+
     //const float m_angDragCoefficient = 24.9f;
-    const float m_angDragCoefficient = 10.9f;
+    const float m_angDragCoefficient = 1.9f;
+    const float m_airDensityDragMod = 1.0f;
 
     DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
     //DirectX::SimpleMath::Vector3 m_testTorqueWorld = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Matrix m_testInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_testInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+
+    float m_testAngularRotationPerSecond = 0.0f;
 
 };
 
