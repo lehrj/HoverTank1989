@@ -225,6 +225,10 @@ struct HeliData
     DirectX::SimpleMath::Quaternion alignmentQuat;
     DirectX::SimpleMath::Quaternion alignmentInverseQuat;
 
+    DirectX::SimpleMath::Quaternion alignmentQuatDelta = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion alignmentInverseQuatDelta = DirectX::SimpleMath::Quaternion::Identity;
+    float angularRadsPerSec = 0.0f;
+
     DirectX::SimpleMath::Matrix cameraOrientation;
     DirectX::SimpleMath::Matrix cameraOrientationPrevious;
     float   terrainHightAtPos;
@@ -385,6 +389,9 @@ private:
     void RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
+    DirectX::SimpleMath::Vector3 TestStabilityForce(const float aTimeStep);
+    DirectX::SimpleMath::Vector3 TestStabilityForce2(const DirectX::SimpleMath::Vector3 aVec, const float aTimeStep);
+
     void UpdateAlignment(const float aTimeDelta);
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
@@ -458,12 +465,12 @@ private:
     const float m_gravStabilityArmMod = 3.0f;
     */
 
-    const float m_testMass = 80.0f;
+    const float m_testMass = 1800.0f;
     const float m_driveTorqueForceMax = 300.0f;
     //const float m_stabilityTorqueForceMax = 33000.0f;
-    const float m_stabilityTorqueForceMax = 1800.0f;
+    const float m_stabilityTorqueForceMax = 800.0f;
     const float m_stabilityTorqueForceMax2 = 200.0f;
-    const float m_terrainTorqueForceMax = 1800.0f;
+    const float m_terrainTorqueForceMax = 3800.0f;
     const float m_gravStabilityArmMod = 1.0f;
 
     const float m_gravTorqueModTest = 15.0f;
@@ -483,5 +490,6 @@ private:
 
     float m_testAngularRotationPerSecond = 0.0f;
 
+    float m_testVal = 0.0f;
 };
 
