@@ -149,6 +149,10 @@ struct HeliData
 
     const float jetThrustMax = 5000.0f;
     // rotor data
+    float       mainRotorRPM;
+    const float mainRotorRPMmin = 0.0f;
+    const float mainRotorRPMmax = 500.0f;
+
     const float mainRotorForceMagMax = 15.0f;
     const float mainRotorForceMagMin = 0.0f;
     DirectX::SimpleMath::Vector3 mainRotorPos;
@@ -164,9 +168,9 @@ struct HeliData
     DirectX::SimpleMath::Vector3 gravityTorqueArmPos;
     DirectX::SimpleMath::Vector3 localGravityTorqueArmPos;
 
-    float       mainRotorRPM;
-    const float mainRotorRPMmin = 0.0f;
-    const float mainRotorRPMmax = 500.0f;
+    DirectX::SimpleMath::Vector3 buoyancyTorqueArmPos;
+    DirectX::SimpleMath::Vector3 localBuoyancyTorqueArmPos;
+
     DirectX::SimpleMath::Vector3 tailRotorPos;
     DirectX::SimpleMath::Vector3 localTailRotorPos;
     DirectX::SimpleMath::Vector3 centerOfMass;
@@ -240,6 +244,10 @@ struct HeliData
     DirectX::SimpleMath::Matrix inverseInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest;
+
+    DirectX::SimpleMath::Matrix localBallastInertiaMatrix;
+    DirectX::SimpleMath::Matrix localInverseBallastInertiaMatrix;
+    DirectX::SimpleMath::Vector3 ballastInertiaTranslation;
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
@@ -391,6 +399,7 @@ private:
 
     DirectX::SimpleMath::Vector3 TestStabilityForce(const float aTimeStep);
     DirectX::SimpleMath::Vector3 TestStabilityForce2(const DirectX::SimpleMath::Vector3 aVec, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 TestStabilityForce3(const DirectX::SimpleMath::Vector3 aVec, const float aTimeStep);
 
     void UpdateAlignment(const float aTimeDelta);
     void UpdateAlignmentCamera();
@@ -402,10 +411,11 @@ private:
     void UpdateCyclicStick(ControlInput& aInput);
     void UpdateCyclicNorm(); 
     float UpdateGroundEffectForce(const float aLiftForce);
+    void UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep);
     void UpdateModelColorVals();
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdatePendulumMotion2(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
-    void UpdatePhysicsPoints(struct HeliData& aVehicle);
+    void UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeStep);
     void UpdateResistance();
     DirectX::SimpleMath::Vector3 UpdateRotorForceRunge();
     void UpdateRotorData(HeliData& aHeliData, const double aTimer);
@@ -416,6 +426,7 @@ private:
     void UpdateTerrainNormTorque();
     void UpdateTerrainNormTorque2();
     void UpdateTestDrivetrainTorqueLocal(const float aTimer);
+    void UpdateTestDrivetrainTorqueLocalLastUsed(const float aTimer);
     void UpdateTestDrivetrainTorqueLocal2(const float aTimer);
     void UpdateVehicleForces(const float aTimeStep);
 
@@ -485,8 +496,8 @@ private:
     DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
     //DirectX::SimpleMath::Vector3 m_testTorqueWorld = DirectX::SimpleMath::Vector3::Zero;
 
-    DirectX::SimpleMath::Matrix m_testInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
-    DirectX::SimpleMath::Matrix m_testInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+    //DirectX::SimpleMath::Matrix m_testInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+    //DirectX::SimpleMath::Matrix m_testInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
 
     float m_testAngularRotationPerSecond = 0.0f;
 
