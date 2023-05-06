@@ -1706,8 +1706,8 @@ void Game::DrawDebugDataUI()
     std::string textLine = "Timer  " + std::to_string(m_testTimer1);
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
-    //m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
-    //textLinePos.y += 30;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
 
     /*
     if (m_vehicle->GetIsDebugToggled() == true)

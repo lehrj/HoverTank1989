@@ -395,6 +395,7 @@ private:
     void LandVehicle();
 
     void RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
+    void RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
     DirectX::SimpleMath::Vector3 TestStabilityForce(const float aTimeStep);
@@ -476,11 +477,11 @@ private:
     const float m_gravStabilityArmMod = 3.0f;
     */
 
-    const float m_testMass = 1800.0f;
-    const float m_driveTorqueForceMax = 300.0f;
+    const float m_testMass = 800.0f;
+    const float m_driveTorqueForceMax = 3300.0f;
     //const float m_stabilityTorqueForceMax = 33000.0f;
     const float m_stabilityTorqueForceMax = 800.0f;
-    const float m_stabilityTorqueForceMax2 = 200.0f;
+    const float m_stabilityTorqueForceMax2 = 1200.0f;
     const float m_terrainTorqueForceMax = 3800.0f;
     const float m_gravStabilityArmMod = 1.0f;
 
@@ -490,7 +491,8 @@ private:
     const float m_testAngDampConst = 0.1f;
 
     //const float m_angDragCoefficient = 24.9f;
-    const float m_angDragCoefficient = 1.9f;
+    //const float m_angDragCoefficient = 1.9f;
+    const float m_angDragCoefficient = 0.3f;
     const float m_airDensityDragMod = 1.0f;
 
     DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
@@ -502,5 +504,8 @@ private:
     float m_testAngularRotationPerSecond = 0.0f;
 
     float m_testVal = 0.0f;
+
+    const float m_testMOI = 1000.0f;
+    const float m_testTorque = 1000.0f;
 };
 
