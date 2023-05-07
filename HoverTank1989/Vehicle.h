@@ -405,6 +405,7 @@ private:
     void UpdateAlignment(const float aTimeDelta);
     void UpdateAlignmentCamera();
     void UpdateBladeLiftForce(const float aTimeStep);
+    DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocalNew(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueLocal(DirectX::SimpleMath::Vector3& aAccelVec, Utility::Torque aPendTorque, const float aTimeStep);
     void UpdateBrakeForce(const float aTimeStep);
     void UpdateCollisionImpulseForces(const float aTimeStep);
@@ -424,10 +425,11 @@ private:
     void UpdateRotorSpin(HeliData& aHeliData, const double aTimer);
     void UpdateTerrainData();
     void UpdateTerrainNorm();
+    void UpdateTerrainNormTorqueNew();
     void UpdateTerrainNormTorque();
     void UpdateTerrainNormTorque2();
+    void UpdateTestDrivetrainTorqueLocalNew(const float aTimer);
     void UpdateTestDrivetrainTorqueLocal(const float aTimer);
-    void UpdateTestDrivetrainTorqueLocalLastUsed(const float aTimer);
     void UpdateTestDrivetrainTorqueLocal2(const float aTimer);
     void UpdateVehicleForces(const float aTimeStep);
 
