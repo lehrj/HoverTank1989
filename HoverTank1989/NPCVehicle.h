@@ -23,7 +23,8 @@ struct NpcControlInput
     const float steeringInputMax = 6.0f;
     const float steeringInputMin = -6.0f;
     const float steeringInputRate = 3.0f;
-    const float steeringForceMod = 100.0f;
+    //const float steeringForceMod = 100.0f;
+    const float steeringForceMod = 9000.0f;
     DirectX::SimpleMath::Vector3 steeringVec;
 
     float       throttleInput;
@@ -462,7 +463,8 @@ struct VehicleData
     DirectX::SimpleMath::Matrix localInverseInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
 
     const float angularDragCoefficient = 0.8f;
-    const float tensorMass = 700.0f;
+    //const float tensorMass = 70.0f;
+    const float tensorMass = 1.0f;
     const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
@@ -630,6 +632,7 @@ private:
 
     Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocal(const float aTimeStep);
+    DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocalNew(const float aTimeStep);
     Utility::Torque UpdateBodyTorqueRungeOld(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
     void UpdateControlInput();
     void UpdateControlInputFromAi();

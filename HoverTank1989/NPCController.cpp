@@ -314,6 +314,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                     const float tol = 0.01f;
                     impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
                 }
+                //impulseToVec.totalTime = 0.3f;
                 impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
                 //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
                 //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
@@ -492,7 +493,8 @@ void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Mic
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
     const float xOrgVal = 70.0f;
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
     DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 0.1f;
@@ -503,7 +505,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
-    const int columns = 0;
+    const int columns = 1;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)

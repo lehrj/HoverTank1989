@@ -1917,7 +1917,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_newProjectilePushVec.clear();
     m_environment = aEnvironment;
     m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
-    m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
+    //m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
     //m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
 
     InitializeAmmoCannon(m_ammoCannon);

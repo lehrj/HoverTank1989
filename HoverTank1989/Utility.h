@@ -78,6 +78,7 @@ public:
         float maxMagnitude = 0.0f;
         DirectX::SimpleMath::Vector3 torqueArm = DirectX::SimpleMath::Vector3::Zero;
         float currentTorqueMagnitude = 0.0f;
+        //float torqueForceMod = 0.1f;
         float torqueForceMod = 0.1f;
         DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::Zero;
         float totalTime = 0.0f;
@@ -86,6 +87,26 @@ public:
         float forceRemaining = 0.0f;
         float forceSum = 0.0f;
     };
+
+    static void UpdateImpulseForceCurveProjectile(ImpulseForce& aImpulseForce, const float aTimeDelta)
+    {
+        aImpulseForce.currentMagnitude = 0.0f;
+        aImpulseForce.currentTorqueMagnitude = aImpulseForce.maxMagnitude * aImpulseForce.torqueForceMod;
+        aImpulseForce.currentTorqueMagnitude = 10000.0f;
+        aImpulseForce.torqueArm = DirectX::SimpleMath::Vector3::UnitZ;
+
+        aImpulseForce.currentTime += aTimeDelta;
+        if (aImpulseForce.currentTime > aImpulseForce.totalTime)
+        {
+            //aImpulseForce.isActive = false;
+        }
+        if (aImpulseForce.tickCount > 1)
+        {
+            aImpulseForce.isActive = false;
+        }
+        ++aImpulseForce.tickCount;
+        //aImpulseForce.isActive = false;
+    }
 
     static void UpdateImpulseForceCurve(ImpulseForce& aImpulseForce, const float aTimeDelta)
     {
