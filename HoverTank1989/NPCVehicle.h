@@ -64,7 +64,6 @@ struct MotionNPC
 {
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
-    Utility::Torque              bodyTorqueForce;
     DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
 };
@@ -464,7 +463,7 @@ struct VehicleData
 
     const float angularDragCoefficient = 0.8f;
     //const float tensorMass = 70.0f;
-    const float tensorMass = 1.0f;
+    const float tensorMass = 700.0f;
     const DirectX::SimpleMath::Vector3 tensorDimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
@@ -597,7 +596,8 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragAngular(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngular3(const DirectX::SimpleMath::Vector3 aAngVelocity);
-    DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity, const float aTimeStep);
+    
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
@@ -630,10 +630,9 @@ private:
     void UpdateAlignment2();
     void UpdateAngularDrag(const float aTimeDelta);
 
-    Utility::Torque UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
-    DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocal(const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocalNew(const float aTimeStep);
-    Utility::Torque UpdateBodyTorqueRungeOld(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep);
+    DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocalOld(const float aTimeStep);
+
     void UpdateControlInput();
     void UpdateControlInputFromAi();
     void UpdateForceTorqueVecs();
@@ -710,7 +709,7 @@ private:
     DirectX::SimpleMath::Vector3 m_angDampTest4 = DirectX::SimpleMath::Vector3::Zero;
 
     const float m_angularDampConst = 0.9f;
-    const float m_angDragCoefficient = 0.4f;
+    const float m_angDragCoefficient = 0.3f;
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

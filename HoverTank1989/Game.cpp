@@ -1196,12 +1196,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
             //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * static_cast<float>(aTimer.GetElapsedSeconds()));
             m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
-            m_debugData->DebugPushUILineDecimalNumber("pad.thumbSticks.leftX  ", pad.thumbSticks.leftX * inputMod, "");
+            //m_vehicle->InputGamePadTurn(pad.thumbSticks.leftX);
         }
         if (pad.triggers.left > m_gamePadInputDeadZone || pad.triggers.right > m_gamePadInputDeadZone)
         {
             const float turnMod = m_gamePadInputRateBodyTurn;
             m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right)* turnMod);
+            //m_vehicle->InputGamePadStrafe((pad.triggers.left - pad.triggers.right)* turnMod);
         }
         if (pad.thumbSticks.rightX > m_gamePadInputDeadZone || pad.thumbSticks.rightX < - m_gamePadInputDeadZone)
         {

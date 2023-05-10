@@ -140,7 +140,7 @@ struct HeliData
     const float hoverDriveMagMax = 20000.0f;
     const float brakeMagMax = 3000.0f;
     //const float yawForce = 300.0f;
-    const float yawForce = 10000.0f;
+    const float yawForce = 1000.0f;
 
     const float hoverRangeLower = 2.0f;
     const float hoverRangeMid = 4.0f;
@@ -495,8 +495,6 @@ private:
     const float m_angularDampConst = 0.9f;
     const float m_testAngDampConst = 0.1f;
 
-    //const float m_angDragCoefficient = 24.9f;
-    //const float m_angDragCoefficient = 1.9f;
     const float m_angDragCoefficient = 0.3f;
     const float m_airDensityDragMod = 1.0f;
 

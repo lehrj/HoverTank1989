@@ -256,16 +256,18 @@ DirectX::SimpleMath::Vector3 NPCVehicle::CalculateDragAngular3(const DirectX::Si
     return angularDrag;
 }
 
-DirectX::SimpleMath::Vector3 NPCVehicle::CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity)
+DirectX::SimpleMath::Vector3 NPCVehicle::CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity, const float aTimeStep)
 {
     DirectX::SimpleMath::Vector3 angVelocityNorm = aAngVelocity;
     angVelocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 localAngVelocityNorm = angVelocityNorm;
-    //localAngVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localAngVelocityNorm, m_heli.alignmentInverse);
+    //localAngVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localAngVelocityNorm, m_vehicleStruct00.vehicleData.alignmentInverse);
+    //angVelocityNorm = localAngVelocityNorm;
 
-    const float length = 8.0f;
-    const float width = 4.0f;
-    const float height = 2.0f;
+    const float length = m_vehicleStruct00.vehicleData.tensorDimensions.x;
+    const float width = m_vehicleStruct00.vehicleData.tensorDimensions.z;
+    const float height = m_vehicleStruct00.vehicleData.tensorDimensions.y;
+
     float frontSurfaceArea = width * height;
     float sideSurfaceArea = length * height;
     float topSurfaceArea = length * width;
@@ -276,7 +278,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::CalculateDragAngularLocal(const DirectX
 
     float yawSurface = (width * abs(yawDot)) + (height * abs(yawDot));
     float pitchSurface = (length * abs(pitchDot)) + (width * abs(pitchDot));
-    //float rollSurface = (length * abs(rollDot)) + (height * abs(rollDot));
     float rollSurface = (length * abs(rollDot)) + (width * abs(rollDot));
 
     float yawRadius = (length * abs(yawDot)) * 0.5f;
@@ -292,8 +293,48 @@ DirectX::SimpleMath::Vector3 NPCVehicle::CalculateDragAngularLocal(const DirectX
     float angFrontSurfaceArea = airSurfaceArea;
     float radius = radiusSum;
 
-    DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * angFrontSurfaceArea * angAirDensity)));
+    m_debugData->DebugPushUILineDecimalNumber("angDragCoefficient", angDragCoefficient, "");
+    m_debugData->DebugPushUILineDecimalNumber("radius", radius, "");
+    m_debugData->DebugPushUILineDecimalNumber("angVelocityF", angVelocityF, "");
+    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea", airSurfaceArea, "");
+    m_debugData->DebugPushUILineDecimalNumber("angAirDensity", angAirDensity, "");
+    m_debugData->DebugPushUILineDecimalNumber("angVelocityNorm", angVelocityNorm.Length(), "");
 
+    DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * airSurfaceArea * angAirDensity)));
+
+    DirectX::SimpleMath::Vector3 angularDragNorm = angularDrag;
+    angularDragNorm.Normalize();
+    DirectX::SimpleMath::Vector3 aAngVelocityNorm = aAngVelocity;
+    aAngVelocityNorm.Normalize();
+
+    float normDot = angularDragNorm.Dot(aAngVelocityNorm);
+    m_debugData->DebugPushUILineDecimalNumber("normDot ", normDot, "");
+
+    //angularDrag *= aTimeStep;
+    float angularDragLength = angularDrag.Length();
+    DirectX::SimpleMath::Vector3 avgVel = aAngVelocity;
+    DirectX::SimpleMath::Vector3 testDrag = aAngVelocity * -0.2f;
+    if (m_vehicleStruct00.vehicleData.impulseForceVec.size() > 0)
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+    m_debugData->DebugPushUILineDecimalNumber("aAngVelocity     ", aAngVelocity.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("angularDrag Sca  ", angularDrag.Length() * aTimeStep, "");
+    m_debugData->DebugPushUILineDecimalNumber("angularDrag Pre  ", angularDrag.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("angularDrag.x", angularDrag.x, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angularDrag.y", angularDrag.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angularDrag.z", angularDrag.z, "");
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, angularDrag, 20.0f, 0.0f, DirectX::Colors::Red);
+    //angularDrag = aAngVelocity * -0.2f;
+    angularDrag = aAngVelocity * -powf(0.8f, aTimeStep);
+
+
+    //m_debugData->DebugPushUILineDecimalNumber("angularDrag.x", angularDrag.x, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angularDrag.y", angularDrag.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angularDrag.z", angularDrag.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("angularDrag Post ", angularDrag.Length(), "");
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, angularDrag, 15.0f, 0.0f, DirectX::Colors::Blue);
     return angularDrag;
 }
 
@@ -592,7 +633,7 @@ void NPCVehicle::CalculateSelfRightingTorque()
     const float modVal = 0.0001f;
     DirectX::SimpleMath::Vector3 gravityForce = (DirectX::SimpleMath::Vector3(0.0f, 9.8f, 0.0f)) * modVal;
     Utility::Torque gravTorque = Utility::GetTorqueForce(gravityTorqueArm, gravityForce);
-    m_vehicleStruct00.vehicleData.q.bodyTorqueForce = gravTorque;
+    //m_vehicleStruct00.vehicleData.q.bodyTorqueForce = gravTorque;
 }
 
 void NPCVehicle::CalculateTopSpeed()
@@ -2764,9 +2805,6 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.q.position = aPosition;
     aVehicleStruct.vehicleData.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 
-    aVehicleStruct.vehicleData.q.bodyTorqueForce.axis = DirectX::SimpleMath::Vector3::Zero;
-    aVehicleStruct.vehicleData.q.bodyTorqueForce.magnitude = 0.0f;
-
     aVehicleStruct.vehicleData.q.angularMomentum = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.q.angularVelocity = DirectX::SimpleMath::Vector3::Zero;
 
@@ -2865,19 +2903,19 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     const float zExtent = aVehicleStruct.vehicleData.tensorDimensions.z;
     const float mass = aVehicleStruct.vehicleData.tensorMass;
     // cuboid
-    /*
+    
     aVehicleStruct.vehicleData.localInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
     aVehicleStruct.vehicleData.localInertiaMatrix._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
     aVehicleStruct.vehicleData.localInertiaMatrix._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     aVehicleStruct.vehicleData.localInertiaMatrix._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
-    */
     
+    /*
     float radius = 10.0f;
     aVehicleStruct.vehicleData.localInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
     aVehicleStruct.vehicleData.localInertiaMatrix._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
     aVehicleStruct.vehicleData.localInertiaMatrix._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
     aVehicleStruct.vehicleData.localInertiaMatrix._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    
+    */
     aVehicleStruct.vehicleData.localInverseInertiaMatrix = aVehicleStruct.vehicleData.localInertiaMatrix;
     aVehicleStruct.vehicleData.localInverseInertiaMatrix = aVehicleStruct.vehicleData.localInverseInertiaMatrix.Invert();
 }
@@ -2947,107 +2985,6 @@ void NPCVehicle::PushImpulseForce(Utility::ImpulseForce aImpulse)
 }
 
 void NPCVehicle::RightHandSide2(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
-{
-    //  Compute the intermediate values of the 
-    //  dependent variables.
-    MotionNPC newQ;
-    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
-    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-    newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
-    newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
-    //newQ.bodyTorqueForce.axis = aQ->bodyTorqueForce.axis;
-    //newQ.bodyTorqueForce.magnitude = aQ->bodyTorqueForce.magnitude + static_cast<float>(aQScale) * aDeltaQ->bodyTorqueForce.magnitude;
-
-    //  Compute the total drag force
-    const float v = newQ.velocity.Length();
-    const float airDensity = m_environment->GetAirDensity(); // ToDo rework to pull data from environment
-
-    float dragCoefficient = aVehicle->dragCoefficient;
-    float frontSurfaceArea = aVehicle->frontalArea;
-    const float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
-    float mass = aVehicle->mass;
-    DirectX::SimpleMath::Vector3 velocityNorm = newQ.velocity;
-    velocityNorm.Normalize();
-    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
-    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 impactForceSum = m_vehicleStruct00.vehicleData.impactForceSum;
-
-    DirectX::SimpleMath::Vector3 angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Zero;
-    Utility::Torque bodyTorqueUpdate = UpdateBodyTorqueRunge(angAccelVecTensorUpdate, static_cast<float>(aTimeDelta));
-
-    velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    velocityUpdate += impactForceSum;
-    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
-    {
-        float jumpMag = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude;
-        velocityUpdate += DirectX::SimpleMath::Vector3::UnitY * jumpMag * mass;
-    }
-    if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == false)
-    {
-        velocityUpdate += m_buoyancyTestForce;
-    }
-    DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec();
-    velocityUpdate += gravForce * (mass);
-
-    DirectX::SimpleMath::Vector3 forwardThrustUpdate = GetForwardThrust(m_vehicleStruct00.vehicleData);
-    forwardThrustUpdate.y = 0.0f;
-    velocityUpdate += forwardThrustUpdate;
-
-    airResistance = velocityNorm * (-frontDragResistance);
-    airResistance.y = 0.0f;
-    velocityUpdate += airResistance;
-
-    // adds some floating flutter movement to vehicles when stationary 
-    if (m_npcAI->GetAiToggle() == false)
-    {
-        DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
-        float flutterMod = (((cos((static_cast<float>(m_testTimer) * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
-        flutter.y = flutterMod * 7.0f;
-        velocityUpdate += flutter * mass;
-    }
-
-    velocityUpdate += m_vehicleStruct00.vehicleData.collisionImpulseForceSum;
-
-    /*
-    if (m_isDebugToggleTrue == true)
-    {
-        angAccelVecTensorUpdate -= m_torqueDebugTest;
-    }
-    else
-    {
-        angAccelVecTensorUpdate += m_torqueDebugTest;
-    }
-    */
-
-    const float angAirDensity = m_environment->GetAirDensity();
-    const float angDragCoefficient = aVehicle->angularDragCoefficient;
-    const float angFrontSurfaceArea = aVehicle->frontalArea;
-    const float angVelocity = newQ.angularVelocity.Length();
-    const float angFrontDragResistance = 0.5f * angAirDensity * angFrontSurfaceArea * angDragCoefficient * angVelocity * angVelocity;
-    DirectX::SimpleMath::Vector3 angVelNormVec = aVehicle->q.angularVelocity;
-    //DirectX::SimpleMath::Vector3 angVelNormVec = newQ.angularVelocityVec;
-    angVelNormVec.Normalize();
-    DirectX::SimpleMath::Vector3 angDampeningVec = angVelNormVec * (-angFrontDragResistance);
-    //angAccelVecTensorUpdate += angDampeningVec;
-    const float radius = m_vehicleStruct00.vehicleData.dimensions.x;
-    //DirectX::SimpleMath::Vector3 testAngularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * angFrontSurfaceArea * angAirDensity)));
-    DirectX::SimpleMath::Vector3 testAngularDrag = angVelNormVec * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocity * angVelocity) * angFrontSurfaceArea * angAirDensity)));
-    testAngularDrag *= aTimeDelta;
-    DirectX::SimpleMath::Matrix inverseAlignment = aVehicle->alignment;
-    inverseAlignment = inverseAlignment.Invert();
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, inverseAlignment);
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->localInverseInertiaMatrix);
-    angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Transform(angAccelVecTensorUpdate, aVehicle->alignment);
-    angAccelVecTensorUpdate += angDampeningVec;
-
-    aDQ->bodyTorqueForce = bodyTorqueUpdate;
-    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
-    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
-    aDQ->angularVelocity = static_cast<float>(aTimeDelta) * (angAccelVecTensorUpdate);
-    aDQ->angularMomentum = static_cast<float>(aTimeDelta) * newQ.angularVelocity;
-}
-
-void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
 {
     //  Compute the intermediate values of the 
     //  dependent variables.
@@ -3130,7 +3067,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     one = AirplanevAngularVelocity;
     //one = DirectX::SimpleMath::Vector3::Transform(one, m_testInertiaTensorLocal);
     one = DirectX::SimpleMath::Vector3::Transform(one, m_vehicleStruct00.vehicleData.localInertiaMatrix);
-    
+
     zero = torqueForce - (AirplanevAngularVelocity.Cross(one));
     //testAngVel += DirectX::SimpleMath::Vector3::Transform(zero, m_testInverseInertiaTensorLocal);
     testAngVel += DirectX::SimpleMath::Vector3::Transform(zero, m_vehicleStruct00.vehicleData.localInverseInertiaMatrix);
@@ -3177,6 +3114,81 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
     //aDQ->angularMomentum = static_cast<float>(aTimeDelta) * torqueForce;
 }
 
+void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, MotionNPC* aDeltaQ, double aTimeDelta, float aQScale, MotionNPC* aDQ)
+{
+    //  Compute the intermediate values of the 
+    //  dependent variables.
+    MotionNPC newQ;
+    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+
+    //  Compute the total drag force
+    const float v = newQ.velocity.Length();
+    const float airDensity = m_environment->GetAirDensity();
+
+    float dragCoefficient = aVehicle->dragCoefficient;
+    float frontSurfaceArea = aVehicle->frontalArea;
+    const float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * v * v;
+    float mass = aVehicle->mass;
+    DirectX::SimpleMath::Vector3 velocityNorm = newQ.velocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
+    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 impactForceSum = m_vehicleStruct00.vehicleData.impactForceSum;
+
+    DirectX::SimpleMath::Vector3 angAccelVecTensorUpdate = DirectX::SimpleMath::Vector3::Zero;
+
+    velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate += impactForceSum;
+    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
+    {
+        float jumpMag = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude;
+        velocityUpdate += DirectX::SimpleMath::Vector3::UnitY * jumpMag * mass;
+    }
+    if (m_vehicleStruct00.vehicleData.jumpData.isJumpActive == false)
+    {
+        velocityUpdate += m_buoyancyTestForce;
+    }
+    DirectX::SimpleMath::Vector3 gravForce = m_environment->GetGravityVec();
+    velocityUpdate += gravForce * (mass);
+
+    DirectX::SimpleMath::Vector3 forwardThrustUpdate = GetForwardThrust(m_vehicleStruct00.vehicleData);
+    forwardThrustUpdate.y = 0.0f;
+    velocityUpdate += forwardThrustUpdate;
+
+    airResistance = velocityNorm * (-frontDragResistance);
+    airResistance.y = 0.0f;
+    velocityUpdate += airResistance;
+
+    // adds some floating flutter movement to vehicles when stationary 
+    if (m_npcAI->GetAiToggle() == false)
+    {
+        DirectX::SimpleMath::Vector3 flutter = DirectX::SimpleMath::Vector3::Zero;
+        float flutterMod = (((cos((static_cast<float>(m_testTimer) * 2.0f) + m_testHoverFlutter) * 0.5f) + 0.0f) * 1.0f) + 1.0f;
+        flutter.y = flutterMod * 7.0f;
+        //velocityUpdate += flutter * mass;
+    }
+
+    ////////////////////////////velocityUpdate += m_vehicleStruct00.vehicleData.collisionImpulseForceSum;
+
+    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
+    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
+    /////////////////////////////////////////
+    // Angular
+    newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
+    newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
+    DirectX::SimpleMath::Vector3 torqueAccum = m_vehicleStruct00.vehicleData.vehicleAngularForcesSum;
+    //torqueAccum = DirectX::SimpleMath::Vector3::UnitX * m_testTorque;
+    torqueAccum += newQ.angularVelocity;
+    torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_vehicleStruct00.vehicleData.localInverseInertiaMatrix);
+
+    //torqueAccum += newQ.angularVelocity;
+    torqueAccum += (m_vehicleStruct00.vehicleData.angularDrag);
+    //torqueAccum *= 0.8f;
+    aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
+    aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
+}
+
 void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
 {
     const float numEqns = static_cast<float>(6);
@@ -3189,12 +3201,6 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 preAngVelocity = aVehicle->q.angularVelocity;
     DirectX::SimpleMath::Vector3 preAngPos = aVehicle->q.angularMomentum;
-    UpdateAngularDrag(static_cast<float>(aTimeDelta));
-    //aVehicle->impactForceSum = GetImpactForceSum(m_vehicleStruct00.vehicleData);
-    //aVehicle->impactForceSum = m_vehicleStruct00.vehicleData.testProjectileImpulse;
-    //aVehicle->impactForceSum += GetImpactForceSum(m_vehicleStruct00.vehicleData);
-    //m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.testProjectileImpulse.Length() ", m_vehicleStruct00.vehicleData.testProjectileImpulse.Length(), "");
-    //m_debugData->DebugPushUILineDecimalNumber("GetImpactForceSum(m_vehicleStruct00.vehicleData).Length() ", GetImpactForceSum(m_vehicleStruct00.vehicleData).Length(), "");
 
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
@@ -3207,30 +3213,11 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
-
     DirectX::SimpleMath::Vector3 angularMomentumUpdate = (dq1.angularMomentum + 2.0 * dq2.angularMomentum + 2.0 * dq3.angularMomentum + dq4.angularMomentum) / numEqns;
     DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
 
-    Utility::Torque bodyTorqueUpdate;
-    bodyTorqueUpdate.axis = (dq1.bodyTorqueForce.axis + 2.0 * dq2.bodyTorqueForce.axis + 2.0 * dq3.bodyTorqueForce.axis + dq4.bodyTorqueForce.axis) / numEqns;
-    bodyTorqueUpdate.magnitude = (dq1.bodyTorqueForce.magnitude + 2.0f * dq2.bodyTorqueForce.magnitude + 2.0f * dq3.bodyTorqueForce.magnitude + dq4.bodyTorqueForce.magnitude) / numEqns;
-    q.bodyTorqueForce.axis += bodyTorqueUpdate.axis;
-    q.bodyTorqueForce.magnitude += bodyTorqueUpdate.magnitude;
-
     q.velocity += velocityUpdate;
     q.position += posUpdate;
-
-
-    const float maxAngVelocity = 100.0f;
-    if (angularVelocityUpdate.Length() > maxAngVelocity)
-    {
-        DirectX::SimpleMath::Vector3 boundVec = angularVelocityUpdate;
-        boundVec.Normalize();
-        //boundVec *= maxAngVelocity * 0.5f;
-       
-        angularVelocityUpdate = boundVec;
-    }
-
 
     q.angularMomentum += angularMomentumUpdate;
     q.angularVelocity += angularVelocityUpdate;
@@ -3238,21 +3225,8 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     m_prevYvelocityStep = velocityUpdate.y;
     m_prevYvelocityQ = q.velocity.y;
 
-    //float testMax = std::numeric_limits<float>::max();
-    /*
-    const float maxAngVelocity = 100.0f;
-    if (q.angularVelocity.Length() > maxAngVelocity)
-    {
-        DirectX::SimpleMath::Vector3 boundVec = q.angularVelocity;
-        boundVec.Normalize();
-        boundVec *= maxAngVelocity * 0.5f;
-        q.angularVelocity = boundVec;
-    }
-    */
     aVehicle->q.velocity = q.velocity;
     aVehicle->q.position = q.position;
-    aVehicle->q.bodyTorqueForce = q.bodyTorqueForce;
-
     aVehicle->q.angularVelocity = q.angularVelocity;
     aVehicle->q.angularMomentum = q.angularMomentum;
 }
@@ -3313,9 +3287,6 @@ void NPCVehicle::UpdateAlignmentNew(const float aTimeDelta)
 
     m_vehicleStruct00.vehicleData.alignmentInverse = m_vehicleStruct00.vehicleData.alignment;
     m_vehicleStruct00.vehicleData.alignmentInverse = m_vehicleStruct00.vehicleData.alignmentInverse.Invert();
-    //m_heli.alignmentQuat = m_heli.q.angularQuatUpdateTest;
-    //m_heli.inverseAlignmentQuat = m_heli.alignmentQuat;
-    //m_heli.inverseAlignmentQuat.Inverse(m_heli.inverseAlignmentQuat);
 
     m_vehicleStruct00.vehicleData.up = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_vehicleStruct00.vehicleData.alignment);
     m_vehicleStruct00.vehicleData.right = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleStruct00.vehicleData.alignment);
@@ -3324,9 +3295,14 @@ void NPCVehicle::UpdateAlignmentNew(const float aTimeDelta)
     m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
     m_vehicleStruct00.vehicleData.alignmentInverse = m_vehicleStruct00.vehicleData.alignment;
     m_vehicleStruct00.vehicleData.alignmentInverse = m_vehicleStruct00.vehicleData.alignmentInverse.Invert();
+    m_vehicleStruct00.vehicleData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleStruct00.vehicleData.alignment);
+    m_vehicleStruct00.vehicleData.alignmentQuat.Normalize();
     m_vehicleStruct00.vehicleData.alignmentInverseQuat = m_vehicleStruct00.vehicleData.alignmentQuat;
     m_vehicleStruct00.vehicleData.alignmentInverseQuat.Inverse(m_vehicleStruct00.vehicleData.alignmentInverseQuat);
     m_vehicleStruct00.vehicleData.alignmentInverseQuat.Normalize();
+
+    m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
+    m_vehicleStruct00.vehicleData.collisionBox.Orientation = m_vehicleStruct00.vehicleData.alignmentQuat;
 }
 
 
@@ -3373,122 +3349,6 @@ void NPCVehicle::UpdateAlignment()
     m_vehicleStruct00.vehicleData.collisionBox.Orientation = updateQuat;
 }
 
-void NPCVehicle::UpdateAlignment2()
-{
-    DirectX::SimpleMath::Matrix preAlignment = m_vehicleStruct00.vehicleData.alignment;
-    DirectX::SimpleMath::Quaternion preAlignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleStruct00.vehicleData.alignment);
-    DirectX::SimpleMath::Matrix torqueMat;
-    const float tol = 0.0001f;
-    if (abs(m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude) < tol || m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis.Length() < tol)
-    {
-        torqueMat = DirectX::SimpleMath::Matrix::Identity;
-    }
-    else
-    {
-        m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis.Normalize();
-        torqueMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis, m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude);
-    }
-
-    const float t = 0.5f;
-    DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(torqueMat);
-    DirectX::SimpleMath::Matrix postAlignment = DirectX::SimpleMath::Matrix::Transform(preAlignment, rotQuat);
-
-    if (1 == 0)
-    {
-        m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Lerp(preAlignment, postAlignment, t);
-    }
-    else
-    {
-        DirectX::SimpleMath::Vector3 testAngVec = m_vehicleStruct00.vehicleData.q.angularVelocity;
-
-        if (testAngVec != DirectX::SimpleMath::Vector3::Zero)
-        {
-            if (testAngVec.Length() < 100000000.0f)
-            {
-                if (m_vehicleStruct00.vehicleData.id % 2 == 0)
-                {
-                    DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angularVelocity;
-                    //DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angPosVec;
-                    axis.Normalize();
-                    DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularVelocity.Length());
-                    //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angPosVec.Length());
-                    m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);
-                }
-                else
-                {
-                    //DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angularVelocityVec;
-                    DirectX::SimpleMath::Vector3 axis = m_vehicleStruct00.vehicleData.q.angularMomentum;
-                    axis.Normalize();
-                    //DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularVelocityVec.Length());
-                    DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, m_vehicleStruct00.vehicleData.q.angularMomentum.Length());
-                    m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);
-                }
-
-            }
-            else
-            {
-                DirectX::SimpleMath::Vector3 axis = DirectX::SimpleMath::Vector3::UnitY;
-                axis.Normalize();
-                DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(axis, 0.0f);
-                //m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Transform(m_vehicleStruct00.vehicleData.alignment, testQuat);
-                m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::Identity;
-                //m_vehicleStruct00.vehicleData.q.angularVelocityVec = DirectX::SimpleMath::Vector3::UnitY;
-            }
-        }
-    }
-
-    m_vehicleStruct00.vehicleData.up = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitY, m_vehicleStruct00.vehicleData.alignment);
-    m_vehicleStruct00.vehicleData.up.Normalize();
-    m_vehicleStruct00.vehicleData.right = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleStruct00.vehicleData.alignment);
-    m_vehicleStruct00.vehicleData.right.Normalize();
-    m_vehicleStruct00.vehicleData.forward = DirectX::SimpleMath::Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX, m_vehicleStruct00.vehicleData.alignment);
-    m_vehicleStruct00.vehicleData.forward.Normalize();
-
-    m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
-
-    DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleStruct00.vehicleData.alignment);
-    updateQuat.Normalize();
-    m_vehicleStruct00.vehicleData.collisionBox.Orientation = updateQuat;
-
-    /*
-    DirectX::SimpleMath::Vector3 torqueAxis = m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis;
-    //torqueAxis = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 testVec1 = torqueAxis;
-    testVec1 = DirectX::SimpleMath::Vector3::Transform(testVec1, torqueMat);
-    //testVec1.y += 0.0001f;
-    //testVec1.Normalize();
-
-    //DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3::Zero;
-
-    DirectX::SimpleMath::Vector3 testVec = torqueAxis.Cross(testVec1);
-    testVec.Normalize();
-
-    DirectX::SimpleMath::Vector3 preAngVec = testVec;
-    //preAngVec = DirectX::SimpleMath::Vector3::Transform(preAngVec, torqueMat);
-    DirectX::SimpleMath::Vector3 postAngVec = testVec;
-    postAngVec = DirectX::SimpleMath::Vector3::Transform(postAngVec, torqueMat);
-    //float angularVelocity = Utility::GetAngleBetweenVectors(preAngVec, postAngVec);
-    float angularVelocity = 0.0f;
-
-    if (abs(m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude) < tol || m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis.Length() < tol)
-    {
-        angularVelocity = 0.0f;
-    }
-    else
-    {
-
-    }
-
-    if (angularVelocity > 1.5f)
-    {
-
-        //float angularVelocity2 = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, postAngVec);
-    }
-
-    m_debugData->DebugPushUILineDecimalNumber("Angular Velocity = ", angularVelocity, "");
-    */
-}
-
 void NPCVehicle::UpdateAngularDrag(const float aTimeDelta)
 {
     const float angAirDensity = m_environment->GetAirDensity();
@@ -3526,98 +3386,6 @@ void NPCVehicle::UpdateAngularDrag(const float aTimeDelta)
     */
 }
 
-Utility::Torque NPCVehicle::UpdateBodyTorqueRunge(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep)
-{
-    Utility::Torque impactTorque;
-    impactTorque.axis = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.axis;
-    impactTorque.magnitude = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.magnitude;
-    //impactTorque.magnitude *= .0000392f;
-    Utility::Torque gravTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.environment->GetGravityVec());
-    Utility::Torque steeringTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.vehicleData.right * (m_vehicleStruct00.vehicleData.controlInput.steeringInput));
-
-    if (steeringTorque.magnitude > Utility::GetMaxAngularForce())
-    {
-        steeringTorque.magnitude = Utility::GetMaxAngularForce();
-    }
-    if (gravTorque.magnitude > Utility::GetMaxAngularForce())
-    {
-        gravTorque.magnitude = Utility::GetMaxAngularForce();
-    }
-    if (impactTorque.magnitude > Utility::GetMaxAngularForce())
-    {
-        impactTorque.magnitude = Utility::GetMaxAngularForce();
-    }
-
-    DirectX::SimpleMath::Vector3 steeringVec = steeringTorque.axis * steeringTorque.magnitude;
-    DirectX::SimpleMath::Vector3 gravVec = gravTorque.axis * gravTorque.magnitude;
-    DirectX::SimpleMath::Vector3 impactVec = impactTorque.axis * impactTorque.magnitude;
-    DirectX::SimpleMath::Vector3 torqueVec = steeringVec + gravVec + impactVec;
-    //torqueVec = steeringVec + gravVec + impactVec + m_testTorqueVec;
-    torqueVec = steeringVec + gravVec + impactVec;
-    //torqueVec = steeringVec + gravVec + m_testTorqueVec;
-    if (m_vehicleStruct00.vehicleData.isExploding == true)
-    {
-        torqueVec = steeringVec + impactVec;
-        torqueVec = steeringVec + gravVec + impactVec;
-        //torqueVec = steeringVec + m_testTorqueVec;
-        //torqueVec = steeringVec + gravVec + impactVec + m_testTorqueVec;
-        torqueVec = steeringVec + gravVec + impactVec;
-    }
-
-    aAngVec = torqueVec;
-
-    Utility::Torque updatedTorque;
-    updatedTorque.axis = DirectX::SimpleMath::Vector3::Zero;
-    updatedTorque.magnitude = 0.0f;
-    return updatedTorque;
-}
-
-DirectX::SimpleMath::Vector3 NPCVehicle::UpdateBodyTorqueRungeLocal(const float aTimeStep)
-{
-    Utility::Torque impactTorque;
-    impactTorque.axis = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.axis;
-    impactTorque.magnitude = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.magnitude;
-    impactTorque.axis = DirectX::SimpleMath::Vector3::Transform(impactTorque.axis, m_vehicleStruct00.vehicleData.alignmentInverse);
-    //impactTorque.magnitude *= .0000392f;
-    Utility::Torque gravTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.environment->GetGravityVec());
-    Utility::Torque steeringTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.vehicleData.right * (m_vehicleStruct00.vehicleData.controlInput.steeringInput));
-    gravTorque.axis = DirectX::SimpleMath::Vector3::Transform(gravTorque.axis, m_vehicleStruct00.vehicleData.alignmentInverse);
-    steeringTorque.axis = DirectX::SimpleMath::Vector3::Transform(steeringTorque.axis, m_vehicleStruct00.vehicleData.alignmentInverse);
-    steeringTorque.magnitude *= m_vehicleStruct00.vehicleData.controlInput.steeringForceMod;
-    gravTorque.magnitude *= m_vehicleStruct00.vehicleData.controlInput.steeringForceMod;
-    if (steeringTorque.magnitude > Utility::GetMaxAngularForce())
-    {
-        steeringTorque.magnitude = Utility::GetMaxAngularForce();
-    }
-    if (gravTorque.magnitude > Utility::GetMaxAngularForce())
-    {
-        gravTorque.magnitude = Utility::GetMaxAngularForce();
-    }
-    if (impactTorque.magnitude > Utility::GetMaxAngularForce())
-    {
-        impactTorque.magnitude = Utility::GetMaxAngularForce();
-    }
-
-    DirectX::SimpleMath::Vector3 steeringVec = steeringTorque.axis * steeringTorque.magnitude;
-    DirectX::SimpleMath::Vector3 gravVec = gravTorque.axis * gravTorque.magnitude;
-    DirectX::SimpleMath::Vector3 impactVec = impactTorque.axis * impactTorque.magnitude;
-    DirectX::SimpleMath::Vector3 torqueVec = steeringVec + gravVec + impactVec;
-    //torqueVec = steeringVec + gravVec + impactVec + m_testTorqueVec;
-    torqueVec = steeringVec + gravVec + impactVec;
-    //torqueVec = steeringVec + gravVec + m_testTorqueVec;
-    if (m_vehicleStruct00.vehicleData.isExploding == true)
-    {
-        torqueVec = steeringVec + impactVec;
-        torqueVec = steeringVec + gravVec + impactVec;
-        //torqueVec = steeringVec + m_testTorqueVec;
-        //torqueVec = steeringVec + gravVec + impactVec + m_testTorqueVec;
-        torqueVec = steeringVec + gravVec + impactVec;
-    }
-
-    //aAngVec = torqueVec;
-
-    return torqueVec;
-}
 
 DirectX::SimpleMath::Vector3 NPCVehicle::UpdateBodyTorqueRungeLocalNew(const float aTimeStep)
 {
@@ -3625,6 +3393,56 @@ DirectX::SimpleMath::Vector3 NPCVehicle::UpdateBodyTorqueRungeLocalNew(const flo
     impactTorque.axis = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.axis;
     impactTorque.magnitude = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.magnitude;
     impactTorque.axis = DirectX::SimpleMath::Vector3::Transform(impactTorque.axis, m_vehicleStruct00.vehicleData.alignmentInverse);
+
+    Utility::Torque gravTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.environment->GetGravityVec());
+    Utility::Torque steeringTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.vehicleData.right * (m_vehicleStruct00.vehicleData.controlInput.steeringInput));
+    gravTorque.axis = DirectX::SimpleMath::Vector3::Transform(gravTorque.axis, m_vehicleStruct00.vehicleData.alignmentInverse);
+    steeringTorque.axis = DirectX::SimpleMath::Vector3::Transform(steeringTorque.axis, m_vehicleStruct00.vehicleData.alignmentInverse);
+    steeringTorque.magnitude *= m_vehicleStruct00.vehicleData.controlInput.steeringForceMod;
+    gravTorque.magnitude *= m_vehicleStruct00.vehicleData.controlInput.steeringForceMod;
+    /*
+    if (steeringTorque.magnitude > Utility::GetMaxAngularForce())
+    {
+        steeringTorque.magnitude = Utility::GetMaxAngularForce();
+    }
+    if (gravTorque.magnitude > Utility::GetMaxAngularForce())
+    {
+        gravTorque.magnitude = Utility::GetMaxAngularForce();
+    }
+    if (impactTorque.magnitude > Utility::GetMaxAngularForce())
+    {
+        impactTorque.magnitude = Utility::GetMaxAngularForce();
+    }
+    */
+
+    DirectX::SimpleMath::Vector3 steeringVec = steeringTorque.axis * steeringTorque.magnitude;
+    DirectX::SimpleMath::Vector3 gravVec = gravTorque.axis * gravTorque.magnitude;
+    DirectX::SimpleMath::Vector3 impactVec = impactTorque.axis * impactTorque.magnitude;
+    DirectX::SimpleMath::Vector3 torqueVec = steeringVec + gravVec + impactVec;
+    //torqueVec = steeringVec + gravVec + impactVec + m_testTorqueVec;
+    torqueVec = steeringVec + gravVec + impactVec;
+    //torqueVec = steeringVec + gravVec;
+    //torqueVec = steeringVec + gravVec + m_testTorqueVec;
+    if (m_vehicleStruct00.vehicleData.isExploding == true)
+    {
+        torqueVec = steeringVec + impactVec;
+        torqueVec = steeringVec + gravVec + impactVec;
+        //torqueVec = steeringVec + m_testTorqueVec;
+        //torqueVec = steeringVec + gravVec + impactVec + m_testTorqueVec;
+        torqueVec = steeringVec + gravVec + impactVec;
+    }
+
+    //aAngVec = torqueVec;
+
+    return torqueVec;
+}
+
+DirectX::SimpleMath::Vector3 NPCVehicle::UpdateBodyTorqueRungeLocalOld(const float aTimeStep)
+{
+    Utility::Torque impactTorque;
+    impactTorque.axis = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.axis;
+    impactTorque.magnitude = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.magnitude;
+    impactTorque.axis = DirectX::SimpleMath::Vector3::Transform(impactTorque.axis, m_vehicleStruct00.vehicleData.alignmentInverse);
     //impactTorque.magnitude *= .0000392f;
     Utility::Torque gravTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.environment->GetGravityVec());
     Utility::Torque steeringTorque = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos, -m_vehicleStruct00.vehicleData.right * (m_vehicleStruct00.vehicleData.controlInput.steeringInput));
@@ -3664,105 +3482,6 @@ DirectX::SimpleMath::Vector3 NPCVehicle::UpdateBodyTorqueRungeLocalNew(const flo
     //aAngVec = torqueVec;
 
     return torqueVec;
-}
-
-Utility::Torque NPCVehicle::UpdateBodyTorqueRungeOld(DirectX::SimpleMath::Vector3& aAngVec, const float aTimeStep)
-{
-    Utility::Torque impactTorque = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
-    impactTorque.axis.Normalize();
-    Utility::Torque impactTorque2 = impactTorque;
-    const DirectX::SimpleMath::Vector3 centerMassPos = m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
-    const DirectX::SimpleMath::Vector3 rotorPos = m_vehicleStruct00.vehicleData.hardPoints.verticalStabilizerPos;
-    DirectX::SimpleMath::Vector3 gravityForce = -m_vehicleStruct00.environment->GetGravityVec();
-    DirectX::SimpleMath::Vector3 gravityTorqueArm = rotorPos - centerMassPos;
-    Utility::Torque gravTorque = Utility::GetTorqueForce(gravityTorqueArm, gravityForce);
-    //gravTorque.magnitude *= aTimeStep;
-
-    DirectX::SimpleMath::Vector3 tailRotorTorqueArm = m_vehicleStruct00.vehicleData.hardPoints.steeringTorqueArmPos - centerMassPos;
-    DirectX::SimpleMath::Vector3 tailForce = -m_vehicleStruct00.vehicleData.right * (m_vehicleStruct00.vehicleData.controlInput.steeringInput) * 1.0f;
-    Utility::Torque steeringTorque = Utility::GetTorqueForce(tailRotorTorqueArm, tailForce);
-
-    impactTorque.axis = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.axis;
-    impactTorque.magnitude = m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.magnitude;
-    //impactTorque.magnitude *= .0000392f;
-
-    DirectX::SimpleMath::Vector3 torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude);
-    float torqueMag = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude;
-
-    if (m_vehicleStruct00.vehicleData.isExploding == true)
-    {
-        //torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude);
-        //torqueMag = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude;
-        torqueAxis = (impactTorque.axis * impactTorque.magnitude);
-        torqueMag = impactTorque.magnitude;
-    }
-    Utility::Torque testPrevTorque = m_vehicleStruct00.vehicleData.q.bodyTorqueForce;
-    testPrevTorque.magnitude *= 0.0000001f;
-    if (testPrevTorque.magnitude > 0.1f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-
-    if (impactTorque.axis.Length() > 1.1f || impactTorque.axis.Length() < 0.9f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-    //torqueAxis = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude) + (testPrevTorque.axis * testPrevTorque.magnitude);
-    //torqueMag = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude + testPrevTorque.magnitude;
-
-    if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
-    {
-        DirectX::SimpleMath::Vector3 jumpTorqueAxis = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.torqueArm;
-        float jumpTorqueMag = m_vehicleStruct00.vehicleData.jumpData.impulseBurnForce.currentMagnitude * 0.55f;
-        DirectX::SimpleMath::Vector3 torqueAxis2 = (impactTorque.axis * impactTorque.magnitude) + (gravTorque.axis * gravTorque.magnitude) + (steeringTorque.axis * steeringTorque.magnitude) + (jumpTorqueAxis * jumpTorqueMag);
-        float torqueMag2 = impactTorque.magnitude + gravTorque.magnitude + steeringTorque.magnitude + jumpTorqueMag;
-        torqueAxis = torqueAxis2;
-        torqueMag = torqueMag2;
-    }
-    impactTorque.axis.Normalize();
-    DirectX::SimpleMath::Vector3 steeringVec = steeringTorque.axis * steeringTorque.magnitude;
-    DirectX::SimpleMath::Vector3 gravVec = gravTorque.axis * gravTorque.magnitude;
-    DirectX::SimpleMath::Vector3 impactVec = impactTorque.axis * impactTorque.magnitude;
-    DirectX::SimpleMath::Vector3 torqueVec = steeringVec + gravVec + impactVec;
-    //torqueVec = steeringVec + gravVec + m_testTorqueVec;
-    if (m_vehicleStruct00.vehicleData.isExploding == true)
-    {
-        torqueVec = steeringVec + impactVec;
-        torqueVec = steeringVec + gravVec + impactVec;
-        //torqueVec = steeringVec + m_testTorqueVec;
-    }
-
-    if (impactVec != m_testTorqueVec || m_testTorqueVec.Length() > 0.1f)
-    {
-        Utility::Torque impactTorque3 = GetImpactTorqueSum(m_vehicleStruct00.vehicleData);
-        float impVecLength = impactVec.Length();
-        float testTorqueLength = m_testTorqueVec.Length();
-        float impactTorque2Mag = impactTorque2.magnitude;
-        int testBreak = 0;
-        testBreak++;
-    }
-
-    if (impactTorque.axis.Length() < 1.5f && impactTorque.axis.Length() > 0.5f)
-    {
-        impactVec *= 1.0f;
-        //torqueVec += impactVec;
-    }
-
-    if (torqueVec.Length() > 1000.0f || torqueVec.Length() < 0.0f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-
-    aAngVec = torqueVec;
-
-    Utility::Torque updatedTorque;
-    updatedTorque.axis = torqueAxis;
-    updatedTorque.axis.Normalize();
-    updatedTorque.magnitude = torqueMag / m_vehicleStruct00.vehicleData.mass;
-    return updatedTorque;
 }
 
 void NPCVehicle::UpdateControlInput()
@@ -3945,9 +3664,9 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         //Utility::UpdateImpulseForceBellCurve2(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         //Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
-        //Utility::UpdateImpulseForceCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        Utility::UpdateImpulseForceCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         //Utility::UpdateImpulseForceBellCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
-        Utility::UpdateImpulseForceCurveProjectile(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        //Utility::UpdateImpulseForceCurveProjectile(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
         if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)
@@ -3977,6 +3696,7 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         }
     }
 
+    /*
     if (torqueSum.axis.Length() > 1.1f || torqueSum.axis.Length() < 0.9f)
     {
         if (torqueSum.magnitude == 0.0f)
@@ -3990,9 +3710,11 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
             testBreak++;
         }
     }
+    */
 
     torqueSum.axis.Normalize();
 
+    /*
     if (forceSum.Length() > 1600000.0f)
     {
         float forceSumLength = forceSum.Length();
@@ -4004,24 +3726,19 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         int testBreak = 0.0f;
         testBreak++;
     }
+    */
+
     m_vehicleStruct00.vehicleData.testProjectileImpulse = forceSum;
     m_vehicleStruct00.vehicleData.testProjectileTorque = torqueSum;
     m_vehicleStruct00.vehicleData.collisionImpulseForceSum = forceSum;
     m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum = torqueSum;
 
-    //m_vehicleStruct00.vehicleData.collisionImpulseForceSum = DirectX::SimpleMath::Vector3::Zero;
-    //m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.axis = DirectX::SimpleMath::Vector3::Zero;
-    //m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum.magnitude = 0.0f;
 
     Utility::Torque zeroTorque;
     zeroTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     zeroTorque.magnitude = 0.0f;
     m_testTorqueVec = DirectX::SimpleMath::Vector3::Zero;
-    //m_vehicleStruct00.vehicleData.testProjectileImpulse = DirectX::SimpleMath::Vector3::Zero;
-    //m_vehicleStruct00.vehicleData.testProjectileTorque = zeroTorque;
-    //m_vehicleStruct00.vehicleData.collisionImpulseForceSum = DirectX::SimpleMath::Vector3::Zero;
-    //m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum = zeroTorque;
-
+ 
     m_vehicleStruct00.vehicleData.impulseForceVec.erase(
         std::remove_if(
             m_vehicleStruct00.vehicleData.impulseForceVec.begin(),
@@ -4234,11 +3951,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         //m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.q.velocity.z ", m_vehicleStruct00.vehicleData.q.velocity.z, "");
     }
 
-    m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
-
-    m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.collisionBox.CenterX", m_vehicleStruct00.vehicleData.collisionBox.Center.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.collisionBox.CenterY", m_vehicleStruct00.vehicleData.collisionBox.Center.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.collisionBox.CenterZ", m_vehicleStruct00.vehicleData.collisionBox.Center.z, "");
+    
     UpdateAlignmentNew(static_cast<float>(aTimeDelta));
     
     /*
@@ -4298,8 +4011,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     m_vehicleStruct00.vehicleData.impactForce.impactMass = 0.0f;
     m_vehicleStruct00.vehicleData.impactForce.impactVelocity = DirectX::SimpleMath::Vector3::Zero;
-    m_vehicleStruct00.vehicleData.q.bodyTorqueForce.axis = DirectX::SimpleMath::Vector3::Zero;
-    m_vehicleStruct00.vehicleData.q.bodyTorqueForce.magnitude = 0.0f;
 
     m_vehicleStruct00.vehicleData.impactTorque.axis = DirectX::SimpleMath::Vector3::Zero;
     m_vehicleStruct00.vehicleData.impactTorque.magnitude = 0.0f;
@@ -4870,7 +4581,7 @@ void NPCVehicle::UpdateVehicleForces(const float aTimeStep)
     DirectX::SimpleMath::Vector3 angularVec = UpdateBodyTorqueRungeLocalNew(aTimeStep);
     m_vehicleStruct00.vehicleData.vehicleAngularForcesSum = angularVec;
 
-    m_vehicleStruct00.vehicleData.angularDrag = CalculateDragAngularLocal(m_vehicleStruct00.vehicleData.q.angularVelocity);
+    m_vehicleStruct00.vehicleData.angularDrag = CalculateDragAngularLocal(m_vehicleStruct00.vehicleData.q.angularVelocity, aTimeStep);
 
     // angular
     /*

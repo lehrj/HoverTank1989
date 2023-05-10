@@ -205,17 +205,13 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngularLocal(const DirectX::S
     angFrontSurfaceArea = airSurfaceArea;
 
     DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * airSurfaceArea * angAirDensity)));
-
     
-    //angularDrag = m_heli.q.angularMomentum;
-    //angularDrag *= 0.2f;
-    //angularDrag *= -1.0f;
-    
-    m_debugData->DebugPushUILineDecimalNumber("angularDrag.L = ", angularDrag.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("angularDrag.L  = ", angularDrag.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("aAngVelocity.L = ", aAngVelocity.Length(), "");
     DirectX::SimpleMath::Vector3 angWorld = angularDrag;
     angWorld = DirectX::SimpleMath::Vector3::Transform(angularDrag, m_heli.alignment);
     //m_debugData->PushDebugLine(m_heli.q.position, angWorld, 7.0f, 0.0, DirectX::Colors::Orange);
-
+    //angularDrag = aAngVelocity * -0.2f;
     return angularDrag;
 }
 
@@ -2111,6 +2107,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
     DirectX::SimpleMath::Vector3 momentumUpdate = newQ.angularMomentum;
     momentumUpdate *= m_angularDampConst;
 
@@ -2158,7 +2155,7 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     //aDQ->angularMomentum = static_cast<float>(aTimeDelta) * torqueForce;
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * momentumUpdate;
     //aDQ->angularMomentum = static_cast<float>(aTimeDelta) * (DirectX::SimpleMath::Vector3::UnitX * 100.0f);
-
+    */
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //DirectX::SimpleMath::Vector3 torqueAccum = m_testTorqueLocal;
     DirectX::SimpleMath::Vector3 torqueAccum = aHeli->vehicleAngularForcesSum;
@@ -2173,21 +2170,21 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    /*
     DirectX::SimpleMath::Vector3 torqueForceorld = torqueForce;
     torqueForceorld = DirectX::SimpleMath::Vector3::Transform(torqueForceorld, m_heli.alignment);
     DirectX::SimpleMath::Vector3 momentumUpdateWorld = momentumUpdate;
     momentumUpdateWorld = DirectX::SimpleMath::Vector3::Transform(momentumUpdateWorld, m_heli.alignment);
     DirectX::SimpleMath::Vector3 momentumUpdateWorld2 = momentumUpdate2;
     momentumUpdateWorld2 = DirectX::SimpleMath::Vector3::Transform(momentumUpdateWorld2, m_heli.alignment);
-
+    */
     //m_debugData->DebugPushUILineDecimalNumber("torqueForce    ", torqueForce.Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("momentumUpdate ", momentumUpdate.Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("momentumUpdate2", momentumUpdate2.Length(), "");
 
-    m_debugData->PushDebugLine(m_heli.q.position, torqueForceorld, 10.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_heli.q.position, momentumUpdateWorld, 15.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(m_heli.q.position, momentumUpdateWorld2, 20.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLine(m_heli.q.position, torqueForceorld, 10.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_heli.q.position, momentumUpdateWorld, 15.0f, 0.0f, DirectX::Colors::Blue);
+    //m_debugData->PushDebugLine(m_heli.q.position, momentumUpdateWorld2, 20.0f, 0.0f, DirectX::Colors::Yellow);
 }
 
 void Vehicle::RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ)
@@ -2328,32 +2325,6 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     aHeli->q.velocity = q.velocity;
     aHeli->q.position = q.position;
 
-    float adq1X = dq1.angularVelocity.x;
-    float adq2X = dq2.angularVelocity.x;
-    float adq3X = dq3.angularVelocity.x;
-    float adq4X = dq4.angularVelocity.x;
-
-    float dq1Pz = dq1.velocity.z;
-    float dq2Pz = dq2.velocity.z;
-    float dq3Pz = dq3.velocity.z;
-    float dq4Pz = dq4.velocity.z;
-
-    float delta = 0.0f;
-    //delta += abs(dq1Pz - dq2Pz);
-    //delta += abs(dq2Pz - dq3Pz);
-    //delta += abs(dq3Pz - dq4Pz);
-
-    delta += abs(adq1X - adq2X);
-    delta += abs(adq2X - adq3X);
-    delta += abs(adq3X - adq4X);
-    delta *= 100.0f;
-    m_debugData->DebugPushUILineDecimalNumber("delta", delta, "");
-    m_debugData->DebugPushUILineDecimalNumber("dq1Pz", dq1Pz, "");
-    m_debugData->DebugPushUILineDecimalNumber("dq2Pz", dq2Pz, "");
-    m_debugData->DebugPushUILineDecimalNumber("dq3Pz", dq3Pz, "");
-    m_debugData->DebugPushUILineDecimalNumber("dq4Pz", dq4Pz, "");
-
-
     aHeli->q.angularVelocity = q.angularVelocity;
     aHeli->q.angularMomentum = q.angularMomentum;
 }
@@ -2423,7 +2394,6 @@ void Vehicle::UpdateAlignment(const float aTimeDelta)
 
     m_heli.cameraOrientation = DirectX::XMMatrixLookAtRH(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
     m_heli.cameraOrientation = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
-    
 }
 
 void Vehicle::UpdateAlignmentCamera()
@@ -2510,7 +2480,7 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocalNew(DirectX::SimpleMa
     DirectX::SimpleMath::Vector3 terrainVec = m_testTerrainNormTorque.axis;
     terrainVec.Normalize();
     terrainVec *= m_testTerrainNormTorque.magnitude;
-    m_debugData->DebugPushUILineDecimalNumber("m_testTerrainNormTorque.magnitude ", m_testTerrainNormTorque.magnitude, "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_testTerrainNormTorque.magnitude ", m_testTerrainNormTorque.magnitude, "");
 
     DirectX::SimpleMath::Vector3 pendVec = aPendTorque.axis * aPendTorque.magnitude;
 
@@ -2524,14 +2494,14 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocalNew(DirectX::SimpleMa
 
     DirectX::SimpleMath::Vector3 terrainVecWorld = terrainVec;
     terrainVecWorld = DirectX::SimpleMath::Vector3::Transform(terrainVecWorld, m_heli.alignment);
-    m_debugData->PushDebugLine(m_heli.q.position, terrainVecWorld, 12.0f, 0.0f, DirectX::Colors::Teal);
+    //m_debugData->PushDebugLine(m_heli.q.position, terrainVecWorld, 12.0f, 0.0f, DirectX::Colors::Teal);
 
     DirectX::SimpleMath::Vector3 driveVecWorld = driveVec;
     driveVecWorld = DirectX::SimpleMath::Vector3::Transform(driveVecWorld, m_heli.alignment);
     //m_debugData->PushDebugLine(m_heli.q.position, driveVecWorld, 12.0f, 0.0f, DirectX::Colors::Lime);
 
     aAccelVec = torqueVec;
-    m_debugData->DebugPushUILineDecimalNumber("driveVec ", driveVec.Length(), "");
+
     return torqueVec;
 }
 
@@ -3581,11 +3551,11 @@ void Vehicle::UpdateTerrainNormTorqueNew()
     {
         forcePercentage = 0.0f;
     }
-    m_debugData->DebugPushUILineDecimalNumber("forcePercentage ", forcePercentage, "");
+    //m_debugData->DebugPushUILineDecimalNumber("forcePercentage ", forcePercentage, "");
     const DirectX::SimpleMath::Vector3 terrrainForce = m_heli.terrainNormal * (-m_heli.gravity.y);
     //slopeForceUpdate = (terrrainForce * forcePercentage) * mass;
     slopeForceUpdate = (terrrainForce * forcePercentage) * m_terrainTorqueForceMax;
-    m_debugData->DebugPushUILineDecimalNumber("slopeForceUpdate ", slopeForceUpdate.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("slopeForceUpdate ", slopeForceUpdate.Length(), "");
     DirectX::SimpleMath::Vector3 torqueArm = m_heli.centerOfMass - m_heli.mainRotorPos;
     updateTorque = Utility::GetTorqueForce(torqueArm, slopeForceUpdate);
     updateTorque.magnitude *= forceMod;
@@ -3939,7 +3909,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 speed = m_heli.q.velocity;
     //speed.y = 0.0f;
     m_heli.speed = speed.Length();
-    m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
+    //m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
     m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
     m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
 
@@ -3979,11 +3949,11 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     float angDegrees = Utility::ToDegrees(angRad);
     float angDegreesPerSecond = angDegrees / aTimeDelta;
     float angRadsPerSecond = angRad / aTimeDelta;
-    m_debugData->DebugPushUILineDecimalNumber("angDegreesPerSecond ", angDegreesPerSecond, "");
-    m_debugData->DebugPushUILineDecimalNumber("angRadsPerSecond ", angRadsPerSecond, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angDegreesPerSecond ", angDegreesPerSecond, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angRadsPerSecond ", angRadsPerSecond, "");
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
-    m_debugData->DebugPushUILineDecimalNumber("m_testTimer         ", m_testTimer, "");
+
     //m_debugData->DebugClearUI();
     DirectX::SimpleMath::Vector3 momWorld = m_heli.q.angularMomentum;
     momWorld = DirectX::SimpleMath::Vector3::Transform(momWorld, m_heli.alignment);
@@ -3993,13 +3963,14 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //m_debugData->PushDebugLine(m_heli.q.position, momWorld, 15.0f, 0.0f, DirectX::Colors::Blue);
     //m_debugData->PushDebugLine(m_heli.q.position, velWorld, 10.0f, 0.0f, DirectX::Colors::Red);
 
+    /*
     m_debugData->DebugPushUILineDecimalNumber("momWorld ", momWorld.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("velWorld ", velWorld.Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("m_testTorqueLocal ", m_testTorqueLocal.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("m_heli.vehicleAngularForcesSum ", m_heli.vehicleAngularForcesSum.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("m_heli.altitude ", m_heli.altitude, "");
     m_debugData->DebugPushUILineDecimalNumber("m_heli.q.position.x ", m_heli.q.position.x, "");
-
+    */
 
     //m_debugData->DebugClearUI();
     if (m_testTimer > 20.0f)
@@ -4019,6 +3990,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
 {
     UpdateCollisionImpulseForces(static_cast<float>(aTimeStep));
     m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularVelocity);
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.angularDrag ", m_heli.angularDrag.Length(), "");
     //m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularMomentum);
     //UpdateTestDrivetrainTorqueLocal(aTimeStep);
     UpdateTestDrivetrainTorqueLocalNew(aTimeStep);
