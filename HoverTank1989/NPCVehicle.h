@@ -113,8 +113,10 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldAfterBurnLeftMatrix2 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix worldAfterBurnRightMatrix2 = DirectX::SimpleMath::Matrix::Identity;
 
-    const float burnFlickerFrequencyMod = 39.04f;
-    const float burnFlickerLengthMod = 7.1f;
+    //const float burnFlickerFrequencyMod = 39.04f;
+    //const float burnFlickerLengthMod = 7.1f;
+    const float burnFlickerFrequencyMod = 39.04;
+    const float burnFlickerLengthMod = 5.1f;
 
     float burnFlickerLegth = 0.0f;
 
@@ -150,6 +152,12 @@ struct NPCModel
     DirectX::SimpleMath::Matrix worldJetHousingShellLeftMatrix;
     DirectX::SimpleMath::Matrix localJetHousingShellRightMatrix;
     DirectX::SimpleMath::Matrix worldJetHousingShellRightMatrix;
+
+    float jetAntiTorqueRotationLeft = 0.0f;
+    float jetAntiTorqueRotationRight = 0.0f;
+    float jetAntiTorqueLengthBase = 0.0;
+    float jetAntiTorqueLengthLeft = 0.0;
+    float jetAntiTorqueLengthRight = 0.0f;
 
     float jetRotationLeft = 0.0f;
     float jetRotationLeftPrev = 0.0f;
@@ -421,6 +429,8 @@ struct VehicleData
     DirectX::SimpleMath::Quaternion alignmentQuat;
     DirectX::SimpleMath::Quaternion alignmentInverseQuat;
 
+    DirectX::SimpleMath::Quaternion alignmentQuatDelta = DirectX::SimpleMath::Quaternion::Identity;
+
     DirectX::SimpleMath::Vector3 forward;
     DirectX::SimpleMath::Vector3 right;
     DirectX::SimpleMath::Vector3 up;
@@ -638,6 +648,7 @@ private:
     void UpdateForceTorqueVecs();
     void UpdateHardPoints();
     void UpdateImpulseForces(const float aTimeDelta);
+    void UpdateJetCounterTorqueData(const float aTimeDelta);
     void UpdateJumpData(JumpData& aJumpData, const float aTimeDelta);
     void UpdateNPCModel(const double aTimeDelta);
     void UpdateVehicleForces(const float aTimeStep);
@@ -710,6 +721,7 @@ private:
 
     const float m_angularDampConst = 0.9f;
     const float m_angDragCoefficient = 0.3f;
+    const float m_angularDragMod = 0.3f;
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

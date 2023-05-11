@@ -3979,6 +3979,11 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
         testBreak++;
     }
     
+    DirectX::SimpleMath::Vector3 eulerVec = DirectX::SimpleMath::Vector3::Zero;
+    eulerVec = m_heli.alignmentQuat.ToEuler();
+    m_debugData->DebugPushUILineDecimalNumber("eulerVec.x", eulerVec.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("eulerVec.y", eulerVec.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("eulerVec.z", eulerVec.z, "");
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)

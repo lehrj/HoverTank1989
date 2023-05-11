@@ -314,7 +314,7 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
                     const float tol = 0.01f;
                     impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
                 }
-                //impulseToVec.totalTime = 0.3f;
+                impulseToVec.totalTime = 0.1f;
                 impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
                 //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
                 //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
@@ -496,7 +496,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
     DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
     const float low = 0.1f;
     const float high = 5.0f;
     //const float zPosOffSet = 12.0f;

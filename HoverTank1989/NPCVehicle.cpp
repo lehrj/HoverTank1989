@@ -327,7 +327,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::CalculateDragAngularLocal(const DirectX
     //m_debugData->DebugPushUILineDecimalNumber("angularDrag.z", angularDrag.z, "");
     m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, angularDrag, 20.0f, 0.0f, DirectX::Colors::Red);
     //angularDrag = aAngVelocity * -0.2f;
-    angularDrag = aAngVelocity * -powf(0.8f, aTimeStep);
+    angularDrag = aAngVelocity * -powf(m_angularDragMod, aTimeStep);
 
 
     //m_debugData->DebugPushUILineDecimalNumber("angularDrag.x", angularDrag.x, "");
@@ -3169,7 +3169,7 @@ void NPCVehicle::RightHandSide(struct VehicleData* aVehicle, MotionNPC* aQ, Moti
         //velocityUpdate += flutter * mass;
     }
 
-    ////////////////////////////velocityUpdate += m_vehicleStruct00.vehicleData.collisionImpulseForceSum;
+    velocityUpdate += m_vehicleStruct00.vehicleData.collisionImpulseForceSum;
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -3271,6 +3271,7 @@ void NPCVehicle::ToggleDebugBool()
 
 void NPCVehicle::UpdateAlignmentNew(const float aTimeDelta)
 {
+    DirectX::SimpleMath::Quaternion preQuat = m_vehicleStruct00.vehicleData.alignmentQuat;
     DirectX::SimpleMath::Quaternion updateAlignQuat;
     updateAlignQuat.x = m_vehicleStruct00.vehicleData.q.angularVelocity.x;
     updateAlignQuat.y = m_vehicleStruct00.vehicleData.q.angularVelocity.y;
@@ -3284,6 +3285,24 @@ void NPCVehicle::UpdateAlignmentNew(const float aTimeDelta)
     m_vehicleStruct00.vehicleData.alignmentQuat = updateAlignOutputQuat;
 
     m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_vehicleStruct00.vehicleData.alignmentQuat);
+
+    //////////////////////////////////
+    /*
+    DirectX::SimpleMath::Vector3 headingForward = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 headingUp = DirectX::SimpleMath::Vector3::UnitY;
+    float testVal = cos(m_testTimer);
+    float yaw = 0.0f;
+    float pitch = testVal;
+    float roll = 0.0f;
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(yaw, pitch, roll);
+    headingForward = DirectX::SimpleMath::Vector3::Transform(headingForward, rotMat);
+    headingUp = DirectX::SimpleMath::Vector3::Transform(headingUp, rotMat);
+    m_vehicleStruct00.vehicleData.forward = headingForward;
+    m_vehicleStruct00.vehicleData.up = headingUp;
+    m_vehicleStruct00.vehicleData.right = m_vehicleStruct00.vehicleData.forward.Cross(m_vehicleStruct00.vehicleData.up);
+    m_vehicleStruct00.vehicleData.alignment = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_vehicleStruct00.vehicleData.right, m_vehicleStruct00.vehicleData.up);
+    */
+    /////////////////////////////////
 
     m_vehicleStruct00.vehicleData.alignmentInverse = m_vehicleStruct00.vehicleData.alignment;
     m_vehicleStruct00.vehicleData.alignmentInverse = m_vehicleStruct00.vehicleData.alignmentInverse.Invert();
@@ -3303,6 +3322,20 @@ void NPCVehicle::UpdateAlignmentNew(const float aTimeDelta)
 
     m_vehicleStruct00.vehicleData.collisionBox.Center = m_vehicleStruct00.vehicleData.q.position;
     m_vehicleStruct00.vehicleData.collisionBox.Orientation = m_vehicleStruct00.vehicleData.alignmentQuat;
+
+
+    DirectX::SimpleMath::Quaternion postQuat = m_vehicleStruct00.vehicleData.alignmentQuat;
+    m_vehicleStruct00.vehicleData.alignmentQuatDelta = postQuat - preQuat;
+    m_vehicleStruct00.vehicleData.alignmentQuatDelta.Normalize();
+
+    DirectX::SimpleMath::Vector3 angularVelocity = m_vehicleStruct00.vehicleData.alignmentQuatDelta.ToEuler();
+
+    DirectX::SimpleMath::Vector3 angularDrag = angularVelocity * -powf(m_angularDragMod, aTimeDelta);
+    //m_vehicleStruct00.vehicleData.angularDrag = angularDrag;
+
+    //m_debugData->DebugPushUILineDecimalNumber("angularVelocityx", angularVelocity.x, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angularVelocityy", angularVelocity.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("angularVelocityz", angularVelocity.z, "");
 }
 
 
@@ -3664,15 +3697,15 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         //Utility::UpdateImpulseForceBellCurve2(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         //Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
-        Utility::UpdateImpulseForceCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
-        //Utility::UpdateImpulseForceBellCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        //Utility::UpdateImpulseForceCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        Utility::UpdateImpulseForceBellCurve(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         //Utility::UpdateImpulseForceCurveProjectile(m_vehicleStruct00.vehicleData.impulseForceVec[i], static_cast<float>(aTimeDelta));
         Utility::ImpulseForce testImpulse = m_vehicleStruct00.vehicleData.impulseForceVec[i];
 
         if (m_vehicleStruct00.vehicleData.impulseForceVec[i].isActive == true)
         {
             //m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude *= aTimeDelta;
-            forceSum += m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm;
+            forceSum += (m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm) * 1.0f;
 
             //Utility::Torque torqueImpulse = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueArm, (m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].directionNorm));
             //Utility::Torque torqueImpulse = Utility::GetTorqueForce(m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueArm, (m_vehicleStruct00.vehicleData.impulseForceVec[i].currentMagnitude * m_vehicleStruct00.vehicleData.impulseForceVec[i].torqueForceNorm));
@@ -3747,6 +3780,181 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         ),
         m_vehicleStruct00.vehicleData.impulseForceVec.end()
     );
+}
+void NPCVehicle::UpdateJetCounterTorqueData(const float aTimeDelta)
+{
+    DirectX::SimpleMath::Vector3 eulerVec = DirectX::SimpleMath::Vector3::Zero;
+    eulerVec = m_vehicleStruct00.vehicleData.alignmentQuat.ToEuler();
+    //m_debugData->DebugPushUILineDecimalNumber("eulerVec.x", eulerVec.x, "");
+    //m_debugData->DebugPushUILineDecimalNumber("eulerVec.y", eulerVec.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("eulerVec.z", eulerVec.z, "");
+    DirectX::SimpleMath::Vector3 angularVelocityNorm = m_vehicleStruct00.vehicleData.q.angularVelocity;
+    angularVelocityNorm.Normalize();
+
+    DirectX::SimpleMath::Vector3 angDragNorm = m_vehicleStruct00.vehicleData.angularDrag;
+    angDragNorm.Normalize();
+    float angDragLength = m_vehicleStruct00.vehicleData.angularDrag.Length();
+    float angDragMod = angDragLength;
+    if(angDragLength > 1.0f)
+    {
+        angDragMod = 1.0f;
+    }
+    m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.vehicleData.angularDrag", m_vehicleStruct00.vehicleData.angularDrag.Length(), "");
+    DirectX::SimpleMath::Vector3 eulerDeltaVec = DirectX::SimpleMath::Vector3::Zero;
+    eulerDeltaVec = m_vehicleStruct00.vehicleData.alignmentQuatDelta.ToEuler();
+    //m_debugData->DebugPushUILineDecimalNumber("eulerDeltaVec.x", eulerDeltaVec.x, "");
+    //m_debugData->DebugPushUILineDecimalNumber("eulerDeltaVec.y", eulerDeltaVec.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("eulerDeltaVec.z", eulerDeltaVec.z, "");
+    eulerVec = angDragNorm;
+    float yawRot = angDragNorm.y;
+    //float yawRot = eulerVec.y;
+    //yawRot = 0.0f;
+
+    const float rotPitchMod = 1.0f * angDragLength;
+    const float rotYawMod = 0.5f * angDragLength;
+    float leftRotDot = angularVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    float rightRotDot = angularVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    
+    leftRotDot = eulerVec.z * rotPitchMod;
+    rightRotDot = eulerVec.z * rotPitchMod;
+
+    leftRotDot += yawRot * rotYawMod;
+    rightRotDot -= yawRot * rotYawMod;
+
+    const float preRotLeft = m_vehicleStruct00.npcModel.jetAntiTorqueRotationLeft;
+    const float preRotRight = m_vehicleStruct00.npcModel.jetAntiTorqueRotationRight;
+    
+    leftRotDot += m_vehicleStruct00.npcModel.jetAntiTorqueRotationLeft;
+    rightRotDot += m_vehicleStruct00.npcModel.jetAntiTorqueRotationRight;
+    leftRotDot *= 0.5f;
+    rightRotDot *= 0.5f;
+   
+    const float postRotLeft = leftRotDot;
+    const float postRotRight = rightRotDot;
+    const float maxRotDelta = 3.0f * aTimeDelta;
+    m_debugData->DebugPushUILineDecimalNumber("maxDelta ", maxRotDelta, "");
+    const float deltaRotLeft = postRotLeft - preRotLeft;
+    const float deltaRotRight = postRotRight - preRotRight;
+    if (abs(deltaRotLeft) > maxRotDelta)
+    {
+        if (deltaRotLeft > 0.0f)
+        {
+            leftRotDot = preRotLeft + maxRotDelta;
+        }
+        else
+        {
+            leftRotDot = preRotLeft - maxRotDelta;
+        }
+    }
+    if (abs(deltaRotRight) > maxRotDelta)
+    {
+        if (deltaRotRight > 0.0f)
+        {
+            rightRotDot = preRotRight + maxRotDelta;
+        }
+        else
+        {
+            rightRotDot = preRotRight - maxRotDelta;
+        }
+    }
+    m_vehicleStruct00.npcModel.jetAntiTorqueRotationLeft = leftRotDot;
+    m_vehicleStruct00.npcModel.jetAntiTorqueRotationRight = rightRotDot;
+
+    const float baseLengthPitchMod = 50.0f * angDragMod;
+    const float pitchLengthhMod = 0.5f * angDragMod;
+    const float rollLengthMod = 0.5f * angDragMod;
+    const float yawLengthMod = 0.5f * angDragMod;
+    float leftLength = m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft;
+    float rightLength = m_vehicleStruct00.npcModel.jetAntiTorqueLengthRight;
+    float baseLength = m_vehicleStruct00.npcModel.jetAntiTorqueLengthBase;
+
+    leftLength += abs(yawRot) * yawLengthMod;
+    rightLength += abs(yawRot) * yawLengthMod;
+
+    if (eulerVec.z < 0.0f)
+    {
+        leftLength -= eulerVec.z * pitchLengthhMod;
+        rightLength -= eulerVec.z * pitchLengthhMod;
+    }
+    else
+    {
+        baseLength += eulerVec.z * baseLengthPitchMod;
+    }
+
+    if (eulerVec.x < 0.0f)
+    {
+        //leftLength -= eulerVec.x;
+        rightLength -= eulerVec.x * rollLengthMod;
+    }
+    else
+    {
+        leftLength += eulerVec.x * rollLengthMod;
+        //rightLength += eulerVec.x;
+    }
+    //leftLength -= eulerVec.x;
+    //rightLength += eulerVec.x;
+
+    leftLength *= 0.5f;
+    rightLength *= 0.5f;
+    baseLength *= 0.5f;
+
+    const float preLengthBase = m_vehicleStruct00.npcModel.jetAntiTorqueLengthBase;
+    const float preLengthLeft = m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft;
+    const float preLengthRight = m_vehicleStruct00.npcModel.jetAntiTorqueLengthRight;
+    const float postLengthBase = baseLength;
+    const float postLengthLeft = leftLength;
+    const float postLengthRight = rightLength;
+    const float maxSideLengthDelta = 2.0f * aTimeDelta;
+    m_debugData->DebugPushUILineDecimalNumber("maxSideLengthDelta ", maxSideLengthDelta, "");
+    const float deltaLengthLeft = postLengthLeft - preLengthLeft;
+    const float deltaLengthRight = postLengthRight - preLengthRight;
+    m_debugData->DebugPushUILineDecimalNumber("deltaLengthLeft ", deltaLengthLeft, "");
+    m_debugData->DebugPushUILineDecimalNumber("deltaLengthRight ", deltaLengthRight, "");
+    if (abs(deltaLengthLeft) > maxSideLengthDelta)
+    {
+        if (deltaLengthLeft > 0.0f)
+        {
+            leftLength = preLengthLeft + maxSideLengthDelta;
+        }
+        else
+        {
+            leftLength = preLengthLeft - maxSideLengthDelta;
+        }
+    }
+    if (abs(deltaLengthRight) > maxSideLengthDelta)
+    {
+        if (deltaLengthRight > 0.0f)
+        {
+            rightLength = preLengthRight + maxSideLengthDelta;
+        }
+        else
+        {
+            rightLength = preLengthRight - maxSideLengthDelta;
+        }
+    }
+
+    const float maxBaseLengthDelta = 200.0f * aTimeDelta;
+    m_debugData->DebugPushUILineDecimalNumber("maxBaseLengthDelta ", maxBaseLengthDelta, "");
+    const float deltaLengthBase = postLengthBase - preLengthBase;
+    m_debugData->DebugPushUILineDecimalNumber("deltaLengthBase ", deltaLengthBase, "");
+    if (abs(deltaLengthBase) > maxBaseLengthDelta)
+    {
+        if (deltaLengthBase > 0.0f)
+        {
+            baseLength = preLengthBase + maxBaseLengthDelta;
+        }
+        else
+        {
+            baseLength = preLengthBase - maxBaseLengthDelta;
+        }
+    }
+
+    m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft = leftLength;
+    m_vehicleStruct00.npcModel.jetAntiTorqueLengthRight = rightLength;
+    m_vehicleStruct00.npcModel.jetAntiTorqueLengthBase = baseLength;
+    m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft ", m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.npcModel.jetAntiTorqueLengthRight", m_vehicleStruct00.npcModel.jetAntiTorqueLengthRight, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_vehicleStruct00.npcModel.jetAntiTorqueLengthBase", m_vehicleStruct00.npcModel.jetAntiTorqueLengthBase, "");
 }
 
 void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
@@ -3975,12 +4183,14 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     }
     */
 
+    UpdateJetCounterTorqueData(aTimeDelta);
+
     if (m_vehicleStruct00.vehicleData.isVehicleInCameraFrustum == true)
     {
         UpdateNPCModel(aTimeDelta);
     }
     UpdateHardPoints();
-
+    //UpdateJetCounterTorqueData(aTimeDelta);
     if (m_vehicleStruct00.vehicleData.q.position.y > 1300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)
     {
         JumpData testData = m_vehicleStruct00.vehicleData.jumpData;
@@ -4073,6 +4283,26 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     float testThrottleRotLeft = (leftBurnLengthModTest * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
     float testThrottleRotRight = (rightBurnLengthModTest * (Utility::GetPi() * -0.5f)) + (Utility::GetPi() * 0.5f);
 
+    // counter body torque jet rotation
+    testThrottleRotLeft += m_vehicleStruct00.npcModel.jetAntiTorqueRotationLeft;
+    testThrottleRotRight += m_vehicleStruct00.npcModel.jetAntiTorqueRotationRight;
+    if (testThrottleRotLeft > DirectX::XM_PI)
+    {
+        testThrottleRotLeft = DirectX::XM_PI;
+    }
+    else if (testThrottleRotLeft < 0.0f)
+    {
+        testThrottleRotLeft = 0.0f;
+    }
+    if (testThrottleRotRight > DirectX::XM_PI)
+    {
+        testThrottleRotRight = DirectX::XM_PI;
+    }
+    else if (testThrottleRotRight < 0.0f)
+    {
+        testThrottleRotRight = 0.0f;
+    }
+
     if (m_vehicleStruct00.vehicleData.jumpData.isImpulseBurnActive == true)
     {
         testThrottleRotLeft = m_vehicleStruct00.npcModel.jetRotationLeft;
@@ -4148,6 +4378,11 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
         rightBurnLengthMod = burnRatio;
     }
 
+    // Anti torque alignment jet length mod
+    leftBurnLengthMod += m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft;
+    rightBurnLengthMod += m_vehicleStruct00.npcModel.jetAntiTorqueLengthRight;
+
+
     float prevBurnLengthLeft = m_vehicleStruct00.npcModel.afterBurnLengthLeft;
     float prevBurnLengthRight = m_vehicleStruct00.npcModel.afterBurnLengthRight;
     float prevBurnLengthLeft1 = m_vehicleStruct00.npcModel.afterBurnLengthLeftPrev;
@@ -4164,6 +4399,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     leftBurnLengthMod = (leftBurnLengthMod + prevBurnLengthLeft + prevBurnLengthLeft1 + prevBurnLengthLeft2) / 4.0f;
     rightBurnLengthMod = (rightBurnLengthMod + prevBurnLengthRight + prevBurnLengthRight1 + prevBurnLengthRight2) / 4.0f;
 
+   
     const float delta = leftBurnLengthMod - rightBurnLengthMod;
     if (abs(delta) > abs(m_vehicleStruct00.npcModel.maxDelta))
     {
@@ -4176,10 +4412,15 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     m_vehicleStruct00.npcModel.afterBurnLengthLeft = afterBurnLengthModLeft;
     m_vehicleStruct00.npcModel.afterBurnLengthRight = afterBurnLengthModRight;
 
+    // Anti torque alignment jet length mod
+    //m_vehicleStruct00.npcModel.afterBurnLengthLeft += m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft;
+    //m_vehicleStruct00.npcModel.afterBurnLengthRight += m_vehicleStruct00.npcModel.jetAntiTorqueLengthRight;
+
     float testThrottle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
     float afterBurnLength = (afterBurnLengthModLeft * afterBurnLengthSum);
     m_vehicleStruct00.npcModel.burnFlickerLegth = Utility::WrapAnglePositive(m_vehicleStruct00.npcModel.burnFlickerLegth + m_vehicleStruct00.npcModel.burnFlickerFrequencyMod);
     afterBurnLength = afterBurnLength + (m_vehicleStruct00.npcModel.burnFlickerLegth * m_vehicleStruct00.npcModel.burnFlickerLengthMod);
+
     float afterBurnY = (afterBurnLength * 0.5f) * 0.1f;
     DirectX::SimpleMath::Matrix afterBurnTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(0.0f, afterBurnY, 0.0f);
     if (testThrottle <= 0.0f)
@@ -4322,6 +4563,9 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     m_vehicleStruct00.npcModel.burnFlickerLegth = Utility::WrapAnglePositive(m_vehicleStruct00.npcModel.burnFlickerLegth + m_vehicleStruct00.npcModel.burnFlickerFrequencyMod);
     baseBurnLength = baseBurnLength + (m_vehicleStruct00.npcModel.burnFlickerLegth * m_vehicleStruct00.npcModel.burnFlickerLengthMod);
+
+    // counter body torque base jet length mod
+    baseBurnLength += m_vehicleStruct00.npcModel.jetAntiTorqueLengthBase;
 
     baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
     m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;
