@@ -206,12 +206,6 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngularLocal(const DirectX::S
 
     DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * airSurfaceArea * angAirDensity)));
     
-    m_debugData->DebugPushUILineDecimalNumber("angularDrag.L  = ", angularDrag.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("aAngVelocity.L = ", aAngVelocity.Length(), "");
-    DirectX::SimpleMath::Vector3 angWorld = angularDrag;
-    angWorld = DirectX::SimpleMath::Vector3::Transform(angularDrag, m_heli.alignment);
-    //m_debugData->PushDebugLine(m_heli.q.position, angWorld, 7.0f, 0.0, DirectX::Colors::Orange);
-    //angularDrag = aAngVelocity * -0.2f;
     return angularDrag;
 }
 
@@ -3971,19 +3965,6 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("m_heli.altitude ", m_heli.altitude, "");
     m_debugData->DebugPushUILineDecimalNumber("m_heli.q.position.x ", m_heli.q.position.x, "");
     */
-
-    //m_debugData->DebugClearUI();
-    if (m_testTimer > 20.0f)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-    
-    DirectX::SimpleMath::Vector3 eulerVec = DirectX::SimpleMath::Vector3::Zero;
-    eulerVec = m_heli.alignmentQuat.ToEuler();
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.x", eulerVec.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.y", eulerVec.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.z", eulerVec.z, "");
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
@@ -3995,7 +3976,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
 {
     UpdateCollisionImpulseForces(static_cast<float>(aTimeStep));
     m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularVelocity);
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.angularDrag ", m_heli.angularDrag.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_heli.angularDrag ", m_heli.angularDrag.Length(), "");
     //m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularMomentum);
     //UpdateTestDrivetrainTorqueLocal(aTimeStep);
     UpdateTestDrivetrainTorqueLocalNew(aTimeStep);

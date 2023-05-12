@@ -24,7 +24,7 @@ struct NpcControlInput
     const float steeringInputMin = -6.0f;
     const float steeringInputRate = 3.0f;
     //const float steeringForceMod = 100.0f;
-    const float steeringForceMod = 9000.0f;
+    const float steeringForceMod = 900.0f;
     DirectX::SimpleMath::Vector3 steeringVec;
 
     float       throttleInput;
@@ -429,8 +429,6 @@ struct VehicleData
     DirectX::SimpleMath::Quaternion alignmentQuat;
     DirectX::SimpleMath::Quaternion alignmentInverseQuat;
 
-    DirectX::SimpleMath::Quaternion alignmentQuatDelta = DirectX::SimpleMath::Quaternion::Identity;
-
     DirectX::SimpleMath::Vector3 forward;
     DirectX::SimpleMath::Vector3 right;
     DirectX::SimpleMath::Vector3 up;
@@ -607,7 +605,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragAngular2(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngular3(const DirectX::SimpleMath::Vector3 aAngVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity, const float aTimeStep);
-    
+    void CalculateGroundImpactForce(DirectX::SimpleMath::Vector3& aForce, DirectX::SimpleMath::Vector3& aTorque);
     void CalculateTopSpeed();
     bool CheckVehiclePenetration(DirectX::SimpleMath::Vector3 aPos);
 
@@ -620,6 +618,7 @@ private:
     DirectX::SimpleMath::Vector3 GetHoverLift(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetOmniDirectionalThrust(const VehicleData& aVehicleData);
     DirectX::SimpleMath::Vector3 GetRepulsionForce(const VehicleData& aRepulsorVehicleData);
+    DirectX::SimpleMath::Vector3 GetSlopeForce(const DirectX::SimpleMath::Vector3 aTerrainNorm, const float aAltitude, const float aGroundInteractionRange);
 
     static void InitializeNPCStruct(VehicleStruct& aVehicleStruct,
         const DirectX::SimpleMath::Vector3 aHeading,
