@@ -238,14 +238,15 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     up = aProjectile.up;
 
     //const int mirvCount = 12;
-    const int columnCount = 8;
-    const int rowCount = 8;
+    const int columnCount = 6;
+    const int rowCount = 6;
 
     float rowSpacingAngle = Utility::ToRadians(3.0f);
     float columnSpacingAngle = Utility::ToRadians(15.0f);
     //const float yawOrg = -columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) + (columnSpacingAngle * 0.5f);
     //const float pitchOrg = -rowSpacingAngle * (static_cast<float>(rowCount) * 0.5f);
-    const float yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
+    //const float yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
+    const float yawOrg = columnSpacingAngle * (static_cast<float>(rowCount) * 0.5f) - (columnSpacingAngle * 0.5f);
     const float pitchOrg = rowSpacingAngle * (static_cast<float>(rowCount) * 0.5f);
 
     float yawRowMod = Utility::ToRadians(3.0f);
@@ -405,8 +406,8 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         float distanceToCenter = (expPos - camPos).Length();
         float distanceToFogStart = distanceToCenter - (m_explosionStruct.explosionVec[i].collisionSphere.Radius * durationMod);
         float distanceToFogEnd = distanceToCenter + (m_explosionStruct.explosionVec[i].collisionSphere.Radius * durationMod);
-        m_debugData->DebugPushUILineDecimalNumber("distanceToFogStart = ", distanceToFogStart, "");
-        m_debugData->DebugPushUILineDecimalNumber("distanceToFogEnd = ", distanceToFogEnd, "");
+        //m_debugData->DebugPushUILineDecimalNumber("distanceToFogStart = ", distanceToFogStart, "");
+        //m_debugData->DebugPushUILineDecimalNumber("distanceToFogEnd = ", distanceToFogEnd, "");
 
         if (m_isTestBoolTrue == true)
         {
@@ -434,12 +435,11 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         dirNormToExplosion = DirectX::SimpleMath::Vector3::UnitX;
         //m_debugData->PushDebugLinePositionIndicator(expPos + (dirNormToExplosion * (distanceToCenter - distanceToFogStart)), 50.0f, 1.0f, DirectX::Colors::Blue);
         //m_debugData->PushDebugLinePositionIndicator(expPos + (dirNormToExplosion * (distanceToCenter - distanceToFogEnd)), 50.0f, 1.0f, DirectX::Colors::White);
-
+       
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix0);
-        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color2);
+        aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color0);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
-     
-        
+       
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix1);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color1);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -459,7 +459,7 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color4);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
         //m_explosionStruct.explosionShape1->Draw(aEffect.get(), aInputLayout.Get());
-
+           
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix5);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color5);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -1744,7 +1744,7 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
         recoilImpulseForce.totalTime = 0.1f;
         recoilImpulseForce.currentMagnitude = 0.0f;
         recoilImpulseForce.currentTorqueMagnitude = 0.0f;
-        recoilImpulseForce.torqueForceMod = 0.1f;
+        recoilImpulseForce.torqueForceMod = 0.6f;
         recoilImpulseForce.maxMagnitude = 50000.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
@@ -1833,7 +1833,8 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     //aAmmo.ammoData.launchVelocity = 165.0f;
-    aAmmo.ammoData.launchVelocity = 105.0f;
+    //aAmmo.ammoData.launchVelocity = 105.0f;
+    aAmmo.ammoData.launchVelocity = 75.0f;
     aAmmo.ammoData.length = 24.5f;
     aAmmo.ammoData.mass = 65.0f;
     aAmmo.ammoData.radius = 0.22f;
@@ -1852,7 +1853,7 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 395.0f;
     aAmmo.ammoData.length = 1.0f;
-    aAmmo.ammoData.mass = 1.0f;
+    aAmmo.ammoData.mass = 1.6f;
     aAmmo.ammoData.radius = 0.1f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;

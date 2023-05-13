@@ -96,6 +96,8 @@ private:
     TexturePack m_textureDataTest1;
     TexturePack m_textureDataTest2;
 
-    float m_testTimer = 0.0f;    
+    float m_testTimer = 0.0f;
+
+    const bool m_isNpcAiOn = false;
 };
 

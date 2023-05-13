@@ -606,11 +606,57 @@ void ModelController::SetGlowColors(const DirectX::SimpleMath::Vector4 aColorCen
     m_playerModel.glowLightDirectionBase = aLightDir;
 }
 
-void ModelController::SetGlowVals(const float aCenterVal, const float aLeftVal, const float aRightVal, const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aDir)
+void ModelController::SetGlowVals(const float aCenterVal, const float aLeftVal, const float aRightVal, const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aDir, const float aTimeStep)
 {
-    m_playerModel.glowCenterVal = aCenterVal;
-    m_playerModel.glowLeftVal = aLeftVal;
-    m_playerModel.glowRightVal = aRightVal;
+    const float maxValDelta = 0.8f * aTimeStep;
+    const float deltaCenter = aCenterVal - m_playerModel.glowCenterVal;
+    if (abs(deltaCenter) > maxValDelta)
+    {
+        if (deltaCenter > 0.0f)
+        {
+            m_playerModel.glowCenterVal += maxValDelta;
+        }
+        else
+        {
+            m_playerModel.glowCenterVal -= maxValDelta;
+        }
+    }
+    else
+    {
+        m_playerModel.glowCenterVal = aCenterVal;
+    }
+    const float deltaLeft = aLeftVal - m_playerModel.glowLeftVal;
+    if (abs(deltaLeft) > maxValDelta)
+    {
+        if (deltaLeft > 0.0f)
+        {
+            m_playerModel.glowLeftVal += maxValDelta;
+        }
+        else
+        {
+            m_playerModel.glowLeftVal -= maxValDelta;
+        }
+    }
+    else
+    {
+        m_playerModel.glowLeftVal = aLeftVal;
+    }
+    const float deltaRight = aRightVal - m_playerModel.glowRightVal;
+    if (abs(deltaRight) > maxValDelta)
+    {
+        if (deltaRight > 0.0f)
+        {
+            m_playerModel.glowRightVal += maxValDelta;
+        }
+        else
+        {
+            m_playerModel.glowRightVal -= maxValDelta;
+        }
+    }
+    else
+    {
+        m_playerModel.glowRightVal = aRightVal;
+    }
     m_testPos = aPos;
     m_playerModel.glowLightDirectionBase = aDir;
 }

@@ -226,6 +226,7 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     //explosionImpulseForce.torqueArm.Normalize();
                     m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
 
+                    /*
                     m_debugData->PushDebugLineScaled(m_npcVec[i]->GetPos(), explosionImpulseForce.torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
                    // m_debugData->PushDebugLineScaled(forcePoint, explosionImpulseForce.torqueArm, 1.0f, 1.0f, 0.0f, DirectX::Colors::DarkSeaGreen);
                     m_debugData->PushDebugLine(forcePoint, explosionImpulseForce.directionNorm, 20.0f, 0.0f, DirectX::Colors::Blue);
@@ -237,6 +238,8 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.x = ", explosionImpulseForce.directionNorm.x, "");
                     m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.y = ", explosionImpulseForce.directionNorm.y, "");
                     m_debugData->DebugPushUILineDecimalNumber("explosionImpulseForce.directionNorm.z = ", explosionImpulseForce.directionNorm.z, "");
+                    */
+
                     /*
                     m_debugData->PushDebugLine(impactPos, explosionImpulseForce.torqueArm, 20.0f, 0.0f, DirectX::Colors::White);
                     m_debugData->PushDebugLinePositionIndicator(impactPos, 10.0f, 0.0f, DirectX::Colors::Blue);
@@ -504,8 +507,8 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     float baseHeight = 10.0f;
     //const int rows = 6;
     //const int columns = 4;
-    const int rows = 1;
-    const int columns = 1;
+    const int rows = 2;
+    const int columns = 4;
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -723,7 +726,10 @@ void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const d
 
     CheckNpcCollisions();
     CheckPlayerCollisions();
-    CheckNpcAvoidance();
+    if (m_isNpcAiOn == true)
+    {
+        CheckNpcAvoidance();
+    }
 }
 
 void NPCController::CheckNpcAvoidance()

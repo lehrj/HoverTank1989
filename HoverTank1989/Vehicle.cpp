@@ -163,7 +163,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     return buoyancyForce;
 }
 
-DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity)
+DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity, const float aTimeStep)
 {
     DirectX::SimpleMath::Vector3 angVelocityNorm = aAngVelocity;
     angVelocityNorm.Normalize();
@@ -205,7 +205,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngularLocal(const DirectX::S
     angFrontSurfaceArea = airSurfaceArea;
 
     DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * airSurfaceArea * angAirDensity)));
-    
+    //angularDrag = aAngVelocity * -powf(m_angularDragMod, aTimeStep);
     return angularDrag;
 }
 
@@ -3036,7 +3036,7 @@ void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeSt
     m_debugData->PushDebugLine(m_heli.q.position, m_heli.q.angularVelocity, 10.0f, 0.0f, DirectX::Colors::Blue);
 }
 
-void Vehicle::UpdateModelColorVals()
+void Vehicle::UpdateModelColorVals(const float aTimeStep)
 {
     const float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
 
@@ -3057,14 +3057,14 @@ void Vehicle::UpdateModelColorVals()
     {
         rightYawVal = 0.0f;
     }
-
     float rightVal = m_heli.controlInput.cyclicInputRoll / m_heli.controlInput.cyclicInputMax;
     if (rightVal <= 0.0f)
     {
         rightVal = 0.0f;
     }
     rightVal += rightYawVal;
-    m_modelController->SetGlowVals(centerVal, leftVal, rightVal, m_heli.q.position, m_heli.forward);
+
+    m_modelController->SetGlowVals(centerVal, leftVal, rightVal, m_heli.q.position, m_heli.forward, aTimeStep);
 }
 
 void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep)
@@ -3904,8 +3904,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //speed.y = 0.0f;
     m_heli.speed = speed.Length();
     //m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
-    m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
-    m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
+    //m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
+    //m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
 
     InputDecayNew(aTimeDelta);
     InputDecay(aTimeDelta);
@@ -3913,7 +3913,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_heli.testAccel = (m_heli.q.velocity.Length() - prevVelocity.Length()) / static_cast<float>(aTimeDelta);
     m_heli.testAccelVec = (m_heli.q.velocity - prevVelocity) / static_cast<float>(aTimeDelta);
 
-    UpdateModelColorVals();
+    UpdateModelColorVals(static_cast<float>(aTimeDelta));
 
     UpdateResistance();
 
@@ -3975,7 +3975,7 @@ void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
 void Vehicle::UpdateVehicleForces(const float aTimeStep)
 {
     UpdateCollisionImpulseForces(static_cast<float>(aTimeStep));
-    m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularVelocity);
+    m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularVelocity, aTimeStep);
     //m_debugData->DebugPushUILineDecimalNumber("m_heli.angularDrag ", m_heli.angularDrag.Length(), "");
     //m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularMomentum);
     //UpdateTestDrivetrainTorqueLocal(aTimeStep);

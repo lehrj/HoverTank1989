@@ -401,8 +401,8 @@ private:
 
     const float m_gamePadInputRateTurretHorizontal = 0.035f;
     const float m_gamePadInputRateTurretVerticle = 0.015f;
-    const float m_gamePadInputRateBodyTurn = 0.3f;
-    const float m_gamePadInputRateBodyAccel = 1.4f;
+    const float m_gamePadInputRateBodyTurn = 1.0f;
+    const float m_gamePadInputRateBodyAccel = 1.0f;
     //const float m_gamePadInputRateBodySideStrafe = 0.2f;
     const float m_gamePadInputRateBodySideStrafe = 1.0f;
     const float m_gamePadInputDeadZone = 0.1f;

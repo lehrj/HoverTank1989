@@ -722,6 +722,8 @@ private:
     const float m_angDragCoefficient = 0.3f;
     const float m_angularDragMod = 0.3f;
 
+    const bool m_isAiOn = false;
+
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };
     void ToggleDebugBool();

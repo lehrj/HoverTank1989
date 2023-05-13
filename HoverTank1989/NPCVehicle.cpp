@@ -445,7 +445,6 @@ void NPCVehicle::CalculateImpulseForce(const VehicleData& aVehicleHit, DirectX::
     //impulseToVec.torqueArm = m_vehicleStruct00.vehicleData.up * 5.0f;
     //impulseToVec.torqueArm = aForceVec2;
     //impulseToVec.torqueArm.Normalize();
-    impulseToVec.torqueArm *= 1.0f;
     float impactVelocity = (aVehicleHit.q.velocity - m_vehicleStruct00.vehicleData.q.velocity).Length();
     float impactTime = 1.0f / (impactVelocity + 0.00000000001f);
     impulseToVec.totalTime = impactTime;
@@ -509,6 +508,9 @@ void NPCVehicle::CalculateImpulseForceFromPlayer(const float aPlayerMass, const 
     //impulseToVec.torqueArm = m_vehicleStruct00.vehicleData.up * 5.0f;
     //impulseToVec.torqueArm = aForceVec2;
     //impulseToVec.torqueArm.Normalize();
+    impulseToVec.torqueForceNorm = aPlayerVelocity;
+    impulseToVec.torqueForceNorm.Normalize();
+
     impulseToVec.torqueArm *= 1.0f;
     float impactVelocity = (aPlayerVelocity - m_vehicleStruct00.vehicleData.q.velocity).Length();
     float impactTime = 1.0f / (impactVelocity + 0.00000000001f);
@@ -579,6 +581,7 @@ void NPCVehicle::CalculateImpulseForceFromProjectile(const Utility::ImpactForce 
     impulseToVec.maxMagnitude = (0.5f * aImpactForce.impactMass * aImpactForce.impactVelocity * aImpactForce.impactVelocity).Length();
     impulseToVec.maxMagnitude *= aImpactForce.impactModifier;
     impulseToVec.torqueArm = aImpactPos - m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos;
+    //impulseToVec.torqueArm = DirectX::SimpleMath::Vector3::Transform(impulseToVec.torqueArm, m_vehicleStruct00.vehicleData.alignmentInverseQuat);
     //impulseToVec.totalTime = 0.1f;
     impulseToVec.totalTime = 0.8f;
     PushImpulseForce(impulseToVec);
@@ -4050,8 +4053,11 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     m_vehicleStruct00.vehicleData.altitude = m_vehicleStruct00.vehicleData.q.position.y - m_vehicleStruct00.vehicleData.terrainHightAtPos;
 
-    m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
-    UpdateControlInputFromAi();
+    if (m_isAiOn == true)
+    {
+        m_npcAI->UpdateAI(static_cast<float>(aTimeDelta));
+        UpdateControlInputFromAi();
+    }
 
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked == true)
     {
@@ -4668,7 +4674,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane = m_vehicleStruct00.vehicleData.groundPlane;
-    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
+    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.5f;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
     planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
     DirectX::SimpleMath::Matrix planeTrans2 = planeTrans;

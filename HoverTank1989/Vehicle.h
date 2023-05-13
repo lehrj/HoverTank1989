@@ -140,7 +140,7 @@ struct HeliData
     const float hoverDriveMagMax = 20000.0f;
     const float brakeMagMax = 3000.0f;
     //const float yawForce = 300.0f;
-    const float yawForce = 1000.0f;
+    const float yawForce = 2000.0f;
 
     const float hoverRangeLower = 2.0f;
     const float hoverRangeMid = 4.0f;
@@ -376,7 +376,7 @@ public:
 
 private:
     DirectX::SimpleMath::Vector3 CalculateBuoyancyForce(const HeliData& aVehicleData);
-    DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragAngularLocal(const DirectX::SimpleMath::Vector3 aAngVelocity, const float aTimeStep);
     DirectX::SimpleMath::Vector3 CalculateDragLinear(const DirectX::SimpleMath::Vector3 aVelocity);
     void CalculateGroundImpactForce(DirectX::SimpleMath::Vector3& aForce, DirectX::SimpleMath::Vector3& aTorque);
     DirectX::SimpleMath::Vector3 CalculateHoverDriveForce(const struct HeliData& aHeli);
@@ -416,7 +416,7 @@ private:
     void UpdateCyclicNorm(); 
     float UpdateGroundEffectForce(const float aLiftForce);
     void UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep);
-    void UpdateModelColorVals();
+    void UpdateModelColorVals(const float aTimeStep);
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdatePendulumMotion2(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeStep);
@@ -482,7 +482,7 @@ private:
     */
 
     const float m_testMass = 1700.0f;
-    const float m_driveTorqueForceMax = 3300.0f;
+    const float m_driveTorqueForceMax = 2300.0f;
     //const float m_stabilityTorqueForceMax = 33000.0f;
     const float m_stabilityTorqueForceMax = 800.0f;
     const float m_stabilityTorqueForceMax2 = 1200.0f;
@@ -497,6 +497,7 @@ private:
 
     const float m_angDragCoefficient = 0.3f;
     const float m_airDensityDragMod = 1.0f;
+    const float m_angularDragMod = 0.8f;
 
     //DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
     //DirectX::SimpleMath::Vector3 m_testTorqueWorld = DirectX::SimpleMath::Vector3::Zero;

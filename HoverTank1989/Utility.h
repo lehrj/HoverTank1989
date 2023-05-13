@@ -79,7 +79,7 @@ public:
         DirectX::SimpleMath::Vector3 torqueArm = DirectX::SimpleMath::Vector3::Zero;
         float currentTorqueMagnitude = 0.0f;
         //float torqueForceMod = 0.1f;
-        float torqueForceMod = 1.0f;
+        float torqueForceMod = 0.6f;
         DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::Zero;
         float totalTime = 0.0f;
         int tickCount = 0;

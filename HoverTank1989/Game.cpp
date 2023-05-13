@@ -1187,7 +1187,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (pad.thumbSticks.leftY > m_gamePadInputDeadZone || pad.thumbSticks.leftY < -m_gamePadInputDeadZone)
         {
             const float inputMod = m_gamePadInputRateBodyAccel;
-            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY* inputMod);
+            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
         }
         if (pad.thumbSticks.leftX > m_gamePadInputDeadZone || pad.thumbSticks.leftX < -m_gamePadInputDeadZone)
         {
