@@ -52,6 +52,27 @@ Game::Game() noexcept(false)
     m_currentUiState = UiState::UISTATE_SWING;
 }
 
+void Game::AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX)
+{
+    m_audioMusicStream = m_audioBank->CreateStreamInstance(aSFX);
+
+    if (m_audioMusicStream)
+    {
+        m_audioMusicStream->SetVolume(m_musicVolume);
+        m_audioMusicStream->Play(true);
+    }
+}
+
+void Game::AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX)
+{
+    m_audioEffectStream = m_audioBank->CreateStreamInstance(aSFX);
+    if (m_audioEffectStream)
+    {
+        m_audioEffectStream->SetVolume(m_sfxVolume);
+        m_audioEffectStream->Play();
+    }
+}
+
 // Initialize the Direct3D resources required to run.
 void Game::Initialize(HWND window, int width, int height)
 {
@@ -300,6 +321,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     }
     gridLineOffSetY = 0.22f;
     const float gridLineOffSetY2 = 1.1f;
+    //const float gridLineOffSetY2 = 0.1f;
     for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
     {
         if (aTerrain.terrainVertexArray[i].position.y > 5.0f)
@@ -541,9 +563,32 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_isPauseOn = false;
     }
 
-    //m_shapeScaleMod = Utility::WrapAngle(m_shapeScaleMod + cos(aTimer.GetElapsedSeconds() * 9.0f));
-    //m_shapeScaleMod = Utility::WrapAngle(m_shapeScaleMod + cos(aTimer.GetTotalSeconds() * 9.0f));
-    m_shapeScaleMod = Utility::WrapAngle(m_shapeScaleMod + (0.1f * 9.0f));
+
+    // audio
+    if (m_retryAudio)
+    {
+        m_retryAudio = false;
+        if (m_audioEngine->Reset())
+        {
+            // ToDo: restart any looped sounds here
+            if (m_audioMusicStream)
+            {
+                m_audioMusicStream->Play(true);
+            }
+            if (m_audioEffectStream)
+            {
+                m_audioEffectStream->Play(); // WLJ this could lead to problems and might not be needed, maybe cause unwanted effect to play after reset?
+            }
+        }
+    }
+    else if (!m_audioEngine->Update())
+    {
+        if (m_audioEngine->IsCriticalError())
+        {
+            m_retryAudio = true;
+        }
+    }
+
 }
 #pragma endregion
 
@@ -1079,8 +1124,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle2();
-            /*
+            //m_vehicle->DebugToggle2();
+            
             const unsigned int columnCount = 1;
             const unsigned int rowCount = 1;
             const float columSpaceing = 15.0f;
@@ -1091,13 +1136,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const float dropDistance = 200.0f;
             dropDirection *= dropDistance;
             DirectX::SimpleMath::Vector3 dropPosition = m_vehicle->GetPos();
+            dropPosition.y += 55.0f;
             dropPosition += dropDirection;
 
             const DirectX::SimpleMath::Vector3 orientation = -m_vehicle->GetForward();
             const DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicle->GetAlignment());
 
             m_npcController->LoadToQueue(dropPosition, orientation, columnCount, rowCount, spacing, alignQuat);
-            */
+            
         }
     }
     if (m_kbStateTracker.pressed.D3)

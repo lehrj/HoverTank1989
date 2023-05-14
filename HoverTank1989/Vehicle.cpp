@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Vehicle.h"
-
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
 
 Vehicle::~Vehicle()
 {
@@ -945,7 +949,7 @@ void Vehicle::FireWeapon()
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
         //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
-        //m_testImpulseForce = recoil;
+        m_testImpulseForce = recoil;
     }
 }
 
@@ -1325,8 +1329,10 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.cameraOrientation = m_heli.alignment;
     m_heli.cameraOrientationPrevious = m_heli.cameraOrientation;
 
-    m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
+    //m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
     //m_heli.q.position = DirectX::SimpleMath::Vector3(950.0f, 8.8f, 0.0f);
+    m_heli.q.position = DirectX::SimpleMath::Vector3(-900.0f, 55.0f, 0.0f);
+
 
     m_heli.boundingBox.Center = m_heli.q.position;
     m_heli.boundingBox.Extents = m_heli.dimensions;
@@ -3905,8 +3911,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_heli.speed = speed.Length();
     //m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
     //m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
-    //m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
-
+    m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
+    m_debugData->DebugPushUILineDecimalNumber("pos.y = ", m_heli.q.position.y, "");
     InputDecayNew(aTimeDelta);
     InputDecay(aTimeDelta);
 
@@ -3965,6 +3971,17 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("m_heli.altitude ", m_heli.altitude, "");
     m_debugData->DebugPushUILineDecimalNumber("m_heli.q.position.x ", m_heli.q.position.x, "");
     */
+
+    std::stringstream inVal;
+    inVal.precision(Utility::GetNumericalPrecisionForUI());
+    inVal.str(std::string());
+    inVal << std::fixed << Utility::ToDegrees(m_heli.controlInput.weaponPitch);
+    //m_environs[i].airDensityStr = inVal.str();
+
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.weaponPitch raw  ", Utility::ToDegrees(m_heli.controlInput.weaponPitch), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.weaponPitch test " + inVal.str() + "degrees", Utility::ToDegrees(m_heli.controlInput.weaponPitch), inVal.str());
+
+    m_debugData->DebugPushUILineString("Weapon Pitch = " + inVal.str() + " Degrees");    
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)

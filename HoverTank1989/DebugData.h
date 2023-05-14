@@ -21,6 +21,7 @@ public:
 
     void DebugPushUILine(std::string aString, float aVal);
     void DebugPushUILineDecimalNumber(std::string aString1, float aVal, std::string aString2);
+    void DebugPushUILineString(std::string aString);
     void DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2);
 
     void DebugPushTestLine(DirectX::SimpleMath::Vector3 aLineBase, DirectX::SimpleMath::Vector3 aLineEnd, float aLength, float aYOffset, DirectX::SimpleMath::Vector4 aColor);

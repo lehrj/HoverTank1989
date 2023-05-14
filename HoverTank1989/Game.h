@@ -59,6 +59,10 @@ public:
     void GetDefaultSize( int& width, int& height ) const noexcept;
 
 private:
+
+    void AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX);
+    void AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX);
+
     void Clear();
 
     void CreateDeviceDependentResources();
@@ -395,7 +399,6 @@ private:
     float m_shape3Height = 1.1f;
     float m_shape3Scale = 3.0f;
 
-    float m_shapeScaleMod = 0.0f;
     float m_lightRotation = 0.0f;
     float m_shapeRotation = 0.0f;
 

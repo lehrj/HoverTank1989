@@ -482,7 +482,7 @@ private:
     */
 
     const float m_testMass = 1700.0f;
-    const float m_driveTorqueForceMax = 2300.0f;
+    const float m_driveTorqueForceMax = 1300.0f;
     //const float m_stabilityTorqueForceMax = 33000.0f;
     const float m_stabilityTorqueForceMax = 800.0f;
     const float m_stabilityTorqueForceMax2 = 1200.0f;

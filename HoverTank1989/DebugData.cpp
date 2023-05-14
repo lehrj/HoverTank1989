@@ -116,6 +116,14 @@ void DebugData::DebugPushUILineDecimalNumber(std::string aString1, float aVal, s
     }
 }
 
+void DebugData::DebugPushUILineString(std::string aString)
+{
+    if (m_isDebugOn == true)
+    {
+        m_debugUIVector.push_back(aString);
+    }
+}
+
 void DebugData::DebugPushUILineWholeNumber(std::string aString1, int aVal, std::string aString2)
 {
     if (m_isDebugOn == true)

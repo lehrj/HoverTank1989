@@ -57,7 +57,6 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
 
-
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
     aEffect->SetLightDirection(2, lightDir2);
@@ -65,7 +64,6 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetColorAndAlpha(aModel.frontGlowCenterColor);
     aModel.frontGlowCenterShape->Draw(aEffect.get(), aInputLayout.Get());
     //aModel.frontGlowCenterShape->Draw(aModel.worldFrontGlowCenterMatrix, aView, aProjection, aModel.frontGlowCenterColor);
-
 
     lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
@@ -98,8 +96,6 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aModel.frontGlowCenterShape->Draw(aModel.worldFrontGlowCenterMatrix, aView, aProjection, aModel.frontGlowCenterColor);
     */
 
-    
-
     m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
     Utility::GetDispersedLightDirectionsRotation(-DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(45.0), Utility::ToRadians(0.0f), defaultLightDir0, defaultLightDir1, defaultLightDir2);
@@ -108,11 +104,9 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     //defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
     //defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
 
-
     //m_debugData->PushDebugLine(m_testPos, defaultLightDir0, 7.0f, 0.0f, DirectX::Colors::Red);
     //m_debugData->PushDebugLine(m_testPos, defaultLightDir1, 7.0f, 0.0f, DirectX::Colors::Red);
     //m_debugData->PushDebugLine(m_testPos, defaultLightDir2, 7.0f, 0.0f, DirectX::Colors::Red);
-
 
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
     {
@@ -142,8 +136,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetLightDirection(2, defaultLightDir2);
 
     aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
-
-    
+  
     aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
         {
             auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
@@ -167,8 +160,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
 
     aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
-
-    
+   
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
     {
         auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
@@ -292,7 +284,6 @@ void ModelController::DrawTank2(TankModel& aModel, ID3D11DeviceContext* deviceCo
     aModel.turretModel->Draw(deviceContext, states, aModel.turretShadowMatrix, aView, aProjection);
 }
 
-//void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
 void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     aModel.barrelModel = aBarrel;
@@ -579,7 +570,6 @@ void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlign
 {
     UpdateModel(m_playerModel, aAlignment, aAltitude, aPos, aBarrelPitch, aTurretRotation, aPlane);
 }
-
 
 //void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
 void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)

@@ -181,7 +181,7 @@ private:
     const float                     m_frustumPlanePaddingVertical = Utility::ToRadians(15.0f);
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
-    const float                     m_posTravelSpeed = 54.0f;
+    const float                     m_posTravelSpeed = 154.0f;
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
@@ -224,7 +224,8 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamPosOffsetTest = DirectX::SimpleMath::Vector3(-15.0, 0.0, 0.0);
     DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 5.0, 0.0);
     float                       m_followCamDistance = 1.0;
-    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
+    //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
+    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 9.0f, 20.0f);
 
     Environment const* m_environment;
     std::shared_ptr<Vehicle> m_vehicleFocus;
@@ -240,7 +241,7 @@ private:
     float m_fDistance;
     float m_vDistance;
 
-    const float m_springConstantSet = 40.0f;
+    const float m_springConstantSet = 75.0f;
 
     float m_springConstant;
     float m_dampConstant;
