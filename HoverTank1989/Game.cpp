@@ -998,14 +998,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->PrepareTrailerStart();
+            //m_camera->PrepareTrailerStart();
+            m_fireControl->TriggerMirvDeploy();
         }
     }
     if (m_kbStateTracker.pressed.M)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->StartTrailerCamera();
+            //m_camera->StartTrailerCamera();
         }
     }
     if (m_kbStateTracker.pressed.L)
@@ -1274,6 +1275,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             {
                 m_vehicle->CycleFireControlAmmo();
                 SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
+            }
+        }
+        if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                m_fireControl->TriggerMirvDeploy();
             }
         }
     }

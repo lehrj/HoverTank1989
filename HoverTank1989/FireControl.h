@@ -228,6 +228,8 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
 
+    void TriggerMirvDeploy();
+
     void UpdateFireControl(double aTimeDelta);
 
 private:
@@ -236,6 +238,7 @@ private:
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
+    void DeployMirv2(ProjectileData& aProjectile);
 
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -294,9 +297,10 @@ private:
 
     float m_testTimer = 0.0f;
 
-    const float m_testCoolDown = 0.00016f;
     float m_coolDownTimer = 0.0f;
     bool m_isCoolDownActive = false;
+
+    const float m_mirvFuseDelayTime = 0.7f;
 
     AmmoType m_currentAmmoType;
     MuzzleFlash m_muzzleFlash;

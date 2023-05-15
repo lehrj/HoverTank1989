@@ -210,6 +210,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngularLocal(const DirectX::S
 
     DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * airSurfaceArea * angAirDensity)));
     //angularDrag = aAngVelocity * -powf(m_angularDragMod, aTimeStep);
+
     return angularDrag;
 }
 
@@ -949,7 +950,7 @@ void Vehicle::FireWeapon()
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
         //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
-        m_testImpulseForce = recoil;
+        //m_testImpulseForce = recoil;
     }
 }
 
@@ -1329,9 +1330,9 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.cameraOrientation = m_heli.alignment;
     m_heli.cameraOrientationPrevious = m_heli.cameraOrientation;
 
-    //m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
+    m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
     //m_heli.q.position = DirectX::SimpleMath::Vector3(950.0f, 8.8f, 0.0f);
-    m_heli.q.position = DirectX::SimpleMath::Vector3(-900.0f, 55.0f, 0.0f);
+    //m_heli.q.position = DirectX::SimpleMath::Vector3(-900.0f, 55.0f, 0.0f);
 
 
     m_heli.boundingBox.Center = m_heli.q.position;
@@ -3911,8 +3912,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_heli.speed = speed.Length();
     //m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
     //m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
-    m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
-    m_debugData->DebugPushUILineDecimalNumber("pos.y = ", m_heli.q.position.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
     InputDecayNew(aTimeDelta);
     InputDecay(aTimeDelta);
 
@@ -3949,37 +3949,13 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     float angDegrees = Utility::ToDegrees(angRad);
     float angDegreesPerSecond = angDegrees / aTimeDelta;
     float angRadsPerSecond = angRad / aTimeDelta;
-    //m_debugData->DebugPushUILineDecimalNumber("angDegreesPerSecond ", angDegreesPerSecond, "");
-    //m_debugData->DebugPushUILineDecimalNumber("angRadsPerSecond ", angRadsPerSecond, "");
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
-
-    //m_debugData->DebugClearUI();
-    DirectX::SimpleMath::Vector3 momWorld = m_heli.q.angularMomentum;
-    momWorld = DirectX::SimpleMath::Vector3::Transform(momWorld, m_heli.alignment);
-    DirectX::SimpleMath::Vector3 velWorld = m_heli.q.angularVelocity;
-    velWorld = DirectX::SimpleMath::Vector3::Transform(velWorld, m_heli.alignment);
-
-    //m_debugData->PushDebugLine(m_heli.q.position, momWorld, 15.0f, 0.0f, DirectX::Colors::Blue);
-    //m_debugData->PushDebugLine(m_heli.q.position, velWorld, 10.0f, 0.0f, DirectX::Colors::Red);
-
-    /*
-    m_debugData->DebugPushUILineDecimalNumber("momWorld ", momWorld.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("velWorld ", velWorld.Length(), "");
-    //m_debugData->DebugPushUILineDecimalNumber("m_testTorqueLocal ", m_testTorqueLocal.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.vehicleAngularForcesSum ", m_heli.vehicleAngularForcesSum.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.altitude ", m_heli.altitude, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.q.position.x ", m_heli.q.position.x, "");
-    */
 
     std::stringstream inVal;
     inVal.precision(Utility::GetNumericalPrecisionForUI());
     inVal.str(std::string());
     inVal << std::fixed << Utility::ToDegrees(m_heli.controlInput.weaponPitch);
-    //m_environs[i].airDensityStr = inVal.str();
-
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.weaponPitch raw  ", Utility::ToDegrees(m_heli.controlInput.weaponPitch), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.weaponPitch test " + inVal.str() + "degrees", Utility::ToDegrees(m_heli.controlInput.weaponPitch), inVal.str());
 
     m_debugData->DebugPushUILineString("Weapon Pitch = " + inVal.str() + " Degrees");    
 }

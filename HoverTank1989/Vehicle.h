@@ -75,7 +75,7 @@ struct ControlInput
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
     const float weaponPitchInputRate = 0.3f;
-    const float weaponPitchMax = Utility::ToRadians(20.0f);
+    const float weaponPitchMax = Utility::ToRadians(45.0f);
     const float weaponPitchMin = Utility::ToRadians(-20.0f);
 
     float turretYaw;
