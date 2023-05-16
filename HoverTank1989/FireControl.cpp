@@ -237,80 +237,95 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     right = aProjectile.right;
     up = aProjectile.up;
 
-    //const int mirvCount = 12;
-    const int rowCount = 4;
-    const int columnCount = 4;
+    const int rowCount = 8;
+    const int columnCount = 5;
 
-    //float rowSpacingAngle = Utility::ToRadians(3.0f);
-    //float columnSpacingAngle = Utility::ToRadians(15.0f);
-    //float rowSpacingAngle = Utility::ToRadians(6.0f);
-    //float columnSpacingAngle = Utility::ToRadians(20.0f);
-    float rowSpacingAngle = Utility::ToRadians(6.0f);
-    float columnSpacingAngle = Utility::ToRadians(20.0f);
-
-    //float yawRowMod = Utility::ToRadians(3.0f);
-    float yawRowMod = Utility::ToRadians(10.0f);
-    //yawRowMod = 0.0f;
-    //float pitchColumnMod = Utility::ToRadians(9.0f);
-    float pitchColumnMod = Utility::ToRadians(19.0f);
-    //pitchColumnMod = 0.0f;
-
-    //const float yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
-    //const float pitchOrg = rowSpacingAngle * (static_cast<float>(columnCount) * 0.5f);
+    float rowSpacingAngle = Utility::ToRadians(2.0f);
+    float columnSpacingAngle = Utility::ToRadians(15.0f);
     float yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
-    //yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f);
-    //yawOrg -= (yawRowMod * (columnCount)) * 0.5f;
-    //const float pitchOrg = rowSpacingAngle * (static_cast<float>(columnCount) * 0.5f);
     float pitchOrg = rowSpacingAngle * (static_cast<float>(rowCount) * 0.5f) - (rowSpacingAngle * 0.5f);
-
     float yawVal = yawOrg;
     float pitchVal = pitchOrg;
 
-    const float yawOrgDeg = Utility::ToDegrees(yawOrg);
-    const float pitchOrgDeg = Utility::ToDegrees(pitchOrg);
-    float yawValDeg = Utility::ToDegrees(yawOrg);
-    float pitchValDeg = Utility::ToDegrees(pitchOrg);
     DirectX::SimpleMath::Vector3 updateVelocity = firedProjectile.q.velocity;
 
-    //////////////////////////////
     // calculate angle at deploy
     DirectX::SimpleMath::Vector3 flatForward = right.Cross(-DirectX::SimpleMath::Vector3::UnitY);
     const float flatDelta = Utility::GetAngleBetweenVectors(forward, flatForward);
 
-    /////////////////////////////
-
-    const float deployDownAngle = Utility::ToRadians(-20.0f) - flatDelta;
-    float deployDownMod = Utility::ToRadians(-10.0f);
+    const float deployDownAngle = Utility::ToRadians(-40.0f) - flatDelta;
+    float deployDownMod = Utility::ToRadians(-15.0f);
     DirectX::SimpleMath::Quaternion deployDownQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle);
     //updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle));
     updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, deployDownQuat);
-    const float velocityBoostMod = 1.0f;
+    const float velocityBoostMod = 2.0f;
     updateVelocity *= velocityBoostMod;
 
-    const float angleOffsetMin = Utility::ToRadians(-0.0f);
-    const float angleOffSetMax = Utility::ToRadians(0.0f);
+    const float angleOffsetMin = Utility::ToRadians(-0.5f);
+    const float angleOffSetMax = Utility::ToRadians(0.5f);
     float yawMod = 0.0f;
     float rowMod = 0.0f;
+    float yawTestMod = Utility::ToRadians(2.0f);
+    std::vector<float> testYawVec;
+    testYawVec.clear();
+    std::vector<float> testPitchVec;
+    testPitchVec.clear();
     for (int i = 0; i < rowCount; ++i)
     {
+        if (static_cast<float>(i) < static_cast<float>(rowCount * 0.5f))
+        {
+            columnSpacingAngle += yawTestMod;
+            yawVal = (columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f));
+        }
+        else
+        {
+            columnSpacingAngle -= yawTestMod;
+            yawVal = (columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f));
+        }
         for (int j = 0; j < columnCount; ++j)
         {
-            //yawVal -= columnSpacingAngle * static_cast<float>(i);
-            //yawVal = yawOrg - (columnSpacingAngle * static_cast<float>(j));// +(yawRowMod * static_cast<float>(j));
-            
+            if (static_cast<float>(i) <= static_cast<float>(rowCount * 0.5f))
+            {
+                if (static_cast<float>(j) <= static_cast<float>(columnCount * 0.5f))
+                {
+                    //yawVal -= yawTestMod;
+                }
+                else
+                {
+                    //yawVal += yawTestMod;
+                }
+            }
+            else
+            {
+                if (static_cast<float>(j) <= static_cast<float>(columnCount * 0.5f))
+                {
+                    //yawVal += yawTestMod;
+                }
+                else
+                {
+                    //yawVal -= yawTestMod;
+                }
+            }
+
             ProjectileData mirv = firedProjectile;
             DirectX::SimpleMath::Matrix rotMatYaw = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.up, yawVal + angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
             DirectX::SimpleMath::Matrix rotMatPitch = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.right, pitchVal + angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
+            //DirectX::SimpleMath::Matrix rotMatYaw = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.up, yawVal);// +angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
+            //DirectX::SimpleMath::Matrix rotMatPitch = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.right, pitchVal);// +angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
+            
             DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::Identity;
             rotMat *= rotMatYaw;
-            rotMat *= rotMatPitch;
+            //rotMat *= rotMatPitch;
+            if (j == 0)
+            {
+                testPitchVec.push_back(Utility::ToDegrees(pitchVal));
+                testYawVec.push_back(Utility::ToDegrees(yawVal));
+            }
 
-            //DirectX::SimpleMath::Matrix inverseRotMat = rotMat;
-            //inverseRotMat = inverseRotMat.Invert();
             DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
-            updateQuat *= deployDownQuat;
-            updateQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
             //updateQuat *= deployDownQuat;
+            updateQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+            updateQuat *= deployDownQuat;
             //mirv.alignmentQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
             
             mirv.alignmentQuat *= updateQuat;
@@ -318,9 +333,6 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
             mirv.right = DirectX::SimpleMath::Vector3::Transform(mirv.right, updateQuat);
             mirv.forward = DirectX::SimpleMath::Vector3::Transform(mirv.forward, updateQuat);
             
-            //mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(mirv.q.velocity, rotMat);
-            //mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, rotMat);
-            //mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, updateQuat);
             mirv.q.velocity = mirv.forward * updateVelocity.Length();
             if(j == 0)
             {
@@ -328,33 +340,15 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
             }
 
             m_newProjectilePushVec.push_back(mirv);
-            //yawVal += rowSpacingAngle;
-            //yawVal += columnSpacingAngle;
             yawVal -= columnSpacingAngle;
-            // 
-            //yawVal -= yawRowMod;// *static_cast<float>(j);
-            //yawVal += Utility::ToRadians(-5.0f) * static_cast<float>(i);
+ 
         }
         //yawVal = yawOrg;
-        columnSpacingAngle += Utility::ToRadians(10.0f);// *static_cast<float>(i + 1);
+        columnSpacingAngle += Utility::ToRadians(0.0f);// *static_cast<float>(i + 1);
         yawVal = (columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f));// -((static_cast<float>(i) * Utility::ToRadians(5.0f)) * 0.5f);
-        //yawVal = (columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f));
-
-        //yawMod = yawRowMod * (static_cast<float>(i + 1)) * 0.5f;
-        //yawVal -= yawRowMod * static_cast<float>(i + 1);
-        //yawVal += yawMod;
-
-        //columnSpacingAngle += yawRowMod;
-        //yawVal = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
-        //pitchVal += columnSpacingAngle;
-        //pitchVal += rowSpacingAngle;
-        //rowSpacingAngle += pitchColumnMod;
         pitchVal -= rowSpacingAngle;
         deployDownQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle + (deployDownMod * static_cast<float>(i + 1)));
     }
-
-    float yawValDegFinal = Utility::ToDegrees(yawOrg);
-    float pitchValDegFinal = Utility::ToDegrees(pitchOrg);
 
     aProjectile.isDeleteTrue = true;
 }
@@ -478,6 +472,164 @@ void FireControl::DeployMirv2(ProjectileData& aProjectile)
         //pitchVal += rowSpacingAngle;
         //rowSpacingAngle += pitchColumnMod;
         pitchVal -= rowSpacingAngle;
+    }
+
+    float yawValDegFinal = Utility::ToDegrees(yawOrg);
+    float pitchValDegFinal = Utility::ToDegrees(pitchOrg);
+
+    aProjectile.isDeleteTrue = true;
+}
+
+void FireControl::DeployMirv3(ProjectileData& aProjectile)
+{
+    AmmoData firedAmmo = m_ammoExplosive.ammoData;
+
+    ProjectileData firedProjectile;
+    firedProjectile.ammoData = firedAmmo;
+    firedProjectile.q.position = aProjectile.q.position;
+    firedProjectile.q.velocity = aProjectile.q.velocity;
+    firedProjectile.forward = aProjectile.forward;
+    firedProjectile.right = aProjectile.right;
+    firedProjectile.up = aProjectile.up;
+    firedProjectile.alignmentQuat = aProjectile.alignmentQuat;
+    firedProjectile.inverseAlignmentQuat = aProjectile.inverseAlignmentQuat;
+
+    firedProjectile.isCollisionTrue = false;
+    firedProjectile.isDeleteTrue = false;
+    firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+    firedProjectile.time = 0.0f;
+
+    // collision data
+    firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+    firedProjectile.collisionData.mass = firedAmmo.mass;
+    firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+
+    DirectX::SimpleMath::Vector3 velocityNorm = firedProjectile.q.velocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 right = velocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
+    right = aProjectile.right;
+    DirectX::SimpleMath::Vector3 up = velocityNorm.Cross(-right);
+    right = velocityNorm.Cross(up);
+
+    DirectX::SimpleMath::Vector3 forward = aProjectile.forward;
+    right = aProjectile.right;
+    up = aProjectile.up;
+
+    //const int mirvCount = 12;
+    const int rowCount = 8;
+    const int columnCount = 5;
+
+    //float rowSpacingAngle = Utility::ToRadians(3.0f);
+    //float columnSpacingAngle = Utility::ToRadians(15.0f);
+    //float rowSpacingAngle = Utility::ToRadians(6.0f);
+    //float columnSpacingAngle = Utility::ToRadians(20.0f);
+    float rowSpacingAngle = Utility::ToRadians(9.0f);
+    float columnSpacingAngle = Utility::ToRadians(20.0f);
+
+    //float yawRowMod = Utility::ToRadians(3.0f);
+    //float yawRowMod = Utility::ToRadians(10.0f);
+    //yawRowMod = 0.0f;
+    //float pitchColumnMod = Utility::ToRadians(9.0f);
+    //float pitchColumnMod = Utility::ToRadians(19.0f);
+    //pitchColumnMod = 0.0f;
+
+    //const float yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
+    //const float pitchOrg = rowSpacingAngle * (static_cast<float>(columnCount) * 0.5f);
+    float yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
+    //yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f);
+    //yawOrg -= (yawRowMod * (columnCount)) * 0.5f;
+    //const float pitchOrg = rowSpacingAngle * (static_cast<float>(columnCount) * 0.5f);
+    float pitchOrg = rowSpacingAngle * (static_cast<float>(rowCount) * 0.5f) - (rowSpacingAngle * 0.5f);
+
+    float yawVal = yawOrg;
+    float pitchVal = pitchOrg;
+
+    const float yawOrgDeg = Utility::ToDegrees(yawOrg);
+    const float pitchOrgDeg = Utility::ToDegrees(pitchOrg);
+    float yawValDeg = Utility::ToDegrees(yawOrg);
+    float pitchValDeg = Utility::ToDegrees(pitchOrg);
+    DirectX::SimpleMath::Vector3 updateVelocity = firedProjectile.q.velocity;
+
+    //////////////////////////////
+    // calculate angle at deploy
+    DirectX::SimpleMath::Vector3 flatForward = right.Cross(-DirectX::SimpleMath::Vector3::UnitY);
+    const float flatDelta = Utility::GetAngleBetweenVectors(forward, flatForward);
+
+    /////////////////////////////
+
+    const float deployDownAngle = Utility::ToRadians(-40.0f) - flatDelta;
+    float deployDownMod = Utility::ToRadians(-15.0f);
+    DirectX::SimpleMath::Quaternion deployDownQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle);
+    //updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle));
+    updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, deployDownQuat);
+    const float velocityBoostMod = 1.0f;
+    updateVelocity *= velocityBoostMod;
+
+    const float angleOffsetMin = Utility::ToRadians(-0.0f);
+    const float angleOffSetMax = Utility::ToRadians(0.0f);
+    float yawMod = 0.0f;
+    float rowMod = 0.0f;
+    for (int i = 0; i < rowCount; ++i)
+    {
+        for (int j = 0; j < columnCount; ++j)
+        {
+            //yawVal -= columnSpacingAngle * static_cast<float>(i);
+            //yawVal = yawOrg - (columnSpacingAngle * static_cast<float>(j));// +(yawRowMod * static_cast<float>(j));
+
+            ProjectileData mirv = firedProjectile;
+            DirectX::SimpleMath::Matrix rotMatYaw = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.up, yawVal + angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
+            DirectX::SimpleMath::Matrix rotMatPitch = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.right, pitchVal + angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
+            DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::Identity;
+            rotMat *= rotMatYaw;
+            //rotMat *= rotMatPitch;
+
+            //DirectX::SimpleMath::Matrix inverseRotMat = rotMat;
+            //inverseRotMat = inverseRotMat.Invert();
+            DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
+            //updateQuat *= deployDownQuat;
+            updateQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+            updateQuat *= deployDownQuat;
+            //mirv.alignmentQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
+
+
+            mirv.alignmentQuat *= updateQuat;
+            mirv.up = DirectX::SimpleMath::Vector3::Transform(mirv.up, updateQuat);
+            mirv.right = DirectX::SimpleMath::Vector3::Transform(mirv.right, updateQuat);
+            mirv.forward = DirectX::SimpleMath::Vector3::Transform(mirv.forward, updateQuat);
+
+            //mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(mirv.q.velocity, rotMat);
+            //mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, rotMat);
+            //mirv.q.velocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, updateQuat);
+            mirv.q.velocity = mirv.forward * updateVelocity.Length();
+            if (j == 0)
+            {
+                //m_newProjectilePushVec.push_back(mirv);
+            }
+
+            m_newProjectilePushVec.push_back(mirv);
+            //yawVal += rowSpacingAngle;
+            //yawVal += columnSpacingAngle;
+            yawVal -= columnSpacingAngle;
+            // 
+            //yawVal -= yawRowMod;// *static_cast<float>(j);
+            //yawVal += Utility::ToRadians(-5.0f) * static_cast<float>(i);
+        }
+        //yawVal = yawOrg;
+        columnSpacingAngle += Utility::ToRadians(.0f);// *static_cast<float>(i + 1);
+        yawVal = (columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f));// -((static_cast<float>(i) * Utility::ToRadians(5.0f)) * 0.5f);
+        //yawVal = (columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f));
+
+        //yawMod = yawRowMod * (static_cast<float>(i + 1)) * 0.5f;
+        //yawVal -= yawRowMod * static_cast<float>(i + 1);
+        //yawVal += yawMod;
+
+        //columnSpacingAngle += yawRowMod;
+        //yawVal = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
+        //pitchVal += columnSpacingAngle;
+        //pitchVal += rowSpacingAngle;
+        //rowSpacingAngle += pitchColumnMod;
+        pitchVal -= rowSpacingAngle;
+        deployDownQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle + (deployDownMod * static_cast<float>(i + 1)));
     }
 
     float yawValDegFinal = Utility::ToDegrees(yawOrg);
@@ -1997,7 +2149,7 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactModifier = 1.0f;
     //aAmmo.ammoData.launchVelocity = 165.0f;
     //aAmmo.ammoData.launchVelocity = 105.0f;
-    aAmmo.ammoData.launchVelocity = 65.0f;
+    aAmmo.ammoData.launchVelocity = 165.0f;
     aAmmo.ammoData.length = 24.5f;
     aAmmo.ammoData.mass = 65.0f;
     aAmmo.ammoData.radius = 0.22f;
@@ -2409,7 +2561,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
             m_explosionStruct.explosionVec[i].collisionSphere.Radius = radius * 1.0f;
 
-            float baseRedVal = 0.5f;
+            float baseRedVal = 0.36f;
             float scatterVal0 = cos(static_cast<float>(m_explosionStruct.explosionVec[i].currentDuration) * 9.0f);
             m_explosionStruct.explosionVec[i].color0 = DirectX::SimpleMath::Vector4((abs(scatterVal0 * 0.5f) + baseRedVal), (abs(scatterVal0 * 0.5f)), 0.0f, 1.0f);
             DirectX::SimpleMath::Vector4 currentColor = m_explosionStruct.explosionVec[i].explosionEndColor - m_explosionStruct.explosionVec[i].explosionStartColor;
