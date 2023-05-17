@@ -784,7 +784,7 @@ void Vehicle::DebugInputVelocityZero()
 
     DirectX::SimpleMath::Vector3 brakeForce = antiVelocity * brakeVal;
     //m_heli.q.velocity += brakeForce;
-    m_heli.controlInput.brakeIsPressed = true;
+    m_heli.controlInput.isBrakePressed = true;
 
     //m_heli.q.angularVelocity = DirectX::SimpleMath::Vector3::Zero;
     //m_heli.q.angularMomentum = DirectX::SimpleMath::Vector3::Zero;
@@ -950,7 +950,7 @@ void Vehicle::FireWeapon()
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
         //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
-        //m_testImpulseForce = recoil;
+        m_testImpulseForce = recoil;
     }
 }
 
@@ -1332,8 +1332,8 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
     //m_heli.q.position = DirectX::SimpleMath::Vector3(950.0f, 8.8f, 0.0f);
-    //m_heli.q.position = DirectX::SimpleMath::Vector3(-900.0f, 55.0f, 0.0f);
-
+    m_heli.q.position = DirectX::SimpleMath::Vector3(-900.0f, 55.0f, 0.0f);
+    m_heli.q.position = DirectX::SimpleMath::Vector3(-400.0f, 9.0f, 0.0f);
 
     m_heli.boundingBox.Center = m_heli.q.position;
     m_heli.boundingBox.Extents = m_heli.dimensions;
@@ -2902,7 +2902,7 @@ DirectX::SimpleMath::Vector3 Vehicle::TestStabilityForce3(const DirectX::SimpleM
 
 void Vehicle::UpdateBrakeForce(const float aTimeStep)
 {
-    if (m_heli.controlInput.brakeIsPressed == true)
+    if (m_heli.controlInput.isBrakePressed == true)
     {
         m_heli.controlInput.brakeInput += m_heli.controlInput.brakeInputRate * aTimeStep;
         if (m_heli.controlInput.brakeInput > m_heli.controlInput.brakeInputMax)
@@ -2910,7 +2910,7 @@ void Vehicle::UpdateBrakeForce(const float aTimeStep)
             m_heli.controlInput.brakeInput = m_heli.controlInput.brakeInputMax;
         }
     }
-    else if (m_heli.controlInput.brakeIsPressed == false)
+    else if (m_heli.controlInput.isBrakePressed == false)
     {
         m_heli.controlInput.brakeInput -= m_heli.controlInput.brakeInputRate * aTimeStep;
         if (m_heli.controlInput.brakeInput < m_heli.controlInput.brakeInputMin)
@@ -2918,7 +2918,7 @@ void Vehicle::UpdateBrakeForce(const float aTimeStep)
             m_heli.controlInput.brakeInput = m_heli.controlInput.brakeInputMin;
         }
     }
-    m_heli.controlInput.brakeIsPressed = false;
+    m_heli.controlInput.isBrakePressed = false;
 
     if (m_heli.controlInput.brakeInput > m_heli.controlInput.brakeInputMin)
     {
@@ -2929,13 +2929,11 @@ void Vehicle::UpdateBrakeForce(const float aTimeStep)
         brakeNorm.Normalize();
         DirectX::SimpleMath::Vector3 brakeForce = brakeNorm * ((m_heli.controlInput.brakeInput * m_heli.brakeMagMax) * brakableVelocity);
         m_heli.controlInput.brakeForce = brakeForce;
-
     }
     else
     {
         m_heli.controlInput.brakeForce = DirectX::SimpleMath::Vector3::Zero;
     }
-
 }
 
 void Vehicle::UpdateCollisionImpulseForces(const float aTimeStep)
@@ -3910,7 +3908,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     DirectX::SimpleMath::Vector3 speed = m_heli.q.velocity;
     //speed.y = 0.0f;
     m_heli.speed = speed.Length();
-    //m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
+    m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
     //m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
     //m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
     InputDecayNew(aTimeDelta);

@@ -15,6 +15,7 @@ enum class CameraState
     CAMERASTATE_RESET,
     CAMERASTATE_TRANSTONEWSHOT,
     CAMERASTATE_FOLLOWVEHICLE,
+    CAMERASTATE_FOLLOWVEHICLETEST,
     CAMERASTATE_SPRINGCAMERA,
     CAMERASTATE_SPRINGCAMERANPC,
     CAMERASTATE_SPINCAMERA,
@@ -144,6 +145,7 @@ private:
     void UpdateBoundingFrustum();
     void UpdateChaseCameraNPC();
     void UpdateChaseCamera();
+    void UpdateChaseCameraTest();
 
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
@@ -225,7 +227,8 @@ private:
     DirectX::SimpleMath::Vector3 m_followCamTargOffset = DirectX::SimpleMath::Vector3(0.0, 5.0, 0.0);
     float                       m_followCamDistance = 1.0;
     //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
-    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 9.0f, 20.0f);
+    //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 9.0f, 20.0f);
+    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 6.5f, 20.0f);
 
     Environment const* m_environment;
     std::shared_ptr<Vehicle> m_vehicleFocus;
@@ -241,7 +244,8 @@ private:
     float m_fDistance;
     float m_vDistance;
 
-    const float m_springConstantSet = 75.0f;
+    //const float m_springConstantSet = 75.0f;
+    const float m_springConstantSet = 100.0f;
 
     float m_springConstant;
     float m_dampConstant;
@@ -257,6 +261,7 @@ private:
     void UpdateSpringCameraPlayer2(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer3(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
+    void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
 
     // SpinCamera
     float m_cameraSpin = 0.0;

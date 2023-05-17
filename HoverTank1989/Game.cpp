@@ -495,6 +495,11 @@ void Game::Tick()
     Render();
 }
 
+void Game::ToggleMusicFadeOut()
+{
+    m_isMusicFadeOutTrue = true;
+}
+
 void Game::TogglePause()
 {
     if (m_isPauseOn == true)
@@ -565,6 +570,10 @@ void Game::Update(DX::StepTimer const& aTimer)
 
 
     // audio
+    if (m_isMusicFadeOutTrue == true)
+    {
+        FadeOutMusic();
+    }
     if (m_retryAudio)
     {
         m_retryAudio = false;
@@ -1277,11 +1286,55 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
             }
         }
-        if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
+        if (m_buttons.leftShoulder == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
                 m_fireControl->TriggerMirvDeploy();
+            }
+        }
+        if (m_buttons.b == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                const unsigned int columnCount = 8;
+                const unsigned int rowCount = 2;
+                const float columSpaceing = 15.0f;
+                const float rowSpacing = 20.0f;
+
+                const DirectX::SimpleMath::Vector2 spacing = DirectX::SimpleMath::Vector2(columSpaceing, rowSpacing);
+                DirectX::SimpleMath::Vector3 dropDirection = m_vehicle->GetForward();
+                const float dropDistance = 200.0f;
+                dropDirection *= dropDistance;
+                DirectX::SimpleMath::Vector3 dropPosition = m_vehicle->GetPos();
+                dropPosition.y += 55.0f;
+                dropPosition += dropDirection;
+
+                const DirectX::SimpleMath::Vector3 orientation = -m_vehicle->GetForward();
+                const DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicle->GetAlignment());
+
+                m_npcController->LoadToQueue(dropPosition, orientation, columnCount, rowCount, spacing, alignQuat);
+            }
+        }
+        if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                m_npcController->SetAllNpcsToDead();
+            }
+        }
+        if (m_buttons.a == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                ToggleMusicFadeOut();
+            }
+        }
+        if (m_buttons.dpadUp == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
             }
         }
     }
@@ -1289,9 +1342,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         m_buttons.Reset();
     }
-
-
-
 }
 
 #pragma region Frame Render
@@ -2089,6 +2139,22 @@ void Game::DrawTerrainNew(Terrain& aTerrain)
 {
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
+}
+
+void Game::FadeOutMusic()
+{
+    if (m_isMusicFadeOutTrue == true)
+    {
+        float timeStep = static_cast<float>(m_timer.GetElapsedSeconds());
+        float fadeVal = timeStep / m_musicFadeOutDuration;
+        m_musicVolume -= fadeVal;
+        if (m_musicVolume <= 0.0f)
+        {
+            m_musicVolume = 0.0f;
+            m_isMusicFadeOutTrue = false;
+        }
+        m_audioMusicStream->SetVolume(m_musicVolume);
+    }
 }
 
 void Game::OnDeviceLost()

@@ -62,6 +62,7 @@ public:
         const float aColumnSpacing, const float aRowSpacing);
 
     void ResetNpcDebugPauseToggle();
+    void SetAllNpcsToDead();
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
     void SetNPCEnvironment(Environment const* aEnvironment);

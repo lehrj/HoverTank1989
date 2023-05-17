@@ -241,7 +241,7 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     const int columnCount = 5;
 
     float rowSpacingAngle = Utility::ToRadians(2.0f);
-    float columnSpacingAngle = Utility::ToRadians(15.0f);
+    float columnSpacingAngle = Utility::ToRadians(12.0f);
     float yawOrg = columnSpacingAngle * (static_cast<float>(columnCount) * 0.5f) - (columnSpacingAngle * 0.5f);
     float pitchOrg = rowSpacingAngle * (static_cast<float>(rowCount) * 0.5f) - (rowSpacingAngle * 0.5f);
     float yawVal = yawOrg;
@@ -253,7 +253,7 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     DirectX::SimpleMath::Vector3 flatForward = right.Cross(-DirectX::SimpleMath::Vector3::UnitY);
     const float flatDelta = Utility::GetAngleBetweenVectors(forward, flatForward);
 
-    const float deployDownAngle = Utility::ToRadians(-40.0f) - flatDelta;
+    const float deployDownAngle = Utility::ToRadians(-30.0f) - flatDelta;
     float deployDownMod = Utility::ToRadians(-15.0f);
     DirectX::SimpleMath::Quaternion deployDownQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle);
     //updateVelocity = DirectX::SimpleMath::Vector3::Transform(updateVelocity, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedProjectile.right, deployDownAngle));
@@ -2077,7 +2077,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.dragCoefficient = 0.82f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
-    aAmmo.ammoData.launchVelocity = 365.0f;
+    aAmmo.ammoData.launchVelocity = 395.0f;
     aAmmo.ammoData.length = 9.0f;
     aAmmo.ammoData.mass = 10.0f;
     aAmmo.ammoData.radius = 0.2f;
@@ -2090,7 +2090,7 @@ void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_EXPLOSIVE;
     aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 1.7f;
+    aAmmo.ammoData.cooldown = 1.3f;
     aAmmo.ammoData.dragCoefficient = 0.1f;
     aAmmo.ammoData.impactDurration = 0.3f;
     aAmmo.ammoData.impactModifier = 1.0f;
@@ -2130,7 +2130,7 @@ void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 465.0f;
     aAmmo.ammoData.length = 0.4f;
-    aAmmo.ammoData.mass = 1.0f;
+    aAmmo.ammoData.mass = 1.4f;
     aAmmo.ammoData.radius = 0.14f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
@@ -2194,7 +2194,7 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.currentRadius = aExplosionData.initialRadius;
     aExplosionData.currentDuration = 0.0f;
     aExplosionData.totalDuration = 3.0f;
-    aExplosionData.maxRadius = 10.f;
+    aExplosionData.maxRadius = 15.f;
     aExplosionData.position = DirectX::SimpleMath::Vector3::Zero;
     m_explosionStruct.explosionShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), -1.0f);
     m_explosionStruct.explosionShape1 = DirectX::GeometricPrimitive::CreateDodecahedron(aContext.Get(), -0.75f);

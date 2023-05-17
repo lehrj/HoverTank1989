@@ -77,6 +77,8 @@ private:
     void DrawUIDisplay();
     void DrawUnlockUI();
 
+    void FadeOutMusic();
+
     bool InitializeTerrainArray();
     bool InitializeTerrainArrayNew(Terrain& aTerrain);
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
@@ -85,6 +87,7 @@ private:
     void SetUiAmmoDisplay(AmmoType aAmmoType);
     void SetUiDisplay(std::string aString);
     
+    void ToggleMusicFadeOut();
     void TogglePause();
     void Update(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
@@ -269,11 +272,16 @@ private:
     // audio 
     std::unique_ptr<DirectX::AudioEngine>       m_audioEngine;
     bool                                        m_retryAudio;
-    float                                       m_musicVolume = 0.9f;
+    float                                       m_musicVolume = 1.0f;
     float                                       m_sfxVolume = 0.5f;
     std::unique_ptr<DirectX::WaveBank>          m_audioBank;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioMusicStream;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioEffectStream;
+
+    float                                       m_musicFadeOutTimer = 0.0f;
+    const float                                 m_musicFadeOutDuration = 5.0f;
+    const float                                 m_musicFadeOutRate = 0.2f;
+    bool                                        m_isMusicFadeOutTrue = false;
 
     const bool                                  m_isInDebugMode = true;
 

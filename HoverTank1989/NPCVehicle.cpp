@@ -4123,6 +4123,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     //UpdateJetCounterTorqueData(aTimeDelta);
     if (m_vehicleStruct00.vehicleData.q.position.y > 1300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)
     {
+        m_vehicleStruct00.vehicleData.isDead = true;
+        /*
         JumpData testData = m_vehicleStruct00.vehicleData.jumpData;
 
         m_vehicleStruct00.vehicleData.impulseForceVec.clear();
@@ -4143,6 +4145,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         m_vehicleStruct00.vehicleData.q.velocity.x = 0.0f;
         m_vehicleStruct00.vehicleData.q.velocity.y = 0.0f;
         m_vehicleStruct00.vehicleData.q.velocity.z = 0.0f;
+        */
     }
 
     m_testAccelVec = (m_testAccelVec + (m_vehicleStruct00.vehicleData.q.velocity - preVelocity) / static_cast<float>(aTimeDelta)) * 0.5f;

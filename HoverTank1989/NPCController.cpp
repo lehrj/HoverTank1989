@@ -495,11 +495,7 @@ void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Mic
 
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
-    const float xOrgVal = 70.0f;
-    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
     const float low = 0.1f;
     const float high = 5.0f;
     //const float zPosOffSet = 12.0f;
@@ -509,6 +505,12 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int columns = 4;
     const int rows = 0;
     const int columns = 4;
+    //const float xOrgVal = -500.0f;
+    const float xOrgVal = -200.0f;
+    const float zOrgVal = (static_cast<float>(columns * 0.5f) * -zPosOffSet) + (zPosOffSet * 0.5f);
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
+    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, zOrgVal);
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -624,6 +626,17 @@ void NPCController::ResetNpcDebugPauseToggle()
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         m_npcVec[i]->ResetDebugPauseToggle();
+    }
+}
+
+void NPCController::SetAllNpcsToDead()
+{
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetIsInCameraFrustrum() == false)
+        {
+            m_npcVec[i]->SetDeadTrue();
+        }
     }
 }
 

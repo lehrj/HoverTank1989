@@ -25,7 +25,7 @@ Camera::Camera(int aWidth, int aHeight)
 
 	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
 	//m_cameraState = CameraState::CAMERASTATE_FIRSTPERSON;
-
+	//m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLETEST;
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
@@ -804,6 +804,11 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		UpdateChaseCamera();
 		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
+	else if (m_cameraState == CameraState::CAMERASTATE_FOLLOWVEHICLETEST)
+	{
+		UpdateChaseCameraTest();
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SPINCAMERA)
 	{
 		UpdateSpinCamera(aTimer);
@@ -818,7 +823,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
 		m_springTarget.forward = testHeading;
 		*/
-		UpdateSpringCameraPlayer(aTimer);
+		UpdateSpringCameraPlayerLastUsed(aTimer);
 		//m_viewMatrix = m_springCameraMatrix;
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERANPC)
@@ -1154,14 +1159,86 @@ void Camera::UpdateSpringCamera(DX::StepTimer const& aTimeDelta)
 
 void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
 {
+	DirectX::SimpleMath::Vector3 vehicleVelocity = m_vehicleFocus->GetVelocity();
+	float velocityMod = 0.01f;
+	vehicleVelocity *= velocityMod;
 	m_springTarget.position = m_vehicleFocus->GetPos();
-	
+	DirectX::SimpleMath::Vector3 targPosMod = DirectX::SimpleMath::Vector3(0.0f, 1.5f, 0.0f);
+	targPosMod = DirectX::SimpleMath::Vector3::Transform(targPosMod, m_vehicleFocus->GetAlignment());
+	//m_debugData->PushDebugLinePositionIndicator(m_springTarget.position, 10.0f, 0.0f, DirectX::Colors::Blue);
+	m_springTarget.position += targPosMod;
+	//m_debugData->PushDebugLinePositionIndicator(m_springTarget.position, 10.0f, 0.0f, DirectX::Colors::Red);
+	//m_springTarget.position += vehicleVelocity;
+	m_springTarget.position = m_vehicleFocus->GetPos();
 	DirectX::SimpleMath::Vector3 weaponRight = m_vehicleFocus->GetWeaponDirection().Cross(m_vehicleFocus->GetVehicleUp());
-	const float pitchDampening = 0.5f;
+	const float pitchDampening = 0.9f;
 	DirectX::SimpleMath::Matrix pitchRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(weaponRight, m_vehicleFocus->GetWeaponPitch() * pitchDampening);
 	DirectX::SimpleMath::Matrix yawRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleFocus->GetVehicleUp(), m_vehicleFocus->GetTurretYaw());
 	DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetAlignment();
 	
+	rotMat *= yawRotMat;
+	rotMat *= pitchRotMat;
+	DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
+	testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, rotMat);
+	testHeading = m_vehicleFocus->GetWeaponDirection();
+	m_springTarget.forward = testHeading;
+
+
+	DirectX::SimpleMath::Vector3 idealPosition = m_springTarget.position - m_springTarget.forward * m_hDistance + m_springTarget.up * m_vDistance;
+	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
+	DirectX::SimpleMath::Vector3 springAccel = (-m_springConstant * displacement) - (m_dampConstant * m_velocity);
+	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
+	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
+	//m_actualPosition += idealPosition;
+	//m_actualPosition *= 0.5f;
+	DirectX::SimpleMath::Vector3 testPos = m_actualPosition;
+	testPos = DirectX::SimpleMath::Vector3::SmoothStep(testPos, idealPosition, 0.1f);
+	
+	/*
+	DirectX::SimpleMath::Vector3 velocityDraw = m_velocity;
+	m_debugData->PushDebugLine(m_vehicleFocus->GetPos(), velocityDraw, 20.0, 0.0f, DirectX::Colors::Blue);
+	m_debugData->PushDebugLine(m_vehicleFocus->GetPos(), -velocityDraw, 20.0, 0.0f, DirectX::Colors::Yellow);
+	m_debugData->PushDebugLinePositionIndicator(idealPosition, 10.0f, 0.0f, DirectX::Colors::Purple);
+	m_debugData->DebugPushUILineDecimalNumber("m_velocity ", m_velocity.Length(), "");
+	*/
+	DirectX::SimpleMath::Vector3 idealPosNorm = idealPosition - m_springTarget.position;
+	//m_debugData->PushDebugLine(m_vehicleFocus->GetPos(), idealPosNorm, 30.0f, 0.0f, DirectX::Colors::Yellow);
+	m_debugData->PushDebugLineScaled(m_vehicleFocus->GetPos(), idealPosNorm, 0.0f, 1.0f, 0.0f, DirectX::Colors::Yellow);
+	m_debugData->DebugPushUILineDecimalNumber("idealPosNorm ", idealPosNorm.Length(), "");
+
+	DirectX::SimpleMath::Vector3 testPosNorm = testPos - m_springTarget.position;
+	//m_debugData->PushDebugLine(m_vehicleFocus->GetPos(), testPosNorm, 35.0f, 0.0f, DirectX::Colors::Blue);
+	m_debugData->PushDebugLineScaled(m_vehicleFocus->GetPos(), testPosNorm, 0.0f, 1.0f, 0.0f, DirectX::Colors::Blue);
+	m_debugData->DebugPushUILineDecimalNumber("idealPosNorm ", testPosNorm.Length(), "");
+
+	DirectX::SimpleMath::Vector3 actualPosNorm = m_actualPosition - m_springTarget.position;
+	//m_debugData->PushDebugLine(m_vehicleFocus->GetPos(), actualPosNorm, 40.0f, 0.0f, DirectX::Colors::Red);
+	m_debugData->PushDebugLineScaled(m_vehicleFocus->GetPos(), actualPosNorm, 0.0f, 1.0f, 0.0f, DirectX::Colors::Red);
+	m_debugData->DebugPushUILineDecimalNumber("idealPosNorm ", actualPosNorm.Length(), "");
+	m_actualPosition = testPos;
+
+	m_position = m_actualPosition;
+	m_target = m_springTarget.position;
+	DirectX::SimpleMath::Vector3 cameraForward = m_springTarget.position - m_actualPosition;
+	cameraForward.Normalize();
+	DirectX::SimpleMath::Vector3 cameraLeft = m_springTarget.up.Cross(cameraForward);
+	cameraLeft.Normalize();
+	DirectX::SimpleMath::Vector3 cameraUp = cameraForward.Cross(cameraLeft);
+	cameraUp.Normalize();
+	m_springCameraMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_actualPosition, m_springTarget.position, cameraUp);
+	m_viewMatrix = m_springCameraMatrix;
+}
+
+void Camera::UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta)
+{
+	m_springTarget.position = m_vehicleFocus->GetPos();
+
+	DirectX::SimpleMath::Vector3 weaponRight = m_vehicleFocus->GetWeaponDirection().Cross(m_vehicleFocus->GetVehicleUp());
+	const float pitchDampening = 0.9f;
+	DirectX::SimpleMath::Matrix pitchRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(weaponRight, m_vehicleFocus->GetWeaponPitch() * pitchDampening);
+	DirectX::SimpleMath::Matrix yawRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(m_vehicleFocus->GetVehicleUp(), m_vehicleFocus->GetTurretYaw());
+	DirectX::SimpleMath::Matrix rotMat = m_vehicleFocus->GetAlignment();
+
 	rotMat *= yawRotMat;
 	rotMat *= pitchRotMat;
 	DirectX::SimpleMath::Vector3 testHeading = DirectX::SimpleMath::Vector3::UnitX;
@@ -1459,6 +1536,44 @@ void Camera::UpdateChaseCamera()
 	newCamPosition += m_vehicleFocus->GetPos();
 	SetPos(newCamPosition);
 	*/
+}
+
+void Camera::UpdateChaseCameraTest()
+{
+	SetUpPos(m_followCamUp);
+	DirectX::SimpleMath::Vector3 targetPitch = DirectX::SimpleMath::Vector3(10.0f, 0.0f, 0.0f);
+	//targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, DirectX::SimpleMath::Matrix::CreateRotationZ(m_vehicleFocus->GetWeaponPitch()));
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
+	targetPitch = DirectX::SimpleMath::Vector3::Transform(targetPitch, m_vehicleFocus->GetVehicleOrientation());
+	DirectX::SimpleMath::Vector3 targetPos = m_vehicleFocus->GetPos() + m_followCamTargOffset;
+	targetPos += targetPitch;
+	SetTargetPos(targetPos);
+
+	// this is causing to much camera shake with weapon recoil
+	DirectX::SimpleMath::Vector3 weaponPos = m_vehicleFocus->GetWeaponPos();
+	const float targetDistanceMod = 30.0f;
+	DirectX::SimpleMath::Vector3 weaponDir = m_vehicleFocus->GetWeaponDirection() * targetDistanceMod;
+	targetPos = weaponDir;
+	targetPos += weaponPos;
+	SetTargetPos(targetPos);
+
+	const float pitchSensitivity = 0.5f;
+	DirectX::SimpleMath::Quaternion orientationQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(
+		DirectX::SimpleMath::Matrix::CreateRotationZ(pitchSensitivity * m_vehicleFocus->GetWeaponPitch()));
+	orientationQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
+	orientationQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetVehicleOrientation());
+
+	m_chaseCamQuat = orientationQuat;
+	m_chaseCamQuat = DirectX::SimpleMath::Quaternion::Slerp(m_chaseCamQuat, orientationQuat, 0.01f);
+	DirectX::SimpleMath::Vector3 preCamPosition = m_position;
+	DirectX::SimpleMath::Vector3 accelCamPos = m_followCamPos;
+	DirectX::SimpleMath::Vector3 accelVec = m_vehicleFocus->GetAccelVec() * 0.01f;
+	accelCamPos += accelVec;
+	accelCamPos = DirectX::SimpleMath::Vector3::Lerp(accelCamPos, m_followCamPos, 0.0001);
+	accelCamPos = DirectX::SimpleMath::Vector3::Transform(accelCamPos, m_chaseCamQuat);
+	accelCamPos += m_vehicleFocus->GetPos();
+	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::SmoothStep(preCamPosition, accelCamPos, 0.15);
+	SetPos(newCamPosition);
 }
 
 void Camera::UpdatePitchYaw(const float aPitch, const float aYaw)

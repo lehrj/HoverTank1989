@@ -308,7 +308,8 @@ private:
 
     const float m_gravityMod = 1.0f;
     const float m_explosiveTorqueArmMod = 1.0f;
-    const float m_maxExplosiveForce = 100000.0f;
+    //const float m_maxExplosiveForce = 100000.0f;
+    const float m_maxExplosiveForce = 500000.0f;
 
     bool m_isTestBoolTrue = false;
 
