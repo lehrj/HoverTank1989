@@ -32,6 +32,7 @@ enum class CameraState
     CAMERASTATE_FOLLOWNPC,
     CAMERASTATE_TRANSITIONFROMSPRINGCAM,
     CAMERASTATE_TRANSITIONTOSPRINGCAM,
+    CAMERASTATE_SNAPCAM,
 };
 
 // spring camera target
@@ -262,6 +263,7 @@ private:
     void UpdateSpringCameraPlayer3(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapCamera(DX::StepTimer const& aTimeDelta);
 
     // SpinCamera
     float m_cameraSpin = 0.0;
@@ -318,5 +320,17 @@ private:
     const float                  m_transitionTimeMax = 2.0f;
 
     int m_npcFocusID = 0;
+
+
+    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-20.0f, 4.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapPosNorm = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapTargNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapPos = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapTarg = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapPosPrev = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapTargPrev = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Quaternion m_snapQuat = DirectX::SimpleMath::Quaternion::Identity;
+
 };
 

@@ -272,7 +272,12 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Art\Audio\AudioBank.xwb" />
+    <None Include="Art\Audio\AudioBank.xwb">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+    </None>
     <None Include="Art\Fonts\bitwise16.spritefont" />
     <None Include="Art\Fonts\bitwise20.spritefont" />
     <None Include="Art\Fonts\bitwise24.spritefont" />
