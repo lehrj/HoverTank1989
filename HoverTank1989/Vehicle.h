@@ -74,7 +74,7 @@ struct ControlInput
 
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
-    const float weaponPitchInputRate = 0.3f;
+    const float weaponPitchInputRate = 0.2f;
     const float weaponPitchMax = Utility::ToRadians(20.0f);
     const float weaponPitchMin = Utility::ToRadians(-20.0f);
 
@@ -326,6 +326,7 @@ public:
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_heli.up; };
     DirectX::SimpleMath::Matrix GetVehicleOrientation() const { return m_heli.cameraOrientation; };
     DirectX::SimpleMath::Vector3 GetVelocity() const { return m_heli.q.velocity; };
+    DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_modelController->GetTargetingMatrix(); };
     DirectX::SimpleMath::Matrix GetTensorTest() const { return m_heli.localInertiaMatrixTest; };
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
     float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };

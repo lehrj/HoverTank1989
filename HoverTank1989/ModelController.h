@@ -42,6 +42,8 @@ struct TankModel
     DirectX::SimpleMath::Matrix  muzzleWorldMatrix;
     DirectX::SimpleMath::Matrix  muzzleTransMatrix;
 
+    DirectX::SimpleMath::Matrix  targetingMatrix = DirectX::SimpleMath::Matrix::Identity;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    frontGlowCenterShape;
     DirectX::SimpleMath::Matrix localFrontGlowCenterMatrix;
     DirectX::SimpleMath::Matrix worldFrontGlowCenterMatrix;
@@ -82,6 +84,7 @@ public:
     DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_playerModel.muzzleWorldMatrix; };
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_playerModel.muzzlePosWorld; };
     DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };
+    DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_playerModel.targetingMatrix; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };
     DirectX::SimpleMath::Vector3 GetWeaponDirLocal() const { return m_playerModel.weaponDirLocal; };
     DirectX::SimpleMath::Vector3 GetWeaponDirWorld() const { return m_playerModel.weaponDirWorld; };

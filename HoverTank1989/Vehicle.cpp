@@ -3345,7 +3345,6 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeSt
     m_heli.boundingBox.Orientation = updateQuat;
     //m_heli.boundingBox.Center = m_heli.q.position + (m_heli.forward * 0.75f);
     m_heli.boundingBox.Center = m_heli.q.position;
-
 }
 
 void Vehicle::UpdateResistance()
@@ -3909,7 +3908,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //speed.y = 0.0f;
     m_heli.speed = speed.Length();
     m_debugData->DebugPushUILineDecimalNumber("Speed = ", m_heli.speed, "");
-    //m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
+    m_debugData->DebugPushUILineDecimalNumber("MPH = ", m_heli.speed * 2.237f, "");
     //m_debugData->DebugPushUILineDecimalNumber("Altitude = ", m_heli.altitude, "");
     InputDecayNew(aTimeDelta);
     InputDecay(aTimeDelta);

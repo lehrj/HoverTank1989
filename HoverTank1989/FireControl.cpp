@@ -977,7 +977,7 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     }
     
     aEffect->SetBiasedVertexNormals(true);
-
+ 
     /*
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir0, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -985,16 +985,8 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), weaponDir, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     */
 
-    DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
-    testColor = m_muzzleFlash.currentColor;
-    //testColor = DirectX::Colors::Yellow;
-    //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
-    //testColor = DirectX::SimpleMath::Vector4(0.501960814f, 0.501960814f, 0.501960814f, 1.0f);
-    //testColor = DirectX::SimpleMath::Vector4(1.0f, 0.501960814f, 0.501960814f, 1.0f);
-
     aEffect->SetWorld(m_muzzleFlash.worldTestMatrix);
-    //aEffect->SetColorAndAlpha(m_muzzleFlash.currentColor);
-    aEffect->SetColorAndAlpha(testColor);
+    aEffect->SetColorAndAlpha(m_muzzleFlash.currentColor);
     m_muzzleFlash.muzzleFlashConeShape2->Draw(aEffect.get(), aInputLayout.Get());
 
     /*
@@ -1010,7 +1002,7 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), -weaponDir, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     */
     
-    aEffect->SetWorld(m_muzzleFlash.worldMuzzleFlashConeMatrix);
+    //aEffect->SetWorld(m_muzzleFlash.worldMuzzleFlashConeMatrix);
     //m_muzzleFlash.muzzleFlashConeShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetBiasedVertexNormals(false);
@@ -2074,7 +2066,8 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_CANNON;
     aAmmo.ammoData.baseDamage = 1.0f;
     aAmmo.ammoData.cooldown = 0.9f;
-    aAmmo.ammoData.dragCoefficient = 0.82f;
+    //aAmmo.ammoData.dragCoefficient = 0.82f;
+    aAmmo.ammoData.dragCoefficient = 0.042f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 395.0f;
@@ -2233,7 +2226,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_newProjectilePushVec.clear();
     m_environment = aEnvironment;
     m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
-    m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
+    //m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
     //m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
 
     InitializeAmmoCannon(m_ammoCannon);
@@ -2771,7 +2764,6 @@ void FireControl::UpdateProjectileVec(double aTimeDelta)
     }
 
     CheckCollisions();
-
 
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)

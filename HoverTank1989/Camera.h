@@ -184,7 +184,7 @@ private:
     const float                     m_frustumPlanePaddingVertical = Utility::ToRadians(15.0f);
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
-    const float                     m_posTravelSpeed = 104.0f;
+    const float                     m_posTravelSpeed = 14.0f;
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 
@@ -246,7 +246,7 @@ private:
     float m_vDistance;
 
     //const float m_springConstantSet = 75.0f;
-    const float m_springConstantSet = 100.0f;
+    const float m_springConstantSet = 30.0f;
 
     float m_springConstant;
     float m_dampConstant;
@@ -322,8 +322,8 @@ private:
     int m_npcFocusID = 0;
 
 
-    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-20.0f, 4.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-25.0f, 8.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(5.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapPosNorm = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapTargNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapPos = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
@@ -331,6 +331,6 @@ private:
     DirectX::SimpleMath::Vector3 m_snapPosPrev = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapTargPrev = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Quaternion m_snapQuat = DirectX::SimpleMath::Quaternion::Identity;
-
+    DirectX::SimpleMath::Quaternion m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
 };
 

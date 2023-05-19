@@ -497,6 +497,8 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzleWorldMatrix *= turretMat;
     aModel.muzzleWorldMatrix *= aModel.barrelTransMatrix;
     aModel.localizedMuzzlePos = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosLocal, aModel.muzzleWorldMatrix);
+
+    aModel.targetingMatrix = aModel.muzzleWorldMatrix;
     aModel.muzzleWorldMatrix *= updateMat;
 
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
