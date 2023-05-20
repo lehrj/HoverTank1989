@@ -2296,6 +2296,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             }
         }
+        if (m_buttons.rightStick == GamePad::ButtonStateTracker::HELD)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                m_vehicle->InputWeaponPitchToZero(static_cast<float>(aTimer.GetElapsedSeconds()));
+            }
+        }
+        
     }
     else
     {

@@ -571,7 +571,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
 {
     UpdateModel(m_playerModel, aAlignment, aAltitude, aPos, aBarrelPitch, aTurretRotation, aPlane);
-    m_debugData->PushDebugLine(m_playerModel.muzzlePosWorld, m_playerModel.weaponDirWorld, 300.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_playerModel.muzzlePosWorld, m_playerModel.weaponDirWorld, 300.0f, 0.0f, DirectX::Colors::Red);
 }
 
 //void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)

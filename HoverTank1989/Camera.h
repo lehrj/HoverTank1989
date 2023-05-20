@@ -322,8 +322,10 @@ private:
     int m_npcFocusID = 0;
 
 
-    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-25.0f, 8.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(5.0f, 1.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(5.0f, 1.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 1.0f, -4.0f);
+
     DirectX::SimpleMath::Vector3 m_snapPosNorm = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapTargNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapPos = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);

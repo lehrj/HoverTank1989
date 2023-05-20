@@ -177,6 +177,9 @@ struct HeliData
     DirectX::SimpleMath::Vector3 centerOfMass;
     DirectX::SimpleMath::Vector3 localCenterOfMass;
 
+    DirectX::SimpleMath::Vector3 testCenterOfMass = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testLocalCenterOfMass = DirectX::SimpleMath::Vector3::Zero;
+
     DirectX::SimpleMath::Vector3 physicsPointFront;
     DirectX::SimpleMath::Vector3 localPhysicsPointFront;
     DirectX::SimpleMath::Vector3 physicsPointLeft;
@@ -246,9 +249,13 @@ struct HeliData
     DirectX::SimpleMath::Matrix localInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest;
 
+    DirectX::SimpleMath::Matrix ballastInertiaMatrix;
+    DirectX::SimpleMath::Matrix inverseBallastInertiaMatrix;
     DirectX::SimpleMath::Matrix localBallastInertiaMatrix;
     DirectX::SimpleMath::Matrix localInverseBallastInertiaMatrix;
-    DirectX::SimpleMath::Vector3 ballastInertiaTranslation;
+    const DirectX::SimpleMath::Vector3 ballastInertiaTranslationBase = DirectX::SimpleMath::Vector3(0.0f, -5.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 ballastInertiaTranslation = DirectX::SimpleMath::Vector3(0.0f, -5.0f, 0.0f);
+    float ballastMass = 3000.0f;
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
@@ -357,6 +364,8 @@ public:
     void InputGamePadStrafe(const float aStrafeInput);
     void InputGamePadStrafe2(const float aStrafeInput);
     void InputGamePadTurn(const float aTurnInput);
+
+    void InputWeaponPitchToZero(const float aTimeStep);
 
     void Jump();
 
@@ -483,7 +492,9 @@ private:
     */
 
     const float m_testMass = 1700.0f;
-    const float m_driveTorqueForceMax = 1300.0f;
+    //const float m_driveTorqueForceMax = 1300.0f;
+    const float m_driveTorqueForceMax = 2300.0f;
+    //const float m_driveTorqueForceMax = 7300.0f;
     //const float m_stabilityTorqueForceMax = 33000.0f;
     const float m_stabilityTorqueForceMax = 800.0f;
     const float m_stabilityTorqueForceMax2 = 1200.0f;

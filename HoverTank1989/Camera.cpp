@@ -1267,14 +1267,14 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
 
-	m_debugData->DebugPushUILineDecimalNumber("targPos.x ", targPos.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("targPos.y ", targPos.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("targPos.z ", targPos.z, "");
+	//m_debugData->DebugPushUILineDecimalNumber("targPos.x ", targPos.x, "");
+	//m_debugData->DebugPushUILineDecimalNumber("targPos.y ", targPos.y, "");
+	//m_debugData->DebugPushUILineDecimalNumber("targPos.z ", targPos.z, "");
 
 	DirectX::SimpleMath::Vector3 testTarg = m_vehicleFocus->GetLocalizedMuzzlePos();
-	m_debugData->DebugPushUILineDecimalNumber("testTarg.x ", testTarg.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("testTarg.y ", testTarg.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("testTarg.z ", testTarg.z, "");
+	//m_debugData->DebugPushUILineDecimalNumber("testTarg.x ", testTarg.x, "");
+	//m_debugData->DebugPushUILineDecimalNumber("testTarg.y ", testTarg.y, "");
+	//m_debugData->DebugPushUILineDecimalNumber("testTarg.z ", testTarg.z, "");
 
 	DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
 	currentQuat *= turretPitchQuat;
@@ -1310,7 +1310,7 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	//m_position = camPos;
 	//m_target = targPos;
 	//targPos = m_vehicleFocus->GetCameraTargetTest();
-	targPos = DirectX::SimpleMath::Vector3(0.0f, 1.0f, -4.0f);
+	targPos = m_snapTargBase;
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
 	//testTarg = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, t);
@@ -1323,11 +1323,11 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	m_snapPosPrev = camPos;
 	m_snapTargPrev = targPos;
 
-	m_position = camPos;
-	m_target = targPos;
+	//m_position = camPos;
+	//m_target = targPos;
 
 	//testTarg = m_vehicleFocus->GetCameraTargetTest();
-	m_debugData->PushDebugLinePositionIndicator(targPos, 5.0f, 0.0f, DirectX::Colors::Yellow);
+	//m_debugData->PushDebugLinePositionIndicator(targPos, 5.0f, 0.0f, DirectX::Colors::Yellow);
 	//m_debugData->PushDebugLinePositionIndicator(targPos, 5.0f, 0.0f, DirectX::Colors::Red);
 	//m_debugData->PushDebugLinePositionIndicator(m_vehicleFocus->GetPos(), 5.0f, 0.0f, DirectX::Colors::Blue);
 	//m_debugData->DebugPushUILineDecimalNumber("Distance to Pos  ", (camPos - m_vehicleFocus->GetPos()).Length(), "");
