@@ -76,7 +76,7 @@ struct ControlInput
     //const float weaponPitchInputRate = 0.7f;
     const float weaponPitchInputRate = 0.2f;
     const float weaponPitchMax = Utility::ToRadians(20.0f);
-    const float weaponPitchMin = Utility::ToRadians(-20.0f);
+    const float weaponPitchMin = Utility::ToRadians(-10.0f);
 
     float turretYaw;
     //const float turretYawInputRate = 0.7f;
@@ -271,6 +271,8 @@ struct HeliData
 
     DirectX::SimpleMath::Vector3 angularDrag = DirectX::SimpleMath::Vector3::Zero;
 
+    float stabilizedWeaponPitch = 0.0f;
+
     ControlInput  controlInput;
     Rotor         mainRotor;
     Rotor         tailRotor;
@@ -336,7 +338,8 @@ public:
     DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_modelController->GetTargetingMatrix(); };
     DirectX::SimpleMath::Matrix GetTensorTest() const { return m_heli.localInertiaMatrixTest; };
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
-    float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
+    //float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
+    float GetWeaponPitch() const { return m_heli.stabilizedWeaponPitch; };
     DirectX::SimpleMath::Vector3 GetWeaponDirection() const { return m_heli.weaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalDirection() const { return m_heli.localWeaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalPos() const { return m_heli.localWeaponPos; };
@@ -410,6 +413,7 @@ private:
     void RightHandSide2(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ, double aTimeDelta, float aQScale, Motion* aDQ);
     void RungeKutta4(struct HeliData* aHeli, double aTimeDelta);
 
+    void StabilizeWeaponPitch(struct HeliData& aVehicle, const float aTimeStep);
     DirectX::SimpleMath::Vector3 TestStabilityForce(const float aTimeStep);
     DirectX::SimpleMath::Vector3 TestStabilityForce2(const DirectX::SimpleMath::Vector3 aVec, const float aTimeStep);
     DirectX::SimpleMath::Vector3 TestStabilityForce3(const DirectX::SimpleMath::Vector3 aVec, const float aTimeStep);
@@ -499,7 +503,8 @@ private:
     const float m_stabilityTorqueForceMax = 800.0f;
     const float m_stabilityTorqueForceMax2 = 1200.0f;
     //const float m_terrainTorqueForceMax = 3800.0f;
-    const float m_terrainTorqueForceMax = 1700.0f;
+    //const float m_terrainTorqueForceMax = 1700.0f;
+    const float m_terrainTorqueForceMax = 2700.0f;
     const float m_gravStabilityArmMod = 1.0f;
 
     const float m_gravTorqueModTest = 15.0f;

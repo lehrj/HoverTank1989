@@ -74,7 +74,7 @@ struct Fixture
 
 enum class EnvironmentType
 {
-    ENIVRONMENTTYPE_STARTSCREEN,
+    ENVIRONMENTTYPE_STARTSCREEN,
     ENVIRONMENTTYPE_GAMEPLAY,
 };
 

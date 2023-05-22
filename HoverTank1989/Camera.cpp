@@ -740,11 +740,6 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 {
 	UpdateTimer(aTimer);
 
-	if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM || m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
-	{
-		UpdateSnapCamera(aTimer);
-		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
-	}
 	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
 	{
 		UpdateFirstPersonCamera();
@@ -870,18 +865,18 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	{
 		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
-	/*
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
 		UpdateSnapCamera(aTimer);
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
-	*/
 	else
 	{
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
-
+	m_debugData->DebugPushUILineDecimalNumber("m_position.x ", m_position.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.y ", m_position.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.z ", m_position.z, "");
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
 	UpdateBoundingFrustum();
@@ -1323,8 +1318,8 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	m_snapPosPrev = camPos;
 	m_snapTargPrev = targPos;
 
-	//m_position = camPos;
-	//m_target = targPos;
+	m_position = camPos;
+	m_target = targPos;
 
 	//testTarg = m_vehicleFocus->GetCameraTargetTest();
 	//m_debugData->PushDebugLinePositionIndicator(targPos, 5.0f, 0.0f, DirectX::Colors::Yellow);

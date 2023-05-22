@@ -95,6 +95,7 @@ private:
     void AdjustHeadingForVelocity();
     void AvoidPosCurrent();
     void CreateWayPath();
+    void CreateWayPathTestFireRange();
     void InitializeControlOutput();
     void InitializeDestinationTargets();
     void InitializeBehavior();

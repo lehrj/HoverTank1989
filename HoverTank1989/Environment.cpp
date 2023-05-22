@@ -453,7 +453,7 @@ std::vector<DirectX::VertexPositionNormalColor> Environment::GetTerrainPositionN
 {
     std::vector<DirectX::VertexPositionNormalColor> vertPosNormColor;
     vertPosNormColor.clear();
-    if (aEnvironType == EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN)
+    if (aEnvironType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
     {
         vertPosNormColor.resize(m_heightMapStartScreenData.terrainModel.size());
         DirectX::XMFLOAT4 terrainColor(1.0, 1.0, 1.0, 1.0); // ToDo: for testing, implement color control
@@ -767,7 +767,7 @@ void Environment::InitializeHeightMapData()
     m_heightMapStartScreenData.mapYtransform = m_mapYtransformStartScreen;
     m_heightMapStartScreenData.mapZtransform = m_mapZtransformStartScreen;
 
-    m_heightMapStartScreenData.mapType = EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN;
+    m_heightMapStartScreenData.mapType = EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN;
     m_heightMapStartScreenData.terrainHeight = 0;
     m_heightMapStartScreenData.terrainLength = 0;
     m_heightMapStartScreenData.terrainWidth = 0;
@@ -825,7 +825,7 @@ bool Environment::LoadHeightMap(HeightMap& aMap)
 {
     FILE* filePtr;
     const char* filename;
-    if (aMap.mapType == EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN)
+    if (aMap.mapType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
     {
         filename = "../HoverTank1989/Art/HeightMaps/heightmapStartScreen.bmp";
     }
@@ -833,7 +833,7 @@ bool Environment::LoadHeightMap(HeightMap& aMap)
     {
         //filename = "../HoverTank1989/Art/HeightMaps/HeightmapRoughTerrain.bmp";
         //filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest.bmp";
-        filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest5.bmp";
+        filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest6.bmp";
         //filename = "../HoverTank1989/Art/HeightMaps/HeightmapWeaponTest.bmp";
     }
     else
@@ -951,7 +951,7 @@ void Environment::ScaleTerrain(HeightMap& aMap)
     float xTransform = 0.0;
     float yTransform = 0.0;
     float zTransform = 0.0;
-    if (aMap.mapType == EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN)
+    if (aMap.mapType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
     {
         scale = aMap.mapScale;
         xTransform = aMap.mapXtransform;

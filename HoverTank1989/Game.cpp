@@ -116,7 +116,7 @@ void Game::Initialize(HWND window, int width, int height)
         isInitSuccessTrue = false;
     }
 
-    m_terrainStartScreen.environType = EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN;
+    m_terrainStartScreen.environType = EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN;
     result = InitializeTerrainArrayStartScreen(m_terrainStartScreen);
     if (!result)
     {
@@ -227,7 +227,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
     float maxY = 0.0f;
 
-    if (aTerrain.environType == EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN)
+    if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
     {
         baseColor = DirectX::XMFLOAT4(0.01, 0.01, 0.01, 1.0);
         testWhite = baseColor;
@@ -311,7 +311,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     std::vector<DirectX::SimpleMath::Vector3> testNorms2;
     testNorms2.resize(aTerrain.terrainVertexCount);
     float gridLineOffSetY = 0.0f;
-    if (aTerrain.environType == EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN)
+    if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
     {
         gridLineOffSetY = 0.003f;
     }
@@ -440,7 +440,7 @@ bool Game::InitializeTerrainArrayStartScreen(Terrain& aTerrain)
     std::vector<DirectX::SimpleMath::Vector3> testNorms2;
     testNorms2.resize(aTerrain.terrainVertexCount);
     float gridLineOffSetY = 0.0f;
-    if (aTerrain.environType == EnvironmentType::ENIVRONMENTTYPE_STARTSCREEN)
+    if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
     {
         gridLineOffSetY = 0.003f;
     }
@@ -1785,7 +1785,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     if (m_kbStateTracker.pressed.T)
     {
         m_testTimer1 = 0.0f;
-        m_npcController->DebugToggleAI();
+        //m_npcController->DebugToggleAI();
     }
     if (m_kbStateTracker.pressed.Y)
     {
@@ -2280,7 +2280,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 m_npcController->SetAllNpcsToDead();
             }
         }
-        if (m_buttons.a == GamePad::ButtonStateTracker::PRESSED)
+        if (m_buttons.dpadDown == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
