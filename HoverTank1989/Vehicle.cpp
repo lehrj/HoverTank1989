@@ -1306,7 +1306,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.dimensions = DirectX::SimpleMath::Vector3(8.0f, 4.0f, 4.0f);
     m_heli.dimensions = DirectX::SimpleMath::Vector3(4.7f, 2.0f, 2.0f);
     m_heli.airDensity = m_environment->GetAirDensity();
-    m_heli.dragCoefficient = 2.05f;
+    m_heli.dragCoefficient = 2.5f;
 
     m_heli.airResistance = 0.0f;
     m_heli.totalResistance = m_heli.airResistance;
@@ -1334,7 +1334,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     //m_heli.q.position = DirectX::SimpleMath::Vector3(950.0f, 8.8f, 0.0f);
     m_heli.q.position = DirectX::SimpleMath::Vector3(-900.0f, 55.0f, 0.0f);
     //m_heli.q.position = DirectX::SimpleMath::Vector3(-400.0f, 9.0f, 0.0f);
-    m_heli.q.position = DirectX::SimpleMath::Vector3(-975.0f, 70.0f, -750.0f);
+    m_heli.q.position = DirectX::SimpleMath::Vector3(-975.0f, 60.0f, -750.0f);
 
     m_heli.boundingBox.Center = m_heli.q.position;
     m_heli.boundingBox.Extents = m_heli.dimensions;
@@ -1371,7 +1371,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
 
     // Intialize key physics hardpoints based on model 
     m_heli.localCenterOfMass = DirectX::SimpleMath::Vector3::Zero;
-    //m_heli.localCenterOfMass.y += 0.5f;
+    //m_heli.localCenterOfMass.y -= 0.5f;
     m_heli.centerOfMass = m_heli.localCenterOfMass;
 
     m_heli.localMainRotorPos = DirectX::SimpleMath::Vector3(0.0f, -2.174999997f, 0.00000000f);
@@ -2396,13 +2396,8 @@ void Vehicle::StabilizeWeaponPitch(struct HeliData& aVehicle, const float aTimeS
     weaponQuat.Normalize();
 
     DirectX::SimpleMath::Vector3 eulerVec = weaponQuat.ToEuler();
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.x ", eulerVec.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.y ", eulerVec.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.z ", eulerVec.z, "");
 
     float stabilizedPitch = aVehicle.controlInput.weaponPitch - eulerVec.z;
-    m_debugData->DebugPushUILineDecimalNumber("stabilizedPitch Rads ", stabilizedPitch, "");
-    m_debugData->DebugPushUILineDecimalNumber("stabilizedPitch Degs ", Utility::ToDegrees(stabilizedPitch), "");
 
     if (stabilizedPitch > aVehicle.controlInput.weaponPitchMax)
     {
@@ -2412,9 +2407,7 @@ void Vehicle::StabilizeWeaponPitch(struct HeliData& aVehicle, const float aTimeS
     {
         stabilizedPitch = aVehicle.controlInput.weaponPitchMin;
     }
-    m_debugData->DebugPushUILineDecimalNumber("stabilizedPitch Rads ", stabilizedPitch, "");
-    m_debugData->DebugPushUILineDecimalNumber("stabilizedPitch Degs ", Utility::ToDegrees(stabilizedPitch), "");
-
+  
     aVehicle.stabilizedWeaponPitch = stabilizedPitch;
 }
 
@@ -4024,6 +4017,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
 
     //m_heli.isVehicleCollisionTrue = false;
 
+    
     DirectX::SimpleMath::Quaternion postQuat = m_heli.alignmentQuat;
     DirectX::SimpleMath::Quaternion deltaQuat = (postQuat - preQuat) * (1.0f / aTimeDelta);
     deltaQuat.Normalize();
@@ -4038,13 +4032,14 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     float angRadsPerSecond = angRad / aTimeDelta;
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
-
-    std::stringstream inVal;
-    inVal.precision(Utility::GetNumericalPrecisionForUI());
-    inVal.str(std::string());
-    inVal << std::fixed << Utility::ToDegrees(m_heli.controlInput.weaponPitch);
-
-    m_debugData->DebugPushUILineString("Weapon Pitch = " + inVal.str() + " Degrees");    
+    
+    /*
+    DirectX::SimpleMath::Vector3 eulerVec = m_heli.alignmentInverseQuat.ToEuler();
+    m_debugData->DebugPushUILineDecimalNumber("eulerVec.x ", Utility::ToDegrees(eulerVec.x), "");
+    m_debugData->DebugPushUILineDecimalNumber("eulerVec.y ", Utility::ToDegrees(eulerVec.y), "");
+    m_debugData->DebugPushUILineDecimalNumber("eulerVec.z ", Utility::ToDegrees(eulerVec.z), "");
+    m_debugData->DebugPushUILineDecimalNumber("Weapon Pitch ", Utility::ToDegrees(m_heli.controlInput.weaponPitch), "");
+    */
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)

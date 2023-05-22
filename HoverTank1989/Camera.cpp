@@ -874,9 +874,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	{
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
-	m_debugData->DebugPushUILineDecimalNumber("m_position.x ", m_position.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.y ", m_position.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.z ", m_position.z, "");
+
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
 	UpdateBoundingFrustum();

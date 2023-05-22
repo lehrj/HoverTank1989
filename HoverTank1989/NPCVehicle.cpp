@@ -2819,8 +2819,9 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
 
     DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(14.0f, 7.0f, 10.0f);
     aVehicleStruct.vehicleData.dimensions = dimensions;
-    aVehicleStruct.vehicleData.collisionBox.Extents = dimensions * 0.5f;
-
+    DirectX::SimpleMath::Vector3 collisionDimensions = DirectX::SimpleMath::Vector3(16.0f, 8.0f, 10.0f);
+    aVehicleStruct.vehicleData.collisionBox.Extents = collisionDimensions * 0.5f;
+    
     aVehicleStruct.vehicleData.collisionBox.Center = DirectX::SimpleMath::Vector3::Zero;
     aVehicleStruct.vehicleData.collisionBox.Orientation = DirectX::SimpleMath::Quaternion::Identity;
 

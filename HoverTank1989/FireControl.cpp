@@ -2065,7 +2065,7 @@ void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_CANNON;
     aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 0.9f;
+    aAmmo.ammoData.cooldown = 0.8f;
     //aAmmo.ammoData.dragCoefficient = 0.82f;
     aAmmo.ammoData.dragCoefficient = 0.042f;
     aAmmo.ammoData.impactDurration = 0.4f;
@@ -2137,12 +2137,12 @@ void FireControl::InitializeAmmoMirv(AmmoStruct& aAmmo)
     //aAmmo.ammoData.cooldown = 1.9f;
     aAmmo.ammoData.cooldown = 1.0f;
     //aAmmo.ammoData.dragCoefficient = 0.19f;
-    aAmmo.ammoData.dragCoefficient = 0.79f;
+    aAmmo.ammoData.dragCoefficient = 0.5f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     //aAmmo.ammoData.launchVelocity = 165.0f;
     //aAmmo.ammoData.launchVelocity = 105.0f;
-    aAmmo.ammoData.launchVelocity = 165.0f;
+    aAmmo.ammoData.launchVelocity = 195.0f;
     aAmmo.ammoData.length = 24.5f;
     aAmmo.ammoData.mass = 65.0f;
     aAmmo.ammoData.radius = 0.22f;
@@ -2225,8 +2225,8 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_projectileVec.clear();
     m_newProjectilePushVec.clear();
     m_environment = aEnvironment;
-    m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
-    //m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
+    //m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
+    m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
     //m_currentAmmoType = AmmoType::AMMOTYPE_EXPLOSIVE;
 
     InitializeAmmoCannon(m_ammoCannon);
@@ -2302,6 +2302,7 @@ void FireControl::InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoDiameter, ammoLength);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateTetrahedron(aContext.Get(), ammoDiameter, ammoLength);
     aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateOctahedron(aContext.Get(), ammoDiameter, ammoLength);
+    aAmmo.ammoModel.projectileShape = DirectX::GeometricPrimitive::CreateOctahedron(aContext.Get(), ammoDiameter);
     aAmmo.ammoModel.projectileMatrix = DirectX::SimpleMath::Matrix::Identity;
     //aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));

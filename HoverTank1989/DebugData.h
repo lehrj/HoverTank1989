@@ -40,6 +40,6 @@ private:
     std::vector<std::pair<std::string, float>> m_debugUI;
     std::vector<std::string> m_debugUIVector;
 
-    const bool m_isDebugOn = true;
+    const bool m_isDebugOn = false;
 };
 

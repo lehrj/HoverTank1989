@@ -675,7 +675,7 @@ void Game::Render()
         DrawSky();
         //DrawTestTrack();
 
-
+        /*
         DirectX::SimpleMath::Vector3 pos = m_vehicle->GetPos();
         //pos.y += 5.0f;
         DirectX::SimpleMath::Matrix tensor = m_vehicle->GetTensorTest();
@@ -709,6 +709,7 @@ void Game::Render()
         DirectX::SimpleMath::Matrix testTensor2;
         testTensor2 *= translation;
         testTensor2 *= DirectX::SimpleMath::Matrix::Transform(tensor, testRotationQuat);
+        */
     }
 
 
@@ -750,14 +751,14 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawDebugLinesVector();
+        //DrawDebugLinesVector();
     }
     m_batch3->End();
 
     m_spriteBatch->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawDebugDataUI();
+        //DrawDebugDataUI();
 
         if (m_isDisplayCountdownTrue == true)
         {
@@ -2165,7 +2166,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             //m_vehicle->DebugToggle0();
             //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
-            AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
+            //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
+            AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_UNSTOPPABLE_DRIVER);
             //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
         }
     }
@@ -2256,15 +2258,17 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             {
                 const unsigned int columnCount = 8;
                 const unsigned int rowCount = 2;
-                const float columSpaceing = 15.0f;
-                const float rowSpacing = 20.0f;
+                //const float columSpaceing = 15.0f;
+                //const float rowSpacing = 20.0f;
+                const float columSpaceing = 20.0f;
+                const float rowSpacing = 25.0f;
 
                 const DirectX::SimpleMath::Vector2 spacing = DirectX::SimpleMath::Vector2(columSpaceing, rowSpacing);
                 DirectX::SimpleMath::Vector3 dropDirection = m_vehicle->GetForward();
-                const float dropDistance = 200.0f;
+                const float dropDistance = 250.0f;
                 dropDirection *= dropDistance;
                 DirectX::SimpleMath::Vector3 dropPosition = m_vehicle->GetPos();
-                dropPosition.y += 55.0f;
+                dropPosition.y += 145.0f;
                 dropPosition += dropDirection;
 
                 const DirectX::SimpleMath::Vector3 orientation = -m_vehicle->GetForward();

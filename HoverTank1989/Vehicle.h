@@ -75,7 +75,7 @@ struct ControlInput
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
     const float weaponPitchInputRate = 0.2f;
-    const float weaponPitchMax = Utility::ToRadians(20.0f);
+    const float weaponPitchMax = Utility::ToRadians(25.0f);
     const float weaponPitchMin = Utility::ToRadians(-10.0f);
 
     float turretYaw;
@@ -140,7 +140,7 @@ struct HeliData
     const float hoverDriveMagMax = 20000.0f;
     const float brakeMagMax = 3000.0f;
     //const float yawForce = 300.0f;
-    const float yawForce = 2000.0f;
+    const float yawForce = 1900.0f;
 
     const float hoverRangeLower = 2.0f;
     const float hoverRangeMid = 4.0f;
@@ -255,7 +255,7 @@ struct HeliData
     DirectX::SimpleMath::Matrix localInverseBallastInertiaMatrix;
     const DirectX::SimpleMath::Vector3 ballastInertiaTranslationBase = DirectX::SimpleMath::Vector3(0.0f, -5.0f, 0.0f);
     DirectX::SimpleMath::Vector3 ballastInertiaTranslation = DirectX::SimpleMath::Vector3(0.0f, -5.0f, 0.0f);
-    float ballastMass = 3000.0f;
+    float ballastMass = 1.0f;
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
@@ -497,14 +497,15 @@ private:
 
     const float m_testMass = 1700.0f;
     //const float m_driveTorqueForceMax = 1300.0f;
+    //const float m_driveTorqueForceMax = 2300.0f;
     const float m_driveTorqueForceMax = 2300.0f;
     //const float m_driveTorqueForceMax = 7300.0f;
     //const float m_stabilityTorqueForceMax = 33000.0f;
     const float m_stabilityTorqueForceMax = 800.0f;
     const float m_stabilityTorqueForceMax2 = 1200.0f;
     //const float m_terrainTorqueForceMax = 3800.0f;
-    //const float m_terrainTorqueForceMax = 1700.0f;
-    const float m_terrainTorqueForceMax = 2700.0f;
+    const float m_terrainTorqueForceMax = 1400.0f;
+    //const float m_terrainTorqueForceMax = 2700.0f;
     const float m_gravStabilityArmMod = 1.0f;
 
     const float m_gravTorqueModTest = 15.0f;
