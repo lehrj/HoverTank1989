@@ -524,6 +524,7 @@ public:
     void InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
+    DirectX::SimpleMath::Quaternion GetAlignmentInverseQuat() const { return m_vehicleStruct00.vehicleData.alignmentInverseQuat; };
     DirectX::BoundingOrientedBox GetAvoidanceBox() const { return m_npcAI->GetAiAvoidanceBox(); };
     bool GetAvoidanceIsTrue() const { return m_npcAI->GetIsAvoidanceTrue(); };
     int GetAvoidanceTargetIndex() const { return m_avoidanceTargetIndex; };
@@ -532,6 +533,7 @@ public:
 
     const DirectX::SimpleMath::Vector3 GetCenterOfMass() const { return m_vehicleStruct00.vehicleData.hardPoints.centerOfMassPos; };
 
+    DirectX::BoundingOrientedBox GetCollisionDataTest() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     const DirectX::BoundingOrientedBox& GetCollisionData() const { return m_vehicleStruct00.vehicleData.collisionBox; };
     float GetCollisionDetectionRange() const { return m_vehicleStruct00.vehicleData.maxCollisionDetectionRange; };
     float GetDelta() { return m_vehicleStruct00.npcModel.maxDelta; };
@@ -722,7 +724,7 @@ private:
     const float m_angDragCoefficient = 0.3f;
     const float m_angularDragMod = 0.3f;
 
-    const bool m_isAiOn = false;
+    const bool m_isAiOn = true;
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

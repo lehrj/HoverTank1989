@@ -631,7 +631,6 @@ void Game::Render()
     m_effect->SetView(m_camera->GetViewMatrix());
     m_effect->SetWorld(m_world);
 
-    /*
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
     if (ilights)
     {
@@ -639,28 +638,6 @@ void Game::Render()
         ilights->SetLightEnabled(0, true);
         ilights->SetLightEnabled(1, true);
         ilights->SetLightEnabled(2, true);
-        ilights->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
-        ilights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
-        ilights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
-        //ilights->SetDiffuseColor(Colors::Blue);
-        //ilights->SetAmbientLightColor(Colors::Blue);
-        //ilights->EnableDefaultLighting();
-    }
-    */
-
-    auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
-    if (ilights)
-    {
-        ilights->EnableDefaultLighting();
-        ilights->SetLightEnabled(0, true);
-        ilights->SetLightEnabled(1, true);
-        ilights->SetLightEnabled(2, true);
-        //ilights->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
-        //ilights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
-        //ilights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
-        //ilights->SetDiffuseColor(Colors::Blue);
-        //ilights->SetAmbientLightColor(Colors::Blue);
-        //ilights->EnableDefaultLighting();
     }
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -674,44 +651,7 @@ void Game::Render()
         m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
         //DrawTestTrack();
-
-        /*
-        DirectX::SimpleMath::Vector3 pos = m_vehicle->GetPos();
-        //pos.y += 5.0f;
-        DirectX::SimpleMath::Matrix tensor = m_vehicle->GetTensorTest();
-        DirectX::SimpleMath::Vector3 scale;
-        DirectX::SimpleMath::Vector3 trans;
-        DirectX::SimpleMath::Quaternion rotQuat;
-        tensor.Decompose(scale, rotQuat, trans);
-
-        DirectX::SimpleMath::Matrix posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-        //posMat *= tensor;
-
-        DirectX::SimpleMath::Vector3 t = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 5.0f);
-
-        DirectX::SimpleMath::Matrix s = DirectX::SimpleMath::Matrix::Identity;
-
-        s.m[0][0] = 0.0f;
-        s.m[0][1] = t.z;
-        s.m[0][2] = -t.y;
-        s.m[1][0] = -t.z;
-        s.m[1][1] = 0.0f;
-        s.m[1][2] = t.x;
-        s.m[2][0] = t.y;
-        s.m[2][1] = -t.x;
-        //s.m[2][2] = 0.0f;
-        //s.m[3][3] = 0.0f;
-        DirectX::SimpleMath::Matrix testTensor = (s * s) * 1.0f;// *tensor;
-        //m_testShape3->Draw(testTensor, m_camera->GetViewMatrix(), m_proj);
-
-        DirectX::SimpleMath::Matrix translation = DirectX::SimpleMath::Matrix::CreateTranslation(t);
-        DirectX::SimpleMath::Quaternion testRotationQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicle->GetTurretYaw());
-        DirectX::SimpleMath::Matrix testTensor2;
-        testTensor2 *= translation;
-        testTensor2 *= DirectX::SimpleMath::Matrix::Transform(tensor, testRotationQuat);
-        */
     }
-
 
     m_effect->EnableDefaultLighting();
     m_effect->SetWorld(m_world);
@@ -731,34 +671,16 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout3.Get());
     m_batch3->Begin();
 
-
-    /*
-    DirectX::BoundingOrientedBox boBox = m_vehicle->GetBoundingBox();
-    const int cornerSize = 8;
-    DirectX::XMFLOAT3 testV1Corners[cornerSize];
-    DirectX::XMFLOAT3* pCorners1;
-    pCorners1 = testV1Corners;
-    boBox.GetCorners(pCorners1);
-
-    for (int i = 0; i < cornerSize - 1; ++i)
-    {
-        m_debugData->PushTestDebugBetweenPoints(pCorners1[i], pCorners1[i + 1], DirectX::Colors::Red);
-    }
-
-    pCorners1 = nullptr;
-    delete pCorners1;
-    */
-
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawDebugLinesVector();
+        DrawDebugLinesVector();
     }
     m_batch3->End();
 
     m_spriteBatch->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawDebugDataUI();
+        DrawDebugDataUI();
 
         if (m_isDisplayCountdownTrue == true)
         {
@@ -1547,6 +1469,10 @@ void Game::SetUiAmmoDisplay(AmmoType aAmmoType)
     {
         m_uiAmmoDisplayString = "Shotgun Ammo Loaded";
     }
+    else if (aAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
+    {
+        m_uiAmmoDisplayString = "Guided Missle Loaded";
+    }
     else
     {
         m_uiAmmoDisplayString = "Error : Unknown Ammo Type";
@@ -1785,8 +1711,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.T)
     {
-        m_testTimer1 = 0.0f;
-        //m_npcController->DebugToggleAI();
+        m_npcController->DebugToggleAI();
     }
     if (m_kbStateTracker.pressed.Y)
     {
@@ -2171,7 +2096,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
         }
     }
-
+    if (m_kbStateTracker.pressed.K)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_vehicle->ToggleFireControlLaser();
+        }
+    }
 
 
 

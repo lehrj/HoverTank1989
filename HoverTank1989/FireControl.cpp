@@ -54,6 +54,15 @@ void FireControl::ActivateMuzzleFlash(AmmoType aAmmoType)
     }
 }
 
+void FireControl::CastRayLaser()
+{
+    DirectX::SimpleMath::Ray laserRay = DirectX::SimpleMath::Ray(m_playerVehicle->GetMuzzlePos(), m_playerVehicle->GetWeaponDirection());
+    bool isTargetHit = false;
+    float distanceToTarget = 0.0f;
+    int targetID = m_npcController->CheckTargetingLaser(laserRay);
+    m_debugData->DebugPushUILineWholeNumber("targetID = ", targetID, "");
+}
+
 void FireControl::CheckCollisions()
 {
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
@@ -183,6 +192,10 @@ void FireControl::CycleLoadedAmmo()
         m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
     }
     else if (m_currentAmmoType == AmmoType::AMMOTYPE_MIRV)
+    {
+        m_currentAmmoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
+    }
+    else if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
     {
         m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
     }
@@ -2419,6 +2432,18 @@ void FireControl::SetNPCController(std::shared_ptr<NPCController> aNPCController
     m_npcController = aNPCController;
 }
 
+void FireControl::ToggleTargetingLaser()
+{
+    if (m_isTargetingLaserOn == false)
+    {
+        m_isTargetingLaserOn = true;
+    }
+    else
+    {
+        m_isTargetingLaserOn = false;
+    }
+}
+
 void FireControl::TriggerMirvDeploy()
 {
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
@@ -2435,6 +2460,10 @@ void FireControl::TriggerMirvDeploy()
 
 void FireControl::UpdateFireControl(double aTimeDelta)
 {
+    if (m_isTargetingLaserOn == true)
+    {
+        CastRayLaser();
+    }
     if (m_isCoolDownActive == true)
     {
         m_coolDownTimer -= static_cast<float>(aTimeDelta);

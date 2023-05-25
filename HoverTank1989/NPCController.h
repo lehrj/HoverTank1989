@@ -36,6 +36,7 @@ public:
     
     bool CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere, const double aTimeDelta, const float aRemainingDuration);
     bool CheckProjectileCollisions(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive);
+    int CheckTargetingLaser(DirectX::SimpleMath::Ray aRay);
     void DebugToggleAI();
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, 
@@ -80,6 +81,7 @@ private:
     void CheckNpcAvoidance();
     void CheckNpcCollisions();
     void CheckPlayerCollisions();
+
     unsigned int GetUniqueID();
 
     Environment const* m_environment;
@@ -99,6 +101,6 @@ private:
 
     float m_testTimer = 0.0f;
 
-    const bool m_isNpcAiOn = false;
+    const bool m_isNpcAiOn = true;
 };
 

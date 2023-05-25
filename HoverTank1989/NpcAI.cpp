@@ -243,8 +243,8 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicl
 
     Utility::ClearWayPath(m_currentWayPath);
 
-    //CreateWayPath();
-    CreateWayPathTestFireRange();
+    CreateWayPath();
+    //CreateWayPathTestFireRange();
 
     m_currentDestination = DirectX::SimpleMath::Vector3::Zero;
 

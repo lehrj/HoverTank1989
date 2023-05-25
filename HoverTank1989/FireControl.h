@@ -97,6 +97,19 @@ struct ProjectileData
     DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
 };
 
+struct MissleData
+{
+    ProjectileData projData;
+    GuidanceSystem guidance;
+};
+
+struct MissleModel
+{
+    std::unique_ptr<DirectX::GeometricPrimitive>    mainBody;
+    DirectX::SimpleMath::Matrix localMatrix;
+    DirectX::SimpleMath::Matrix worldMatrix;
+};
+
 enum class ExplosionType
 {
     EXPLOSIONTYPE_NONVEHICLE,
@@ -228,12 +241,14 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
 
+    void ToggleTargetingLaser();
     void TriggerMirvDeploy();
 
     void UpdateFireControl(double aTimeDelta);
 
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
+    void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void DeleteProjectileFromVec(const unsigned int aIndex);
@@ -312,6 +327,8 @@ private:
     const float m_maxExplosiveForce = 500000.0f;
 
     bool m_isTestBoolTrue = false;
+
+    bool m_isTargetingLaserOn = false;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };

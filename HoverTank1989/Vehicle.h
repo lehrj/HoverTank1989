@@ -383,7 +383,7 @@ public:
     void SetTestCollisionVelocityUpdate(DirectX::SimpleMath::Vector3 aCollisionVelocityUpdate);
     void SetTestCollisionImpulseForce(Utility::ImpulseForce aCollisionImpulseForce);
     void SetTestVehicleCollisionTrue() { m_heli.isVehicleCollisionTrue = true; };
-
+    void ToggleFireControlLaser();
     void UpdateVehicle(const double aTimeDelta);
     void UpdateVehicleFireControl(const double aTimeDelta);
 

@@ -346,6 +346,48 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
     return isCollisionTrue;
 }
 
+int NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay)
+{
+    bool isTargetHit = false;
+    float distanceToTarget = 10000.0f;
+    int targetID = -1;
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        float distance = 0.0f;
+        DirectX::SimpleMath::Vector3 localizedPos = aRay.position - m_npcVec[i]->GetPos();
+        localizedPos = DirectX::SimpleMath::Vector3::Transform(localizedPos, m_npcVec[i]->GetAlignmentInverseQuat());
+        DirectX::SimpleMath::Vector3 localizedRayDirection = DirectX::SimpleMath::Vector3::Transform(aRay.direction, m_npcVec[i]->GetAlignmentInverseQuat());
+        DirectX::SimpleMath::Ray localizedRay = DirectX::SimpleMath::Ray(localizedPos, localizedRayDirection);
+        DirectX::BoundingOrientedBox testOrientedBox = m_npcVec[i]->GetCollisionData();
+        DirectX::BoundingBox testBox;
+        testBox.Center = testOrientedBox.Center;
+        testBox.Center = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 collisionDimensions = DirectX::SimpleMath::Vector3(16.0f, 8.0f, 10.0f);
+        testBox.Extents = collisionDimensions * 0.5f;
+
+        //if (aRay.Intersects(testBox, distance) == true)
+        if (localizedRay.Intersects(testBox, distance) == true)
+        {
+            if (isTargetHit == false)
+            {
+                distanceToTarget = distance;
+                targetID = m_npcVec[i]->GetID();
+            }
+            else
+            {
+                if (distance < distanceToTarget)
+                {
+                    targetID = m_npcVec[i]->GetID();
+                    distanceToTarget = distance;
+                }
+            }
+        }
+    }
+
+    m_debugData->PushDebugLine(aRay.position, aRay.direction, distanceToTarget, 0.0f, DirectX::Colors::Red);
+
+    return targetID;
+}
 void NPCController::DebugToggleAI()
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
