@@ -2126,6 +2126,11 @@ void FireControl::InitializeAmmoGuidedMissile(AmmoStruct& aAmmo)
     aAmmo.ammoData.isGuided = true;
 }
 
+void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
+{
+    
+}
+
 void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_MACHINEGUN;

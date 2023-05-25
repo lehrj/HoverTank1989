@@ -97,18 +97,27 @@ struct ProjectileData
     DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
 };
 
-struct MissleData
-{
-    ProjectileData projData;
-    GuidanceSystem guidance;
-};
-
-struct MissleModel
+struct MissileModel
 {
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBody;
     DirectX::SimpleMath::Matrix localMatrix;
     DirectX::SimpleMath::Matrix worldMatrix;
 };
+
+struct MissileData
+{
+    ProjectileData projectileData;
+    GuidanceSystem guidance;
+};
+
+struct MissileStruct
+{
+    AmmoData ammoData;
+    
+    MissileModel modelData;
+};
+
+
 
 enum class ExplosionType
 {
@@ -183,10 +192,7 @@ struct MuzzleFlash
     DirectX::SimpleMath::Vector4 color1 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-    //DirectX::SimpleMath::Vector4 startColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 startColor = DirectX::SimpleMath::Vector4(0.7f, 0.0f, 0.0f, 1.3f);
-    //DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(0.501960814f, 0.501960814f, 0.501960814f, 0.7f);
-    //DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(1.f, 0.647058845f, 0.f, 1.f);
     DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(1.f, 0.4f, 0.f, 0.7f);
     DirectX::SimpleMath::Vector4 currentColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
@@ -272,6 +278,8 @@ private:
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
 
+    void InitializeAmmoMissile(MissileStruct& aAmmo);
+
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
@@ -305,6 +313,8 @@ private:
     AmmoStruct m_ammoMirv;
     AmmoStruct m_ammoShotgun;
 
+    MissileStruct m_missile;
+
     ExplosionStruct m_explosionStruct;
 
     const float m_maxProjectileLifeTime = 10.0f;
@@ -323,7 +333,6 @@ private:
 
     const float m_gravityMod = 1.0f;
     const float m_explosiveTorqueArmMod = 1.0f;
-    //const float m_maxExplosiveForce = 100000.0f;
     const float m_maxExplosiveForce = 500000.0f;
 
     bool m_isTestBoolTrue = false;
