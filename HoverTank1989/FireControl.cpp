@@ -2128,7 +2128,19 @@ void FireControl::InitializeAmmoGuidedMissile(AmmoStruct& aAmmo)
 
 void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
 {
-    
+    aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
+    aAmmo.ammoData.baseDamage = 1.0f;
+    aAmmo.ammoData.cooldown = 0.9f;
+    aAmmo.ammoData.dragCoefficient = 0.3f;
+    aAmmo.ammoData.impactDurration = 0.4f;
+    aAmmo.ammoData.impactModifier = 1.0f;
+    aAmmo.ammoData.launchVelocity = 365.0f;
+    aAmmo.ammoData.length = 5.0f;
+    aAmmo.ammoData.mass = 10.0f;
+    aAmmo.ammoData.radius = 0.15f;
+    aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
+    aAmmo.ammoData.tickDownCounter = 1;
+    aAmmo.ammoData.isGuided = true;
 }
 
 void FireControl::InitializeAmmoMachineGun(AmmoStruct& aAmmo)

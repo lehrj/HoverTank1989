@@ -110,13 +110,12 @@ struct MissileData
     GuidanceSystem guidance;
 };
 
+
 struct MissileStruct
 {
-    AmmoData ammoData;
-    
+    AmmoData ammoData;  
     MissileModel modelData;
 };
-
 
 
 enum class ExplosionType
@@ -313,7 +312,7 @@ private:
     AmmoStruct m_ammoMirv;
     AmmoStruct m_ammoShotgun;
 
-    MissileStruct m_missile;
+    MissileStruct m_ammoMissile;
 
     ExplosionStruct m_explosionStruct;
 
