@@ -61,6 +61,7 @@ void FireControl::CastRayLaser()
     float distanceToTarget = 0.0f;
     int targetID = m_npcController->CheckTargetingLaser(laserRay);
     m_debugData->DebugPushUILineWholeNumber("targetID = ", targetID, "");
+    m_currentTargetID = targetID;
 }
 
 void FireControl::CheckCollisions()
@@ -1336,6 +1337,59 @@ void FireControl::DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, cons
     }
 }
 
+void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
+{
+    if (m_isCoolDownActive == false)
+    {
+        AmmoData firedAmmo = m_ammoGuidedMissile.ammoData;
+
+        m_isCoolDownActive = true;
+        m_coolDownTimer = firedAmmo.cooldown;
+
+
+        ProjectileData firedProjectile;
+        firedProjectile.ammoData = firedAmmo;
+        firedProjectile.q.position = aLaunchPos;
+        firedProjectile.q.velocity = (firedProjectile.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+        firedProjectile.isCollisionTrue = false;
+        firedProjectile.isDeleteTrue = false;
+        firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
+        firedProjectile.forward = aLaunchDirectionForward;
+        firedProjectile.forward.Normalize();
+        firedProjectile.up = aUp;
+        firedProjectile.up.Normalize();
+        firedProjectile.right = -firedProjectile.up.Cross(firedProjectile.forward);
+        firedProjectile.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -firedProjectile.right, firedProjectile.up));
+        firedProjectile.alignmentQuat.Normalize();
+        firedProjectile.inverseAlignmentQuat = firedProjectile.alignmentQuat;
+        firedProjectile.inverseAlignmentQuat.Inverse(firedProjectile.inverseAlignmentQuat);
+        firedProjectile.inverseAlignmentQuat.Normalize();
+
+        // collision data
+        firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
+        firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
+        firedProjectile.collisionData.collisionSphere.Center = firedProjectile.q.position;
+        firedProjectile.collisionData.collisionSphere.Radius = firedAmmo.radius;
+        firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
+        firedProjectile.collisionData.mass = firedAmmo.mass;
+        firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
+        firedProjectile.time = 0.0f;
+
+        MissileData firedMissile;
+        firedMissile.projectileData = firedProjectile;
+
+        GuidanceSystem guidance;
+        guidance.heading = aLaunchDirectionForward;
+        guidance.isTargetLocked = false;
+        //guidance.
+        m_npcController->UpdateMissleGuidance(m_currentTargetID, guidance.targetPosition, guidance.targetVelocity);
+        guidance.targetDistance = (aLaunchPos - guidance.targetPosition).Length();
+
+        //m_projectileVec.push_back(firedProjectile);
+        m_missileVec.push_back(firedMissile);
+    }
+}
+
 void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
 {
     if (m_isCoolDownActive == false)
@@ -2254,6 +2308,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_explosionStruct.explosionToPushVec.clear();
     m_projectileVec.clear();
     m_newProjectilePushVec.clear();
+    m_missileVec.clear();
     m_environment = aEnvironment;
     //m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
     m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
@@ -2265,6 +2320,10 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     InitializeAmmoMachineGun(m_ammoMachineGun);
     InitializeAmmoMirv(m_ammoMirv);
     InitializeAmmoShotgun(m_ammoShotgun);
+
+    InitializeAmmoMissile(m_ammoMissile);
+    InitializeProjectileModelMissile(aContext, m_ammoMissile);
+
     InitializeExplosionData(aContext, m_explosionStruct.explosionRefData);
     InitializeMuzzleFlashModel(aContext, m_muzzleFlash);
     InitializeProjectileModelCannon(aContext, m_ammoCannon);
@@ -2350,6 +2409,18 @@ void FireControl::InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11Dev
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, ammoLength, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
+}
+
+void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MissileStruct& aAmmo)
+{
+    const float ammoSize = aAmmo.ammoData.radius;
+    const float ammoLength = aAmmo.ammoData.length;
+    aAmmo.modelData.mainBodyShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
+    //aAmmo.modelData.mainBodyShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
+    aAmmo.modelData.worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+    //aAmmo.modelData.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
+    aAmmo.modelData.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
+    aAmmo.modelData.localBodyMatrix = aAmmo.modelData.worldBodyMatrix;
 }
 
 void FireControl::InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
@@ -2777,6 +2848,31 @@ void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float 
     aProjectile.forward = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, aProjectile.alignmentQuat);
     aProjectile.right = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitZ, aProjectile.alignmentQuat);
     aProjectile.up = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aProjectile.alignmentQuat);
+}
+
+void FireControl::UpdateMissileVec(double aTimeDelta)
+{
+    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    {
+        RungeKutta4(&m_projectileVec[i], aTimeDelta);
+    }
+
+    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    {
+        UpdateProjectileData(m_projectileVec[i], static_cast<float>(aTimeDelta));
+    }
+
+    CheckCollisions();
+
+    int deleteCount = 0;
+    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    {
+        if (m_projectileVec[i].isDeleteTrue == true)
+        {
+            deleteCount++;
+            DeleteProjectileFromVec(i);
+        }
+    }
 }
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)

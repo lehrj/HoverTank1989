@@ -74,6 +74,7 @@ public:
     void ToggleDebugBool();
     void UnlockJumpAbility();
     void UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const double aTimeDelta);
+    void UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity);
     void UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta);
     void UpdateNPCController(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta);
 

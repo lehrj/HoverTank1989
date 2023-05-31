@@ -736,6 +736,36 @@ void NPCController::UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
     }
 }
 
+void NPCController::UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity)
+{
+    int idIndex = -1;
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            if (idIndex == -1)
+            {
+                idIndex = i;
+            }
+            else
+            {
+                int testBreak = 0;
+                ++testBreak;
+            }
+        }
+    }
+    if (idIndex != -1)
+    {
+        aPosition = m_npcVec[idIndex]->GetPos();
+        aVelocity = m_npcVec[idIndex]->GetVelocity();
+    }
+    else
+    {
+        int testBreak = 0;
+        ++testBreak;
+    }
+}
+
 void NPCController::UpdateNPCController(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta)
 {
     UpdateNPCs(aFrustum, aTimeDelta);

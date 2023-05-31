@@ -99,9 +99,9 @@ struct ProjectileData
 
 struct MissileModel
 {
-    std::unique_ptr<DirectX::GeometricPrimitive>    mainBody;
-    DirectX::SimpleMath::Matrix localMatrix;
-    DirectX::SimpleMath::Matrix worldMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
+    DirectX::SimpleMath::Matrix localBodyMatrix;
+    DirectX::SimpleMath::Matrix worldBodyMatrix;
 };
 
 struct MissileData
@@ -110,13 +110,11 @@ struct MissileData
     GuidanceSystem guidance;
 };
 
-
 struct MissileStruct
 {
     AmmoData ammoData;  
     MissileModel modelData;
 };
-
 
 enum class ExplosionType
 {
@@ -229,6 +227,8 @@ public:
 
     void InitializeTextureMapsExplosion(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
+    void FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
+
     void FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
     void FireProjectileGuidedMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
@@ -278,6 +278,7 @@ private:
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
 
     void InitializeAmmoMissile(MissileStruct& aAmmo);
+    void InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MissileStruct& aAmmo);
 
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash);
@@ -294,6 +295,7 @@ private:
    
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
+    void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
@@ -319,6 +321,7 @@ private:
     const float m_maxProjectileLifeTime = 10.0f;
     std::vector<ProjectileData> m_projectileVec;
     std::vector<ProjectileData> m_newProjectilePushVec;
+    std::vector<MissileData> m_missileVec;
 
     float m_testTimer = 0.0f;
 
@@ -337,6 +340,7 @@ private:
     bool m_isTestBoolTrue = false;
 
     bool m_isTargetingLaserOn = false;
+    int m_currentTargetID = -1;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
