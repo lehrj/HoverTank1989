@@ -2479,6 +2479,11 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
 }
 
+void FireControl::RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
+{
+
+}
+
 void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta)
 {
     //  Define a convenience variables
@@ -2508,6 +2513,52 @@ void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDe
     aProjectile->q.position = q.position;
     aProjectile->collisionData.collisionSphere.Center = q.position;
     aProjectile->collisionData.velocity = q.velocity;
+}
+
+void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta)
+{
+    //  Define a convenience variables
+    const float numEqns = static_cast<float>(6);
+    //  Retrieve the current values of the dependent and independent variables.
+    //ProjectileMotion q = aProjectile->q;
+    ProjectileMotion q = aProjectile->projectileData.q;
+    ProjectileMotion dq1;
+    ProjectileMotion dq2;
+    ProjectileMotion dq3;
+    ProjectileMotion dq4;
+
+    // Compute the four Runge-Kutta steps, The return 
+    // value of RightHandSide method is an array
+    // of delta-q values for each of the four steps.
+    /*
+    RightHandSide(aProjectile, &q, &q, aTimeDelta, 0.0, &dq1);
+    RightHandSide(aProjectile, &q, &dq1, aTimeDelta, 0.5, &dq2);
+    RightHandSide(aProjectile, &q, &dq2, aTimeDelta, 0.5, &dq3);
+    RightHandSide(aProjectile, &q, &dq3, aTimeDelta, 1.0, &dq4);
+    */
+    RightHandSideMissile(aProjectile, &q, &q, aTimeDelta, 0.0, &dq1);
+    RightHandSideMissile(aProjectile, &q, &dq1, aTimeDelta, 0.5, &dq2);
+    RightHandSideMissile(aProjectile, &q, &dq2, aTimeDelta, 0.5, &dq3);
+    RightHandSideMissile(aProjectile, &q, &dq3, aTimeDelta, 1.0, &dq4);
+
+    //aProjectile->time = aProjectile->time + static_cast<float>(aTimeDelta);
+    aProjectile->projectileData.time = aProjectile->projectileData.time + static_cast<float>(aTimeDelta);
+
+    DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
+    DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
+
+    q.velocity += velocityUpdate;
+    q.position += posUpdate;
+    /*
+    aProjectile->q.velocity = q.velocity;
+    aProjectile->q.position = q.position;
+    aProjectile->collisionData.collisionSphere.Center = q.position;
+    aProjectile->collisionData.velocity = q.velocity;
+    */
+    aProjectile->projectileData.q.velocity = q.velocity;
+    aProjectile->projectileData.q.position = q.position;
+    aProjectile->projectileData.collisionData.collisionSphere.Center = q.position;
+    aProjectile->projectileData.collisionData.velocity = q.velocity;
 }
 
 void FireControl::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
@@ -2852,7 +2903,7 @@ void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float 
 
 void FireControl::UpdateMissileVec(double aTimeDelta)
 {
-    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
         RungeKutta4(&m_projectileVec[i], aTimeDelta);
     }

@@ -291,8 +291,10 @@ private:
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
+    void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
-   
+    void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
+
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
