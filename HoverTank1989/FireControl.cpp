@@ -108,6 +108,35 @@ void FireControl::CheckCollisions()
     }
 }
 
+void FireControl::CheckCollisionsMissile()
+{
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+    {
+        unsigned int vehicleHitId = 0;
+        bool isHitTrue;
+
+        isHitTrue = m_npcController->CheckProjectileCollisions(m_missileVec[i].projectileData.collisionData, vehicleHitId, true);
+
+        if (isHitTrue == true)
+        {
+            m_missileVec[i].projectileData.isCollisionTrue = true;
+            m_missileVec[i].projectileData.liveTimeTick--;
+            if (m_missileVec[i].projectileData.liveTimeTick <= 0)
+            {
+                m_missileVec[i].projectileData.isDeleteTrue = true;
+            }
+        }
+        else if (m_missileVec[i].projectileData.time > m_maxProjectileLifeTime)
+        {
+            m_missileVec[i].projectileData.isDeleteTrue = true;
+        }
+        else if (m_environment->GetIsPosInPlay(m_missileVec[i].projectileData.q.position) == false)
+        {
+            m_missileVec[i].projectileData.isDeleteTrue = true;
+        }
+    }
+}
+
 void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId)
 {
     ExplosionData createdExplosion;
@@ -199,6 +228,20 @@ void FireControl::CycleLoadedAmmo()
     else if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
     {
         m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
+    }
+}
+
+void FireControl::DeleteMissileFromVec(const unsigned int aIndex)
+{
+    if (aIndex > m_missileVec.size())
+    {
+        // add error handling here
+    }
+    else
+    {
+        std::vector<MissileData>::iterator it;
+        it = m_missileVec.begin() + aIndex;
+        m_missileVec.erase(it);
     }
 }
 
@@ -906,6 +949,31 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
         DrawMuzzleFlash2(aView, aProj, aEffect, aInputLayout);
     }
     DrawProjectiles(aView, aProj);
+    DrawMissiles(aView, aProj, aEffect, aInputLayout);
+}
+
+void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+    {
+        DirectX::SimpleMath::Matrix projMat = m_ammoMissile.modelData.localBodyMatrix;
+
+        DirectX::SimpleMath::Vector3 forward = m_missileVec[i].projectileData.q.velocity;
+        if (forward.Length() < 0.00001f)
+        {
+            forward = DirectX::SimpleMath::Vector3::UnitX;
+        }
+        forward.Normalize();
+        DirectX::SimpleMath::Vector3 right = DirectX::SimpleMath::Vector3::UnitY.Cross(forward);
+        DirectX::SimpleMath::Vector3 up = right.Cross(forward);
+        DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -right, up);
+        projMat *= alignMat;
+        projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+
+        m_ammoMissile.modelData.mainBodyShape->Draw(projMat, aView, aProj, projectileColor);
+    }
 }
 
 void FireControl::DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
@@ -2043,7 +2111,10 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
             DirectX::SimpleMath::Vector3 right = -up.Cross(aLaunchDirectionForward);
             FireProjectileShotGun(aLaunchPos, aLaunchDirectionForward, right, aLauncherVelocity);
         }
-
+        else if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
+        {
+            FireMissile(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp);
+        }
         if (m_isTestBoolTrue == true)
         {
             m_isTestBoolTrue = false;
@@ -2415,7 +2486,8 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
 {
     const float ammoSize = aAmmo.ammoData.radius;
     const float ammoLength = aAmmo.ammoData.length;
-    aAmmo.modelData.mainBodyShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
+    //aAmmo.modelData.mainBodyShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoSize);
+    aAmmo.modelData.mainBodyShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), 2.0f, 5.0f);
     //aAmmo.modelData.mainBodyShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoSize);
     aAmmo.modelData.worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     //aAmmo.modelData.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
@@ -2620,8 +2692,10 @@ void FireControl::UpdateFireControl(double aTimeDelta)
 
     m_testTimer += static_cast<float>(aTimeDelta);
     UpdateProjectileVec(aTimeDelta);
+    UpdateMissileVec(aTimeDelta);
     UpdateExplosionVec(aTimeDelta);
 
+    m_debugData->DebugPushUILineWholeNumber("m_missileVec.size() = ", m_missileVec.size(), "");
     //m_debugData->DebugPushUILineWholeNumber("m_isTestBoolTrue = ", m_isTestBoolTrue, "");
 }
 
@@ -2901,27 +2975,65 @@ void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float 
     aProjectile.up = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aProjectile.alignmentQuat);
 }
 
+void FireControl::UpdateMissileData(MissileData& aMissile, const float aTimeDelta)
+{
+    aMissile.projectileData.time += aTimeDelta;
+    DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
+    velocityNorm.Normalize();
+    const float t = 4.0f;
+    aMissile.projectileData.forward = DirectX::SimpleMath::Vector3::SmoothStep(aMissile.projectileData.forward, velocityNorm, t * aTimeDelta);
+    aMissile.projectileData.up = aMissile.projectileData.right.Cross(aMissile.projectileData.forward);
+    aMissile.projectileData.right = aMissile.projectileData.forward.Cross(aMissile.projectileData.up);
+
+    DirectX::SimpleMath::Vector3 pos2 = aMissile.projectileData.q.position;
+    DirectX::SimpleMath::Vector3 up2 = aMissile.projectileData.up;
+    DirectX::SimpleMath::Vector3 right2 = aMissile.projectileData.right;
+
+    DirectX::SimpleMath::Vector3 forward = aMissile.projectileData.forward;
+    if (forward.Length() < 0.00001f)
+    {
+        forward = DirectX::SimpleMath::Vector3::UnitX;
+    }
+    forward.Normalize();
+
+    DirectX::SimpleMath::Vector3 right = aMissile.projectileData.right;
+
+    DirectX::SimpleMath::Vector3 up = aMissile.projectileData.up;
+
+    DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -right, up);
+    aMissile.projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(alignMat);
+
+    aMissile.projectileData.inverseAlignmentQuat = aMissile.projectileData.alignmentQuat;
+    aMissile.projectileData.inverseAlignmentQuat.Inverse(aMissile.projectileData.inverseAlignmentQuat);
+
+    aMissile.projectileData.forward = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, aMissile.projectileData.alignmentQuat);
+    aMissile.projectileData.right = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitZ, aMissile.projectileData.alignmentQuat);
+    aMissile.projectileData.up = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aMissile.projectileData.alignmentQuat);
+}
+
 void FireControl::UpdateMissileVec(double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        RungeKutta4(&m_projectileVec[i], aTimeDelta);
+        //RungeKutta4(&m_projectileVec[i], aTimeDelta);
+        RungeKutta4Missile(&m_missileVec[i], aTimeDelta);
     }
 
-    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        UpdateProjectileData(m_projectileVec[i], static_cast<float>(aTimeDelta));
+        //UpdateProjectileData(m_projectileVec[i], static_cast<float>(aTimeDelta));
+        UpdateMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
     }
 
-    CheckCollisions();
+    CheckCollisionsMissile();
 
     int deleteCount = 0;
-    for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        if (m_projectileVec[i].isDeleteTrue == true)
+        if (m_missileVec[i].projectileData.isDeleteTrue == true)
         {
             deleteCount++;
-            DeleteProjectileFromVec(i);
+            DeleteMissileFromVec(i);
         }
     }
 }
