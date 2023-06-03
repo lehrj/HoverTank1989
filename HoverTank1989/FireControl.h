@@ -65,8 +65,6 @@ struct GuidanceSystem
     float targetDistance = 0.0f;
     bool isRocketFired = false;
     bool isTargetLocked = false;
-    float rocketFireDelay = 1.0f;
-    float steeringForce = 0.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
 };
 
@@ -114,6 +112,13 @@ struct MissileStruct
 {
     AmmoData ammoData;  
     MissileModel modelData;
+};
+
+struct MissileConsts
+{
+    const float steeringForceMax = 0.5f;
+    const float rocketFireDelay = 1.0f;
+    const float rocketBoostForceMax = 10000.0f;
 };
 
 enum class ExplosionType
@@ -302,6 +307,7 @@ private:
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
@@ -322,6 +328,8 @@ private:
     AmmoStruct m_ammoShotgun;
 
     MissileStruct m_ammoMissile;
+
+    MissileConsts m_missileConsts;
 
     ExplosionStruct m_explosionStruct;
 
