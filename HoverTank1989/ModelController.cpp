@@ -336,6 +336,15 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.muzzleLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
     aModel.muzzleWorldMatrix = aModel.muzzleLocalMatrix;
 
+    // missile tubes
+    const float missileTubeVerticalRot = Utility::ToRadians(40.0f);
+    const float missileTubeHorizontalRot = Utility::ToRadians(10.0f);
+    aModel.localMissleTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
+    aModel.localMissleTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+
+    aModel.localMissleTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+    aModel.localMissleTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+
     // front center glow
     DirectX::SimpleMath::Vector3 frontGlowCenterSize = DirectX::SimpleMath::Vector3(0.2f, 0.5f, 1.75f);
     aModel.frontGlowCenterShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), frontGlowCenterSize);
@@ -504,18 +513,29 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzlePosWorld = aModel.muzzlePosLocal;
     aModel.muzzlePosWorld = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosWorld, aModel.muzzleWorldMatrix);
   
-    //m_debugData->PushDebugLine(aModel.muzzlePosWorld, aModel.weaponDirWorld, 200.0f, 0.0, DirectX::Colors::Red);
+    // missile tubes
+    DirectX::SimpleMath::Matrix missileTubMat = DirectX::SimpleMath::Matrix::Identity;
+    missileTubMat = aModel.turretOffSetMatrix;
+    missileTubMat *= turretMat;
+    missileTubMat *= aModel.turretLocalMatrix;
+    missileTubMat *= updateMat;
+    aModel.worldMissleTubeLeftPos = aModel.localMissleTubeLeftPos;
+    aModel.worldMissleTubeLeftPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeLeftPos, missileTubMat);
+    aModel.worldMissleTubeRightPos = aModel.localMissleTubeRightPos;
+    aModel.worldMissleTubeRightPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeRightPos, missileTubMat);
 
+    aModel.worldMissleTubeLeftDir = aModel.localMissleTubeLeftDir;
+    aModel.worldMissleTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeLeftDir, turretMat);
+    aModel.worldMissleTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeLeftDir, aAlignment);
+
+    aModel.worldMissleTubeRightDir = aModel.localMissleTubeRightDir;
+    aModel.worldMissleTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeRightDir, turretMat);
+    aModel.worldMissleTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeRightDir, aAlignment);
+
+    // shadows
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane = aPlane;
     DirectX::SimpleMath::Vector3 modelPos = aPos;
-    /*
-    bool isPlaneFound = m_environment->GetGroundPlane(groundPlane, modelPos);
-    if(isPlaneFound == false)
-    {
-        // add error handleing
-    }
-    */
 
     DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
@@ -571,13 +591,10 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
 {
     UpdateModel(m_playerModel, aAlignment, aAltitude, aPos, aBarrelPitch, aTurretRotation, aPlane);
-    //m_debugData->PushDebugLine(m_playerModel.muzzlePosWorld, m_playerModel.weaponDirWorld, 300.0f, 0.0f, DirectX::Colors::Red);
 }
 
-//void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret)
 void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
-    //InitializeModel(m_playerModel, aBarrel, aBody, aTurret);
     InitializeModel(m_playerModel, aBarrel, aBody, aTurret, aContext);
 }
 

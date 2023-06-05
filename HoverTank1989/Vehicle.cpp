@@ -1366,6 +1366,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.muzzlePos = m_heli.weaponPos;
     m_heli.localMuzzlePos = m_heli.muzzlePos;
     m_heli.localizedMuzzlePos = m_heli.localMuzzlePos;
+
     // set up rotor blades
     InitializeRotorBlades(m_heli);
 
@@ -3413,11 +3414,10 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeSt
 
     DirectX::SimpleMath::Matrix weaponMuzzleMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicle.right, aVehicle.up);
     aVehicle.weaponDirection = aVehicle.localWeaponDirection;
-
     aVehicle.weaponDirection = DirectX::SimpleMath::Vector3::Transform(aVehicle.weaponDirection, tempMat);
     aVehicle.weaponDirection = DirectX::SimpleMath::Vector3::Transform(aVehicle.weaponDirection, weaponMuzzleMat);
-
     aVehicle.weaponDirection = m_modelController->GetWeaponDirWorld();
+
     //aVehicle.weaponPos = m_modelController->GetWeaponPos();
     aVehicle.weaponPos = m_modelController->GetMuzzlePos();
     aVehicle.muzzlePos = m_modelController->GetMuzzlePos();
@@ -3427,8 +3427,13 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeSt
     updateMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicle.right, aVehicle.up);
     DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(updateMat);
     m_heli.boundingBox.Orientation = updateQuat;
-    //m_heli.boundingBox.Center = m_heli.q.position + (m_heli.forward * 0.75f);
     m_heli.boundingBox.Center = m_heli.q.position;
+
+    // missle hardpoints
+    aVehicle.worldMissleTubeLeftPos = m_modelController->GetMissleTubePosLeft();
+    aVehicle.worldMissleTubeRightPos = m_modelController->GetMissleTubePosRight();
+    aVehicle.worldMissleTubeLeftDir = m_modelController->GetMissleTubeDirLeft();
+    aVehicle.worldMissleTubeRightDir = m_modelController->GetMissleTubeDirRight();
 }
 
 void Vehicle::UpdateResistance()
@@ -4045,6 +4050,12 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("eulerVec.z ", Utility::ToDegrees(eulerVec.z), "");
     m_debugData->DebugPushUILineDecimalNumber("Weapon Pitch ", Utility::ToDegrees(m_heli.controlInput.weaponPitch), "");
     */
+
+    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissleTubeLeftPos, 5.0f, 0.0f, DirectX::Colors::Blue);
+    m_debugData->PushDebugLine(m_heli.worldMissleTubeLeftPos, m_heli.worldMissleTubeLeftDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
+
+    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissleTubeRightPos, 5.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_heli.worldMissleTubeRightPos, m_heli.worldMissleTubeRightDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)

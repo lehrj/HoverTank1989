@@ -42,8 +42,23 @@ struct TankModel
     DirectX::SimpleMath::Matrix  muzzleWorldMatrix;
     DirectX::SimpleMath::Matrix  muzzleTransMatrix;
 
+    // missile tubes
+    DirectX::SimpleMath::Vector3 localMissleTubeLeftPos = DirectX::SimpleMath::Vector3(-0.9f, -0.3f, -0.9f);
+    DirectX::SimpleMath::Vector3 localMissleTubeRightPos = DirectX::SimpleMath::Vector3(0.9f, -0.3f, -0.9f);
+    DirectX::SimpleMath::Vector3 worldMissleTubeLeftPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 worldMissleTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Matrix  missleTubeLeftTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f));
+    DirectX::SimpleMath::Matrix  missleTubeRightTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f));
+
+    DirectX::SimpleMath::Vector3 localMissleTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 localMissleTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 worldMissleTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 worldMissleTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
+
+
     DirectX::SimpleMath::Matrix  targetingMatrix = DirectX::SimpleMath::Matrix::Identity;
 
+    // engine glows
     std::unique_ptr<DirectX::GeometricPrimitive>    frontGlowCenterShape;
     DirectX::SimpleMath::Matrix localFrontGlowCenterMatrix;
     DirectX::SimpleMath::Matrix worldFrontGlowCenterMatrix;
@@ -84,6 +99,12 @@ public:
     DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_playerModel.muzzleWorldMatrix; };
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_playerModel.muzzlePosWorld; };
     DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };
+    
+    DirectX::SimpleMath::Vector3 GetMissleTubeDirLeft() const { return m_playerModel.worldMissleTubeLeftDir; };
+    DirectX::SimpleMath::Vector3 GetMissleTubeDirRight() const { return m_playerModel.worldMissleTubeRightDir; };
+    DirectX::SimpleMath::Vector3 GetMissleTubePosLeft() const { return m_playerModel.worldMissleTubeLeftPos; };
+    DirectX::SimpleMath::Vector3 GetMissleTubePosRight() const { return m_playerModel.worldMissleTubeRightPos; };
+
     DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_playerModel.targetingMatrix; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };
     DirectX::SimpleMath::Vector3 GetWeaponDirLocal() const { return m_playerModel.weaponDirLocal; };

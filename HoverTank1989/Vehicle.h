@@ -203,6 +203,15 @@ struct HeliData
     DirectX::SimpleMath::Vector3 weaponTorqueArmPos;
     DirectX::SimpleMath::Vector3 localWeaponTorqueArmPos;
 
+    DirectX::SimpleMath::Vector3 localMissleTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 2.0f);
+    DirectX::SimpleMath::Vector3 localMissleTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 worldMissleTubeLeftPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 worldMissleTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 localMissleTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 localMissleTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 worldMissleTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 worldMissleTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
     //
     int     numEqns;
     double  time;
