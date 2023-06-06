@@ -1459,6 +1459,57 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
     }
 }
 
+void FireControl::FireMissile2(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
+{
+    AmmoData firedAmmo = m_ammoGuidedMissile.ammoData;
+
+    m_isCoolDownActive = true;
+    m_coolDownTimer = firedAmmo.cooldown;
+
+    MissileData firedMissile;
+    firedMissile.projectileData.ammoData = firedAmmo;
+    firedMissile.projectileData.q.position = aLaunchPos;
+    firedMissile.projectileData.q.velocity = (firedMissile.projectileData.ammoData.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
+    firedMissile.projectileData.isCollisionTrue = false;
+    firedMissile.projectileData.isDeleteTrue = false;
+    firedMissile.projectileData.liveTimeTick = firedAmmo.tickDownCounter;
+    firedMissile.projectileData.forward = aLaunchDirectionForward;
+    firedMissile.projectileData.forward.Normalize();
+    firedMissile.projectileData.up = aUp;
+    firedMissile.projectileData.up.Normalize();
+    firedMissile.projectileData.right = -firedMissile.projectileData.up.Cross(firedMissile.projectileData.forward);
+    firedMissile.projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -firedMissile.projectileData.right, firedMissile.projectileData.up));
+    firedMissile.projectileData.alignmentQuat.Normalize();
+    firedMissile.projectileData.inverseAlignmentQuat = firedMissile.projectileData.alignmentQuat;
+    firedMissile.projectileData.inverseAlignmentQuat.Inverse(firedMissile.projectileData.inverseAlignmentQuat);
+    firedMissile.projectileData.inverseAlignmentQuat.Normalize();
+
+    // collision data
+    firedMissile.projectileData.collisionData.collisionDurationMod = firedAmmo.impactDurration;
+    firedMissile.projectileData.collisionData.collisionMagnitudeMod = firedMissile.projectileData.ammoData.impactModifier;
+    firedMissile.projectileData.collisionData.collisionSphere.Center = firedMissile.projectileData.q.position;
+    firedMissile.projectileData.collisionData.collisionSphere.Radius = firedAmmo.radius;
+    firedMissile.projectileData.collisionData.velocity = firedMissile.projectileData.q.velocity;
+    firedMissile.projectileData.collisionData.mass = firedAmmo.mass;
+    firedMissile.projectileData.collisionData.isCollisionTrue = firedMissile.projectileData.isCollisionTrue;
+    firedMissile.projectileData.time = 0.0f;
+
+    firedMissile.guidance.heading = aLaunchDirectionForward;
+    firedMissile.guidance.targetID = m_currentTargetID;
+    if (m_currentTargetID != -1)
+    {
+        firedMissile.guidance.isTargetLocked = true;
+    }
+    else
+    {
+        firedMissile.guidance.isTargetLocked = false;
+    }
+    m_npcController->UpdateMissleGuidance(m_currentTargetID, firedMissile.guidance.targetPosition, firedMissile.guidance.targetVelocity);
+    firedMissile.guidance.targetDistance = (aLaunchPos - firedMissile.guidance.targetPosition).Length();
+
+    m_missileVec.push_back(firedMissile);  
+}
+
 void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
 {
     if (m_isCoolDownActive == false)
@@ -2114,7 +2165,12 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
         }
         else if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
         {
-            FireMissile(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp);
+            //FireMissile(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp);
+            FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
+            FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
+
+            m_isCoolDownActive = true;
+            m_coolDownTimer = m_ammoGuidedMissile.ammoData.cooldown;
         }
         if (m_isTestBoolTrue == true)
         {
@@ -2730,7 +2786,6 @@ void FireControl::UpdateFireControl(double aTimeDelta)
 
     m_debugData->DebugPushUILineWholeNumber("m_missileVec.size() = ", m_missileVec.size(), "");
     m_debugData->DebugPushUILineWholeNumber("m_currentTargetID = ", m_currentTargetID, "");
-    //m_debugData->DebugPushUILineWholeNumber("m_isTestBoolTrue = ", m_isTestBoolTrue, "");
 }
 
 void FireControl::UpdateExplosionVec(double aTimeDelta)

@@ -339,11 +339,17 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     // missile tubes
     const float missileTubeVerticalRot = Utility::ToRadians(40.0f);
     const float missileTubeHorizontalRot = Utility::ToRadians(10.0f);
-    aModel.localMissleTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
-    aModel.localMissleTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+    aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
+    aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
 
-    aModel.localMissleTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
-    aModel.localMissleTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissleTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+    aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+    aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+
+    aModel.localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftUp, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
+    aModel.localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+
+    aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+    aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
 
     // front center glow
     DirectX::SimpleMath::Vector3 frontGlowCenterSize = DirectX::SimpleMath::Vector3(0.2f, 0.5f, 1.75f);
@@ -519,18 +525,26 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     missileTubMat *= turretMat;
     missileTubMat *= aModel.turretLocalMatrix;
     missileTubMat *= updateMat;
-    aModel.worldMissleTubeLeftPos = aModel.localMissleTubeLeftPos;
-    aModel.worldMissleTubeLeftPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeLeftPos, missileTubMat);
-    aModel.worldMissleTubeRightPos = aModel.localMissleTubeRightPos;
-    aModel.worldMissleTubeRightPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeRightPos, missileTubMat);
+    aModel.worldMissileTubeLeftPos = aModel.localMissileTubeLeftPos;
+    aModel.worldMissileTubeLeftPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeLeftPos, missileTubMat);
+    aModel.worldMissileTubeRightPos = aModel.localMissileTubeRightPos;
+    aModel.worldMissileTubeRightPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightPos, missileTubMat);
 
-    aModel.worldMissleTubeLeftDir = aModel.localMissleTubeLeftDir;
-    aModel.worldMissleTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeLeftDir, turretMat);
-    aModel.worldMissleTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeLeftDir, aAlignment);
+    aModel.worldMissileTubeLeftDir = aModel.localMissileTubeLeftDir;
+    aModel.worldMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeLeftDir, turretMat);
+    aModel.worldMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeLeftDir, aAlignment);
 
-    aModel.worldMissleTubeRightDir = aModel.localMissleTubeRightDir;
-    aModel.worldMissleTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeRightDir, turretMat);
-    aModel.worldMissleTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissleTubeRightDir, aAlignment);
+    aModel.worldMissileTubeRightDir = aModel.localMissileTubeRightDir;
+    aModel.worldMissileTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightDir, turretMat);
+    aModel.worldMissileTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightDir, aAlignment);
+
+    aModel.worldMissileTubeLeftUp = aModel.localMissileTubeLeftUp;
+    aModel.worldMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeLeftUp, turretMat);
+    aModel.worldMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeLeftUp, aAlignment);
+
+    aModel.worldMissileTubeRightUp = aModel.localMissileTubeRightUp;
+    aModel.worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightUp, turretMat);
+    aModel.worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightUp, aAlignment);
 
     // shadows
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();

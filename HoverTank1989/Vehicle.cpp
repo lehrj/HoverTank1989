@@ -3430,10 +3430,13 @@ void Vehicle::UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeSt
     m_heli.boundingBox.Center = m_heli.q.position;
 
     // missle hardpoints
-    aVehicle.worldMissleTubeLeftPos = m_modelController->GetMissleTubePosLeft();
-    aVehicle.worldMissleTubeRightPos = m_modelController->GetMissleTubePosRight();
-    aVehicle.worldMissleTubeLeftDir = m_modelController->GetMissleTubeDirLeft();
-    aVehicle.worldMissleTubeRightDir = m_modelController->GetMissleTubeDirRight();
+    aVehicle.worldMissileTubeLeftPos = m_modelController->GetMissileTubePosLeft();
+    aVehicle.worldMissileTubeRightPos = m_modelController->GetMissileTubePosRight();
+    aVehicle.worldMissileTubeLeftDir = m_modelController->GetMissileTubeDirLeft();
+    aVehicle.worldMissileTubeRightDir = m_modelController->GetMissileTubeDirRight();
+
+    aVehicle.worldMissileTubeLeftUp = m_modelController->GetMissileTubeLeftUp();
+    aVehicle.worldMissileTubeRightUp = m_modelController->GetMissileTubeRightUp();
 }
 
 void Vehicle::UpdateResistance()
@@ -4051,11 +4054,14 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("Weapon Pitch ", Utility::ToDegrees(m_heli.controlInput.weaponPitch), "");
     */
 
-    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissleTubeLeftPos, 5.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(m_heli.worldMissleTubeLeftPos, m_heli.worldMissleTubeLeftDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissileTubeLeftPos, 5.0f, 0.0f, DirectX::Colors::Blue);
+    m_debugData->PushDebugLine(m_heli.worldMissileTubeLeftPos, m_heli.worldMissileTubeLeftDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
 
-    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissleTubeRightPos, 5.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_heli.worldMissleTubeRightPos, m_heli.worldMissleTubeRightDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissileTubeRightPos, 5.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_heli.worldMissileTubeRightPos, m_heli.worldMissileTubeRightDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
+
+    m_debugData->PushDebugLine(m_heli.worldMissileTubeLeftPos, m_heli.worldMissileTubeLeftUp, 5.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLine(m_heli.worldMissileTubeRightPos, m_heli.worldMissileTubeRightUp, 5.0f, 0.0f, DirectX::Colors::Purple);
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)

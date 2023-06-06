@@ -203,15 +203,18 @@ struct HeliData
     DirectX::SimpleMath::Vector3 weaponTorqueArmPos;
     DirectX::SimpleMath::Vector3 localWeaponTorqueArmPos;
 
-    DirectX::SimpleMath::Vector3 localMissleTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 2.0f);
-    DirectX::SimpleMath::Vector3 localMissleTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 worldMissleTubeLeftPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 worldMissleTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 2.0f);
+    DirectX::SimpleMath::Vector3 localMissileTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 worldMissileTubeLeftPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 worldMissileTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
 
-    DirectX::SimpleMath::Vector3 localMissleTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 localMissleTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 worldMissleTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 worldMissleTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 localMissileTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 worldMissileTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 worldMissileTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
+
+    DirectX::SimpleMath::Vector3 worldMissileTubeLeftUp = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::UnitY;
     //
     int     numEqns;
     double  time;
@@ -331,6 +334,15 @@ public:
     bool GetIsDebugToggled3() const { return m_debugToggle3; };
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
     float GetMass() const { return m_heli.mass; };
+
+    DirectX::SimpleMath::Vector3 GetMissleTubeDirLeft() const { return m_heli.worldMissileTubeLeftDir; };
+    DirectX::SimpleMath::Vector3 GetMissleTubeDirRight() const { return m_heli.worldMissileTubeRightDir; };
+    DirectX::SimpleMath::Vector3 GetMissleTubePosLeft() const { return m_heli.worldMissileTubeLeftPos; };
+    DirectX::SimpleMath::Vector3 GetMissleTubePosRight() const { return m_heli.worldMissileTubeRightPos; };
+
+    DirectX::SimpleMath::Vector3 GetMissleTubeUpLeft() const { return m_heli.worldMissileTubeLeftUp; };
+    DirectX::SimpleMath::Vector3 GetMissleTubeUpRight() const { return m_heli.worldMissileTubeRightUp; };
+
     DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_modelController->GetMuzzleDirMat(); };
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_heli.muzzlePos; };
     DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_heli.localizedMuzzlePos; };
