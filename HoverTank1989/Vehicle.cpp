@@ -950,7 +950,7 @@ void Vehicle::FireWeapon()
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
         //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
-        m_testImpulseForce = recoil;
+        //m_testImpulseForce = recoil;
     }
 }
 

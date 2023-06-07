@@ -100,6 +100,10 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix worldBodyMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShape;
+    DirectX::SimpleMath::Matrix localPlumeMatrix;
+    DirectX::SimpleMath::Matrix worldPlumeMatrix;
 };
 
 struct MissileData
@@ -117,8 +121,8 @@ struct MissileStruct
 struct MissileConsts
 {
     const float steeringForceMax = 0.5f;
-    const float rocketFireDelay = 1.0f;
-    const float rocketBoostForceMax = 10000.0f;
+    const float rocketFireDelay = 3.0f;
+    const float rocketBoostForceMax = 1000.0f;
 };
 
 enum class ExplosionType
