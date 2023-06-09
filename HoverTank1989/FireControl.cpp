@@ -93,7 +93,7 @@ void FireControl::CheckCollisions()
                 m_projectileVec[i].isDeleteTrue = true;
             }
         }
-        else if (m_projectileVec[i].time > m_maxProjectileLifeTime)
+        else if (m_projectileVec[i].time > m_projectileLifeTimeMax)
         {
             m_projectileVec[i].isDeleteTrue = true;
         }
@@ -126,7 +126,7 @@ void FireControl::CheckCollisionsMissile()
                 m_missileVec[i].projectileData.isDeleteTrue = true;
             }
         }
-        else if (m_missileVec[i].projectileData.time > m_maxProjectileLifeTime)
+        else if (m_missileVec[i].projectileData.time > m_missileLifeTimeMax)
         {
             m_missileVec[i].projectileData.isDeleteTrue = true;
         }
@@ -3099,7 +3099,11 @@ void FireControl::UpdateMissileData(MissileData& aMissile, const float aTimeDelt
 
     DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -right, up);
     */
+
+
     DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aMissile.projectileData.right, aMissile.projectileData.up);
+    //DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, aMissile.projectileData.forward, aMissile.projectileData.up);
+
     aMissile.projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(alignMat);
 
     aMissile.projectileData.inverseAlignmentQuat = aMissile.projectileData.alignmentQuat;
@@ -3128,13 +3132,30 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
             DirectX::SimpleMath::Vector3 vecToTarget = aMissile.guidance.targetPosition - aMissile.projectileData.q.position;
             vecToTarget.Normalize();
+
+            // time to target start
+            DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
+            velocityNorm.Normalize();
+
+            float velocityToTarget = velocityNorm.Dot(vecToTarget) * aMissile.projectileData.q.velocity.Length();
+            float timeToTarget = aMissile.guidance.targetDistance / velocityToTarget;
+            m_debugData->DebugPushUILineDecimalNumber("timeToTarget = ", timeToTarget, "");
+            // time to target stop
+
+            // next counter verticle drop, current y velocity + estimated drop by estimated impact time
+
+
             DirectX::SimpleMath::Vector3 heading = aMissile.projectileData.forward;
             heading.Normalize();
             DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::FromToRotation(heading, vecToTarget);
+
+            m_debugData->PushDebugLine(aMissile.projectileData.q.position, vecToTarget, 40.0f, 0.0f, DirectX::Colors::Orange);
             DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
             //DirectX::SimpleMath::Quaternion::RotateTowards(rotQuat, m_missileConsts.steeringForceMax, updateQuat);
             updateQuat.RotateTowards(rotQuat, m_missileConsts.steeringForceMax);
             aMissile.projectileData.forward = DirectX::SimpleMath::Vector3::Transform(aMissile.projectileData.forward, updateQuat);
+            aMissile.projectileData.right = DirectX::SimpleMath::Vector3::Transform(aMissile.projectileData.right, updateQuat);
+            aMissile.projectileData.up = DirectX::SimpleMath::Vector3::Transform(aMissile.projectileData.up, updateQuat);
         }
     }
 }
@@ -3150,16 +3171,17 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
     {
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
-        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.forward, 10.0f, 0.0f, DirectX::Colors::Yellow);
+        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.forward, 20.0f, 0.0f, DirectX::Colors::Yellow);
     }
 
     CheckCollisionsMissile();
-
+    
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
         if (m_missileVec[i].projectileData.isDeleteTrue == true)
         {
+            float timer = m_missileVec[i].projectileData.time;
             deleteCount++;
             DeleteMissileFromVec(i);
         }
