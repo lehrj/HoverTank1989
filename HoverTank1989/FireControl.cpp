@@ -3130,6 +3130,8 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity);
             aMissile.guidance.targetDistance = (aMissile.projectileData.q.position - aMissile.guidance.targetPosition).Length();
 
+            m_debugData->PushDebugLinePositionIndicator(aMissile.guidance.targetPosition, 10.0f, 0.0f, DirectX::Colors::Red);
+
             DirectX::SimpleMath::Vector3 vecToTarget = aMissile.guidance.targetPosition - aMissile.projectileData.q.position;
             vecToTarget.Normalize();
 
@@ -3160,6 +3162,14 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             vecToTarget.Normalize();
             */
 
+            DirectX::SimpleMath::Vector3 futurePos = aMissile.projectileData.q.position;
+            futurePos += aMissile.projectileData.q.velocity * timeToTarget;
+            m_debugData->PushDebugLinePositionIndicator(aMissile.guidance.targetPosition, 10.0f, 3.0f, DirectX::Colors::Lavender);
+
+            DirectX::SimpleMath::Vector3 counterMomentum = aMissile.projectileData.q.velocity * (timeToTarget * 0.5f);
+            vecToTarget = (aMissile.guidance.targetPosition - counterMomentum) - aMissile.projectileData.q.position;
+            vecToTarget.Normalize();
+
             DirectX::SimpleMath::Vector3 heading = aMissile.projectileData.forward;
             heading.Normalize();
             //DirectX::SimpleMath::Vector3 right = heading.Cross(aMissile.projectileData.up);
@@ -3167,6 +3177,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             right.Normalize();
             m_debugData->PushDebugLine(aMissile.projectileData.q.position, right, 40.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.projectileData.up, 40.0f, 0.0f, DirectX::Colors::Green);
+            
             float adjacentSide = sqrt((m_missileConsts.rocketBoostForceMax * m_missileConsts.rocketBoostForceMax) - (testA * testA));
             float angleAdjustment = atan(testA / adjacentSide);
             m_debugData->DebugPushUILineDecimalNumber("angleAdjustment Rads     = ", angleAdjustment, "");
