@@ -364,6 +364,12 @@ private:
     bool m_isTargetingLaserOn = false;
     int m_currentTargetID = -1;
 
+    DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+
+    const float m_missileMass = 10.0f;
+    const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
+
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };

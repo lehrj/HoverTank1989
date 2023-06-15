@@ -2454,6 +2454,25 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
     m_currentAmmoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
 
+    ////////////
+    // inertia tensors
+
+    m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+
+    float xExtent = m_missileDimensions.x;
+    float yExtent = m_missileDimensions.y;
+    float zExtent = m_missileDimensions.z;
+    float mass = m_missileMass;
+
+    m_missileInertiaTensorLocal._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    m_missileInertiaTensorLocal._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    m_missileInertiaTensorLocal._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+
+    m_missileInverseInertiaTensorLocal = m_missileInertiaTensorLocal;
+    m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();
+    
+    ////////////
+
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
     InitializeAmmoGuidedMissile(m_ammoGuidedMissile);
