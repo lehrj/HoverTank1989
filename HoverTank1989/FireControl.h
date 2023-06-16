@@ -28,6 +28,8 @@ struct ProjectileMotion
 {
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
+    DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct ProjectileModel
@@ -93,6 +95,9 @@ struct ProjectileData
     DirectX::SimpleMath::Vector3 right = DirectX::SimpleMath::Vector3::UnitZ;
     DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion inverseAlignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 angularForceSum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularDragSum = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct MissileModel
@@ -104,6 +109,7 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShape;
     DirectX::SimpleMath::Matrix localPlumeMatrix;
     DirectX::SimpleMath::Matrix worldPlumeMatrix;
+    DirectX::SimpleMath::Matrix plumeTranslation;
 };
 
 struct MissileData
@@ -312,6 +318,7 @@ private:
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
