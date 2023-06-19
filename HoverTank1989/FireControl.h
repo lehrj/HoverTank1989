@@ -68,6 +68,8 @@ struct GuidanceSystem
     bool isRocketFired = false;
     bool isTargetLocked = false;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 forwardThrust = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct

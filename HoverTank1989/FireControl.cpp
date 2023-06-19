@@ -3233,6 +3233,8 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     aMissile.projectileData.angularDragSum = angularDrag;
     // update forward thrust to be fraction remaining after side thrust removed
+    aMissile.guidance.forwardThrust = aMissile.projectileData.forward * (m_missileConsts.rocketBoostForceMax - aMissile.projectileData.angularForceSum.Length());
+
 }
 
 void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta)
