@@ -2185,7 +2185,7 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
         {
             //FireMissile(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp);
             FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
-            FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
+            //FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
 
             m_isCoolDownActive = true;
             m_coolDownTimer = m_ammoGuidedMissile.ammoData.cooldown;
@@ -3223,6 +3223,7 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     torqueForce *= rotationThrustForce;
     Utility::Torque thrustTorque = Utility::GetTorqueForce(torqueArm, torqueForce);
     aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta * 0.3f);
+    //aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta);
 
     m_debugData->DebugPushUILineDecimalNumber("aMissile.projectileData.angularForceSum = ", aMissile.projectileData.angularForceSum.Length(), "");
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.projectileData.angularForceSum, 20.0f, 0.0f, DirectX::Colors::White);
@@ -3292,9 +3293,34 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             futurePos += aMissile.projectileData.q.velocity * timeToTarget;
             m_debugData->PushDebugLinePositionIndicator(aMissile.guidance.targetPosition, 10.0f, 3.0f, DirectX::Colors::Lavender);
 
+            ///////// counter angular momentum
+            DirectX::SimpleMath::Vector3 worldAngularVel = aMissile.projectileData.q.angularVelocity;
+            worldAngularVel = DirectX::SimpleMath::Vector3::Transform(worldAngularVel, aMissile.projectileData.alignmentQuat);
+            
+            DirectX::SimpleMath::Quaternion updateAlignQuat;
+            updateAlignQuat.x = worldAngularVel.x;
+            updateAlignQuat.y = worldAngularVel.y;
+            updateAlignQuat.z = worldAngularVel.z;
+            updateAlignQuat.w = 0.0f;
+            DirectX::SimpleMath::Quaternion updateAlignOutputQuat = aMissile.projectileData.alignmentQuat;
+            updateAlignOutputQuat.Normalize();
+
+            updateAlignOutputQuat += (0.5f * aTimeDelta) * (updateAlignQuat * aMissile.projectileData.alignmentQuat);
+            updateAlignOutputQuat.Normalize();
+
+            DirectX::SimpleMath::Quaternion testAngularQuat = updateAlignQuat * (0.5f * aTimeDelta);
+            DirectX::SimpleMath::Quaternion testInverseAngularQuat = testAngularQuat;
+            testInverseAngularQuat.Inverse(testInverseAngularQuat);
+
+            ////////
+
             DirectX::SimpleMath::Vector3 counterMomentum = aMissile.projectileData.q.velocity * (timeToTarget * 0.5f);
+          
             vecToTarget = (aMissile.guidance.targetPosition - counterMomentum) - aMissile.projectileData.q.position;
             vecToTarget.Normalize();
+            //vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, testAngularQuat);
+
+            ///////////////////////
 
             DirectX::SimpleMath::Vector3 heading = aMissile.projectileData.forward;
             heading.Normalize();
