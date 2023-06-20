@@ -2690,8 +2690,8 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     if (aProjectile->guidance.isRocketFired == true)
     {
-        DirectX::SimpleMath::Vector3 boostForce = aProjectile->projectileData.forward * m_missileConsts.rocketBoostForceMax;
-        //DirectX::SimpleMath::Vector3 boostForce = DirectX::SimpleMath::Vector3::UnitY * m_missileConsts.rocketBoostForceMax;
+        //DirectX::SimpleMath::Vector3 boostForce = aProjectile->projectileData.forward * m_missileConsts.rocketBoostForceMax;
+        DirectX::SimpleMath::Vector3 boostForce = aProjectile->projectileData.forward * aProjectile->guidance.forwardThrust;
         velocityUpdate += boostForce;
     }
 
@@ -3232,15 +3232,18 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     angularDrag = aMissile.projectileData.q.angularVelocity * -powf(angularDrageMod, aTimeDelta);
 
     aMissile.projectileData.angularDragSum = angularDrag;
-    // update forward thrust to be fraction remaining after side thrust removed
-    aMissile.guidance.forwardThrust = aMissile.projectileData.forward * (m_missileConsts.rocketBoostForceMax - aMissile.projectileData.angularForceSum.Length());
 
+    // update forward thrust to be fraction remaining after side thrust removed
+    //float adjacent = cos(thrustAngle) * m_missileConsts.rocketBoostForceMax;
+    //aMissile.guidance.forwardThrust = aMissile.projectileData.forward * (m_missileConsts.rocketBoostForceMax - aMissile.projectileData.angularForceSum.Length());
+    //aMissile.guidance.forwardThrust = cos(thrustAngle) * m_missileConsts.rocketBoostForceMax;
+    // Average out thrust value with previous frame to smooth 
+    aMissile.guidance.forwardThrust += cos(thrustAngle) * m_missileConsts.rocketBoostForceMax;
+    aMissile.guidance.forwardThrust *= 0.5f;
 }
 
 void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta)
 {
-    float testFloat = 0.0f;
-    testFloat = aMissile.projectileData.time;
     if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
     {
         aMissile.guidance.isRocketFired = true;
