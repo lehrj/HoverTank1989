@@ -3315,7 +3315,6 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             ////////
 
             DirectX::SimpleMath::Vector3 counterMomentum = aMissile.projectileData.q.velocity * (timeToTarget * 0.5f);
-          
             vecToTarget = (aMissile.guidance.targetPosition - counterMomentum) - aMissile.projectileData.q.position;
             vecToTarget.Normalize();
             //vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, testAngularQuat);

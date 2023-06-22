@@ -128,9 +128,9 @@ struct MissileStruct
 
 struct MissileConsts
 {
-    const float steeringForceMax = 0.02f;
-    const float rocketFireDelay = 3.0f;
-    const float rocketBoostForceMax = 1000.0f;
+    const float steeringForceMax = 0.04f;
+    const float rocketFireDelay = 3.5f;
+    const float rocketBoostForceMax = 700.0f;
 };
 
 enum class ExplosionType
