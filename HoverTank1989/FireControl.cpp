@@ -2185,7 +2185,7 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
         {
             //FireMissile(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp);
             FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
-            FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
+            //FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
 
             m_isCoolDownActive = true;
             m_coolDownTimer = m_ammoGuidedMissile.ammoData.cooldown;
@@ -3313,14 +3313,39 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             testInverseAngularQuat.Inverse(testInverseAngularQuat);
 
             ////////
-
+            // Linear momentum
             DirectX::SimpleMath::Vector3 counterMomentum = aMissile.projectileData.q.velocity * (timeToTarget * 0.5f);
+
+            float gravDrop = m_environment->GetGravity() * timeToTarget;
+            
+            m_debugData->DebugPushUILineDecimalNumber("gravDrop    = ", gravDrop, "");
             vecToTarget = (aMissile.guidance.targetPosition - counterMomentum) - aMissile.projectileData.q.position;
+            //vecToTarget = (aMissile.guidance.targetPosition) - aMissile.projectileData.q.position;
+            vecToTarget.y -= gravDrop;
             vecToTarget.Normalize();
             //vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, testAngularQuat);
+            m_debugData->PushDebugLinePositionIndicator(aMissile.guidance.targetPosition - counterMomentum, 20.0f, 0.0f, DirectX::Colors::Yellow);
 
             ///////////////////////
+            // Angular momentum
 
+            DirectX::SimpleMath::Vector3 localizedVecToTarget = vecToTarget;
+            localizedVecToTarget = DirectX::SimpleMath::Vector3::Transform(localizedVecToTarget, aMissile.projectileData.inverseAlignmentQuat);
+            m_debugData->DebugPushUILineDecimalNumber("aMissile.projectileData.q.angularVelocity.Length() ", aMissile.projectileData.q.angularVelocity.Length(), "");
+            float radiansToTarget = aMissile.projectileData.q.angularVelocity.Length() * timeToTarget;
+            m_debugData->DebugPushUILineDecimalNumber("radiansToTarget ", radiansToTarget, "");
+
+            if (radiansToTarget > 0.000001f)
+            {
+                DirectX::SimpleMath::Quaternion counterAngularMomentum = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(aMissile.projectileData.q.angularVelocity, -radiansToTarget);
+                counterAngularMomentum.Normalize();
+                DirectX::SimpleMath::Vector3 estimatedVecToTarget = localizedVecToTarget;
+                estimatedVecToTarget = DirectX::SimpleMath::Vector3::Transform(estimatedVecToTarget, counterAngularMomentum);
+                //vecToTarget = estimatedVecToTarget;
+                //vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, aMissile.projectileData.alignmentQuat);
+                //vecToTarget.Normalize();
+            }
+            ///////////////////////
             DirectX::SimpleMath::Vector3 heading = aMissile.projectileData.forward;
             heading.Normalize();
             //DirectX::SimpleMath::Vector3 right = heading.Cross(aMissile.projectileData.up);

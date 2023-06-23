@@ -370,7 +370,7 @@ private:
 
     bool m_isTestBoolTrue = false;
 
-    bool m_isTargetingLaserOn = false;
+    bool m_isTargetingLaserOn = true;
     int m_currentTargetID = -1;
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
