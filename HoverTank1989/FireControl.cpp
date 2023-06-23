@@ -2185,7 +2185,7 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
         {
             //FireMissile(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp);
             FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
-            //FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
+            FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
 
             m_isCoolDownActive = true;
             m_coolDownTimer = m_ammoGuidedMissile.ammoData.cooldown;
