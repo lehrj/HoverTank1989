@@ -384,7 +384,7 @@ int NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay)
         }
     }
 
-    m_debugData->PushDebugLine(aRay.position, aRay.direction, distanceToTarget, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(aRay.position, aRay.direction, distanceToTarget, 0.0f, DirectX::Colors::Red);
 
     return targetID;
 }

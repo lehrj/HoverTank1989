@@ -4045,23 +4045,6 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     float angRadsPerSecond = angRad / aTimeDelta;
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
-    
-    /*
-    DirectX::SimpleMath::Vector3 eulerVec = m_heli.alignmentInverseQuat.ToEuler();
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.x ", Utility::ToDegrees(eulerVec.x), "");
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.y ", Utility::ToDegrees(eulerVec.y), "");
-    m_debugData->DebugPushUILineDecimalNumber("eulerVec.z ", Utility::ToDegrees(eulerVec.z), "");
-    m_debugData->DebugPushUILineDecimalNumber("Weapon Pitch ", Utility::ToDegrees(m_heli.controlInput.weaponPitch), "");
-    */
-
-    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissileTubeLeftPos, 5.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(m_heli.worldMissileTubeLeftPos, m_heli.worldMissileTubeLeftDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
-
-    m_debugData->PushDebugLinePositionIndicator(m_heli.worldMissileTubeRightPos, 5.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_heli.worldMissileTubeRightPos, m_heli.worldMissileTubeRightDir, 5.0f, 0.0f, DirectX::Colors::Yellow);
-
-    m_debugData->PushDebugLine(m_heli.worldMissileTubeLeftPos, m_heli.worldMissileTubeLeftUp, 5.0f, 0.0f, DirectX::Colors::Orange);
-    m_debugData->PushDebugLine(m_heli.worldMissileTubeRightPos, m_heli.worldMissileTubeRightUp, 5.0f, 0.0f, DirectX::Colors::Purple);
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)

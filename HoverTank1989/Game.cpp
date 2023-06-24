@@ -986,6 +986,7 @@ void Game::DrawDebugDataUI()
         textLinePos.y += 30;
     }
 
+    /*
     // Draw Timer
     //std::string textLine = "Timer  " + std::to_string(m_timer.GetTotalSeconds());
     std::string textLine = "Timer  " + std::to_string(m_testTimer1);
@@ -993,6 +994,7 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
+    */
 
     /*
     if (m_vehicle->GetIsDebugToggled() == true)
@@ -1035,8 +1037,8 @@ void Game::DrawDebugDataUI()
     textLinePos.y += 30;
     */
 
-    textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
-    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    std::string textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;

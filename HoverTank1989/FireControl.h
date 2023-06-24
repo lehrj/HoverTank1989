@@ -128,7 +128,7 @@ struct MissileStruct
 
 struct MissileConsts
 {
-    const float steeringForceMax = 0.04f;
+    const float steeringForceMax = 0.2f;
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
 };
@@ -322,6 +322,7 @@ private:
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
