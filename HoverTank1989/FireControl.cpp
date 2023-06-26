@@ -2685,7 +2685,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     DirectX::SimpleMath::Vector3 gravForce = (m_environment->GetGravityVec() * mass) * m_gravityMod;
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    velocityUpdate += airResistance;
+    //velocityUpdate += airResistance;
     velocityUpdate += gravForce;
 
     if (aProjectile->guidance.isRocketFired == true)
@@ -3374,10 +3374,14 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             DirectX::SimpleMath::Vector3 adjustedTarget = aMissile.guidance.targetPosition;
-            //adjustedTarget.y -= gravDrop;
+            adjustedTarget.y -= gravDrop;
             counterMomentum = aMissile.projectileData.q.velocity * (timeToTarget * 0.5f);
-
+           
+            DirectX::SimpleMath::Vector3 aimPoint = adjustedTarget - counterMomentum;
+            m_debugData->PushDebugLinePositionIndicator(aimPoint, 25.0f, 0.0f, DirectX::Colors::Red);
+            m_debugData->PushDebugLinePositionIndicator(adjustedTarget, 25.0f, 0.0f, DirectX::Colors::Yellow);
             vecToTarget = (adjustedTarget - counterMomentum) - aMissile.projectileData.q.position;
+           
             vecToTarget.Normalize();
 
             localizedVecToTarget = vecToTarget;
@@ -3385,6 +3389,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             //m_debugData->DebugPushUILineDecimalNumber("aMissile.projectileData.q.angularVelocity.Length() ", aMissile.projectileData.q.angularVelocity.Length(), "");
             radiansToTarget = aMissile.projectileData.q.angularVelocity.Length() * timeToTarget;
             m_debugData->DebugPushUILineDecimalNumber("radiansToTarget ", radiansToTarget, "");
+            
             if (radiansToTarget > 0.000001f || radiansToTarget < -0.000001f)
             {
                 DirectX::SimpleMath::Quaternion counterAngularMomentum = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(aMissile.projectileData.q.angularVelocity, -radiansToTarget);
@@ -3395,8 +3400,12 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
                 vecToTarget = estimatedVecToTarget;
                 vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, aMissile.projectileData.alignmentQuat);
                 vecToTarget.Normalize();
+                m_debugData->PushDebugLine(aMissile.projectileData.q.position, vecToTarget, 40.0f, 0.0f, DirectX::Colors::Red);
             }
-
+            else
+            {
+                m_debugData->PushDebugLine(aMissile.projectileData.q.position, vecToTarget, 40.0f, 0.0f, DirectX::Colors::Lime);
+            }
 
 
             aMissile.guidance.heading = vecToTarget;
