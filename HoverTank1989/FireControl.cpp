@@ -3325,14 +3325,19 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::UnitX;
             heading = DirectX::SimpleMath::Vector3::Transform(heading, rotToTarget);
             heading = DirectX::SimpleMath::Vector3::Transform(heading, aMissile.projectileData.alignmentQuat);
-            m_debugData->PushDebugLine(aMissile.projectileData.q.position, heading, 30.0f, 0.0f, DirectX::Colors::Red);
+            //m_debugData->PushDebugLine(aMissile.projectileData.q.position, heading, 30.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.projectileData.forward, 30.0f, 0.0f, DirectX::Colors::Blue);
 
+            localizedPredictedPosition = DirectX::SimpleMath::Vector3::Transform(localizedPredictedPosition, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(180.0f)));
             DirectX::SimpleMath::Vector3 worldPredictedPostion = localizedPredictedPosition;
             worldPredictedPostion = DirectX::SimpleMath::Vector3::Transform(worldPredictedPostion, aMissile.projectileData.alignmentQuat);
             worldPredictedPostion += aMissile.projectileData.q.position;
 
-            m_debugData->PushDebugLinePositionIndicator(worldPredictedPostion, 25.0f, 0.0f, DirectX::Colors::Red);
+            worldPredictedPostion.Normalize();
+            m_debugData->PushDebugLine(aMissile.projectileData.q.position, worldPredictedPostion, 30.0f, 0.0f, DirectX::Colors::Red);
+            aMissile.guidance.heading = worldPredictedPostion;
+            m_debugData->PushDebugLinePositionIndicator(worldPredictedPostion, 250.0f, 0.0f, DirectX::Colors::Red);
+
         }
     }
 }
