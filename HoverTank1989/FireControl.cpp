@@ -132,7 +132,7 @@ void FireControl::CheckCollisionsMissile()
         }
         else if (m_environment->GetIsPosInPlay(m_missileVec[i].projectileData.q.position) == false)
         {
-            m_missileVec[i].projectileData.isDeleteTrue = true;
+            //m_missileVec[i].projectileData.isDeleteTrue = true;
         }
     }
 }
@@ -2686,7 +2686,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     velocityUpdate += airResistance;
-    velocityUpdate += gravForce;
+    //velocityUpdate += gravForce;
 
     if (aProjectile->guidance.isRocketFired == true)
     {
@@ -3333,11 +3333,29 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             worldPredictedPostion = DirectX::SimpleMath::Vector3::Transform(worldPredictedPostion, aMissile.projectileData.alignmentQuat);
             worldPredictedPostion += aMissile.projectileData.q.position;
 
+            m_debugData->PushDebugLinePositionIndicator(worldPredictedPostion, 40.0f, 0.0f, DirectX::Colors::Purple);
+
             worldPredictedPostion.Normalize();
             m_debugData->PushDebugLine(aMissile.projectileData.q.position, worldPredictedPostion, 30.0f, 0.0f, DirectX::Colors::Red);
             aMissile.guidance.heading = worldPredictedPostion;
             m_debugData->PushDebugLinePositionIndicator(worldPredictedPostion, 250.0f, 0.0f, DirectX::Colors::Red);
 
+
+            testHeading = DirectX::SimpleMath::Vector3::UnitX;
+            testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(15.0f)));
+            testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
+
+            testHeading = aMissile.projectileData.forward;
+            testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(aMissile.projectileData.up, Utility::ToRadians(45.0f)));
+            //testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
+
+            testHeading = aMissile.projectileData.q.position - aMissile.guidance.targetDestination;
+            testHeading = aMissile.guidance.targetDestination - aMissile.projectileData.q.position;
+            testHeading.Normalize();
+            aMissile.guidance.heading = testHeading;
+
+            //m_debugData->DebugClearUI();
+            m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.heading, 300.0f, 0.0f, DirectX::Colors::Red);
         }
     }
 }

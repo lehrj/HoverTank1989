@@ -129,7 +129,7 @@ struct MissileStruct
 struct MissileConsts
 {
     //const float steeringForceMax = 0.2f;
-    const float steeringForceMax = Utility::ToRadians(180.0f);
+    const float steeringForceMax = Utility::ToRadians(10.0f);
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
 };
@@ -351,7 +351,7 @@ private:
     ExplosionStruct m_explosionStruct;
 
     const float m_projectileLifeTimeMax = 10.0f;
-    const float m_missileLifeTimeMax = 25.0f;
+    const float m_missileLifeTimeMax = 45.0f;
 
     std::vector<ProjectileData> m_projectileVec;
     std::vector<ProjectileData> m_newProjectilePushVec;

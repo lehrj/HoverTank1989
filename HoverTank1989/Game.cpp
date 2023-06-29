@@ -1717,6 +1717,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.Y)
     {
+        /*
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SPRINGCAMERA)
         {
             m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWVEHICLE);
@@ -1728,6 +1729,19 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         else
         {
             m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERA);
+        }
+        */
+        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SNAPCAM)
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
+        }
+        else if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+        }
+        else
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
         }
     }
     if (m_kbStateTracker.pressed.F1)
