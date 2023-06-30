@@ -325,10 +325,13 @@ private:
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
+
+    void TestFunc(const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
@@ -358,6 +361,7 @@ private:
     std::vector<MissileData> m_missileVec;
 
     float m_testTimer = 0.0f;
+    float m_testTimer2 = 0.0f;
 
     float m_coolDownTimer = 0.0f;
     bool m_isCoolDownActive = false;
