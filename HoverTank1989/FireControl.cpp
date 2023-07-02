@@ -3867,7 +3867,7 @@ void FireControl::TestFunc(const float aTimeDelta)
     lookQuat.Normalize();
 
     DirectX::SimpleMath::Vector3 vehicleForward = m_playerVehicle->GetForward();
-    const float maxAngle = Utility::ToRadians(180.0f);
+    const float maxAngle = Utility::ToRadians(45.0f);
     DirectX::SimpleMath::Quaternion targetQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
     //DirectX::SimpleMath::Quaternion targetQuat = DirectX::SimpleMath::Quaternion::Identity;
     targetQuat.RotateTowards(lookQuat, maxAngle);
@@ -3883,8 +3883,42 @@ void FireControl::TestFunc(const float aTimeDelta)
     targetLine2 = DirectX::SimpleMath::Vector3::Transform(targetLine2, targetQuat2);
 
     //m_debugData->PushDebugLine(m_playerVehicle->GetPos(), targetLine, 25.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLine(m_playerVehicle->GetPos() + (m_playerVehicle->GetForward() * 15.0f), targetLine, 25.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLine(m_playerVehicle->GetPos() + (m_playerVehicle->GetForward() * 15.0f), targetLine2, 25.0f, 2.0f, DirectX::Colors::SeaGreen);
+    //m_debugData->PushDebugLine(m_playerVehicle->GetPos() + (m_playerVehicle->GetForward() * 15.0f), targetLine, 25.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLine(m_playerVehicle->GetPos() + (m_playerVehicle->GetForward() * 15.0f), targetLine2, 25.0f, 2.0f, DirectX::Colors::SeaGreen);
 
-    
+    DirectX::SimpleMath::Quaternion invAlignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
+    invAlignmentQuat.Normalize();
+    invAlignmentQuat.Inverse(invAlignmentQuat);
+
+    DirectX::SimpleMath::Vector3 vecForward = m_playerVehicle->GetForward();
+    vecForward.Normalize();
+    vecForward = DirectX::SimpleMath::Vector3::Transform(vecForward, invAlignmentQuat);
+
+    targPos = DirectX::SimpleMath::Vector3(100.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 vecToTarget= targPos - m_playerVehicle->GetPos();
+    vecToTarget.Normalize();
+    vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, invAlignmentQuat);
+
+    DirectX::SimpleMath::Quaternion q;
+    DirectX::SimpleMath::Vector3 a = vecForward.Cross(vecToTarget);
+    q.x = a.x;
+    q.y = a.y;
+    q.z = a.z;
+    q.w = sqrt((vecForward.Length() * vecForward.Length()) * (vecToTarget.Length() * vecToTarget.Length())) + vecForward.Dot(vecToTarget);
+    q.Normalize();
+
+    DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
+    alignmentQuat.Normalize();
+    alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
+    alignmentQuat.RotateTowards(q, maxAngle);
+
+    DirectX::SimpleMath::Vector3 testForward = m_playerVehicle->GetForward();
+    testForward = DirectX::SimpleMath::Vector3::Transform(testForward, alignmentQuat);
+    m_debugData->PushDebugLine(m_playerVehicle->GetPos(), testForward, 35.0f, 1.0f, DirectX::Colors::Yellow);
+
+
+    DirectX::SimpleMath::Vector3 testForward2 = DirectX::SimpleMath::Vector3::UnitX;
+    testForward2 = DirectX::SimpleMath::Vector3::Transform(testForward2, alignmentQuat);
+    testForward2 = DirectX::SimpleMath::Vector3::Transform(testForward2, DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment()));
+    m_debugData->PushDebugLine(m_playerVehicle->GetPos(), testForward2, 35.0f, 2.0f, DirectX::Colors::Red);
 }
