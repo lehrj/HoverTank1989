@@ -326,6 +326,7 @@ private:
     void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance5(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
