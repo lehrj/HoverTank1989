@@ -314,6 +314,10 @@ public:
 
     float GetAccel() const { return m_heli.testAccel; };
     DirectX::SimpleMath::Vector3 GetAccelVec() const { return m_heli.testAccelVec; };
+    
+    DirectX::SimpleMath::Vector3 GetAngularVelocity() const { return m_heli.q.angularVelocity; };
+    DirectX::SimpleMath::Quaternion GetAngularQuatStep() const { return m_angQuatStep; };
+
     float GetAirSpeed() { return m_heli.q.velocity.Length(); };
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_heli.alignment; };
     float GetAltitude() const { return m_heli.q.position.y - m_heli.terrainHightAtPos; };
@@ -550,5 +554,7 @@ private:
 
     const float m_testMOI = 1000.0f;
     const float m_testTorque = 1000.0f;
+
+    DirectX::SimpleMath::Quaternion m_angQuatStep = DirectX::SimpleMath::Quaternion::Identity;
 };
 

@@ -3755,7 +3755,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         }
     }
 
-    //TestFunc(aTimeDelta);
+    TestFunc(aTimeDelta);
 }
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)
@@ -3897,6 +3897,27 @@ void FireControl::TestFunc(const float aTimeDelta)
     vecToTarget.Normalize();
     vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, invAlignmentQuat);
 
+    DirectX::SimpleMath::Vector3 angularVelocity = m_playerVehicle->GetAngularVelocity();
+    DirectX::SimpleMath::Quaternion angQuatStep = m_playerVehicle->GetAngularQuatStep();
+    angQuatStep *= invAlignmentQuat;
+    
+    float angleDif = DirectX::SimpleMath::Quaternion::Angle(angQuatStep, DirectX::SimpleMath::Quaternion::Identity);
+    m_debugData->DebugPushUILineDecimalNumber("angleDif rad = ", angleDif, "");
+    m_debugData->DebugPushUILineDecimalNumber("angleDif deg = ", Utility::ToDegrees(angleDif), "");
+
+    DirectX::SimpleMath::Quaternion angQuatStep2 = angQuatStep;
+    //angQuatStep *= aTimeDelta;
+    //angQuatStep2.Normalize();
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep.x  ", angQuatStep.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.x ", angQuatStep2.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep.y  ", angQuatStep.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.y ", angQuatStep2.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep.z  ", angQuatStep.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.z ", angQuatStep2.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep.w  ", angQuatStep.w, "");
+    m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.w ", angQuatStep2.w, "");
+    //vecForward = DirectX::SimpleMath::Vector3::Transform(vecForward, angQuatStep);
+
     DirectX::SimpleMath::Quaternion q;
     DirectX::SimpleMath::Vector3 a = vecForward.Cross(vecToTarget);
     q.x = a.x;
@@ -3905,10 +3926,15 @@ void FireControl::TestFunc(const float aTimeDelta)
     q.w = sqrt((vecForward.Length() * vecForward.Length()) * (vecToTarget.Length() * vecToTarget.Length())) + vecForward.Dot(vecToTarget);
     q.Normalize();
 
+    q *= angQuatStep;
+    q.Normalize();
+
     DirectX::SimpleMath::Quaternion alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
     alignmentQuat.Normalize();
     alignmentQuat = DirectX::SimpleMath::Quaternion::Identity;
     alignmentQuat.RotateTowards(q, maxAngle);
+
+    //m_debugData->DebugClearUI();
 
     DirectX::SimpleMath::Vector3 testForward = m_playerVehicle->GetForward();
     testForward = DirectX::SimpleMath::Vector3::Transform(testForward, alignmentQuat);
@@ -4002,7 +4028,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             DirectX::SimpleMath::Vector3 targPos = aMissile.guidance.targetPosition;
             m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, targPos, DirectX::Colors::Green);
 
-            DirectX::SimpleMath::Vector3 targetOffset = aMissile.projectileData.q.velocity * (timeToTarget * 0.3f);
+            DirectX::SimpleMath::Vector3 targetOffset = aMissile.projectileData.q.velocity * (timeToTarget * 0.35f);
             targPos -= targetOffset;
             //targPos.y += dropDistance;
 

@@ -2419,6 +2419,7 @@ void Vehicle::ToggleFireControlLaser()
 
 void Vehicle::UpdateAlignment(const float aTimeDelta)
 {
+    DirectX::SimpleMath::Quaternion prevAlignQuat = m_heli.alignmentQuat;
     DirectX::SimpleMath::Quaternion updateAlignQuat;
     updateAlignQuat.x = m_heli.q.angularVelocity.x;
     updateAlignQuat.y = m_heli.q.angularVelocity.y;
@@ -2451,6 +2452,9 @@ void Vehicle::UpdateAlignment(const float aTimeDelta)
 
     m_heli.cameraOrientation = DirectX::XMMatrixLookAtRH(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
     m_heli.cameraOrientation = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_heli.right, m_heli.up);
+
+    m_angQuatStep = m_heli.alignmentQuat / prevAlignQuat;
+    m_angQuatStep.Normalize();
 }
 
 void Vehicle::UpdateAlignmentCamera()
