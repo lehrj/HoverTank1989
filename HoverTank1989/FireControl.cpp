@@ -3908,7 +3908,8 @@ void FireControl::TestFunc(const float aTimeDelta)
     DirectX::SimpleMath::Quaternion angQuatStep2 = angQuatStep;
     //angQuatStep *= aTimeDelta;
     //angQuatStep2.Normalize();
-    m_debugData->DebugPushUILineDecimalNumber("angQuatStep.x  ", angQuatStep.x, "");
+    
+    /*m_debugData->DebugPushUILineDecimalNumber("angQuatStep.x  ", angQuatStep.x, "");
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.x ", angQuatStep2.x, "");
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep.y  ", angQuatStep.y, "");
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.y ", angQuatStep2.y, "");
@@ -3916,6 +3917,7 @@ void FireControl::TestFunc(const float aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.z ", angQuatStep2.z, "");
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep.w  ", angQuatStep.w, "");
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.w ", angQuatStep2.w, "");
+    */
     //vecForward = DirectX::SimpleMath::Vector3::Transform(vecForward, angQuatStep);
 
     DirectX::SimpleMath::Quaternion q;
