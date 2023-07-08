@@ -3969,7 +3969,6 @@ void FireControl::TestFunc(const float aTimeDelta)
     */
 }
 
-
 void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta)
 {
     if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
