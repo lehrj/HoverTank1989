@@ -3755,7 +3755,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         }
     }
 
-    TestFunc(aTimeDelta);
+    //TestFunc(aTimeDelta);
 }
 
 void FireControl::UpdateProjectileVec(double aTimeDelta)
