@@ -954,9 +954,9 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
 
 void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
-    DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
-    DirectX::SimpleMath::Vector4 plumeColor(1.0f, 0.0f, 0.0f, 1.0f);
-
+    const DirectX::SimpleMath::Vector4 projectileColor = m_ammoMissile.modelData.bodyColor;
+    const DirectX::SimpleMath::Vector4 plumeColor = m_ammoMissile.modelData.plumeColor;
+    const DirectX::SimpleMath::Vector4 testColor = m_ammoMissile.modelData.testColor;
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
         DirectX::SimpleMath::Matrix projMat = m_ammoMissile.modelData.localBodyMatrix;
@@ -976,6 +976,12 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
 
         m_ammoMissile.modelData.mainBodyShape->Draw(projMat, aView, aProj, projectileColor);
+
+        // nose cone
+        DirectX::SimpleMath::Matrix noseConeProjMat = m_ammoMissile.modelData.localNoseConeMatrix;
+        noseConeProjMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        noseConeProjMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.noseConeShape->Draw(noseConeProjMat, aView, aProj, projectileColor);
 
         if (m_missileVec[i].guidance.isRocketFired == true)
         {
@@ -2592,6 +2598,14 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.modelData.localBodyMatrix = aAmmo.modelData.worldBodyMatrix;
 
+    // nose cone
+    aAmmo.modelData.noseConeShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoDiameter);
+    aAmmo.modelData.localNoseConeMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Vector3 noseConeTranslation = DirectX::SimpleMath::Vector3(ammoLength * 0.5f, 0.0f, 0.0f);
+    aAmmo.modelData.localNoseConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    aAmmo.modelData.worldNoseConeMatrix = aAmmo.modelData.localNoseConeMatrix;
+
+    // rocket plume
     const float plumeLength = aAmmo.ammoData.length * 0.5f;
     aAmmo.modelData.rocketPlumeShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoDiameter, plumeLength);
 

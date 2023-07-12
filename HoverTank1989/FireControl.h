@@ -104,9 +104,18 @@ struct ProjectileData
 
 struct MissileModel
 {
+    // colors
+    const DirectX::SimpleMath::Vector4 bodyColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix worldBodyMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    noseConeShape;
+    DirectX::SimpleMath::Matrix localNoseConeMatrix;
+    DirectX::SimpleMath::Matrix worldNoseConeMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShape;
     DirectX::SimpleMath::Matrix localPlumeMatrix;
