@@ -125,6 +125,15 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    tailFinShape;
     DirectX::SimpleMath::Matrix localTailFinMatrix1;
     DirectX::SimpleMath::Matrix tailFinTranslation1;
+
+    DirectX::SimpleMath::Matrix localTailFinMatrix2;
+    DirectX::SimpleMath::Matrix tailFinTranslation2;
+
+    DirectX::SimpleMath::Matrix localTailFinMatrix3;
+    DirectX::SimpleMath::Matrix tailFinTranslation3;
+
+    DirectX::SimpleMath::Matrix localTailFinMatrix4;
+    DirectX::SimpleMath::Matrix tailFinTranslation4;
 };
 
 struct MissileData
