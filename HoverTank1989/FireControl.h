@@ -109,6 +109,10 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
+    // consts
+    const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
+    const float finDeployTime = 0.4f;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix worldBodyMatrix;
@@ -134,6 +138,7 @@ struct MissileModel
 
     DirectX::SimpleMath::Matrix localTailFinMatrix4;
     DirectX::SimpleMath::Matrix tailFinTranslation4;
+
 };
 
 struct MissileData
