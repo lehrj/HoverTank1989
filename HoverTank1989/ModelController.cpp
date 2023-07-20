@@ -135,7 +135,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetLightDirection(1, defaultLightDir1);
     aEffect->SetLightDirection(2, defaultLightDir2);
 
-    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
+    //aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
   
     aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
         {
@@ -152,7 +152,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
                 lights->SetLightDirection(2, defaultLightDir2);
             }
         });
-    aModel.turretModel->Modified();
+    //aModel.turretModel->Modified();
 
     aEffect->SetLightDirection(0, defaultLightDir0);
     aEffect->SetLightDirection(1, defaultLightDir1);

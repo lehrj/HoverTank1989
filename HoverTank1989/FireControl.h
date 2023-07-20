@@ -139,6 +139,18 @@ struct MissileModel
     DirectX::SimpleMath::Matrix localTailFinMatrix4;
     DirectX::SimpleMath::Matrix tailFinTranslation4;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    wingFinShape;
+    DirectX::SimpleMath::Matrix localWingFinMatrix1;
+    DirectX::SimpleMath::Matrix tailWingTranslation1;
+
+    DirectX::SimpleMath::Matrix localWingFinMatrix2;
+    DirectX::SimpleMath::Matrix tailWingTranslation2;
+
+    DirectX::SimpleMath::Matrix localWingFinMatrix3;
+    DirectX::SimpleMath::Matrix tailWingTranslation3;
+
+    DirectX::SimpleMath::Matrix localWingFinMatrix4;
+    DirectX::SimpleMath::Matrix tailWingTranslation4;
 };
 
 struct MissileData

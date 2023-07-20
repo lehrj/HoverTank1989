@@ -1033,7 +1033,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
         tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat2, aView, aProj, testColor);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat2, aView, aProj, projectileColor);
 
         // tail fins3
         DirectX::SimpleMath::Matrix tailFinProjMat3 = DirectX::SimpleMath::Matrix::Identity;
@@ -1043,7 +1043,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
         tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat3, aView, aProj, testColor);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat3, aView, aProj, projectileColor);
 
         // tail fins4
         DirectX::SimpleMath::Matrix tailFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
@@ -1053,8 +1053,18 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
         tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat4, aView, aProj, testColor);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat4, aView, aProj, projectileColor);
 
+        // wing fins
+        DirectX::SimpleMath::Matrix wingFinProjMat1 = DirectX::SimpleMath::Matrix::Identity;
+
+        wingFinProjMat1 *= m_ammoMissile.modelData.localWingFinMatrix1;
+        wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
+        wingFinProjMat1 *= m_ammoMissile.modelData.tailWingTranslation1;
+
+        wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat1, aView, aProj, testColor);
 
     }
 }
@@ -2718,6 +2728,20 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.localTailFinMatrix4 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.modelData.localTailFinMatrix4 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     aAmmo.modelData.tailFinTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-ammoLength * 0.4f, 0.0f, -aAmmo.ammoData.radius));
+
+    // wing fins
+    const float wingFinLength = aAmmo.ammoData.length * 0.3f;
+    const float wingFinWidth = wingFinLength * 0.2f;
+    const DirectX::SimpleMath::Vector3 wingFinDimensions = DirectX::SimpleMath::Vector3(wingFinLength, wingFinWidth, wingFinWidth * 0.3f);
+    aAmmo.modelData.wingFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingFinDimensions);
+
+    DirectX::SimpleMath::Vector3 wingFinTranslation1 = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+    aAmmo.modelData.tailWingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(wingFinTranslation1);
+    aAmmo.modelData.localWingFinMatrix1 = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.modelData.localWingFinMatrix1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wingFinLength * 0.5f, 0.0f, 0.0f));
+    aAmmo.modelData.localWingFinMatrix1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    //aAmmo.modelData.tailWingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-ammoLength * 0.4f, aAmmo.ammoData.radius, 0.0f));
+    aAmmo.modelData.tailWingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, aAmmo.ammoData.radius, 0.0f));
 }
 
 void FireControl::InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
@@ -2887,7 +2911,7 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
     DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
 
     q.velocity += velocityUpdate;
-    q.position += posUpdate;
+    //q.position += posUpdate;
     q.angularMomentum += angularMomentumUpdate;
     q.angularVelocity += angularVelocityUpdate;
 
