@@ -111,6 +111,7 @@ struct MissileModel
 
     // consts
     const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
+    const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
     const float finDeployTime = 0.4f;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;

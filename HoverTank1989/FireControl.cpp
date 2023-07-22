@@ -985,6 +985,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
         //float finDeployAngle = m_missileVec[i].projectileData.time;
         float finDeployAngle = Utility::ToRadians(-90.0f);
+        float wingFinDeployAngle = Utility::ToRadians(-90.0f);
         if (m_missileVec[i].guidance.isRocketFired == true)
         {
             DirectX::SimpleMath::Quaternion thrustRotQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-m_missileVec[i].projectileData.forward, -m_missileVec[i].guidance.heading);
@@ -1003,23 +1004,20 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             {
                 float finDeployPercent = (m_missileVec[i].projectileData.time - m_missileConsts.rocketFireDelay) / (m_ammoMissile.modelData.finDeployTime);
                 finDeployAngle += m_ammoMissile.modelData.tailFinDeployAngleMax * finDeployPercent;
+                wingFinDeployAngle += m_ammoMissile.modelData.wingFinDeployAngleMax * finDeployPercent;
             }
             else
             {
                 finDeployAngle += m_ammoMissile.modelData.tailFinDeployAngleMax;
+                wingFinDeployAngle += m_ammoMissile.modelData.wingFinDeployAngleMax;
             }
         }
 
         // tail fins
-        //DirectX::SimpleMath::Matrix tailFinProjMat1 = m_ammoMissile.modelData.localTailFinMatrix1;
         DirectX::SimpleMath::Matrix tailFinProjMat1 = DirectX::SimpleMath::Matrix::Identity;
-        
         tailFinProjMat1 *= m_ammoMissile.modelData.localTailFinMatrix1;
-        //tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_testTimer);
         tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
         tailFinProjMat1 *= m_ammoMissile.modelData.tailFinTranslation1;
-        //tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f));
-
         tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat1, aView, aProj, projectileColor);
@@ -1054,7 +1052,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         // wing fins
         DirectX::SimpleMath::Matrix wingFinProjMat1 = DirectX::SimpleMath::Matrix::Identity;
         wingFinProjMat1 *= m_ammoMissile.modelData.localWingFinMatrix1;
-        wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
+        wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(wingFinDeployAngle);
         wingFinProjMat1 *= m_ammoMissile.modelData.tailWingTranslation1;
         wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
@@ -1063,7 +1061,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         // wing fin 2
         DirectX::SimpleMath::Matrix wingFinProjMat2 = DirectX::SimpleMath::Matrix::Identity;
         wingFinProjMat2 *= m_ammoMissile.modelData.localWingFinMatrix2;
-        wingFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(-finDeployAngle);
+        wingFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(-wingFinDeployAngle);
         wingFinProjMat2 *= m_ammoMissile.modelData.tailWingTranslation2;
         wingFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
@@ -1072,7 +1070,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         // wing fin 3
         DirectX::SimpleMath::Matrix wingFinProjMat3 = DirectX::SimpleMath::Matrix::Identity;
         wingFinProjMat3 *= m_ammoMissile.modelData.localWingFinMatrix3;
-        wingFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateRotationY(-finDeployAngle);
+        wingFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateRotationY(-wingFinDeployAngle);
         wingFinProjMat3 *= m_ammoMissile.modelData.tailWingTranslation3;
         wingFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
@@ -1081,7 +1079,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         // wing fin 4
         DirectX::SimpleMath::Matrix wingFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
         wingFinProjMat4 *= m_ammoMissile.modelData.localWingFinMatrix4;
-        wingFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationY(finDeployAngle);
+        wingFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationY(wingFinDeployAngle);
         wingFinProjMat4 *= m_ammoMissile.modelData.tailWingTranslation4;
         wingFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
