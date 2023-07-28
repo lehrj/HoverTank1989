@@ -2623,7 +2623,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     DirectX::SimpleMath::Matrix wingScale = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(10.0f, 1.0f, 1.0f));
     DirectX::SimpleMath::Matrix wingScale2 = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.3f, 0.05f, 1.0f));
     //DirectX::SimpleMath::Matrix wingScale2 = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
-    const float posOffset = -0.7f;
+    const float posOffset = -0.6f;
     const float wingOffset = (2.0f * 1.1f) * 0.5f;
     const DirectX::SimpleMath::Matrix localWingTrans = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -0.5f, 0.0f));
     DirectX::SimpleMath::Vector3 wingFinTranslation1 = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
@@ -2641,7 +2641,8 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.localWingFinMatrix1 *= wingScale2;
     //aAmmo.modelData.localWingFinMatrix1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, aAmmo.ammoData.radius, 0.0f));
-    aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, aAmmo.ammoData.radius + posOffset, 0.0f));
+    const float mainWingLongPos = 0.2f;
+    aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, aAmmo.ammoData.radius + posOffset, 0.0f));
 
     // wing fin 2
     aAmmo.modelData.localWingFinMatrix2 = DirectX::SimpleMath::Matrix::Identity;
@@ -2654,7 +2655,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.localWingFinMatrix2 *= localWingTrans;
     //aAmmo.modelData.localWingFinMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.modelData.wingTranslation2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -aAmmo.ammoData.radius, 0.0f));
-    aAmmo.modelData.wingTranslation2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, - aAmmo.ammoData.radius - posOffset, 0.0f));
+    aAmmo.modelData.wingTranslation2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, - aAmmo.ammoData.radius - posOffset, 0.0f));
 
     // wing fin 3
     aAmmo.modelData.localWingFinMatrix3 = DirectX::SimpleMath::Matrix::Identity;
@@ -2665,7 +2666,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.localWingFinMatrix3 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     //aAmmo.modelData.localWingFinMatrix3 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     aAmmo.modelData.wingTranslation3 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, aAmmo.ammoData.radius));
-    aAmmo.modelData.wingTranslation3 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, - aAmmo.ammoData.radius - posOffset));
+    aAmmo.modelData.wingTranslation3 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, 0.0f, - aAmmo.ammoData.radius - posOffset));
 
     // wing fin 4
     aAmmo.modelData.localWingFinMatrix4 = DirectX::SimpleMath::Matrix::Identity;
@@ -2676,7 +2677,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.localWingFinMatrix4 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     //aAmmo.modelData.localWingFinMatrix4 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     aAmmo.modelData.wingTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -aAmmo.ammoData.radius));
-    aAmmo.modelData.wingTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, aAmmo.ammoData.radius + posOffset));
+    aAmmo.modelData.wingTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, 0.0f, aAmmo.ammoData.radius + posOffset));
 
     DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 5.0));
     /*
@@ -2740,10 +2741,10 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
             projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
             m_ammoMissile.modelData.rocketPlumeShape->Draw(projMat, aView, aProj, plumeColor);
-
-            if (m_missileVec[i].projectileData.time <= m_missileConsts.rocketFireDelay + m_ammoMissile.modelData.finDeployTime)
+            /*
+            if (m_missileVec[i].projectileData.time <= m_missileConsts.rocketFireDelay + m_missileConsts.finDeployTime)
             {
-                float finDeployPercent = (m_missileVec[i].projectileData.time - m_missileConsts.rocketFireDelay) / (m_ammoMissile.modelData.finDeployTime);
+                float finDeployPercent = (m_missileVec[i].projectileData.time - m_missileConsts.rocketFireDelay) / (m_missileConsts.finDeployTime);
                 finDeployAngle += m_ammoMissile.modelData.tailFinDeployAngleMax * finDeployPercent;
                 wingFinDeployAngle += m_ammoMissile.modelData.wingFinDeployAngleMax * finDeployPercent;
             }
@@ -2752,6 +2753,23 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
                 finDeployAngle += m_ammoMissile.modelData.tailFinDeployAngleMax;
                 wingFinDeployAngle += m_ammoMissile.modelData.wingFinDeployAngleMax;
             }
+            */
+        }
+
+        if (m_missileVec[i].guidance.isFinsDeployEnd == false)
+        {
+            if (m_missileVec[i].projectileData.time >= m_missileConsts.finDeployDelay)
+            {
+                //float finDeployPercent = (m_missileVec[i].projectileData.time - m_missileConsts.rocketFireDelay) / (m_missileConsts.finDeployTime);
+                float finDeployPercent = (m_missileVec[i].projectileData.time - m_missileConsts.finDeployDelay) / (m_missileConsts.finDeployTime);
+                finDeployAngle += m_ammoMissile.modelData.tailFinDeployAngleMax * finDeployPercent;
+                wingFinDeployAngle += m_ammoMissile.modelData.wingFinDeployAngleMax * finDeployPercent;
+            }
+        }
+        else
+        {
+            finDeployAngle += m_ammoMissile.modelData.tailFinDeployAngleMax;
+            wingFinDeployAngle += m_ammoMissile.modelData.wingFinDeployAngleMax;
         }
 
         // tail fins
@@ -4226,7 +4244,14 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
     {
         aMissile.guidance.isRocketFired = true;
     }
-
+    if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay)
+    {
+        aMissile.guidance.isFinsDeployStarted = true;
+    }
+    if (aMissile.guidance.isFinsDeployEnd == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay + m_missileConsts.finDeployTime)
+    {
+        aMissile.guidance.isFinsDeployEnd = true;
+    }
     if (aMissile.guidance.isRocketFired == true)
     {
         if (aMissile.guidance.isTargetLocked == true)

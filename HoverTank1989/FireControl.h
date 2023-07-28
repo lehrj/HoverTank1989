@@ -65,6 +65,8 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
     float targetDistance = 0.0f;
+    bool isFinsDeployStarted = false;
+    bool isFinsDeployEnd = false;
     bool isRocketFired = false;
     bool isTargetLocked = false;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
@@ -112,7 +114,7 @@ struct MissileModel
     // consts
     const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
     const float wingFinDeployAngleMax = Utility::ToRadians(100.0f);
-    const float finDeployTime = 0.7f;
+    //const float finDeployTime = 0.7f;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
     DirectX::SimpleMath::Matrix localBodyMatrix;
@@ -170,8 +172,10 @@ struct MissileConsts
 {
     //const float steeringForceMax = 0.2f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
+    const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
+    const float finDeployTime = 0.7f;
 };
 
 enum class ExplosionType
