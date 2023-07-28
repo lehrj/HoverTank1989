@@ -111,8 +111,8 @@ struct MissileModel
 
     // consts
     const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
-    const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
-    const float finDeployTime = 0.4f;
+    const float wingFinDeployAngleMax = Utility::ToRadians(100.0f);
+    const float finDeployTime = 0.7f;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
     DirectX::SimpleMath::Matrix localBodyMatrix;
@@ -142,16 +142,16 @@ struct MissileModel
 
     std::unique_ptr<DirectX::GeometricPrimitive>    wingFinShape;
     DirectX::SimpleMath::Matrix localWingFinMatrix1;
-    DirectX::SimpleMath::Matrix tailWingTranslation1;
+    DirectX::SimpleMath::Matrix wingTranslation1;
 
     DirectX::SimpleMath::Matrix localWingFinMatrix2;
-    DirectX::SimpleMath::Matrix tailWingTranslation2;
+    DirectX::SimpleMath::Matrix wingTranslation2;
 
     DirectX::SimpleMath::Matrix localWingFinMatrix3;
-    DirectX::SimpleMath::Matrix tailWingTranslation3;
+    DirectX::SimpleMath::Matrix wingTranslation3;
 
     DirectX::SimpleMath::Matrix localWingFinMatrix4;
-    DirectX::SimpleMath::Matrix tailWingTranslation4;
+    DirectX::SimpleMath::Matrix wingTranslation4;
 };
 
 struct MissileData
@@ -395,7 +395,7 @@ private:
     ExplosionStruct m_explosionStruct;
 
     const float m_projectileLifeTimeMax = 10.0f;
-    const float m_missileLifeTimeMax = 45.0f;
+    const float m_missileLifeTimeMax = 51.0f;
 
     std::vector<ProjectileData> m_projectileVec;
     std::vector<ProjectileData> m_newProjectilePushVec;
@@ -426,6 +426,8 @@ private:
 
     const float m_missileMass = 10.0f;
     const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
+
+    float m_testRot = 0.0f;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
