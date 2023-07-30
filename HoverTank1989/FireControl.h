@@ -176,6 +176,7 @@ struct MissileConsts
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
     const float finDeployTime = 0.7f;
+    const float rockFireFullTime = 1.0f;
 };
 
 enum class ExplosionType
