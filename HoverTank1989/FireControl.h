@@ -72,6 +72,13 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
 
     float forwardThrust = 0.0f;
+
+    float finAngle1 = 0.0f;
+    float finAngle2 = 0.0f;
+    float finAngle3 = 0.0f;
+    float finAngle4 = 0.0f;
+    float throttlePercentage = 0.0f;
+    bool isRocketPlumeFlickerTrue = false;
 };
 
 struct AmmoStruct
@@ -176,7 +183,7 @@ struct MissileConsts
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
     const float finDeployTime = 0.7f;
-    const float rockFireFullTime = 1.0f;
+    const float rocketFireFullTime = 1.0f;
 };
 
 enum class ExplosionType
@@ -400,7 +407,7 @@ private:
     ExplosionStruct m_explosionStruct;
 
     const float m_projectileLifeTimeMax = 10.0f;
-    const float m_missileLifeTimeMax = 51.0f;
+    const float m_missileLifeTimeMax = 151.0f;
 
     std::vector<ProjectileData> m_projectileVec;
     std::vector<ProjectileData> m_newProjectilePushVec;
@@ -433,6 +440,8 @@ private:
     const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
 
     float m_testRot = 0.0f;
+    float m_testRot2 = 0.0f;
+    DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
