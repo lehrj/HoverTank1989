@@ -79,6 +79,8 @@ struct GuidanceSystem
     float finAngle4 = 0.0f;
     float throttlePercentage = 0.0f;
     bool isRocketPlumeFlickerTrue = false;
+
+    DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
@@ -177,13 +179,13 @@ struct MissileStruct
 
 struct MissileConsts
 {
-    //const float steeringForceMax = 0.2f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
     const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 1.0f;
+    const float wingArea = 2.0f;
 };
 
 enum class ExplosionType
@@ -379,6 +381,9 @@ private:
     void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance5(MissileData& aMissile, const float aTimeDelta);
+
+    float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);

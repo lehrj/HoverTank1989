@@ -3021,7 +3021,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     velocityUpdate += airResistance;
-    //velocityUpdate += gravForce;
+    velocityUpdate += gravForce;
 
     if (aProjectile->guidance.isRocketFired == true)
     {
@@ -3594,6 +3594,46 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     //aMissile.guidance.forwardThrust *= 0.5f;
 
     aMissile.guidance.forwardThrust = (aMissile.guidance.forwardThrust + (cos(thrustAngle) * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage))) * 0.5f;
+
+    UpdateMissileLiftForce(aMissile, aTimeDelta);
+}
+
+float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta)
+{
+    // calculate angle of attack
+    DirectX::SimpleMath::Vector3 localizedVelocityNorm = aMissile.projectileData.q.velocity;
+    localizedVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localizedVelocityNorm, aMissile.projectileData.inverseAlignmentQuat);
+    localizedVelocityNorm.z = 0.0f;
+    localizedVelocityNorm.Normalize();
+    const float angleOfAttack = Utility::GetAngleBetweenVectors(localizedVelocityNorm, DirectX::SimpleMath::Vector3::UnitX);
+
+
+    return 1.0f;
+}
+
+void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta)
+{
+    const float cL = UpdateMissileLiftCoefficient(aMissile, aTimeDelta);
+    const float airDensity = m_environment->GetAirDensity();
+    const float wingArea = m_missileConsts.wingArea;
+
+    DirectX::SimpleMath::Vector3 worldVelocityNorm = aMissile.projectileData.q.velocity;
+    worldVelocityNorm.Normalize();
+    float velocityDotProd = worldVelocityNorm.Dot(aMissile.projectileData.forward);
+    float velocityLength = aMissile.projectileData.q.velocity.Length();
+
+    float liftF = cL * ((airDensity * (velocityLength * velocityLength)) * 0.5f) * wingArea;
+    DirectX::SimpleMath::Vector3 liftV = cL * ((airDensity * (aMissile.projectileData.q.velocity * aMissile.projectileData.q.velocity)) * 0.5f) * wingArea;
+    float liftVLength = liftV.Length();
+    float rawVelocityLength = aMissile.projectileData.q.velocity.Length();
+
+    DirectX::SimpleMath::Vector3 fowardVelocity = aMissile.projectileData.forward * (velocityDotProd * aMissile.projectileData.q.velocity);
+    DirectX::SimpleMath::Vector3 liftVector = cL * ((airDensity * (fowardVelocity * fowardVelocity)) * 0.5f) * wingArea;
+    float forwardVelocityLength = fowardVelocity.Length();
+    float forwardLength = aMissile.projectileData.forward.Length();
+    float liftVectorLength = liftVector.Length();
+
+    aMissile.guidance.liftForce = liftVector;
 }
 
 void FireControl::UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta)
