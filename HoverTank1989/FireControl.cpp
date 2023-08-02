@@ -3605,10 +3605,60 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     localizedVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localizedVelocityNorm, aMissile.projectileData.inverseAlignmentQuat);
     localizedVelocityNorm.z = 0.0f;
     localizedVelocityNorm.Normalize();
-    const float angleOfAttack = Utility::GetAngleBetweenVectors(localizedVelocityNorm, DirectX::SimpleMath::Vector3::UnitX);
+    float angleOfAttack = Utility::GetAngleBetweenVectors(localizedVelocityNorm, DirectX::SimpleMath::Vector3::UnitX);
+    DirectX::SimpleMath::Vector3 localVelocityNormCross = localizedVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitX);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, localVelocityNormCross, 30.0f, 0.5f, DirectX::Colors::GreenYellow);
+    if (localVelocityNormCross.z < 0.0f)
+    {
+        angleOfAttack *= -1.0f;
+    }
 
+    const float angleMax = Utility::ToRadians(90.0f);
+    const float angleMin = Utility::ToRadians(0.0f);
+    const float currentCurvePos = (angleOfAttack / angleMax);
+    float Cl;
+    float curveDeltaRate;
+    float ClTarget;
+    if (currentCurvePos < 0.666f)
+    {
+        curveDeltaRate = 1.0f;
+        Cl = curveDeltaRate * currentCurvePos;
+    }
+    else if (currentCurvePos < 0.80f)
+    {
+        curveDeltaRate = 1.0f;
+        Cl = curveDeltaRate * currentCurvePos;
+    }
+    else
+    {
+        curveDeltaRate = -0.85f;
+        Cl = curveDeltaRate * currentCurvePos;
+    }
+    // ////////////////////////////
+    const float ClMax = 1.8;
+    const float inflectionPoint = 0.99f;
+    const float curvePos2 = currentCurvePos / inflectionPoint;
+    if (currentCurvePos < inflectionPoint)
+    {
+        curveDeltaRate = 1.0f;
+        Cl = curveDeltaRate * currentCurvePos;
+        ClTarget = 1.5f;
+        ClTarget = curvePos2 * ClMax;
+    }
+    else
+    {
+        float rightBound = 1.3f;
+        float downCurve = rightBound - ClMax;
 
-    return 1.0f;
+        const float curvePos4 = (currentCurvePos - inflectionPoint) / (1.0f - inflectionPoint);
+        float ClRemove = curvePos4 * downCurve;
+        ClTarget = ClMax;
+        ClTarget += ClRemove;
+    }
+    m_debugData->DebugPushUILineDecimalNumber("ClTarget ", ClTarget, "");
+
+    return ClTarget;
+    //return 1.0f;
 }
 
 void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta)
