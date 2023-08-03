@@ -81,6 +81,7 @@ struct GuidanceSystem
     bool isRocketPlumeFlickerTrue = false;
 
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
+    float liftForceFloat = 0.0f;
 };
 
 struct AmmoStruct

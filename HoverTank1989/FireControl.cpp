@@ -2803,7 +2803,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         vertVec.Normalize();
         float vertAng = Utility::GetAngleBetweenVectors(vertVec, DirectX::SimpleMath::Vector3::UnitX);
         DirectX::SimpleMath::Vector3 vertCross = vertVec.Cross(DirectX::SimpleMath::Vector3::UnitX);
-        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, vertCross, 30.0f, 0.0f, DirectX::Colors::Green);
+        
         if (vertCross.z < 0.0f)
         {
             vertAng *= -1.0f;
@@ -2814,7 +2814,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         horzVec.Normalize();
         float horzAng = Utility::GetAngleBetweenVectors(horzVec, DirectX::SimpleMath::Vector3::UnitX);
         DirectX::SimpleMath::Vector3 horzCross = horzVec.Cross(DirectX::SimpleMath::Vector3::UnitX);
-        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, horzCross, 30.0f, 0.0f, DirectX::Colors::Teal);
+        
         if (horzCross.y < 0.0f)
         {
             horzAng *= -1.0f;
@@ -2823,8 +2823,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         m_debugData->DebugPushUILineDecimalNumber("horzVec = ", Utility::ToDegrees(horzAng), "");
         DirectX::SimpleMath::Vector3 testHeadingWorld = localizedHeading;
         testHeadingWorld = DirectX::SimpleMath::Vector3::Transform(testHeadingWorld, m_missileVec[i].projectileData.alignmentQuat);
-        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testHeadingWorld, 20.0f, 0.0f, DirectX::Colors::White);
-
+      
         if (m_missileVec[i].guidance.isFinsDeployEnd == false)
         {
             if (m_missileVec[i].projectileData.time >= m_missileConsts.finDeployDelay)
@@ -2851,11 +2850,6 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         m_missileVec[i].guidance.finAngle2 = (m_missileVec[i].guidance.finAngle2 - horzAng) * 0.5f;
         m_missileVec[i].guidance.finAngle3 = (m_missileVec[i].guidance.finAngle3 + vertAng) * 0.5f;
         m_missileVec[i].guidance.finAngle4 = (m_missileVec[i].guidance.finAngle4 - vertAng) * 0.5f;
-
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.finAngle1 = ", m_missileVec[i].guidance.finAngle1, "");
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.finAngle2 = ", m_missileVec[i].guidance.finAngle2, "");
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.finAngle3 = ", m_missileVec[i].guidance.finAngle3, "");
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.finAngle4 = ", m_missileVec[i].guidance.finAngle4, "");
 
         // tail fins
         DirectX::SimpleMath::Matrix tailFinProjMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -3019,9 +3013,12 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     DirectX::SimpleMath::Vector3 gravForce = (m_environment->GetGravityVec() * mass) * m_gravityMod;
 
+    DirectX::SimpleMath::Vector3 liftForce = aProjectile->projectileData.up * aProjectile->guidance.liftForceFloat;
+
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     velocityUpdate += airResistance;
     velocityUpdate += gravForce;
+    velocityUpdate += liftForce;
 
     if (aProjectile->guidance.isRocketFired == true)
     {
@@ -3607,15 +3604,20 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     localizedVelocityNorm.Normalize();
     float angleOfAttack = Utility::GetAngleBetweenVectors(localizedVelocityNorm, DirectX::SimpleMath::Vector3::UnitX);
     DirectX::SimpleMath::Vector3 localVelocityNormCross = localizedVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitX);
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, localVelocityNormCross, 30.0f, 0.5f, DirectX::Colors::GreenYellow);
+
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, localVelocityNormCross, 30.0f, 0.5f, DirectX::Colors::GreenYellow);
+
     if (localVelocityNormCross.z < 0.0f)
     {
         angleOfAttack *= -1.0f;
     }
+    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack Deg ", Utility::ToDegrees(angleOfAttack), "");
+    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack Rad ", angleOfAttack, "");
 
     const float angleMax = Utility::ToRadians(90.0f);
     const float angleMin = Utility::ToRadians(0.0f);
     const float currentCurvePos = (angleOfAttack / angleMax);
+    m_debugData->DebugPushUILineDecimalNumber("currentCurvePos ", currentCurvePos, "");
     float Cl;
     float curveDeltaRate;
     float ClTarget;
@@ -3655,35 +3657,72 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
         ClTarget = ClMax;
         ClTarget += ClRemove;
     }
-    m_debugData->DebugPushUILineDecimalNumber("ClTarget ", ClTarget, "");
+    m_debugData->DebugPushUILineDecimalNumber("ClTarget ************************** ", ClTarget, "");
+
+
+    ///////////////////////////////////////////////////
+    // Testing lift coefficent calculations
+    const float alphaClMax = 16.0f;
+    float alpha = angleOfAttack;
+    const float clSlope0 = 0.0889f;
+    const float clSlope1 = -0.1f;
+    float cl0 = 0.178; // intercept of Cl-alpha curve
+    float cl1 = 3.2;  // post-stall intercept of Cl-alpha curve
+    float cl;
+
+    if (alpha < alphaClMax)
+    {
+        cl = clSlope0 * alpha + cl0;
+    }
+    else
+    {
+        cl = clSlope1 * alpha + cl1;
+    }
+
+    m_debugData->DebugPushUILineDecimalNumber("cl ======= ", cl, "");
+
+    //return cl;
+    ///////////////////////////////////////////////////
 
     return ClTarget;
-    //return 1.0f;
 }
 
 void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta)
 {
-    const float cL = UpdateMissileLiftCoefficient(aMissile, aTimeDelta);
-    const float airDensity = m_environment->GetAirDensity();
-    const float wingArea = m_missileConsts.wingArea;
+    if (aMissile.guidance.isFinsDeployEnd == false)
+    {
+        aMissile.guidance.liftForce = DirectX::SimpleMath::Vector3::Zero;
+        aMissile.guidance.liftForceFloat = 0.0f;
+    }
+    else
+    {
+        const float cL = UpdateMissileLiftCoefficient(aMissile, aTimeDelta);
+        const float airDensity = m_environment->GetAirDensity();
+        const float wingArea = m_missileConsts.wingArea;
 
-    DirectX::SimpleMath::Vector3 worldVelocityNorm = aMissile.projectileData.q.velocity;
-    worldVelocityNorm.Normalize();
-    float velocityDotProd = worldVelocityNorm.Dot(aMissile.projectileData.forward);
-    float velocityLength = aMissile.projectileData.q.velocity.Length();
+        DirectX::SimpleMath::Vector3 worldVelocityNorm = aMissile.projectileData.q.velocity;
+        worldVelocityNorm.Normalize();
+        float velocityDotProd = worldVelocityNorm.Dot(aMissile.projectileData.forward);
+        float velocityLength = aMissile.projectileData.q.velocity.Length();
 
-    float liftF = cL * ((airDensity * (velocityLength * velocityLength)) * 0.5f) * wingArea;
-    DirectX::SimpleMath::Vector3 liftV = cL * ((airDensity * (aMissile.projectileData.q.velocity * aMissile.projectileData.q.velocity)) * 0.5f) * wingArea;
-    float liftVLength = liftV.Length();
-    float rawVelocityLength = aMissile.projectileData.q.velocity.Length();
+        float liftF = cL * ((airDensity * (velocityLength * velocityLength)) * 0.5f) * wingArea;
+        DirectX::SimpleMath::Vector3 liftV = cL * ((airDensity * (aMissile.projectileData.q.velocity * aMissile.projectileData.q.velocity)) * 0.5f) * wingArea;
+        float liftVLength = liftV.Length();
+        float rawVelocityLength = aMissile.projectileData.q.velocity.Length();
 
-    DirectX::SimpleMath::Vector3 fowardVelocity = aMissile.projectileData.forward * (velocityDotProd * aMissile.projectileData.q.velocity);
-    DirectX::SimpleMath::Vector3 liftVector = cL * ((airDensity * (fowardVelocity * fowardVelocity)) * 0.5f) * wingArea;
-    float forwardVelocityLength = fowardVelocity.Length();
-    float forwardLength = aMissile.projectileData.forward.Length();
-    float liftVectorLength = liftVector.Length();
+        DirectX::SimpleMath::Vector3 fowardVelocity = aMissile.projectileData.forward * (velocityDotProd * aMissile.projectileData.q.velocity);
+        DirectX::SimpleMath::Vector3 liftVector = cL * ((airDensity * (fowardVelocity * fowardVelocity)) * 0.5f) * wingArea;
+        float forwardVelocityLength = fowardVelocity.Length();
+        float forwardLength = aMissile.projectileData.forward.Length();
+        float liftVectorLength = liftVector.Length();
+        //m_debugData->DebugClearUI();
+        m_debugData->DebugPushUILineDecimalNumber("liftVectorLength ", liftVectorLength, "");
+        m_debugData->DebugPushUILineDecimalNumber("liftF             ", liftF, "");
+        //m_debugData->PushDebugLine(aMissile.projectileData.q.position, liftVector, 35.0f, 0.3f, DirectX::Colors::Orange);
 
-    aMissile.guidance.liftForce = liftVector;
+        aMissile.guidance.liftForce = liftVector;
+        aMissile.guidance.liftForceFloat = liftF;
+    }
 }
 
 void FireControl::UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta)
@@ -4480,8 +4519,8 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             targPos -= targetOffset;
             //targPos.y += dropDistance;
 
-            m_debugData->PushDebugLinePositionIndicator(targPos, 40.0f, 0.0f, DirectX::Colors::White);
-            m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, targPos, DirectX::Colors::Blue);
+            //m_debugData->PushDebugLinePositionIndicator(targPos, 40.0f, 0.0f, DirectX::Colors::White);
+            //m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, targPos, DirectX::Colors::Blue);
 
             //DirectX::SimpleMath::Vector3 vecToTarget = targPos - m_playerVehicle->GetPos();
             DirectX::SimpleMath::Vector3 vecToTarget = targPos - aMissile.projectileData.q.position;
