@@ -3013,7 +3013,8 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     DirectX::SimpleMath::Vector3 gravForce = (m_environment->GetGravityVec() * mass) * m_gravityMod;
 
-    DirectX::SimpleMath::Vector3 liftForce = aProjectile->projectileData.up * aProjectile->guidance.liftForceFloat;
+    //DirectX::SimpleMath::Vector3 liftForce = aProjectile->projectileData.up * aProjectile->guidance.liftForceFloat;
+    DirectX::SimpleMath::Vector3 liftForce = aProjectile->guidance.liftForce;
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     velocityUpdate += airResistance;
@@ -3657,7 +3658,7 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
         ClTarget = ClMax;
         ClTarget += ClRemove;
     }
-    m_debugData->DebugPushUILineDecimalNumber("ClTarget ************************** ", ClTarget, "");
+    m_debugData->DebugPushUILineDecimalNumber("ClTarget ****************** ", ClTarget, "");
 
 
     ///////////////////////////////////////////////////
@@ -3683,6 +3684,10 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
 
     //return cl;
     ///////////////////////////////////////////////////
+    if (ClTarget < 0.0f)
+    {
+        ClTarget = 0.0f;
+    }
 
     return ClTarget;
 }
@@ -3711,16 +3716,28 @@ void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTim
         float rawVelocityLength = aMissile.projectileData.q.velocity.Length();
 
         DirectX::SimpleMath::Vector3 fowardVelocity = aMissile.projectileData.forward * (velocityDotProd * aMissile.projectileData.q.velocity);
+        DirectX::SimpleMath::Vector3 lineOfFlight = aMissile.projectileData.q.velocity;
         DirectX::SimpleMath::Vector3 liftVector = cL * ((airDensity * (fowardVelocity * fowardVelocity)) * 0.5f) * wingArea;
+        DirectX::SimpleMath::Vector3 liftVectorLoF = cL * ((airDensity * (lineOfFlight * lineOfFlight)) * 0.5f) * wingArea;
         float forwardVelocityLength = fowardVelocity.Length();
         float forwardLength = aMissile.projectileData.forward.Length();
         float liftVectorLength = liftVector.Length();
         //m_debugData->DebugClearUI();
         m_debugData->DebugPushUILineDecimalNumber("liftVectorLength ", liftVectorLength, "");
         m_debugData->DebugPushUILineDecimalNumber("liftF             ", liftF, "");
+        m_debugData->DebugPushUILineDecimalNumber("liftVectorLoF.L   ", liftVectorLoF.Length(), "");
         //m_debugData->PushDebugLine(aMissile.projectileData.q.position, liftVector, 35.0f, 0.3f, DirectX::Colors::Orange);
+        //m_debugData->PushDebugLine(aMissile.projectileData.q.position, liftVectorLoF, 35.0f, 0.3f, DirectX::Colors::Lime);
 
-        aMissile.guidance.liftForce = liftVector;
+        DirectX::SimpleMath::Vector3 chordLine = aMissile.projectileData.right;
+        DirectX::SimpleMath::Vector3 liftLine = chordLine.Cross(worldVelocityNorm);
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, liftLine, 35.0f, 0.3f, DirectX::Colors::Violet);
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, chordLine, 35.0f, 0.3f, DirectX::Colors::Lime);
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, worldVelocityNorm, 35.0f, 0.3f, DirectX::Colors::Orange);
+        liftLine *= abs(liftF);
+
+        //aMissile.guidance.liftForce = liftVector;
+        aMissile.guidance.liftForce = liftLine;
         aMissile.guidance.liftForceFloat = liftF;
     }
 }
@@ -4545,7 +4562,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             DirectX::SimpleMath::Vector3 testForward = aMissile.projectileData.forward;
             testForward = DirectX::SimpleMath::Vector3::Transform(testForward, alignmentQuat);
             //m_debugData->PushDebugLine(m_playerVehicle->GetPos(), testForward, 35.0f, 1.0f, DirectX::Colors::Yellow);
-            m_debugData->PushDebugLine(aMissile.projectileData.q.position, testForward, 35.0f, 1.0f, DirectX::Colors::Yellow);
+            //m_debugData->PushDebugLine(aMissile.projectileData.q.position, testForward, 35.0f, 1.0f, DirectX::Colors::Yellow);
 
             alignmentQuat.Inverse(alignmentQuat);
 
