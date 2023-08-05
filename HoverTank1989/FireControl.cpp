@@ -3658,7 +3658,7 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
         ClTarget = ClMax;
         ClTarget += ClRemove;
     }
-    m_debugData->DebugPushUILineDecimalNumber("ClTarget ****************** ", ClTarget, "");
+    m_debugData->DebugPushUILineDecimalNumber("ClTarget ******** ", ClTarget, "");
 
 
     ///////////////////////////////////////////////////
@@ -3687,8 +3687,9 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     if (ClTarget < 0.0f)
     {
         ClTarget = 0.0f;
+        //ClTarget *= -1.0f;
     }
-
+    ClTarget = 1.0f;
     return ClTarget;
 }
 
@@ -3739,6 +3740,28 @@ void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTim
         //aMissile.guidance.liftForce = liftVector;
         aMissile.guidance.liftForce = liftLine;
         aMissile.guidance.liftForceFloat = liftF;
+
+
+        float testLift = liftF;
+        if (testLift < 0.0f)
+        {
+            testLift *= 1.0f;
+        }
+        if (testLift > 100.0f)
+        {
+            testLift = 100.0f;
+        }
+        aMissile.guidance.liftForce = testLift * DirectX::SimpleMath::Vector3::UnitY;
+        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.L   ", aMissile.guidance.liftForce.Length(), "");
+        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.x   ", aMissile.guidance.liftForce.x, "");
+        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.y   ", aMissile.guidance.liftForce.y, "");
+        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.z   ", aMissile.guidance.liftForce.z, "");
+
+        if (aMissile.guidance.liftForce.y < 0.0f)
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
     }
 }
 
