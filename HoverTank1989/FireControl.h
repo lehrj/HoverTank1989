@@ -180,13 +180,14 @@ struct MissileStruct
 
 struct MissileConsts
 {
+    const float detonationRange = 10.0f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
     const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 1.0f;
-    const float wingArea = 2.0f;
+    const float wingArea = 0.3f;
 };
 
 enum class ExplosionType

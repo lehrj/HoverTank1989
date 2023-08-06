@@ -115,16 +115,21 @@ void FireControl::CheckCollisionsMissile()
         unsigned int vehicleHitId = 0;
         bool isHitTrue;
 
-        isHitTrue = m_npcController->CheckProjectileCollisions(m_missileVec[i].projectileData.collisionData, vehicleHitId, true);
+        //isHitTrue = m_npcController->CheckProjectileCollisions(m_missileVec[i].projectileData.collisionData, vehicleHitId, true);
+        isHitTrue = m_npcController->CheckProjectileCollisionsMissile(m_missileVec[i].projectileData.collisionData, vehicleHitId, true, m_missileVec[i].guidance.targetID, m_missileConsts.detonationRange);
 
         if (isHitTrue == true)
         {
+            /*
             m_missileVec[i].projectileData.isCollisionTrue = true;
             m_missileVec[i].projectileData.liveTimeTick--;
             if (m_missileVec[i].projectileData.liveTimeTick <= 0)
             {
                 m_missileVec[i].projectileData.isDeleteTrue = true;
             }
+            */
+            CreateExplosion(m_missileVec[i].projectileData.q.position, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
+            m_missileVec[i].projectileData.isDeleteTrue = true;
         }
         else if (m_missileVec[i].projectileData.time > m_missileLifeTimeMax)
         {
@@ -2819,8 +2824,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         {
             horzAng *= -1.0f;
         }
-        m_debugData->DebugPushUILineDecimalNumber("vertAng = ", Utility::ToDegrees(vertAng), "");
-        m_debugData->DebugPushUILineDecimalNumber("horzVec = ", Utility::ToDegrees(horzAng), "");
+
         DirectX::SimpleMath::Vector3 testHeadingWorld = localizedHeading;
         testHeadingWorld = DirectX::SimpleMath::Vector3::Transform(testHeadingWorld, m_missileVec[i].projectileData.alignmentQuat);
       
@@ -3545,9 +3549,6 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 {
     float thrustAngle = Utility::GetAngleBetweenVectors(aMissile.guidance.heading, aMissile.projectileData.forward);
     float rotationThrustForce = sin(thrustAngle) * m_missileConsts.rocketBoostForceMax;
-    
-    m_debugData->DebugPushUILineDecimalNumber("thrustAngle = ", thrustAngle, "");
-    m_debugData->DebugPushUILineDecimalNumber("rotationThrustForce = ", rotationThrustForce, "");
 
     // Update rocket throttle value
     float rocketThrottle;
@@ -3612,12 +3613,11 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     {
         angleOfAttack *= -1.0f;
     }
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack Deg ", Utility::ToDegrees(angleOfAttack), "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack Rad ", angleOfAttack, "");
 
     const float angleMax = Utility::ToRadians(90.0f);
     const float angleMin = Utility::ToRadians(0.0f);
     const float currentCurvePos = (angleOfAttack / angleMax);
+    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack ", Utility::ToDegrees(angleOfAttack), "");
     m_debugData->DebugPushUILineDecimalNumber("currentCurvePos ", currentCurvePos, "");
     float Cl;
     float curveDeltaRate;
@@ -3637,6 +3637,7 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
         curveDeltaRate = -0.85f;
         Cl = curveDeltaRate * currentCurvePos;
     }
+    m_debugData->DebugPushUILineDecimalNumber("Cl ******** ", Cl, "");
     // ////////////////////////////
     const float ClMax = 1.8;
     const float inflectionPoint = 0.99f;
@@ -3658,6 +3659,7 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
         ClTarget = ClMax;
         ClTarget += ClRemove;
     }
+    m_debugData->DebugPushUILineDecimalNumber("Cl ******** ", Cl, "");
     m_debugData->DebugPushUILineDecimalNumber("ClTarget ******** ", ClTarget, "");
 
 
@@ -3682,7 +3684,7 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
 
     m_debugData->DebugPushUILineDecimalNumber("cl ======= ", cl, "");
 
-    //return cl;
+    return cl;
     ///////////////////////////////////////////////////
     if (ClTarget < 0.0f)
     {
@@ -3690,7 +3692,7 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
         //ClTarget *= -1.0f;
     }
     ClTarget = 1.0f;
-    return ClTarget;
+    //return ClTarget;
 }
 
 void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta)
@@ -3745,18 +3747,17 @@ void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTim
         float testLift = liftF;
         if (testLift < 0.0f)
         {
-            testLift *= 1.0f;
+            testLift *= -1.0f;
         }
         if (testLift > 100.0f)
         {
             testLift = 100.0f;
         }
         aMissile.guidance.liftForce = testLift * DirectX::SimpleMath::Vector3::UnitY;
+        
         m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.L   ", aMissile.guidance.liftForce.Length(), "");
-        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.x   ", aMissile.guidance.liftForce.x, "");
-        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.y   ", aMissile.guidance.liftForce.y, "");
-        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.z   ", aMissile.guidance.liftForce.z, "");
 
+        
         if (aMissile.guidance.liftForce.y < 0.0f)
         {
             int testBreak = 0;
@@ -4585,7 +4586,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             DirectX::SimpleMath::Vector3 testForward = aMissile.projectileData.forward;
             testForward = DirectX::SimpleMath::Vector3::Transform(testForward, alignmentQuat);
             //m_debugData->PushDebugLine(m_playerVehicle->GetPos(), testForward, 35.0f, 1.0f, DirectX::Colors::Yellow);
-            //m_debugData->PushDebugLine(aMissile.projectileData.q.position, testForward, 35.0f, 1.0f, DirectX::Colors::Yellow);
+            m_debugData->PushDebugLine(aMissile.projectileData.q.position, testForward, 35.0f, 1.0f, DirectX::Colors::Yellow);
 
             alignmentQuat.Inverse(alignmentQuat);
 

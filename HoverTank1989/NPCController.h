@@ -36,6 +36,7 @@ public:
     
     bool CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSphere, const double aTimeDelta, const float aRemainingDuration);
     bool CheckProjectileCollisions(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive);
+    bool CheckProjectileCollisionsMissile(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive, const int aTargetId, const float aDetonationRange);
     int CheckTargetingLaser(DirectX::SimpleMath::Ray aRay);
     void DebugToggleAI();
     void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);

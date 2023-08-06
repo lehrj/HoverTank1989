@@ -346,6 +346,88 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
     return isCollisionTrue;
 }
 
+bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive, const int aTargetId, const float aDetonationRange)
+{
+    bool isCollisionTrue = false;
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aTargetId)
+        {
+            if (DirectX::SimpleMath::Vector3::Distance(aProjectile.collisionSphere.Center, m_npcVec[i]->GetPos()) < aDetonationRange)
+            {
+                isCollisionTrue = true;
+            }
+        }
+        else if (DirectX::SimpleMath::Vector3::Distance(aProjectile.collisionSphere.Center, m_npcVec[i]->GetPos()) < m_npcVec[i]->GetCollisionDetectionRange())
+        {
+            if (m_npcVec[i]->GetCollisionData().Intersects(aProjectile.collisionSphere) == true || m_npcVec[i]->GetCollisionData().Contains(aProjectile.collisionSphere) == true)
+            {
+                m_npcVec[i]->SetCollisionVal(true);
+                if (aIsExplosive == true)
+                {
+                    m_npcVec[i]->SetExplosionTrue();
+                    m_fireControl->PushVehicleExplosion(m_npcVec[i]->GetPos(), m_npcVec[i]->GetID());
+                }
+
+                /*
+                Utility::ImpactForce projectileForce;
+                projectileForce.impactModifier = aProjectile.collisionMagnitudeMod;
+                projectileForce.impactMass = aProjectile.mass;
+                projectileForce.impactVelocity = aProjectile.velocity;
+                m_npcVec[i]->CalculateImpulseForceFromProjectile(projectileForce, aProjectile.collisionSphere.Center);
+                */
+
+                Utility::ImpulseForce impulseToVec;
+                impulseToVec.currentMagnitude = 0.0f;
+                impulseToVec.currentTime = 0.0f;
+                impulseToVec.directionNorm = aProjectile.velocity;
+                impulseToVec.directionNorm.Normalize();
+                impulseToVec.isActive = true;
+                float impactVelocity = aProjectile.velocity.Length();
+                impulseToVec.maxMagnitude = (0.5f * aProjectile.mass * aProjectile.velocity * aProjectile.velocity).Length();
+                impulseToVec.maxMagnitude *= aProjectile.collisionMagnitudeMod;
+                impulseToVec.torqueArm = aProjectile.collisionSphere.Center - m_npcVec[i]->GetCenterOfMass();
+                impulseToVec.torqueArm *= m_fireControl->GetExplosiveTorqueArmMod();
+                impulseToVec.torqueForceNorm = impulseToVec.directionNorm;
+                const float velocityF = aProjectile.velocity.Length();
+                if (velocityF != 0.0f)
+                {
+                    impulseToVec.totalTime = (aProjectile.collisionDurationMod) / aProjectile.velocity.Length();
+                }
+                else
+                {
+                    const float tol = 0.01f;
+                    impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
+                }
+                impulseToVec.totalTime = 0.1f;
+                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
+                //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
+                //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
+                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
+
+                impulseToVec.forceSum = (aProjectile.mass * impactVelocity);
+                impulseToVec.forceRemaining = impulseToVec.forceSum;
+                float forceByDistance = (1.0f / (2.0f * 1.0f)) * aProjectile.mass * (impactVelocity * impactVelocity);
+                float collisionTime = 1.0f / impactVelocity;
+                float forceByTime = (aProjectile.mass * impactVelocity) / impulseToVec.totalTime;
+                float forceByTime2 = (aProjectile.mass * impactVelocity) / collisionTime;
+                //impulseToVec.maxMagnitude = forceByTime2;
+                //impulseToVec.totalTime = collisionTime;
+                m_npcVec[i]->PushImpulseForce(impulseToVec);
+
+                float testDuration1 = (aProjectile.collisionSphere.Radius * 1.0f) / aProjectile.velocity.Length();
+                float testDuration2 = (aProjectile.collisionSphere.Radius * 2.0f) / aProjectile.velocity.Length();
+                float testDuration3 = (aProjectile.collisionSphere.Radius * 3.0f) / aProjectile.velocity.Length();
+                float testDuration4 = (aProjectile.collisionSphere.Radius * 4.0f) / aProjectile.velocity.Length();
+
+                isCollisionTrue = true;
+                aVehicleHitId = m_npcVec[i]->GetID();
+            }
+        }
+    }
+    return isCollisionTrue;
+}
+
 int NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay)
 {
     bool isTargetHit = false;
