@@ -59,7 +59,9 @@ void FireControl::CastRayLaser()
     DirectX::SimpleMath::Ray laserRay = DirectX::SimpleMath::Ray(m_playerVehicle->GetMuzzlePos(), m_playerVehicle->GetWeaponDirection());
     bool isTargetHit = false;
     float distanceToTarget = 0.0f;
-    int targetID = m_npcController->CheckTargetingLaser(laserRay);
+    int targetID = m_npcController->CheckTargetingLaser(laserRay, distanceToTarget);
+    m_playerLaser.distance = distanceToTarget;
+    m_debugData->DebugPushUILineWholeNumber("m_playerLaser.distance = ", m_playerLaser.distance, "");
     m_debugData->DebugPushUILineWholeNumber("targetID = ", targetID, "");
     m_currentTargetID = targetID;
 }
@@ -955,6 +957,7 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
     }
     DrawProjectiles(aView, aProj);
     DrawMissiles(aView, aProj, aEffect, aInputLayout);
+    DrawLaser(aView, aProj, aEffect, aInputLayout);
 }
 
 void FireControl::DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
@@ -1069,6 +1072,45 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     //m_muzzleFlash.muzzleFlashConeShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetBiasedVertexNormals(false);
+}
+
+void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    if (m_isTargetingLaserOn == true)
+    {
+        float scale = m_playerLaser.distance;
+        DirectX::SimpleMath::Matrix updateMat = m_playerVehicle->GetAlignment();
+        updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetPos());
+
+        const float testRot = Utility::WrapAngle(m_playerLaser.flickerRot + m_playerLaser.flickerRate);
+        m_playerLaser.flickerRot = testRot;
+        const float scaleTransOffset = (m_playerLaser.distance) * 0.5f;
+        DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
+        //DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(-scale, scale, -scale));
+        DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, scale, 1.0f));
+        DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
+
+        m_playerLaser.worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+        //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.1f * -scale, 0.0f));
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
+        //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.2f, 0.0f));
+        m_playerLaser.worldBodyMatrix *= scaleMat;
+        m_playerLaser.worldBodyMatrix *= scaleTransOffsetMat;
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+
+        //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetMuzzlePos());
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
+        m_playerLaser.worldBodyMatrix *= updateMat;
+
+
+        aEffect->EnableDefaultLighting();
+        aEffect->SetWorld(m_playerLaser.worldBodyMatrix);
+        aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+        m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
+    }
 }
 
 void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta)
@@ -2466,6 +2508,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     InitializeProjectileModelMachineGun(aContext, m_ammoMachineGun);
     InitializeProjectileModelMirv(aContext, m_ammoMirv);
     InitializeProjectileModelShotgun(aContext, m_ammoShotgun);
+    InitializeLaserModel(aContext, m_playerLaser);
     InitializeLauncherData(m_launcherData, aLaunchPos, aLaunchDirection);
 }
 
@@ -2697,6 +2740,20 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.wingTranslation4 = testMat;
     */
 }
+
+void FireControl::InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel)
+{
+    const float length = 1.0f;
+    const float diameter = 0.2f;
+    aLazerModel.laserShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), length, diameter,6);
+    aLazerModel.localBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Vector3 transMat = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    aLazerModel.translationMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aLazerModel.localBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
+    aLazerModel.localBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(transMat);
+    aLazerModel.worldBodyMatrix = aLazerModel.localBodyMatrix;
+}
+
 
 void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {

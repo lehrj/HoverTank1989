@@ -287,6 +287,21 @@ struct MuzzleFlash
     float baseConeDiameter = 0.3f;
 };
 
+struct LaserModel
+{
+    // colors
+    const DirectX::SimpleMath::Vector4 laserColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 1.0f, 1.0f);
+    float distance = 0.0f;
+    float flickerRot = 0.0f;
+    const float flickerRate = 0.7f;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    laserShape;
+    DirectX::SimpleMath::Matrix localBodyMatrix;
+    DirectX::SimpleMath::Matrix worldBodyMatrix;
+    DirectX::SimpleMath::Matrix translationMatrix;
+};
+
 class FireControl
 {
 public:
@@ -346,6 +361,7 @@ private:
 
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
@@ -367,8 +383,11 @@ private:
     void InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
-    void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     
+    void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
+
+    void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
+
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
@@ -407,11 +426,12 @@ private:
     AmmoStruct m_ammoMirv;
     AmmoStruct m_ammoShotgun;
 
-    MissileStruct m_ammoMissile;
+    ExplosionStruct m_explosionStruct;
 
+    MissileStruct m_ammoMissile;
     MissileConsts m_missileConsts;
 
-    ExplosionStruct m_explosionStruct;
+    LaserModel m_playerLaser;
 
     const float m_projectileLifeTimeMax = 10.0f;
     const float m_missileLifeTimeMax = 151.0f;

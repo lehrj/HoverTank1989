@@ -428,7 +428,7 @@ bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aPr
     return isCollisionTrue;
 }
 
-int NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay)
+int NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay,float& aDistance)
 {
     bool isTargetHit = false;
     float distanceToTarget = 10000.0f;
@@ -466,8 +466,8 @@ int NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay)
         }
     }
 
-    m_debugData->PushDebugLine(aRay.position, aRay.direction, distanceToTarget, 0.0f, DirectX::Colors::Red);
-
+    //m_debugData->PushDebugLine(aRay.position, aRay.direction, distanceToTarget, 0.0f, DirectX::Colors::Red);
+    aDistance = distanceToTarget;
     return targetID;
 }
 void NPCController::DebugToggleAI()
