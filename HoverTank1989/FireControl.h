@@ -296,7 +296,10 @@ struct LaserModel
     float flickerRot = 0.0f;
     const float flickerRate = 0.7f;
 
+    bool isFlickerTrue = false;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    laserShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    laserShape2;
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix worldBodyMatrix;
     DirectX::SimpleMath::Matrix translationMatrix;
