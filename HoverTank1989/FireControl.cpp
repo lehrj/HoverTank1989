@@ -86,7 +86,7 @@ void FireControl::CheckCollisions()
         {
             if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE || m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_MIRV)
             {
-                CreateExplosion(m_projectileVec[i].q.position, ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE, static_cast<unsigned int>(vehicleHitId));
+                CreateExplosion(m_projectileVec[i].q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE, static_cast<unsigned int>(vehicleHitId));
             }
             m_projectileVec[i].isCollisionTrue = true;
             m_projectileVec[i].liveTimeTick--;
@@ -103,7 +103,7 @@ void FireControl::CheckCollisions()
         {
             if (m_projectileVec[i].ammoData.ammoType == AmmoType::AMMOTYPE_EXPLOSIVE)
             {
-                CreateExplosion(m_projectileVec[i].q.position, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
+                CreateExplosion(m_projectileVec[i].q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
             }
             m_projectileVec[i].isDeleteTrue = true;
         }   
@@ -114,13 +114,22 @@ void FireControl::CheckCollisionsMissile()
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        unsigned int vehicleHitId = 0;
+        unsigned int vehicleHitId = -1;
         bool isHitTrue;
+        bool isProximityDetonationTrue = false; 
+        isHitTrue = m_npcController->CheckProjectileCollisionsMissile(m_missileVec[i].projectileData.collisionData, vehicleHitId, true, m_missileVec[i].guidance.targetID, m_missileConsts.detonationRange, isProximityDetonationTrue);
 
-        //isHitTrue = m_npcController->CheckProjectileCollisions(m_missileVec[i].projectileData.collisionData, vehicleHitId, true);
-        isHitTrue = m_npcController->CheckProjectileCollisionsMissile(m_missileVec[i].projectileData.collisionData, vehicleHitId, true, m_missileVec[i].guidance.targetID, m_missileConsts.detonationRange);
-
-        if (isHitTrue == true)
+        if (isProximityDetonationTrue == true)
+        {
+            CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+            m_missileVec[i].projectileData.isDeleteTrue = true;
+        }
+        else if (vehicleHitId != -1 && isHitTrue == true)
+        {
+            CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE, vehicleHitId);
+            m_missileVec[i].projectileData.isDeleteTrue = true;
+        }
+        else if (isHitTrue == true)
         {
             /*
             m_missileVec[i].projectileData.isCollisionTrue = true;
@@ -130,7 +139,7 @@ void FireControl::CheckCollisionsMissile()
                 m_missileVec[i].projectileData.isDeleteTrue = true;
             }
             */
-            CreateExplosion(m_missileVec[i].projectileData.q.position, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
+            CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
             m_missileVec[i].projectileData.isDeleteTrue = true;
         }
         else if (m_missileVec[i].projectileData.time > m_missileLifeTimeMax)
@@ -144,7 +153,7 @@ void FireControl::CheckCollisionsMissile()
     }
 }
 
-void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId)
+void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId)
 {
     ExplosionData createdExplosion;
     createdExplosion.position = aPos;
@@ -201,6 +210,12 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, Explo
         DirectX::SimpleMath::Vector3 posOnVehicleSurface = aPos - m_npcController->GetNpcPos(aVehicleId);
         posOnVehicleSurface = DirectX::SimpleMath::Vector3::Transform(posOnVehicleSurface, vehicleAlignment);
         createdExplosion.localizedSurfaceExplosionPos = posOnVehicleSurface;
+    }
+    else if (aExplosionType == ExplosionType::EXPLOSIONTYPE_DYNAMIC)
+    {
+        createdExplosion.explosionType = ExplosionType::EXPLOSIONTYPE_DYNAMIC;
+        createdExplosion.velocity = aVelocity;
+        createdExplosion.vehicleExplosionID = -1;
     }
     else
     {
@@ -3331,6 +3346,11 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
                 m_explosionStruct.explosionVec[i].localExplosionMatrix = DirectX::SimpleMath::Matrix::CreateWorld(updatedExplosionPos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
             }
 
+            if (m_explosionStruct.explosionVec[i].explosionType == ExplosionType::EXPLOSIONTYPE_DYNAMIC)
+            {
+
+            }
+
             //upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));
             const float rotMin = 0.0f;
             const float rotMax = DirectX::XM_2PI;
@@ -3493,7 +3513,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
     for (unsigned int i = 0; i < m_explosionStruct.explosionToPushVec.size(); ++i)
     {
-        CreateExplosion(get<0>(m_explosionStruct.explosionToPushVec[i]), ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL, get<1>(m_explosionStruct.explosionToPushVec[i]));
+        CreateExplosion(get<0>(m_explosionStruct.explosionToPushVec[i]), DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL, get<1>(m_explosionStruct.explosionToPushVec[i]));
     }
     m_explosionStruct.explosionToPushVec.clear();
 

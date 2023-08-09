@@ -346,9 +346,10 @@ bool NPCController::CheckProjectileCollisions(Utility::CollisionData& aProjectil
     return isCollisionTrue;
 }
 
-bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive, const int aTargetId, const float aDetonationRange)
+bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aProjectile, unsigned int& aVehicleHitId, const bool aIsExplosive, const int aTargetId, const float aDetonationRange, bool& aIsProximityDetonationTrue)
 {
     bool isCollisionTrue = false;
+    bool isProximityTrue = false;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         if (m_npcVec[i]->GetID() == aTargetId)
@@ -356,6 +357,7 @@ bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aPr
             if (DirectX::SimpleMath::Vector3::Distance(aProjectile.collisionSphere.Center, m_npcVec[i]->GetPos()) < aDetonationRange)
             {
                 isCollisionTrue = true;
+                isProximityTrue = true;
             }
         }
         else if (DirectX::SimpleMath::Vector3::Distance(aProjectile.collisionSphere.Center, m_npcVec[i]->GetPos()) < m_npcVec[i]->GetCollisionDetectionRange())
@@ -425,6 +427,7 @@ bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aPr
             }
         }
     }
+    aIsProximityDetonationTrue = isCollisionTrue;
     return isCollisionTrue;
 }
 

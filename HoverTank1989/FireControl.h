@@ -192,6 +192,7 @@ struct MissileConsts
 
 enum class ExplosionType
 {
+    EXPLOSIONTYPE_DYNAMIC,
     EXPLOSIONTYPE_NONVEHICLE,
     EXPLOSIONTYPE_VEHICLESURFACE,
     EXPLOSIONTYPE_VEHICLEINTERNAL,
@@ -231,7 +232,7 @@ struct ExplosionData
     int vehicleExplosionID = -1;
     float maxRadius;
     DirectX::SimpleMath::Vector3 position;
-
+    DirectX::SimpleMath::Vector3 velocity = DirectX::SimpleMath::Vector3::Zero;
     ExplosionType explosionType;
 
     double totalDuration;
@@ -347,7 +348,7 @@ public:
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
     void CastRayLaser();
-    void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, ExplosionType aExplosionType, const int aVehicleId);
+    void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void CheckCollisionsMissile();
     void DeleteMissileFromVec(const unsigned int aIndex);
