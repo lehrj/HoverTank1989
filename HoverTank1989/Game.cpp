@@ -1830,7 +1830,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->ResetVehicle();
+            m_fireControl->DetonateAllMissiles();
+            //m_vehicle->ResetVehicle();
         }
     }
     if (m_kbStateTracker.pressed.U)

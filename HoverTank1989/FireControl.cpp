@@ -150,6 +150,11 @@ void FireControl::CheckCollisionsMissile()
         {
             //m_missileVec[i].projectileData.isDeleteTrue = true;
         }
+        else if(m_missileVec[i].guidance.isSelfDestructTrue == true)
+        {
+            CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+            m_missileVec[i].projectileData.isDeleteTrue = true;
+        }
     }
 }
 
@@ -715,6 +720,14 @@ void FireControl::DeployMirv3(ProjectileData& aProjectile)
     float pitchValDegFinal = Utility::ToDegrees(pitchOrg);
 
     aProjectile.isDeleteTrue = true;
+}
+
+void FireControl::DetonateAllMissiles()
+{
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+    {
+        m_missileVec[i].guidance.isSelfDestructTrue = true;
+    }
 }
 
 void FireControl::DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
@@ -3307,6 +3320,55 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     //m_debugData->DebugPushUILineWholeNumber("m_currentTargetID = ", m_currentTargetID, "");
 }
 
+void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta)
+{
+    Utility::MotionObj obj;
+    obj.time = aExplosion.currentDuration;
+    obj.q.angularVelocity = DirectX::SimpleMath::Vector3::Zero;
+    obj.q.position = aExplosion.position;
+    obj.q.velocity = aExplosion.velocity;
+
+    const float explosiveMass = 4.0f;
+    obj.mass = explosiveMass;
+    //sphere
+    float radius = aExplosion.currentRadius;
+    obj.inverseInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
+    obj.inverseInertiaMatrix._11 = (2.0f / 3.0f) * (obj.mass) * (radius * radius);
+    obj.inverseInertiaMatrix._22 = (2.0f / 3.0f) * (obj.mass) * (radius * radius);
+    obj.inverseInertiaMatrix._33 = (2.0f / 3.0f) * (obj.mass) * (radius * radius);
+    obj.inverseInertiaMatrix = obj.inverseInertiaMatrix.Invert();
+
+    DirectX::SimpleMath::Vector3 linearForceSum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 gravForce = (m_environment->GetGravityVec() * obj.mass) * m_gravityMod;
+    linearForceSum += gravForce;
+
+    //  Compute the total drag force.
+    const float airDensity = m_environment->GetAirDensity();
+    const float dragCoefficient = 0.5f;
+    float frontSurfaceArea = radius * radius;
+    float velocity = obj.q.velocity.Length();
+    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
+    DirectX::SimpleMath::Vector3 velocityNorm = obj.q.velocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
+
+    DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
+    linearDragSum += airResistance;
+
+    obj.linearAccumulated = linearForceSum;
+    obj.linearDrag;
+    obj.torqueAccumulated = DirectX::SimpleMath::Vector3::Zero;
+    obj.torqueDrag = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::RungeKutta(&obj, aTimeDelta);
+    aExplosion.position = obj.q.position;
+    aExplosion.velocity = obj.q.velocity;
+
+    const DirectX::SimpleMath::Vector3 updatedPos = obj.q.position;
+    aExplosion.collisionSphere.Center = updatedPos;
+    aExplosion.localExplosionMatrix = DirectX::SimpleMath::Matrix::CreateWorld(updatedPos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+}
+
 void FireControl::UpdateExplosionVec(double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
@@ -3348,7 +3410,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
             if (m_explosionStruct.explosionVec[i].explosionType == ExplosionType::EXPLOSIONTYPE_DYNAMIC)
             {
-
+                UpdateDynamicExplosive(m_explosionStruct.explosionVec[i], aTimeDelta);
             }
 
             //upAxisRot = static_cast <float> ((rand()) / (static_cast <float> (RAND_MAX / chokeAngle)) - (0.5f * chokeAngle));

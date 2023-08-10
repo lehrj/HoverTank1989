@@ -976,6 +976,97 @@ public:
         aDir3 = DirectX::SimpleMath::Vector3::TransformNormal(aDir3, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, Utility::ToRadians(240.0f)));
     }
 
+    struct MotionData
+    {
+        DirectX::SimpleMath::Vector3 position = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 velocity = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
+    };
+
+    struct MotionObj
+    {
+        MotionData q;
+        float mass;
+        DirectX::SimpleMath::Vector3 linearAccumulated = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 linearDrag = DirectX::SimpleMath::Vector3::Zero;
+
+        DirectX::SimpleMath::Matrix inverseInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
+
+        DirectX::SimpleMath::Vector3 torqueAccumulated = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 torqueDrag = DirectX::SimpleMath::Vector3::Zero;
+        double time = 0.0f;
+    };
+
+    static void RungeKutta(struct MotionObj* aObj, double aTimeDelta)
+    {
+        //  Define a convenience variables
+        const float numEqns = static_cast<float>(6);
+        //  Retrieve the current values of the dependent and independent variables.
+        MotionData q = aObj->q;
+        MotionData dq1;
+        MotionData dq2;
+        MotionData dq3;
+        MotionData dq4;
+
+        // Compute the four Runge-Kutta steps, The return 
+        // value of RightHandSide method is an array
+        // of delta-q values for each of the four steps.
+        RightHandSide(aObj, &q, &q, aTimeDelta, 0.0, &dq1);
+        RightHandSide(aObj, &q, &dq1, aTimeDelta, 0.5, &dq2);
+        RightHandSide(aObj, &q, &dq2, aTimeDelta, 0.5, &dq3);
+        RightHandSide(aObj, &q, &dq3, aTimeDelta, 1.0, &dq4);
+
+        aObj->time = aObj->time + aTimeDelta;
+
+        DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
+        DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
+        //DirectX::SimpleMath::Vector3 angularMomentumUpdate = (dq1.angularMomentum + 2.0 * dq2.angularMomentum + 2.0 * dq3.angularMomentum + dq4.angularMomentum) / numEqns;
+        DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
+
+        q.velocity += velocityUpdate;
+        q.position += posUpdate;
+        //q.angularMomentum += angularMomentumUpdate;
+        q.angularVelocity += angularVelocityUpdate;
+
+        aObj->q.velocity = q.velocity;
+        aObj->q.position = q.position;
+        //aObj->projectileData.collisionData.collisionSphere.Center = q.position;
+        //aObj->projectileData.collisionData.velocity = q.velocity;
+        aObj->q.angularVelocity = q.angularVelocity;
+        //aObj->projectileData.q.angularMomentum = q.angularMomentum;
+    };
+
+    static void RightHandSide(struct MotionObj* aObj, MotionData* aQ, MotionData* aDeltaQ, double aTimeDelta, float aQScale, MotionData* aDQ)
+    {
+        //  Compute the intermediate values of the 
+        //  dependent variables.
+        MotionData newQ;
+        newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+        newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+
+        const float mass = aObj->mass;
+
+        // Linear update
+        DirectX::SimpleMath::Vector3 velocityNorm = newQ.velocity;
+        velocityNorm.Normalize();
+        //DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 velocityUpdate = newQ.velocity;
+        velocityUpdate += aObj->linearAccumulated;
+        velocityUpdate += aObj->linearDrag;
+        
+        aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
+        aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
+
+        // angular update
+        
+        DirectX::SimpleMath::Vector3 torqueAccum = aObj->torqueAccumulated;
+        torqueAccum += newQ.angularVelocity;
+        torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, aObj->inverseInertiaMatrix);
+        torqueAccum += aObj->torqueDrag;;
+        
+        aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
+    };
+
 private:
 
 

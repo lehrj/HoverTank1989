@@ -79,7 +79,7 @@ struct GuidanceSystem
     float finAngle4 = 0.0f;
     float throttlePercentage = 0.0f;
     bool isRocketPlumeFlickerTrue = false;
-
+    bool isSelfDestructTrue = false;
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     float liftForceFloat = 0.0f;
 };
@@ -310,6 +310,7 @@ class FireControl
 {
 public:
     void CycleLoadedAmmo();
+    void DetonateAllMissiles();
     void DrawFireControlObjects(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
@@ -397,6 +398,7 @@ private:
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 
+    void UpdateDynamicExplosive(struct ExplosionData& aExplosion,const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
