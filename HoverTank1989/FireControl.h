@@ -69,6 +69,10 @@ struct GuidanceSystem
     bool isFinsDeployEnd = false;
     bool isRocketFired = false;
     bool isTargetLocked = false;
+    bool isRocketPlumeFlickerTrue = false;
+    bool isSelfDestructTrue = false;
+    bool isExplodingTrue = false;
+    float postExplosionDrawCountDown = 2.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
 
     float forwardThrust = 0.0f;
@@ -78,8 +82,7 @@ struct GuidanceSystem
     float finAngle3 = 0.0f;
     float finAngle4 = 0.0f;
     float throttlePercentage = 0.0f;
-    bool isRocketPlumeFlickerTrue = false;
-    bool isSelfDestructTrue = false;
+
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     float liftForceFloat = 0.0f;
 };
@@ -188,6 +191,11 @@ struct MissileConsts
     const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 1.0f;
     const float wingArea = 0.3f;
+    const float mass = 10.0f;
+    const float dragCoefficient = 0.3f;
+    const float postExplosionMass = 10.0f;
+    const float postExplosionDragCoefficient = 0.5f;
+    const float explosionDragCoefficient = 0.5f;
 };
 
 enum class ExplosionType

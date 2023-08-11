@@ -106,7 +106,7 @@ void FireControl::CheckCollisions()
                 CreateExplosion(m_projectileVec[i].q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
             }
             m_projectileVec[i].isDeleteTrue = true;
-        }   
+        }
     }
 }
 
@@ -114,46 +114,54 @@ void FireControl::CheckCollisionsMissile()
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        unsigned int vehicleHitId = -1;
-        bool isHitTrue;
-        bool isProximityDetonationTrue = false; 
-        isHitTrue = m_npcController->CheckProjectileCollisionsMissile(m_missileVec[i].projectileData.collisionData, vehicleHitId, true, m_missileVec[i].guidance.targetID, m_missileConsts.detonationRange, isProximityDetonationTrue);
+        if (m_missileVec[i].guidance.isExplodingTrue == false)
+        {
+            unsigned int vehicleHitId = -1;
+            bool isHitTrue;
+            bool isProximityDetonationTrue = false;
+            isHitTrue = m_npcController->CheckProjectileCollisionsMissile(m_missileVec[i].projectileData.collisionData, vehicleHitId, true, m_missileVec[i].guidance.targetID, m_missileConsts.detonationRange, isProximityDetonationTrue);
 
-        if (isProximityDetonationTrue == true)
-        {
-            CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
-            m_missileVec[i].projectileData.isDeleteTrue = true;
-        }
-        else if (vehicleHitId != -1 && isHitTrue == true)
-        {
-            CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE, vehicleHitId);
-            m_missileVec[i].projectileData.isDeleteTrue = true;
-        }
-        else if (isHitTrue == true)
-        {
-            /*
-            m_missileVec[i].projectileData.isCollisionTrue = true;
-            m_missileVec[i].projectileData.liveTimeTick--;
-            if (m_missileVec[i].projectileData.liveTimeTick <= 0)
+            if (isProximityDetonationTrue == true)
+            {
+                CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+                m_missileVec[i].projectileData.isDeleteTrue = true;
+            }
+            else if (vehicleHitId != -1 && isHitTrue == true)
+            {
+                CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE, vehicleHitId);
+                m_missileVec[i].projectileData.isDeleteTrue = true;
+            }
+            else if (isHitTrue == true)
+            {
+                /*
+                m_missileVec[i].projectileData.isCollisionTrue = true;
+                m_missileVec[i].projectileData.liveTimeTick--;
+                if (m_missileVec[i].projectileData.liveTimeTick <= 0)
+                {
+                    m_missileVec[i].projectileData.isDeleteTrue = true;
+                }
+                */
+                CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
+                m_missileVec[i].projectileData.isDeleteTrue = true;
+            }
+            else if (m_missileVec[i].projectileData.time > m_missileLifeTimeMax)
             {
                 m_missileVec[i].projectileData.isDeleteTrue = true;
             }
-            */
-            CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
-            m_missileVec[i].projectileData.isDeleteTrue = true;
-        }
-        else if (m_missileVec[i].projectileData.time > m_missileLifeTimeMax)
-        {
-            m_missileVec[i].projectileData.isDeleteTrue = true;
-        }
-        else if (m_environment->GetIsPosInPlay(m_missileVec[i].projectileData.q.position) == false)
-        {
-            //m_missileVec[i].projectileData.isDeleteTrue = true;
-        }
-        else if(m_missileVec[i].guidance.isSelfDestructTrue == true)
-        {
-            CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
-            m_missileVec[i].projectileData.isDeleteTrue = true;
+            else if (m_environment->GetIsPosInPlay(m_missileVec[i].projectileData.q.position) == false)
+            {
+                //m_missileVec[i].projectileData.isDeleteTrue = true;
+            }
+            else if (m_missileVec[i].guidance.isSelfDestructTrue == true)
+            {
+                CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+                //m_missileVec[i].projectileData.isDeleteTrue = true;
+
+                m_missileVec[i].guidance.isExplodingTrue = true;
+                m_missileVec[i].guidance.isRocketFired = false;
+                m_missileVec[i].guidance.forwardThrust = 0.0f;
+                m_missileVec[i].guidance.throttlePercentage = 0.0f;
+            }
         }
     }
 }
@@ -177,7 +185,7 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
 
     createdExplosion.currentDuration = 0.0f;
     createdExplosion.currentRadius = m_explosionStruct.explosionRefData.currentRadius;
-      
+
     createdExplosion.initialRadius = m_explosionStruct.explosionRefData.initialRadius;
     createdExplosion.collisionSphere = m_explosionStruct.explosionRefData.collisionSphere;
     createdExplosion.collisionSphere.Center = aPos;
@@ -194,7 +202,7 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
     createdExplosion.explosionMatrix8 = createdExplosion.localExplosionMatrix;
 
     createdExplosion.maxRadius = m_explosionStruct.explosionRefData.maxRadius;
-    
+
     createdExplosion.totalDuration = m_explosionStruct.explosionRefData.totalDuration;
     createdExplosion.isLifeTimeExpired = false;
 
@@ -295,7 +303,7 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
     firedProjectile.q.position = aProjectile.q.position;
     firedProjectile.q.velocity = aProjectile.q.velocity;
     firedProjectile.forward = aProjectile.forward;
-    firedProjectile.right = aProjectile.right;    
+    firedProjectile.right = aProjectile.right;
     firedProjectile.up = aProjectile.up;
     firedProjectile.alignmentQuat = aProjectile.alignmentQuat;
     firedProjectile.inverseAlignmentQuat = aProjectile.inverseAlignmentQuat;
@@ -396,7 +404,7 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
             DirectX::SimpleMath::Matrix rotMatPitch = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.right, pitchVal + angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
             //DirectX::SimpleMath::Matrix rotMatYaw = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.up, yawVal);// +angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
             //DirectX::SimpleMath::Matrix rotMatPitch = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(mirv.right, pitchVal);// +angleOffsetMin + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (angleOffSetMax - angleOffsetMin))));
-            
+
             DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::Identity;
             rotMat *= rotMatYaw;
             //rotMat *= rotMatPitch;
@@ -411,21 +419,21 @@ void FireControl::DeployMirv(ProjectileData& aProjectile)
             updateQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
             updateQuat *= deployDownQuat;
             //mirv.alignmentQuat *= DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rotMat);
-            
+
             mirv.alignmentQuat *= updateQuat;
             mirv.up = DirectX::SimpleMath::Vector3::Transform(mirv.up, updateQuat);
             mirv.right = DirectX::SimpleMath::Vector3::Transform(mirv.right, updateQuat);
             mirv.forward = DirectX::SimpleMath::Vector3::Transform(mirv.forward, updateQuat);
-            
+
             mirv.q.velocity = mirv.forward * updateVelocity.Length();
-            if(j == 0)
+            if (j == 0)
             {
                 //m_newProjectilePushVec.push_back(mirv);
             }
 
             m_newProjectilePushVec.push_back(mirv);
             yawVal -= columnSpacingAngle;
- 
+
         }
         //yawVal = yawOrg;
         columnSpacingAngle += Utility::ToRadians(0.0f);// *static_cast<float>(i + 1);
@@ -842,11 +850,11 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         dirNormToExplosion = DirectX::SimpleMath::Vector3::UnitX;
         //m_debugData->PushDebugLinePositionIndicator(expPos + (dirNormToExplosion * (distanceToCenter - distanceToFogStart)), 50.0f, 1.0f, DirectX::Colors::Blue);
         //m_debugData->PushDebugLinePositionIndicator(expPos + (dirNormToExplosion * (distanceToCenter - distanceToFogEnd)), 50.0f, 1.0f, DirectX::Colors::White);
-       
+
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix0);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color0);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
-       
+
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix1);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color1);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -866,7 +874,7 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color4);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
         //m_explosionStruct.explosionShape1->Draw(aEffect.get(), aInputLayout.Get());
-           
+
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix5);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color5);
         m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -884,9 +892,9 @@ void FireControl::DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const
 
         aEffect->SetWorld(m_explosionStruct.explosionVec[i].explosionMatrix8);
         aEffect->SetColorAndAlpha(m_explosionStruct.explosionVec[i].color8);
-        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());    
+        m_explosionStruct.explosionShape->Draw(aEffect.get(), aInputLayout.Get());
         //m_explosionStruct.explosionShape1->Draw(aEffect.get(), aInputLayout.Get());
-        
+
         aEffect->SetFogEnabled(false);
     }
 }
@@ -997,7 +1005,7 @@ void FireControl::DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const
 void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
     aEffect->EnableDefaultLighting();
-    
+
     DirectX::SimpleMath::Vector3 weaponDir = -m_playerVehicle->GetWeaponDirection();
     DirectX::SimpleMath::Vector3 lightDir0 = weaponDir;
     DirectX::SimpleMath::Vector3 lightDir1 = weaponDir;
@@ -1069,9 +1077,9 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
         aEffect->SetLightDirection(1, -lightDir1);
         aEffect->SetLightDirection(2, -lightDir2);
     }
-    
+
     aEffect->SetBiasedVertexNormals(true);
- 
+
     /*
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir0, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), lightDir1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -1095,7 +1103,7 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), -lightDir2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushTestLine(m_playerVehicle->GetMuzzlePos(), -weaponDir, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     */
-    
+
     //aEffect->SetWorld(m_muzzleFlash.worldMuzzleFlashConeMatrix);
     //m_muzzleFlash.muzzleFlashConeShape->Draw(aEffect.get(), aInputLayout.Get());
 
@@ -1183,7 +1191,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
             m_playerLaser.isFlickerTrue = true;
             aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
             m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
-        }     
+        }
     }
 }
 
@@ -1207,7 +1215,7 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
         aMuzzleFlash.sizeMod -= aMuzzleFlash.growthRate * static_cast<float>(aTimeDelta);
     }
     //aMuzzleFlash.sizeMod += aMuzzleFlash.growthRate * static_cast<float>(aTimeDelta);
-    
+
     DirectX::SimpleMath::Vector4 colorTest = aMuzzleFlash.startColor - aMuzzleFlash.endColor;
     aMuzzleFlash.currentColor = aMuzzleFlash.startColor - (colorTest * durationPercentage);
     //aMuzzleFlash.currentColor.w = 1.0f;
@@ -1244,7 +1252,7 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
     aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
     aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
-    
+
     //aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetMuzzlePos());
     aMuzzleFlash.worldTestMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
     aMuzzleFlash.worldTestMatrix *= updateMat;
@@ -1280,7 +1288,7 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
     DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
-    
+
     DirectX::SimpleMath::Plane groundPlane;
     groundPlane.x = 0.0f;
     groundPlane.y = -1.0f;
@@ -1298,7 +1306,7 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
     const float maxShadowRange = m_environment->GetMaxShadowCastRange();
     float shadowScale;
     float inverseShadowScale;
-    
+
     for (unsigned int i = 0; i < m_projectileVec.size(); ++i)
     {
         DirectX::SimpleMath::Matrix projMat;
@@ -1326,7 +1334,7 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
         {
             projMat = m_ammoCannon.ammoModel.localProjectileMatrix;
         }
-        
+
         const float altitude = m_projectileVec[i].q.position.y;
         if (altitude > maxShadowRange)
         {
@@ -1387,12 +1395,12 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
 
         DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_projectileVec[i].alignmentQuat);
         projMat *= alignMat;
-       
+
         projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_projectileVec[i].q.position);
 
         shadowDrawMat = shadowDrawMat;
         shadowDrawMat *= alignMat;
-        shadowDrawMat *=  inverseShadowScale;
+        shadowDrawMat *= inverseShadowScale;
         shadowDrawMat *= shadowScaleMat;
         shadowDrawMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_projectileVec[i].q.position);;
         shadowDrawMat *= shadowMat;
@@ -1426,7 +1434,7 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
         {
             m_ammoCannon.ammoModel.projectileShape->Draw(projMat, aView, aProj, projectileColor);
             m_ammoCannon.ammoModel.projectileShape->Draw(shadowDrawMat, aView, aProj, projectileColor);
-        }      
+        }
     }
 }
 
@@ -1559,6 +1567,7 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
 void FireControl::FireMissile2(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
 {
     AmmoData firedAmmo = m_ammoGuidedMissile.ammoData;
+    //AmmoData firedAmmo = m_ammoMissile.ammoData;
 
     m_isCoolDownActive = true;
     m_coolDownTimer = firedAmmo.cooldown;
@@ -1604,7 +1613,7 @@ void FireControl::FireMissile2(const DirectX::SimpleMath::Vector3 aLaunchPos, co
     m_npcController->UpdateMissleGuidance(m_currentTargetID, firedMissile.guidance.targetPosition, firedMissile.guidance.targetVelocity);
     firedMissile.guidance.targetDistance = (aLaunchPos - firedMissile.guidance.targetPosition).Length();
 
-    m_missileVec.push_back(firedMissile);  
+    m_missileVec.push_back(firedMissile);
 }
 
 void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
@@ -1623,7 +1632,7 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
         firedProjectile.isCollisionTrue = false;
         firedProjectile.isDeleteTrue = false;
         firedProjectile.liveTimeTick = firedAmmo.tickDownCounter;
-        
+
         firedProjectile.forward = aLaunchDirectionForward;
         firedProjectile.forward.Normalize();
         firedProjectile.up = aUp;
@@ -1634,7 +1643,7 @@ void FireControl::FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunc
         firedProjectile.inverseAlignmentQuat = firedProjectile.alignmentQuat;
         firedProjectile.inverseAlignmentQuat.Inverse(firedProjectile.inverseAlignmentQuat);
         firedProjectile.inverseAlignmentQuat.Normalize();
-  
+
         // collision data
         firedProjectile.collisionData.collisionDurationMod = firedAmmo.impactDurration;
         firedProjectile.collisionData.collisionMagnitudeMod = firedProjectile.ammoData.impactModifier;
@@ -1678,7 +1687,7 @@ void FireControl::FireDefaultProjectile(const AmmoType aAmmoType, const DirectX:
         else if (aAmmoType == AmmoType::AMMOTYPE_SHOTGUN)
         {
             firedAmmo = m_ammoExplosive.ammoData;
-            firedProjectile.isMidAirDeployAvailable = false;     
+            firedProjectile.isMidAirDeployAvailable = false;
         }
         else
         {
@@ -1689,7 +1698,7 @@ void FireControl::FireDefaultProjectile(const AmmoType aAmmoType, const DirectX:
 
         m_isCoolDownActive = true;
         m_coolDownTimer = firedAmmo.cooldown;
-        
+
         firedProjectile.ammoData = firedAmmo;
         firedProjectile.q.position = aLaunchPos;
         firedProjectile.q.velocity = (firedAmmo.launchVelocity * aLaunchDirectionForward) + aLauncherVelocity;
@@ -1705,7 +1714,7 @@ void FireControl::FireDefaultProjectile(const AmmoType aAmmoType, const DirectX:
         firedProjectile.collisionData.velocity = firedProjectile.q.velocity;
         firedProjectile.collisionData.mass = firedAmmo.mass;
         firedProjectile.collisionData.isCollisionTrue = firedProjectile.isCollisionTrue;
-        
+
         firedProjectile.time = 0.0f;
 
         m_projectileVec.push_back(firedProjectile);
@@ -1921,7 +1930,7 @@ void FireControl::FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaun
         up = aLaunchDirectionRight.Cross(aLaunchDirectionForward);
 
         const unsigned int shotCount = 10;
-        const float shotRotationOffset =  DirectX::XM_2PI / static_cast<float>(shotCount);
+        const float shotRotationOffset = DirectX::XM_2PI / static_cast<float>(shotCount);
         float shotRotation = 0.0f;
         const float chokeAngle = Utility::ToRadians(5.0f);
         DirectX::SimpleMath::Vector3 shotCenterAim = m_ammoShotgun.ammoData.launchVelocity * aLaunchDirectionForward;
@@ -2413,7 +2422,7 @@ void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
-    aAmmo.ammoData.launchVelocity = 365.0f;
+    aAmmo.ammoData.launchVelocity = 25.0f;
     aAmmo.ammoData.length = 4.0f;
     aAmmo.ammoData.mass = 10.0f;
     aAmmo.ammoData.radius = 0.75f;
@@ -2525,10 +2534,10 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     m_explosionStruct.explosionVec.clear();
 }
 
-void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
-    const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection, 
+void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+    const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirection,
     Environment const* aEnvironment, std::shared_ptr<Vehicle> aVehicle)
-{   
+{
     m_playerVehicle = aVehicle;
     m_explosionStruct.explosionToPushVec.clear();
     m_projectileVec.clear();
@@ -2561,7 +2570,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_missileInertiaTensorLocal._33 = (1.0f / 2.0f) * (mass) * (radius * radius);
 
     m_missileInverseInertiaTensorLocal = m_missileInertiaTensorLocal;
-    m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();   
+    m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();
     ////////////
 
     InitializeAmmoCannon(m_ammoCannon);
@@ -2777,7 +2786,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.localWingFinMatrix2 *= localWingTrans;
     //aAmmo.modelData.localWingFinMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.modelData.wingTranslation2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -aAmmo.ammoData.radius, 0.0f));
-    aAmmo.modelData.wingTranslation2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, - aAmmo.ammoData.radius - posOffset, 0.0f));
+    aAmmo.modelData.wingTranslation2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, -aAmmo.ammoData.radius - posOffset, 0.0f));
 
     // wing fin 3
     aAmmo.modelData.localWingFinMatrix3 = DirectX::SimpleMath::Matrix::Identity;
@@ -2788,7 +2797,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.localWingFinMatrix3 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     //aAmmo.modelData.localWingFinMatrix3 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     aAmmo.modelData.wingTranslation3 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, aAmmo.ammoData.radius));
-    aAmmo.modelData.wingTranslation3 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, 0.0f, - aAmmo.ammoData.radius - posOffset));
+    aAmmo.modelData.wingTranslation3 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, 0.0f, -aAmmo.ammoData.radius - posOffset));
 
     // wing fin 4
     aAmmo.modelData.localWingFinMatrix4 = DirectX::SimpleMath::Matrix::Identity;
@@ -2807,7 +2816,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.wingTranslation2 = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.wingTranslation3 = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.wingTranslation4 = DirectX::SimpleMath::Matrix::Identity;
-    
+
     aAmmo.modelData.wingTranslation1 = testMat;
     aAmmo.modelData.wingTranslation2 = testMat;
     aAmmo.modelData.wingTranslation3 = testMat;
@@ -2940,7 +2949,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         vertVec.Normalize();
         float vertAng = Utility::GetAngleBetweenVectors(vertVec, DirectX::SimpleMath::Vector3::UnitX);
         DirectX::SimpleMath::Vector3 vertCross = vertVec.Cross(DirectX::SimpleMath::Vector3::UnitX);
-        
+
         if (vertCross.z < 0.0f)
         {
             vertAng *= -1.0f;
@@ -2951,7 +2960,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         horzVec.Normalize();
         float horzAng = Utility::GetAngleBetweenVectors(horzVec, DirectX::SimpleMath::Vector3::UnitX);
         DirectX::SimpleMath::Vector3 horzCross = horzVec.Cross(DirectX::SimpleMath::Vector3::UnitX);
-        
+
         if (horzCross.y < 0.0f)
         {
             horzAng *= -1.0f;
@@ -2959,7 +2968,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
         DirectX::SimpleMath::Vector3 testHeadingWorld = localizedHeading;
         testHeadingWorld = DirectX::SimpleMath::Vector3::Transform(testHeadingWorld, m_missileVec[i].projectileData.alignmentQuat);
-      
+
         if (m_missileVec[i].guidance.isFinsDeployEnd == false)
         {
             if (m_missileVec[i].projectileData.time >= m_missileConsts.finDeployDelay)
@@ -3085,7 +3094,7 @@ void FireControl::InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11
 }
 
 void FireControl::InitializeTextureMapsExplosion(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap)
-{  
+{
     m_explosionStruct.textureExplosion = aTexture;
     m_explosionStruct.normalMapExplosion = aNormalMap;
     m_explosionStruct.specularExplosion = aSpecularMap;
@@ -3106,7 +3115,7 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
 
     const float mass = aProjectile->collisionData.mass;
-  
+
     //  Compute the total drag force.
     float airDensity = m_environment->GetAirDensity();
     float dragCoefficient = aProjectile->ammoData.dragCoefficient;
@@ -3135,11 +3144,17 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
 
-    const float mass = aProjectile->projectileData.collisionData.mass;
+    float mass = aProjectile->projectileData.collisionData.mass;
 
     //  Compute the total drag force.
     float airDensity = m_environment->GetAirDensity();
     float dragCoefficient = aProjectile->projectileData.ammoData.dragCoefficient;
+    if (aProjectile->guidance.isExplodingTrue == true)
+    {
+        //dragCoefficient = m_missileConsts.postExplosionDragCoefficient;
+        //mass = m_missileConsts.postExplosionMass;
+    }
+
     float frontSurfaceArea = aProjectile->projectileData.ammoData.frontSurfaceArea;
     float velocity = newQ.velocity.Length();
     float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
@@ -3344,7 +3359,7 @@ void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const
 
     //  Compute the total drag force.
     const float airDensity = m_environment->GetAirDensity();
-    const float dragCoefficient = 0.5f;
+    const float dragCoefficient = m_missileConsts.explosionDragCoefficient;
     float frontSurfaceArea = radius * radius;
     float velocity = obj.q.velocity.Length();
     float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
@@ -3396,12 +3411,12 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
                 radius *= m_explosionStruct.internalVehicleExplosionRadiusMod;
             }
 
-            if(m_explosionStruct.explosionVec[i].explosionType == ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE)
+            if (m_explosionStruct.explosionVec[i].explosionType == ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE)
             {
                 const DirectX::SimpleMath::Vector3 updatedVehiclePos = m_npcController->GetNpcPos(m_explosionStruct.explosionVec[i].vehicleExplosionID);
                 const DirectX::SimpleMath::Matrix updatedVehicleAlignment = m_npcController->GetNpcAlignment(m_explosionStruct.explosionVec[i].vehicleExplosionID);
                 DirectX::SimpleMath::Vector3 updatedExplosionPos = m_explosionStruct.explosionVec[i].localizedSurfaceExplosionPos;
-                updatedExplosionPos = DirectX::SimpleMath::Vector3::Transform(updatedExplosionPos, updatedVehicleAlignment); 
+                updatedExplosionPos = DirectX::SimpleMath::Vector3::Transform(updatedExplosionPos, updatedVehicleAlignment);
                 updatedExplosionPos += updatedVehiclePos;
                 m_explosionStruct.explosionVec[i].position = updatedExplosionPos;
                 m_explosionStruct.explosionVec[i].collisionSphere.Center = updatedExplosionPos;
@@ -3464,7 +3479,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
             //m_explosionStruct.explosionVec[i].explosionMatrix0 = DirectX::SimpleMath::Matrix::CreateScale(radius);
             //m_explosionStruct.explosionVec[i].explosionMatrix0 *= m_explosionStruct.explosionVec[i].localExplosionMatrix;
-            
+
             const float scale = radius * 2.0f;
             m_explosionStruct.explosionVec[i].explosionMatrix0 = DirectX::SimpleMath::Matrix::CreateScale(scale);
             m_explosionStruct.explosionVec[i].explosionMatrix0 *= rotMat0;
@@ -3478,10 +3493,10 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             DirectX::SimpleMath::Vector4 currentColor = m_explosionStruct.explosionVec[i].explosionEndColor - m_explosionStruct.explosionVec[i].explosionStartColor;
             currentColor *= ratio;
             m_explosionStruct.explosionVec[i].explosionCurrentColor = currentColor + m_explosionStruct.explosionVec[i].explosionStartColor;
-                  
+
             //const float scatterDistanceMod = 0.15f * radius;
             const float scatterDistanceMod = 0.15f * scale;
-           
+
             baseRedVal = 0.5f;
             float scatterVal1 = cos(static_cast<float>(m_explosionStruct.explosionVec[i].currentDuration) * 10.0f);
             m_explosionStruct.explosionVec[i].color1 = DirectX::SimpleMath::Vector4((abs(scatterVal1 * 0.5f) + baseRedVal), (abs(scatterVal1 * 0.5f)), 0.0f, 1.0f);
@@ -3591,7 +3606,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 }
 
 void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta)
-{  
+{
     if (aProjectile.isFuseTriggered == true)
     {
         aProjectile.fuseTimer -= static_cast<float>(aTimeDelta);
@@ -3780,6 +3795,14 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     aMissile.guidance.forwardThrust = (aMissile.guidance.forwardThrust + (cos(thrustAngle) * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage))) * 0.5f;
 
+
+    if (aMissile.guidance.isExplodingTrue == true)
+    {
+        aMissile.guidance.throttlePercentage = 0.0f;
+        aMissile.guidance.forwardThrust = 0.0f;
+        aMissile.projectileData.angularForceSum = DirectX::SimpleMath::Vector3::Zero;
+    }
+
     UpdateMissileLiftForce(aMissile, aTimeDelta);
 }
 
@@ -3883,7 +3906,7 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
 
 void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta)
 {
-    if (aMissile.guidance.isFinsDeployEnd == false)
+    if (aMissile.guidance.isFinsDeployEnd == false || aMissile.guidance.isExplodingTrue == true)
     {
         aMissile.guidance.liftForce = DirectX::SimpleMath::Vector3::Zero;
         aMissile.guidance.liftForceFloat = 0.0f;
@@ -3940,10 +3963,10 @@ void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTim
             testLift = 100.0f;
         }
         aMissile.guidance.liftForce = testLift * DirectX::SimpleMath::Vector3::UnitY;
-        
+
         m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.liftForce.L   ", aMissile.guidance.liftForce.Length(), "");
 
-        
+
         if (aMissile.guidance.liftForce.y < 0.0f)
         {
             int testBreak = 0;
@@ -4450,7 +4473,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
     }
 
     CheckCollisionsMissile();
-    
+
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
@@ -4459,6 +4482,10 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
             float timer = m_missileVec[i].projectileData.time;
             deleteCount++;
             DeleteMissileFromVec(i);
+        }
+        else
+        {
+            m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.forwardThrust ", m_missileVec[i].guidance.forwardThrust, "");
         }
     }
     //TestFunc(aTimeDelta);
@@ -4552,7 +4579,7 @@ void FireControl::TestFunc(const float aTimeDelta)
     quatForward = DirectX::SimpleMath::Vector3::Transform(quatForward, DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment()));
     DirectX::SimpleMath::Vector3 quatUp = DirectX::SimpleMath::Vector3::UnitY;
     quatUp = DirectX::SimpleMath::Vector3::Transform(quatUp, DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment()));
-    DirectX::SimpleMath::Vector3 quatRight= DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3 quatRight = DirectX::SimpleMath::Vector3::UnitZ;
     quatRight = DirectX::SimpleMath::Vector3::Transform(quatRight, DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment()));
 
     DirectX::SimpleMath::Vector3 testUp = quatRight.Cross(quatForward);
@@ -4599,14 +4626,14 @@ void FireControl::TestFunc(const float aTimeDelta)
     vecForward = DirectX::SimpleMath::Vector3::Transform(vecForward, invAlignmentQuat);
 
     targPos = DirectX::SimpleMath::Vector3(100.0f, 0.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 vecToTarget= targPos - m_playerVehicle->GetPos();
+    DirectX::SimpleMath::Vector3 vecToTarget = targPos - m_playerVehicle->GetPos();
     vecToTarget.Normalize();
     vecToTarget = DirectX::SimpleMath::Vector3::Transform(vecToTarget, invAlignmentQuat);
 
     DirectX::SimpleMath::Vector3 angularVelocity = m_playerVehicle->GetAngularVelocity();
     DirectX::SimpleMath::Quaternion angQuatStep = m_playerVehicle->GetAngularQuatStep();
     angQuatStep *= invAlignmentQuat;
-    
+
     float angleDif = DirectX::SimpleMath::Quaternion::Angle(angQuatStep, DirectX::SimpleMath::Quaternion::Identity);
     m_debugData->DebugPushUILineDecimalNumber("angleDif rad = ", angleDif, "");
     m_debugData->DebugPushUILineDecimalNumber("angleDif deg = ", Utility::ToDegrees(angleDif), "");
@@ -4614,7 +4641,7 @@ void FireControl::TestFunc(const float aTimeDelta)
     DirectX::SimpleMath::Quaternion angQuatStep2 = angQuatStep;
     //angQuatStep *= aTimeDelta;
     //angQuatStep2.Normalize();
-    
+
     /*m_debugData->DebugPushUILineDecimalNumber("angQuatStep.x  ", angQuatStep.x, "");
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep2.x ", angQuatStep2.x, "");
     m_debugData->DebugPushUILineDecimalNumber("angQuatStep.y  ", angQuatStep.y, "");
@@ -4677,6 +4704,15 @@ void FireControl::TestFunc(const float aTimeDelta)
 
 void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta)
 {
+    if (aMissile.guidance.isExplodingTrue == true)
+    {
+        aMissile.guidance.postExplosionDrawCountDown -= aTimeDelta;
+        if (aMissile.guidance.postExplosionDrawCountDown <= 0.0f)
+        {
+            aMissile.projectileData.isDeleteTrue = true;
+        }
+    }
+
     if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
     {
         aMissile.guidance.isRocketFired = true;
