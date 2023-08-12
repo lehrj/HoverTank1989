@@ -791,6 +791,7 @@ void Environment::LoadEnvironmentData()
     m_environs[i].landingFrictionScale = 1.0;
     m_environs[i].landingHardnessScale = 1.0;
     m_environs[i].scale = 0.02;
+    m_environs[i].terrainCoefficientOfRestitution = 0.4;
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, -0.9f);
     UpdateDirectionalLightingVectors(m_environs[i]);
@@ -804,6 +805,7 @@ void Environment::LoadEnvironmentData()
     m_environs[i].landingFrictionScale = 1.0;
     m_environs[i].landingHardnessScale = 1.0;
     m_environs[i].scale = 0.02;
+    m_environs[i].terrainCoefficientOfRestitution = 0.4;
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(-10.0f, 0.0f, 0.0f);
     UpdateDirectionalLightingVectors(m_environs[i]);
@@ -816,6 +818,7 @@ void Environment::LoadEnvironmentData()
     m_environs[i].landingFrictionScale = 1.0;
     m_environs[i].landingHardnessScale = 1.0;
     m_environs[i].scale = 0.02;
+    m_environs[i].terrainCoefficientOfRestitution = 0.4;
     m_environs[i].terrainColor = DirectX::Colors::Green;
     m_environs[i].wind = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     UpdateDirectionalLightingVectors(m_environs[i]);

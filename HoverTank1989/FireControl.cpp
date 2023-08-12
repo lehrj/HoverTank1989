@@ -3382,6 +3382,27 @@ void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const
     const DirectX::SimpleMath::Vector3 updatedPos = obj.q.position;
     aExplosion.collisionSphere.Center = updatedPos;
     aExplosion.localExplosionMatrix = DirectX::SimpleMath::Matrix::CreateWorld(updatedPos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    DirectX::SimpleMath::Plane groundPlane;
+    DirectX::SimpleMath::Vector3 groundNorm = DirectX::SimpleMath::Vector3::Zero;
+    float height = 0.0f;
+    m_environment->GetVehicleUpdateData(aExplosion.position, groundNorm, height, groundPlane);
+
+    float altitude = aExplosion.position.y - height;
+
+    if (altitude <= 0.0f)
+    {
+        DirectX::SimpleMath::Vector3 v = aExplosion.velocity;
+        DirectX::SimpleMath::Vector3 n = groundNorm;
+        const float b = m_environment->GetTerrainCoR();
+
+        DirectX::SimpleMath::Vector3 postImpactVelocity = b * (-2.0f * (v.Dot(n)) * n + v);
+
+        if (postImpactVelocity.y >= 0.0f)
+        {
+            aExplosion.velocity = postImpactVelocity;
+        }
+    }
 }
 
 void FireControl::UpdateExplosionVec(double aTimeDelta)

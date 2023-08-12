@@ -40,6 +40,7 @@ struct Environ
     float                              landingHardnessScale;
     std::string                         landingHardnessScaleStr;
     float                               scale;
+    float                               terrainCoefficientOfRestitution;
     DirectX::XMVECTORF32                terrainColor;
     DirectX::SimpleMath::Vector3        wind;               // in m/s
     std::string                         windXStr;
@@ -137,6 +138,7 @@ public:
     int GetNumberOfEnvironSelectDisplayVariables() const { return m_environSelectDisplayDataPoints; };
     float GetScale() const { return m_currentEnviron.scale; };
     bool GetIsPosInPlay(const DirectX::XMFLOAT3 aPos) const;
+    float GetTerrainCoR() const { return m_currentEnviron.terrainCoefficientOfRestitution; };
     float GetTerrainHeightAtPos(DirectX::XMFLOAT3 aPos) const;
     DirectX::SimpleMath::Vector3 GetTerrainNormal(DirectX::SimpleMath::Vector3 aPos) const;
     std::vector<DirectX::VertexPositionColor> GetTerrainColorVertex();
