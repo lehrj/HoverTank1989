@@ -185,6 +185,8 @@ struct MissileConsts
 {
     const float detonationRange = 10.0f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
+    const float seekerHeadAngleMax = Utility::ToRadians(80.0f);
+    const float stearingAngleMax = Utility::ToRadians(45.0f);
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
@@ -338,8 +340,6 @@ public:
     void FireProjectileMachineGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
     void FireProjectileMirv(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
     void FireProjectileShotGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
-    void FireProjectileShotGun2(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
-    void FireProjectileShotGun3(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncheraLaunchDirectionRight, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
 
     void FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
     void FireDefaultProjectile(const AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
@@ -363,31 +363,24 @@ private:
     void DeleteMissileFromVec(const unsigned int aIndex);
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
-    void DeployMirv2(ProjectileData& aProjectile);
-    void DeployMirv3(ProjectileData& aProjectile);
 
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
-    void DrawExplosions3(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
-
     void DrawMissiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
-
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
-
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
+
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
     void InitializeAmmoGuidedMissile(AmmoStruct& aAmmo);
     void InitializeAmmoMachineGun(AmmoStruct& aAmmo);
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
-
     void InitializeAmmoMissile(MissileStruct& aAmmo);
     void InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MissileStruct& aAmmo);
-
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
@@ -395,10 +388,8 @@ private:
     void InitializeProjectileModelGuidedMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
-    void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
-    
+    void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);   
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
-
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
@@ -412,10 +403,6 @@ private:
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance5(MissileData& aMissile, const float aTimeDelta);
 
     float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta);
@@ -423,8 +410,6 @@ private:
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
-
-    void TestFunc(const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
