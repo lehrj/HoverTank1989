@@ -85,6 +85,7 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     float liftForceFloat = 0.0f;
+    float airFoilDragMod = 0.0f;
 };
 
 struct AmmoStruct
@@ -185,7 +186,7 @@ struct MissileConsts
 {
     const float detonationRange = 10.0f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
-    const float seekerHeadAngleMax = Utility::ToRadians(80.0f);
+    const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
     const float stearingAngleMax = Utility::ToRadians(45.0f);
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
@@ -403,6 +404,7 @@ private:
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
 
     float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta);
@@ -468,7 +470,7 @@ private:
     float m_testRot = 0.0f;
     float m_testRot2 = 0.0f;
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
-
+    float m_testAng = 0.0f;
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
