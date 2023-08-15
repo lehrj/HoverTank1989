@@ -86,6 +86,10 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     float liftForceFloat = 0.0f;
     float airFoilDragMod = 0.0f;
+    float liftCoefficient = 0.0f;
+    float angleOfAttack = 0.0f;
+    float dragSurfaceArea = 0.0f;
+    float dragCoefficientFull = 0.0f;
 };
 
 struct AmmoStruct
@@ -184,6 +188,7 @@ struct MissileStruct
 
 struct MissileConsts
 {
+    const float angularDragMod = 0.8f;
     const float detonationRange = 10.0f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
     const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
@@ -198,7 +203,8 @@ struct MissileConsts
     const float dragCoefficient = 0.3f;
     const float postExplosionMass = 10.0f;
     const float postExplosionDragCoefficient = 0.5f;
-    const float explosionDragCoefficient = 0.5f;
+    const float explosionDragCoefficientBase = 0.1f;
+    const float explosionDragCoefficientAddMax = 0.1f;
 };
 
 enum class ExplosionType
@@ -402,12 +408,14 @@ private:
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
 
-    float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta);
+    //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);

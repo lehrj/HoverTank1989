@@ -1642,7 +1642,7 @@ void FireControl::InitializeAmmoGuidedMissile(AmmoStruct& aAmmo)
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 25.0f;
     aAmmo.ammoData.length = 5.0f;
-    aAmmo.ammoData.mass = 10.0f;
+    aAmmo.ammoData.mass = m_missileConsts.mass;
     aAmmo.ammoData.radius = 0.15f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
@@ -1659,7 +1659,7 @@ void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 25.0f;
     aAmmo.ammoData.length = 4.0f;
-    aAmmo.ammoData.mass = 10.0f;
+    aAmmo.ammoData.mass = m_missileConsts.mass;
     aAmmo.ammoData.radius = 0.75f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
@@ -2399,13 +2399,18 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
 
     DirectX::SimpleMath::Vector3 gravForce = (m_environment->GetGravityVec() * mass) * m_gravityMod;
-
     //DirectX::SimpleMath::Vector3 liftForce = aProjectile->projectileData.up * aProjectile->guidance.liftForceFloat;
     DirectX::SimpleMath::Vector3 liftForce = aProjectile->guidance.liftForce;
 
-    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    velocityUpdate += airResistance;
+    DirectX::SimpleMath::Vector3 linearDrag = DirectX::SimpleMath::Vector3::Zero;
+    float dragSurfaceArea = aProjectile->guidance.dragSurfaceArea;
+    dragCoefficient = aProjectile->guidance.dragCoefficientFull;
+    float dragResistanceFull = 0.5f * airDensity * dragSurfaceArea * dragCoefficient * velocity * velocity;
+    DirectX::SimpleMath::Vector3 dragForce = velocityNorm * (-dragResistanceFull);
 
+    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    //velocityUpdate += airResistance;
+    velocityUpdate += dragForce;
     velocityUpdate += gravForce;
     velocityUpdate += liftForce;
 
@@ -2580,10 +2585,27 @@ void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const
     obj.q.position = aExplosion.position;
     obj.q.velocity = aExplosion.velocity;
 
-    const float explosiveMass = 4.0f;
+    float durationRatio = aExplosion.currentDuration / aExplosion.totalDuration;
+    float invsDurationRatio = 1.0f - durationRatio;
+
+    if (invsDurationRatio <= 0.0f || invsDurationRatio >= 1.0f)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
+    m_debugData->DebugPushUILineDecimalNumber("invsDurationRatio ", invsDurationRatio, "");
+    float explosiveMass = 4.0f;
+    //float explosiveMass = m_missileConsts.mass * invsDurationRatio;
+    if (explosiveMass <= 0.0f)
+    {
+        const float minMass = 0.002f;
+        explosiveMass = minMass;
+    }
     obj.mass = explosiveMass;
+    obj.mass = 10.0f;
     //sphere
     float radius = aExplosion.currentRadius;
+    //radius = 3.0f;
     obj.inverseInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
     obj.inverseInertiaMatrix._11 = (2.0f / 3.0f) * (obj.mass) * (radius * radius);
     obj.inverseInertiaMatrix._22 = (2.0f / 3.0f) * (obj.mass) * (radius * radius);
@@ -2596,8 +2618,11 @@ void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const
 
     //  Compute the total drag force.
     const float airDensity = m_environment->GetAirDensity();
-    const float dragCoefficient = m_missileConsts.explosionDragCoefficient;
-    float frontSurfaceArea = radius * radius;
+    //const float dragCoefficient = m_missileConsts.explosionDragCoefficientBase;
+    //const float dragCoefficient = m_missileConsts.explosionDragCoefficientBase + (durationRatio * m_missileConsts.explosionDragCoefficientAddMax);
+    const float dragCoefficient = 0.1f;
+    //float frontSurfaceArea = radius * radius;
+    float frontSurfaceArea = Utility::GetPi() * (radius * radius);
     float velocity = obj.q.velocity.Length();
     float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
     DirectX::SimpleMath::Vector3 velocityNorm = obj.q.velocity;
@@ -2606,9 +2631,14 @@ void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const
 
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
     linearDragSum += airResistance;
-
+    linearDragSum *= 0.1f;
+    m_debugData->DebugClearUI();
+    m_debugData->DebugPushUILineDecimalNumber("airResistance.x ", airResistance.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("airResistance.y ", airResistance.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("airResistance.z ", airResistance.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("airResistance.L ", airResistance.Length(), "");
     obj.linearAccumulated = linearForceSum;
-    obj.linearDrag;
+    obj.linearDrag = linearDragSum;
     obj.torqueAccumulated = DirectX::SimpleMath::Vector3::Zero;
     obj.torqueDrag = DirectX::SimpleMath::Vector3::Zero;
 
@@ -3025,7 +3055,7 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     }
 
     aMissile.guidance.throttlePercentage = (aMissile.guidance.throttlePercentage + rocketThrottle) * 0.5f;
-
+    
     DirectX::SimpleMath::Vector3 torqueArm = DirectX::SimpleMath::Vector3(m_ammoMissile.ammoData.length * 0.5f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 torqueForce = aMissile.guidance.heading;
     torqueForce = DirectX::SimpleMath::Vector3::Transform(torqueForce, aMissile.projectileData.inverseAlignmentQuat);
@@ -3037,7 +3067,7 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta * 0.3f);
     //aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta);
 
-    const float angularDrageMod = 0.8f;
+    const float angularDrageMod = m_missileConsts.angularDragMod;
     DirectX::SimpleMath::Vector3 angularDrag = DirectX::SimpleMath::Vector3::Zero;
     angularDrag = aMissile.projectileData.q.angularVelocity * -powf(angularDrageMod, aTimeDelta);
 
@@ -3053,18 +3083,18 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     aMissile.guidance.forwardThrust = (aMissile.guidance.forwardThrust + (cos(thrustAngle) * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage))) * 0.5f;
 
-
     if (aMissile.guidance.isExplodingTrue == true)
     {
         aMissile.guidance.throttlePercentage = 0.0f;
         aMissile.guidance.forwardThrust = 0.0f;
         aMissile.projectileData.angularForceSum = DirectX::SimpleMath::Vector3::Zero;
     }
-
-    UpdateMissileLiftForce(aMissile, aTimeDelta);
+    UpdateMissileForcesLift(aMissile, aTimeDelta);
+    UpdateMissileDragLinear(aMissile, aTimeDelta);
 }
 
-float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta)
+//float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta)
+void FireControl::UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta)
 {
     // calculate angle of attack
     DirectX::SimpleMath::Vector3 localizedVelocityNorm = aMissile.projectileData.q.velocity;
@@ -3074,7 +3104,10 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     float angleOfAttack = Utility::GetAngleBetweenVectors(localizedVelocityNorm, DirectX::SimpleMath::Vector3::UnitX);
     DirectX::SimpleMath::Vector3 localVelocityNormCross = localizedVelocityNorm.Cross(DirectX::SimpleMath::Vector3::UnitX);
 
-    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, localVelocityNormCross, 30.0f, 0.5f, DirectX::Colors::GreenYellow);
+    aMissile.guidance.angleOfAttack = angleOfAttack;
+    aMissile.guidance.angleOfAttack = Utility::WrapAngleRight(aMissile.guidance.angleOfAttack);
+    //aMissile.guidance.angleOfAttack = Utility::ToDegrees(aMissile.guidance.angleOfAttack);
+    aMissile.guidance.angleOfAttack = abs(aMissile.guidance.angleOfAttack);
 
     if (localVelocityNormCross.z < 0.0f)
     {
@@ -3134,6 +3167,9 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     // Testing lift coefficent calculations
     const float alphaClMax = 16.0f;
     float alpha = angleOfAttack;
+    alpha = Utility::WrapAngleRight(alpha);
+    alpha = Utility::ToDegrees(alpha);
+    alpha = abs(alpha);
     const float clSlope0 = 0.0889f;
     const float clSlope1 = -0.1f;
     float cl0 = 0.178; // intercept of Cl-alpha curve
@@ -3184,8 +3220,8 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     m_debugData->DebugPushUILineDecimalNumber("cl ", cl, "");
     m_debugData->DebugPushUILineDecimalNumber("dl ", dl, "");
     /////////////////////////////////////////////////////////////////////
-
-    return cl;
+    aMissile.guidance.liftCoefficient = cl;
+    //return cl;
     ///////////////////////////////////////////////////
     if (ClTarget < 0.0f)
     {
@@ -3196,7 +3232,46 @@ float FireControl::UpdateMissileLiftCoefficient(MissileData& aMissile, const flo
     //return ClTarget;
 }
 
-void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTimeDelta)
+void FireControl::UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta)
+{
+    
+    float airDensity = m_environment->GetAirDensity();
+    float dragCoefficient = aMissile.projectileData.ammoData.dragCoefficient + aMissile.guidance.airFoilDragMod;
+    if (aMissile.guidance.isExplodingTrue == true)
+    {
+        //dragCoefficient = m_missileConsts.postExplosionDragCoefficient;
+        //mass = m_missileConsts.postExplosionMass;
+    }
+
+    float frontSurfaceArea = aMissile.projectileData.ammoData.frontSurfaceArea;
+    float frontSurfaceAreaTest = (aMissile.projectileData.ammoData.radius * 2.0f) * 2.0f;
+    float frontSurfaceAreatTest2 = Utility::GetPi() * (aMissile.projectileData.ammoData.radius * aMissile.projectileData.ammoData.radius);
+    float sideSurfaceArea = aMissile.projectileData.ammoData.length * (aMissile.projectileData.ammoData.radius * 2.0f);
+    float velocity = aMissile.projectileData.q.velocity.Length();
+    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
+    DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
+
+
+    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate += airResistance;
+
+
+    float dragSurfaceArea = 0.0f;
+    dragSurfaceArea += frontSurfaceArea * cos(aMissile.guidance.angleOfAttack);
+    dragSurfaceArea += sideSurfaceArea * sin(aMissile.guidance.angleOfAttack);
+    aMissile.guidance.dragSurfaceArea = dragSurfaceArea;
+    
+    float dragCoefficentSum = aMissile.projectileData.ammoData.dragCoefficient;
+    const float sideProfileDragCoefficient = 0.82f; // long cylinder shape
+    const float sideMinusFrontCl = sideProfileDragCoefficient - aMissile.projectileData.ammoData.dragCoefficient;
+
+    dragCoefficentSum += abs(sideMinusFrontCl)  * sin(aMissile.guidance.angleOfAttack);
+    aMissile.guidance.dragCoefficientFull = abs(dragCoefficentSum + aMissile.guidance.airFoilDragMod);
+}
+
+void FireControl::UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta)
 {
     if (aMissile.guidance.isFinsDeployEnd == false || aMissile.guidance.isExplodingTrue == true)
     {
@@ -3205,7 +3280,9 @@ void FireControl::UpdateMissileLiftForce(MissileData& aMissile, const float aTim
     }
     else
     {
-        const float cL = UpdateMissileLiftCoefficient(aMissile, aTimeDelta);
+        //const float cL = UpdateMissileLiftCoefficient(aMissile, aTimeDelta);
+        UpdateMissileCoefficients(aMissile, aTimeDelta);
+        const float cL = aMissile.guidance.liftCoefficient;
         const float airDensity = m_environment->GetAirDensity();
         const float wingArea = m_missileConsts.wingArea;
 
