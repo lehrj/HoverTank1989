@@ -33,6 +33,9 @@ public:
     void PushTestDebugBetweenPoints(DirectX::SimpleMath::Vector3 aPoint1, DirectX::SimpleMath::Vector3 aPoint2, DirectX::XMVECTORF32 aColor);
     void PushDebugLinePositionIndicator(const DirectX::SimpleMath::Vector3 aPoint, const float aLineLength, const float aOffset, const DirectX::XMVECTORF32 aColor);
 
+    void ToggleDebugOff();
+    void ToggleDebugOn();
+
 private:
 
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector4>> m_debugLinesVec;
@@ -40,6 +43,6 @@ private:
     std::vector<std::pair<std::string, float>> m_debugUI;
     std::vector<std::string> m_debugUIVector;
 
-    const bool m_isDebugOn = true;
+    bool m_isDebugOn = true;
 };
 

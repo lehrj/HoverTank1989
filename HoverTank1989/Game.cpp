@@ -645,10 +645,11 @@ void Game::Render()
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
-        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawSky();
         //DrawTestTrack();
     }

@@ -132,3 +132,14 @@ void DebugData::DebugPushUILineWholeNumber(std::string aString1, int aVal, std::
         m_debugUIVector.push_back(textLine);
     }
 }
+
+void DebugData::ToggleDebugOff()
+{
+    m_isDebugOn = false;
+}
+
+void DebugData::ToggleDebugOn()
+{
+    m_isDebugOn = true;
+}
+

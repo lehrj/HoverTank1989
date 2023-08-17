@@ -65,6 +65,8 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
     float targetDistance = 0.0f;
+    DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
+
     bool isFinsDeployStarted = false;
     bool isFinsDeployEnd = false;
     bool isRocketFired = false;
@@ -72,6 +74,7 @@ struct GuidanceSystem
     bool isRocketPlumeFlickerTrue = false;
     bool isSelfDestructTrue = false;
     bool isExplodingTrue = false;
+    bool isTargetingLaserOn = false;
     float postExplosionDrawCountDown = 2.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
 
@@ -205,6 +208,8 @@ struct MissileConsts
     const float postExplosionDragCoefficient = 0.5f;
     const float explosionDragCoefficientBase = 0.1f;
     const float explosionDragCoefficientAddMax = 0.1f;
+
+    const float laserDepoyDelay = 3.9f;
 };
 
 enum class ExplosionType
