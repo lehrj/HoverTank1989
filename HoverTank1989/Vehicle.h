@@ -320,6 +320,7 @@ public:
 
     float GetAirSpeed() { return m_heli.q.velocity.Length(); };
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_heli.alignment; };
+    DirectX::SimpleMath::Matrix GetAlignmentInverse() const { return m_heli.alignmentInverse; };
     float GetAltitude() const { return m_heli.q.position.y - m_heli.terrainHightAtPos; };
     DirectX::SimpleMath::Vector3 GetAntiGravGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
     DirectX::SimpleMath::Vector3 GetAntiMassGravityForce(const float aAltitude, const DirectX::SimpleMath::Vector3 aGravity, const float aMass);
