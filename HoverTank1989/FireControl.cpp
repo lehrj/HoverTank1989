@@ -4093,6 +4093,33 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
             //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
             //////////////////////////////////////////////////////////////////////////////
             
+            ///////////////////////////////////////////////////////////////
+            // From tank prototype
+            DirectX::SimpleMath::Vector3 toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
+            toUseLocalMuzzlePos.y = 0.5f;
+            toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseLocalMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
+
+            //DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(5) - (m_playerVehicle->GetPos() + toUseLocalMuzzlePos);
+            DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(m_missileVec[i].guidance.targetID) - (m_missileVec[i].projectileData.q.position + toUseLocalMuzzlePos);
+            forwardToTargNorm.Normalize();
+            DirectX::SimpleMath::Vector3 rightCross = forwardToTargNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
+            DirectX::SimpleMath::Vector3 testUp = rightCross.Cross(forwardToTargNorm);
+
+            //DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_playerVehicle->GetPos() + toUseLocalMuzzlePos, forwardToTargNorm, testUp);
+            DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseLocalMuzzlePos, forwardToTargNorm, testUp);
+
+            worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+            worldBodyMatrix *= scaleMat;
+            worldBodyMatrix *= scaleTransOffsetMat;
+            worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+            worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+
+            worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(toUseLocalMuzzlePos);
+           
+            worldBodyMatrix *= updateMat6;
+
+            //////////////////////////////////////////////////////////////
+
             DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
             DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
             DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
