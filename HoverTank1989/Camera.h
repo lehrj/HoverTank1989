@@ -16,6 +16,7 @@ enum class CameraState
     CAMERASTATE_TRANSTONEWSHOT,
     CAMERASTATE_FOLLOWVEHICLE,
     CAMERASTATE_FOLLOWVEHICLETEST,
+    CAMERASTATE_FOLLOWMISSILE,
     CAMERASTATE_SPRINGCAMERA,
     CAMERASTATE_SPRINGCAMERANPC,
     CAMERASTATE_SPINCAMERA,
@@ -51,6 +52,7 @@ public:
     Camera(int aWidth, int aHeight);
     ~Camera();
 
+    void ActivateMissleTrackCamera();
     void CycleNpcFocus(const bool isCycleIncrease);
 
     CameraState GetCameraState() const { return m_cameraState; };
@@ -112,6 +114,7 @@ public:
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
 
+    void SetFireControl(std::shared_ptr<FireControl> aFireControlPtr);
     void SetNpcController(std::shared_ptr<NPCController> aNpcController);
     void SetVehicleFocus(std::shared_ptr<Vehicle> aVehicle);
     void SpinClockwise(float aRotation);
@@ -147,7 +150,7 @@ private:
     void UpdateChaseCameraNPC();
     void UpdateChaseCamera();
     void UpdateChaseCameraTest();
-
+    void UpdateFollowMissile(DX::StepTimer const& aTimer);
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateSpinCamera(DX::StepTimer const& aTimer);
@@ -232,6 +235,7 @@ private:
     DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 6.5f, 20.0f);
 
     Environment const* m_environment;
+    std::shared_ptr<FireControl>    m_fireControl;
     std::shared_ptr<Vehicle> m_vehicleFocus;
     std::shared_ptr<DebugData>      m_debugData;
     std::shared_ptr<NPCController> m_npcController;

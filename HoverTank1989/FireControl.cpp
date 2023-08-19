@@ -1442,6 +1442,36 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
     }
 }
 
+bool FireControl::GetIsMissileActiveTrue() const
+{
+    if (m_missileVec.size() > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void FireControl::GetCameraMissieData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos) const
+{
+    if (m_missileVec.size() > 0)
+    {
+        const int missileId = 0;
+        //DirectX::SimpleMath::Matrix missileAlignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[missileId].projectileData.alignmentQuat);
+        DirectX::SimpleMath::Quaternion missileAlignment = m_missileVec[missileId].projectileData.alignmentQuat;
+        DirectX::SimpleMath::Vector3 missilePos = m_missileVec[missileId].projectileData.q.position;
+        aAlignment = missileAlignment;
+        aPos = missilePos;
+    }
+    else
+    {
+        aAlignment = DirectX::SimpleMath::Quaternion::Identity;
+        aPos = DirectX::SimpleMath::Vector3::Zero;
+    }
+}
+
 Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm)
 {
     Utility::ImpulseForce recoilImpulseForce;

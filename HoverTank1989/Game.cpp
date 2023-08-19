@@ -151,6 +151,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_FLAME, m_textureFlameTest, m_normalMapFlameTest, m_specularFlameTest);
 
     m_fireControl->InitializeTextureMapsExplosion(m_textureFlameTest, m_normalMapFlameTest, m_specularFlameTest);
+    m_camera->SetFireControl(m_fireControl);
 
     m_terrainVector.clear();
 }
@@ -1839,6 +1840,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
+            /*
             DirectX::SimpleMath::Vector3 endPos(11.0, 2.0f, 0.0f);
             DirectX::SimpleMath::Vector3 targetEndPos = m_vehicle->GetPos();
             DirectX::SimpleMath::Vector3 centerPointPos = m_vehicle->GetPos();
@@ -1849,6 +1851,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->SetTargetEndPos(targetEndPos);
             m_camera->TurnEndPosAroundPoint(rotation, centerPointPos);
             m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
+            */
+            m_camera->ActivateMissleTrackCamera();
         }
     }
     if (kb.I)
