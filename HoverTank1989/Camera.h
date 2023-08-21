@@ -151,6 +151,7 @@ private:
     void UpdateChaseCamera();
     void UpdateChaseCameraTest();
     void UpdateFollowMissile(DX::StepTimer const& aTimer);
+    void UpdateFollowMissile2(DX::StepTimer const& aTimer);
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateSpinCamera(DX::StepTimer const& aTimer);

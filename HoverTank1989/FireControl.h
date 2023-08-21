@@ -191,9 +191,12 @@ struct MissileStruct
 
 struct MissileConsts
 {
+    //const float angularDragMod = 0.8f;
     const float angularDragMod = 0.8f;
+    
     const float detonationRange = 10.0f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
+    //const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
     const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
     const float stearingAngleMax = Utility::ToRadians(45.0f);
     const float finDeployDelay = 1.0f;
@@ -357,7 +360,7 @@ public:
     void FireDefaultProjectile(const AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     AmmoType GetCurrentAmmoType() const { return m_currentAmmoType; };
     bool GetIsMissileActiveTrue() const;
-    void GetCameraMissieData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos) const;
+    void GetCameraMissieData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const;
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
@@ -419,6 +422,7 @@ private:
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
 
     //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
@@ -487,6 +491,7 @@ private:
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
     float m_testAng = 0.0f;
     int m_cameraTrackedMissileID = -1;
+    bool m_isLaserFlickerTrue = false;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
