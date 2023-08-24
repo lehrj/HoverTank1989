@@ -78,6 +78,9 @@ struct GuidanceSystem
     float postExplosionDrawCountDown = 2.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Vector3 testThrustForce = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testThrustTorque = DirectX::SimpleMath::Vector3::Zero;
+
     float forwardThrust = 0.0f;
 
     float finAngle1 = 0.0f;
@@ -213,6 +216,8 @@ struct MissileConsts
     const float explosionDragCoefficientAddMax = 0.1f;
 
     const float laserDepoyDelay = 3.9f;
+
+    const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
 };
 
 enum class ExplosionType
@@ -427,6 +432,7 @@ private:
     //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForces2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
@@ -492,6 +498,8 @@ private:
     float m_testAng = 0.0f;
     int m_cameraTrackedMissileID = -1;
     bool m_isLaserFlickerTrue = false;
+
+    bool m_isDebugToggleTrue = false;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
