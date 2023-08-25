@@ -669,6 +669,9 @@ void FireControl::DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, cons
     aEffect->SetColorAndAlpha(m_muzzleFlash.currentColor);
     m_muzzleFlash.muzzleFlashConeShape2->Draw(aEffect.get(), aInputLayout.Get());
 
+    //aEffect->SetWorld(m_muzzleFlash.worldMuzzleFlashConeMatrix);
+    //m_muzzleFlash.muzzleFlashConeShape->Draw(aEffect.get(), aInputLayout.Get());
+
     aEffect->SetBiasedVertexNormals(false);
 }
 
@@ -1876,7 +1879,6 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     // rocket plume
     const float plumeLength = aAmmo.ammoData.length * 0.5f;
     aAmmo.modelData.rocketPlumeShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoDiameter, plumeLength);
-
     //DirectX::SimpleMath::Vector3 plumeTranslation = DirectX::SimpleMath::Vector3(-2.0f - (plumeLength * 0.5f), 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 plumeTranslation = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
     aAmmo.modelData.plumeTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(plumeTranslation);
@@ -1886,6 +1888,22 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.localPlumeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rotationCenterTranslation);
     //aAmmo.modelData.localPlumeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(plumeTranslation);
     aAmmo.modelData.worldPlumeMatrix = aAmmo.modelData.localPlumeMatrix;
+
+    // rocket plume base
+    aAmmo.modelData.rocketPlumeBaseShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), ammoDiameter);
+    //DirectX::SimpleMath::Vector3 plumeBaseTranslation = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 plumeBaseTranslation = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+    aAmmo.modelData.plumeBaseTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(plumeBaseTranslation);
+    aAmmo.modelData.localPlumeBaseMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.modelData.localPlumeBaseMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    //aAmmo.modelData.localPlumeBaseMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(rotationCenterTranslation);
+    //aAmmo.modelData.localPlumeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(plumeTranslation);
+    aAmmo.modelData.worldPlumeBaseMatrix = aAmmo.modelData.localPlumeBaseMatrix;
+
+    DirectX::SimpleMath::Vector3 testTransVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    testTransVec.x = - ammoDiameter * 0.5f;
+    aAmmo.modelData.plumeTranslationTest = DirectX::SimpleMath::Matrix::CreateTranslation(testTransVec);
+
 
     // tail fins
     const float tailFinLength = aAmmo.ammoData.length * 0.3f;
@@ -2061,15 +2079,28 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         float wingFinDeployAngle = Utility::ToRadians(90.0f);
         if (m_missileVec[i].guidance.isRocketFired == true)
         {
+            DirectX::SimpleMath::Vector3 dPos1 = DirectX::SimpleMath::Vector3::Zero;
+            DirectX::SimpleMath::Vector3 dPos2 = DirectX::SimpleMath::Vector3::Zero;
+            DirectX::SimpleMath::Vector3 dScale1 = DirectX::SimpleMath::Vector3::Zero;
+            DirectX::SimpleMath::Vector3 dScale2 = DirectX::SimpleMath::Vector3::Zero;
+            DirectX::SimpleMath::Quaternion dQuat1 = DirectX::SimpleMath::Quaternion::Identity;
+            DirectX::SimpleMath::Quaternion dQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+
             DirectX::SimpleMath::Quaternion thrustRotQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-m_missileVec[i].projectileData.forward, -m_missileVec[i].guidance.heading);
             thrustRotQuat.Inverse(thrustRotQuat);
             DirectX::SimpleMath::Matrix thrustRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(thrustRotQuat);
             projMat = m_ammoMissile.modelData.localPlumeMatrix;
 
+            DirectX::SimpleMath::Matrix projMatPlume2 = m_ammoMissile.modelData.localPlumeMatrix;
+            DirectX::SimpleMath::Matrix projMatBase2 = m_ammoMissile.modelData.localPlumeBaseMatrix;
+
             if (m_missileVec[i].projectileData.time <= m_missileConsts.rocketFireDelay + m_missileConsts.rocketFireFullTime)
             {
                 const float rocketPlumeScale = (m_missileVec[i].projectileData.time - m_missileConsts.rocketFireDelay) / (m_missileConsts.rocketFireFullTime);
                 projMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(rocketPlumeScale, 1.0f, 1.0f));
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(rocketPlumeScale, 1.0f, 1.0f));
+                //projMatBase2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(rocketPlumeScale, 1.0f, 1.0f));
+                projMatBase2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(rocketPlumeScale, rocketPlumeScale, rocketPlumeScale));
             }
 
             if (m_missileVec[i].guidance.isRocketPlumeFlickerTrue == true)
@@ -2077,6 +2108,9 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
                 const float plumeflickerScaleLength = 0.5f;
                 const float plumeflickerScaleWidth = 0.9f;
                 projMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleLength, plumeflickerScaleWidth, plumeflickerScaleWidth));
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleLength, plumeflickerScaleWidth, plumeflickerScaleWidth));
+                //projMatBase2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleLength, plumeflickerScaleWidth, plumeflickerScaleWidth));
+                projMatBase2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleWidth, plumeflickerScaleWidth, plumeflickerScaleWidth));
             }
 
             if (m_missileVec[i].guidance.isRocketPlumeFlickerTrue == true)
@@ -2092,9 +2126,171 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             projMat *= thrustRotMat;
             projMat *= m_ammoMissile.modelData.plumeTranslation;
             projMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
-
             projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-            m_ammoMissile.modelData.rocketPlumeShape->Draw(projMat, aView, aProj, plumeColor);
+            //m_ammoMissile.modelData.rocketPlumeShape->Draw(projMat, aView, aProj, plumeColor);
+
+            //projMatPlume2 *= m_ammoMissile.modelData.plumeBaseTranslation;
+            
+            projMatPlume2 *= thrustRotMat;
+            projMatPlume2 *= m_ammoMissile.modelData.plumeTranslation;
+            
+            //projMatPlume2 *= m_ammoMissile.modelData.plumeTranslationTest;
+         
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            //m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
+
+            //projMatBase2 *= thrustRotMat;
+            projMatBase2 *= m_ammoMissile.modelData.plumeBaseTranslation;
+            projMatBase2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            projMatBase2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            //m_ammoMissile.modelData.rocketPlumeBaseShape->Draw(projMatBase2, aView, aProj, plumeColor);
+
+            const float ammoLength = 4.0f;
+            const float ammoDiameter = 1.5f;
+            const float ammoPlumeLength = 2.0f;
+            float scale = abs(cos(m_testTimer));
+            scale = 1.0f;
+            //scale = m_missileVec[i].guidance.throttlePercentage;
+            DirectX::SimpleMath::Vector3 transToBack = DirectX::SimpleMath::Vector3(-ammoLength * 0.5f, 0.0f, 0.0f);
+            //DirectX::SimpleMath::Vector3 transToBase = DirectX::SimpleMath::Vector3(-ammoDiameter * 0.5f, 0.0f, 0.0f);
+            DirectX::SimpleMath::Vector3 transToBase = DirectX::SimpleMath::Vector3((-ammoDiameter * 0.5f) * scale, 0.0f, 0.0f);
+            DirectX::SimpleMath::Matrix plumeBaseProjMat = DirectX::SimpleMath::Matrix::Identity;
+            if (m_missileVec[i].guidance.isRocketPlumeFlickerTrue == true)
+            {
+                const float plumeflickerScaleLength = 0.5f;
+                const float plumeflickerScaleWidth = 0.9f;
+                plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleWidth, plumeflickerScaleWidth, plumeflickerScaleWidth));
+            }
+            else
+            {
+                plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale, scale));
+            }
+            
+            plumeBaseProjMat *= thrustRotMat;
+            plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBack);
+            plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
+            plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            m_ammoMissile.modelData.rocketPlumeBaseShape->Draw(plumeBaseProjMat, aView, aProj, plumeColor);
+
+            plumeBaseProjMat.Decompose(dScale1, dQuat1, dPos1);
+
+            //m_ammoMissile.modelData.rocketPlumeShape->Draw(plumeBaseProjMat, aView, aProj, plumeColor);
+
+            
+
+            projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBack);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            //m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
+
+            projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
+
+            
+            //scale = 1.0f; // ???
+            //const float scaleTransOffset = ((maxModSize * durationPercentage) * 1.0f) * 0.5f;
+            const float maxModSize = 1.0f;
+            const float durationPercentage = scale;
+            const float scaleTransOffset = ((maxModSize * durationPercentage) * 1.0f) * 0.5f;
+            DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
+            DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(-scale, scale, -scale));
+            DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
+            posOffset = transToBack;
+            projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
+            //projMatPlume2 *= scaleMat;
+            //projMatPlume2 *= scaleTransOffsetMat;
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, (-0.5f * scale), 0.0f));
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, (-0.5f * transToBase.x), 0.0f));
+
+            projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
+
+            float currentScaleSize = ammoDiameter;
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 2.0f, 0.0f));
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, currentScaleSize * 0.5f, 0.0f));
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+            //transToBack = DirectX::SimpleMath::Vector3(-ammoLength * 0.5f, 0.0f, 0.0f);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBack);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
+
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.5f, 0.0f, 0.0f));
+
+            /*
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
+            transToBase = DirectX::SimpleMath::Vector3((-ammoLength * 0.25f) * scale, 0.0f, 0.0f);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
+            */
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
+
+            //projMatPlume2 *= updateMat;
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            //m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
+            
+
+            /*
+            projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBack);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f)); // half of plume length scaled
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            //m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
+            projMatPlume2.Decompose(dScale2, dQuat2, dPos2);
+            */
+            projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBack);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f)); // half of plume length scaled
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            //m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
+            projMatPlume2.Decompose(dScale2, dQuat2, dPos2);
+
+            //DirectX::SimpleMath::Vector3 transToBack = DirectX::SimpleMath::Vector3(-ammoLength * 0.5f, 0.0f, 0.0f);
+            //DirectX::SimpleMath::Vector3 transToBase = DirectX::SimpleMath::Vector3((-ammoDiameter * 0.5f) * scale, 0.0f, 0.0f);
+            //DirectX::SimpleMath::Matrix plumeBaseProjMat = DirectX::SimpleMath::Matrix::Identity;
+            projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+
+            if (m_missileVec[i].guidance.isRocketPlumeFlickerTrue == true)
+            {
+                const float plumeflickerScaleLength = 0.5f;
+                const float plumeflickerScaleWidth = 0.9f;
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleWidth, plumeflickerScaleWidth, plumeflickerScaleWidth));
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f * plumeflickerScaleWidth, 0.0f, 0.0f)); // half of plume length scaled
+            }
+            else
+            {
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale, scale));
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+                projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f * scale, 0.0f, 0.0f)); // half of plume length scaled
+            }
+
+            
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f * scale, 0.0f, 0.0f)); // half of plume length scaled
+            projMatPlume2 *= thrustRotMat;
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBack);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
+            
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
+
+
+            DirectX::SimpleMath::Vector3 dPosDelta = dPos1 - dPos2;
+            float dPosDistance = dPosDelta.Length();
+            int testBreak = 0;
+            testBreak++;
+
             /*
             if (m_missileVec[i].projectileData.time <= m_missileConsts.rocketFireDelay + m_missileConsts.finDeployTime)
             {
