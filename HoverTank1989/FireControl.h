@@ -184,6 +184,13 @@ struct MissileModel
 
     DirectX::SimpleMath::Matrix localWingFinMatrix4;
     DirectX::SimpleMath::Matrix wingTranslation4;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    thrustRodShape;
+    DirectX::SimpleMath::Vector3 thustRodLocalPos;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    testShape;
+    const float testDiameter = 0.25f;
+    const float testLength = 1.6;
 };
 
 struct MissileData
