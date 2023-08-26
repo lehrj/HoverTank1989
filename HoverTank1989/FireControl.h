@@ -96,6 +96,8 @@ struct GuidanceSystem
     float angleOfAttack = 0.0f;
     float dragSurfaceArea = 0.0f;
     float dragCoefficientFull = 0.0f;
+
+    float plumeRotation = 0.0f;
 };
 
 struct AmmoStruct
@@ -221,12 +223,13 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    thrustVectorHousingEndCapShape;
     DirectX::SimpleMath::Matrix localThrustVectorHousingEndCapMatrix;
 
-    std::unique_ptr<DirectX::GeometricPrimitive>    testRodShape;
-    DirectX::SimpleMath::Matrix localTestRodMatrix;
+    std::unique_ptr<DirectX::GeometricPrimitive>    thrustAxelShape;
+    DirectX::SimpleMath::Matrix localThrustAxelMatrix;
 
-    std::unique_ptr<DirectX::GeometricPrimitive>    testShape;
-    const float testDiameter = 0.25f;
-    const float testLength = 1.6;
+    //std::unique_ptr<DirectX::GeometricPrimitive>    testShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    finAxelShape;
+    //const float testDiameter = 0.25f;
+    //const float testLength = 1.6;
 };
 
 struct MissileData
@@ -267,6 +270,8 @@ struct MissileConsts
     const float laserDepoyDelay = 3.9f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
+
+    const float plumeRotationRate = 0.432f;
 };
 
 enum class ExplosionType

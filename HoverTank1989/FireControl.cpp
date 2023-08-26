@@ -1980,9 +1980,18 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.tailFinTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-ammoLength * 0.4f, 0.0f, -aAmmo.ammoData.radius * 0.9f));
 
 
+    /*
+    float diameterMod = (aAmmo.ammoData.radius * 2.0f) / aAmmo.modelData.testDiameter;
+    float lengthMod = (aAmmo.ammoData.length) / aAmmo.modelData.testLength;
 
-    aAmmo.modelData.testShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), aAmmo.modelData.testLength, aAmmo.modelData.testDiameter);
-
+    float diameterMod2 = (aAmmo.ammoData.radius * 2.0f) * aAmmo.modelData.testDiameter;
+    float lengthMod2 = (aAmmo.ammoData.length) * aAmmo.modelData.testLength;
+    */
+    const float finAxelLength = (aAmmo.ammoData.radius * 2.0f) * 1.05f;
+    const float finAxelDiameter = aAmmo.ammoData.radius * 0.33333f;
+    
+    //aAmmo.modelData.finAxelShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), aAmmo.modelData.testLength, aAmmo.modelData.testDiameter);
+    aAmmo.modelData.finAxelShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), finAxelLength, finAxelDiameter);
 
     // thrust vector fin 1
     const float thrustPosZ = aAmmo.ammoData.radius * 0.5f;
@@ -2073,14 +2082,14 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.localThrustVectorHousingEndCapMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(thrustHousingEndCapTrans);
 
 
-    // test rod
-    aAmmo.modelData.testRodShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoDiameter * 0.94f , thrustVectorMainDimensions.z);
+    // thrust Axel rod
+    aAmmo.modelData.thrustAxelShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoDiameter * 0.94f , thrustVectorMainDimensions.z);
 
     DirectX::SimpleMath::Vector3 testRodTrans = DirectX::SimpleMath::Vector3::Zero;
     testRodTrans.x = thrustHousingEndCapTrans.x;
 
-    aAmmo.modelData.localTestRodMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.modelData.localTestRodMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(testRodTrans);
+    aAmmo.modelData.localThrustAxelMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.modelData.localThrustAxelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(testRodTrans);
 
 
     // wing fins
@@ -2336,6 +2345,9 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             //transToBase.y += 2.4f;
 
             DirectX::SimpleMath::Matrix plumeBaseProjMat = DirectX::SimpleMath::Matrix::Identity;
+
+            //plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.plumeRotation);
+
             if (m_missileVec[i].guidance.isRocketPlumeFlickerTrue == true)
             {
                 const float plumeflickerScaleLength = 0.5f;
@@ -2355,7 +2367,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
             plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
             plumeBaseProjMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-            m_ammoMissile.modelData.rocketPlumeBaseShape->Draw(plumeBaseProjMat, aView, aProj, plumeColor);
+ /////           m_ammoMissile.modelData.rocketPlumeBaseShape->Draw(plumeBaseProjMat, aView, aProj, plumeColor);
 
             plumeBaseProjMat.Decompose(dScale1, dQuat1, dPos1);
 
@@ -2442,6 +2454,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             projMatPlume2 = DirectX::SimpleMath::Matrix::Identity;
             //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
 
+            //projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.plumeRotation);
+
             if (m_missileVec[i].guidance.isRocketPlumeFlickerTrue == true)
             {
                 const float plumeflickerScaleLength = 0.5f;
@@ -2467,7 +2481,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             
             projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
             projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-            m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
+ ///           m_ammoMissile.modelData.rocketPlumeShape->Draw(projMatPlume2, aView, aProj, plumeColor);
 
 
             DirectX::SimpleMath::Vector3 dPosDelta = dPos1 - dPos2;
@@ -2582,7 +2596,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         tailFinProjMat1 *= m_ammoMissile.modelData.tailFinTranslation1;
         tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat1, aView, aProj, finColor1);
+        //m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat1, aView, aProj, finColor1);
 
         // tail fin 2
         DirectX::SimpleMath::Matrix tailFinProjMat2 = DirectX::SimpleMath::Matrix::Identity;
@@ -2593,7 +2607,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         tailFinProjMat2 *= m_ammoMissile.modelData.tailFinTranslation2;
         tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat2, aView, aProj, finColor1);
+        //m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat2, aView, aProj, finColor1);
 
         // tail fin 3
         DirectX::SimpleMath::Matrix tailFinProjMat3 = DirectX::SimpleMath::Matrix::Identity;
@@ -2660,7 +2674,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
         float testVal = m_testTimer;
         testVal = Utility::WrapAngle(testVal);
-        finDeployAngle = Utility::ToRadians(-90.0f) + m_ammoMissile.modelData.tailFinDeployAngleMax;
+       // finDeployAngle = Utility::ToRadians(-90.0f) + m_ammoMissile.modelData.tailFinDeployAngleMax;
         float finDeployAngleTest3 = Utility::ToRadians(180.0f) + - m_ammoMissile.modelData.tailFinDeployAngleMax;
         finDeployAngleTest3 = Utility::ToRadians(90.0f);
         tailFinProjMat3 = DirectX::SimpleMath::Matrix::Identity;
@@ -2682,14 +2696,15 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         DirectX::SimpleMath::Matrix tailFinProjMat3Alt2 = tailFinProjMat3;
 
         tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateRotationY(finDeployAngleTest3);
-        
+        //tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateRotationY(-finDeployAngle);
+
         tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileVec[i].guidance.finAngle3);
         tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -testVal3));
         //tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateRotationZ(testVal);
         tailFinProjMat3 *= m_ammoMissile.modelData.tailFinTranslation3;
         tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat3, aView, aProj, finColor1);
+        //m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat3, aView, aProj, finColor1);
 
 
         //tailFinProjMat3Alt *= DirectX::SimpleMath::Matrix::CreateRotationY(finDeployAngleTest3);
@@ -2703,6 +2718,107 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         tailFinProjMat3Alt *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         //m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat3Alt, aView, aProj, plumeColor);
 
+
+
+        float testTempRot = m_testTimer;
+        testTempRot = Utility::WrapAngle(testTempRot);
+        float testRot = m_testTimer;
+        testRot = Utility::WrapAngle(testRot);
+        testRot = Utility::ToRadians(45.0f);
+        //tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateRotationY(finDeployAngleTest3);
+        //tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(Utility::ToRadians(-90.0f) + m_ammoMissile.modelData.tailFinDeployAngleMax));
+        //tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(Utility::ToRadians(45.0f)));
+        tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
+        //tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileVec[i].guidance.finAngle3);
+        tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(testTempRot);
+        tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -testVal3));
+        //tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 1.0f));
+        //tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(testVal);
+        tailFinProjMat3Alt2 *= m_ammoMissile.modelData.tailFinTranslation3;
+        tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat3Alt2, aView, aProj, projectileColor);
+
+
+        // tail fin 4
+        DirectX::SimpleMath::Vector3 tailFinTrans4 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, cos(finDeployAngle + Utility::ToRadians(90.0f)) * (0.24000f * 0.5f));
+        //const float finRot4 = finDeployAngle - Utility::ToRadians(90.0f);
+        const float finRot4 = Utility::ToRadians(-90.0f + 45.0f);
+        DirectX::SimpleMath::Matrix tailFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
+        tailFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-tailFinLength * 0.5f, 0.0f, 0.0f));
+
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationY(finRot4);
+        //tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileVec[i].guidance.finAngle3);
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationZ(testTempRot);
+        //tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -testVal3));
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(-tailFinTrans4);
+        tailFinProjMat4 *= m_ammoMissile.modelData.tailFinTranslation4;
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat4, aView, aProj, projectileColor);
+
+        // tail fin 1 
+        tailFinProjMat1 = DirectX::SimpleMath::Matrix::Identity;
+        tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
+        tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-tailFinLength * 0.5f, 0.0f, 0.0f));
+
+        tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(finRot4);
+        //tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileVec[i].guidance.finAngle3);
+        tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateRotationY(testTempRot);
+        //tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -testVal3));
+        tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(tailFinTrans4);
+        tailFinProjMat1 *= m_ammoMissile.modelData.tailFinTranslation1;
+        tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        tailFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat1, aView, aProj, projectileColor);
+
+        // tail fin 2 
+        tailFinProjMat2 = DirectX::SimpleMath::Matrix::Identity;
+        tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
+        tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-tailFinLength * 0.5f, 0.0f, 0.0f));
+
+        tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(-finRot4);
+        //tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileVec[i].guidance.finAngle3);
+        tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateRotationY(testTempRot);
+        //tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -testVal3));
+        tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(-tailFinTrans4);
+        tailFinProjMat2 *= m_ammoMissile.modelData.tailFinTranslation2;
+        tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        tailFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat2, aView, aProj, testColor3);
+
+        // testShape
+        DirectX::SimpleMath::Matrix testShapeMat = DirectX::SimpleMath::Matrix::Identity;
+        testShapeMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+        DirectX::SimpleMath::Vector3 finTransTest = DirectX::SimpleMath::Vector3(-4.0f * 0.4f, 0.0f, 0.0f);
+        testShapeMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(finTransTest));
+        testShapeMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        testShapeMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.finAxelShape->Draw(testShapeMat, aView, aProj, plumeColor);
+
+
+        /*
+            // tail fin 4
+            DirectX::SimpleMath::Matrix tailFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
+            //tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationX(-vertAng);
+            tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_missileVec[i].guidance.finAngle4);
+            tailFinProjMat4 *= m_ammoMissile.modelData.localTailFinMatrix4;
+            tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationY(finDeployAngle);
+            tailFinProjMat4 *= m_ammoMissile.modelData.tailFinTranslation4;
+            tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+            tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+            m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat4, aView, aProj, finColor1);
+        */
+
+
+        /*
+                tailFinProjMat3 = DirectX::SimpleMath::Matrix::Identity;
+        tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f));
+        tailFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-tailFinLength * 0.5f, 0.0f, 0.0f));
+
+        DirectX::SimpleMath::Matrix tailFinProjMat3Alt2 = tailFinProjMat3;
 
         float testRot = m_testTimer;
         testRot = Utility::WrapAngle(testRot);
@@ -2719,18 +2835,28 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat3Alt2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat3Alt2, aView, aProj, projectileColor);
+        */
 
-        // testShape
-        DirectX::SimpleMath::Matrix testShapeMat = DirectX::SimpleMath::Matrix::Identity;
-        testShapeMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
-        DirectX::SimpleMath::Vector3 finTransTest = DirectX::SimpleMath::Vector3(-4.0f * 0.4f, 0.0f, 0.0f);
-        testShapeMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(finTransTest));
-        testShapeMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
-        testShapeMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.testShape->Draw(testShapeMat, aView, aProj, plumeColor);
 
         // tail fin 4
+        /*
         DirectX::SimpleMath::Matrix tailFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
+
+        tailFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-tailFinLength * 0.5f, 0.0f, 0.0f));
+
+        //tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileVec[i].guidance.finAngle4);
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -testVal3));
+
+        tailFinProjMat4 *= m_ammoMissile.modelData.tailFinTranslation4;
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat4, aView, aProj, testColor4);
+
+        //////////////////////////////////
+
         //tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationX(-vertAng);
         tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_missileVec[i].guidance.finAngle4);
         tailFinProjMat4 *= m_ammoMissile.modelData.localTailFinMatrix4;
@@ -2738,7 +2864,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         tailFinProjMat4 *= m_ammoMissile.modelData.tailFinTranslation4;
         tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         tailFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat4, aView, aProj, finColor1);
+        //m_ammoMissile.modelData.tailFinShape->Draw(tailFinProjMat4, aView, aProj, finColor1);
+        */
 
         // thrust vector 1
         DirectX::SimpleMath::Matrix thrustVectorMainMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -2852,17 +2979,17 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
         DirectX::SimpleMath::Matrix testRodMat1 = DirectX::SimpleMath::Matrix::Identity;
         testRodMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
-        testRodMat1 *= m_ammoMissile.modelData.localTestRodMatrix;
+        testRodMat1 *= m_ammoMissile.modelData.localThrustAxelMatrix;
         testRodMat1 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         testRodMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.testRodShape->Draw(testRodMat1, aView, aProj, finColor2);
+        m_ammoMissile.modelData.thrustAxelShape->Draw(testRodMat1, aView, aProj, finColor2);
 
         DirectX::SimpleMath::Matrix testRodMat2 = DirectX::SimpleMath::Matrix::Identity;
         testRodMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
-        testRodMat2 *= m_ammoMissile.modelData.localTestRodMatrix;
+        testRodMat2 *= m_ammoMissile.modelData.localThrustAxelMatrix;
         testRodMat2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         testRodMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.testRodShape->Draw(testRodMat2, aView, aProj, finColor2);
+        m_ammoMissile.modelData.thrustAxelShape->Draw(testRodMat2, aView, aProj, finColor2);
 
         // thrust rod 1
         DirectX::SimpleMath::Matrix thrustRodProjMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -4769,6 +4896,10 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             aMissile.guidance.heading = testHeading;
             aMissile.guidance.targetLaserAlignment *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(DirectX::SimpleMath::Quaternion::Identity);
             m_debugData->ToggleDebugOff();
+
+            float plumeRotation = aMissile.guidance.plumeRotation;
+            plumeRotation += m_missileConsts.plumeRotationRate * aTimeDelta;
+            aMissile.guidance.plumeRotation = Utility::WrapAngle(plumeRotation);
         }
     }
 }
