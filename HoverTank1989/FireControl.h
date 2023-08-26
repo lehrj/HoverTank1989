@@ -188,6 +188,42 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    thrustRodShape;
     DirectX::SimpleMath::Vector3 thustRodLocalPos;
 
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    tailEndCapShape;
+    DirectX::SimpleMath::Matrix localTailEndCapMatrix;
+    DirectX::SimpleMath::Matrix worldTailEndCapMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    tailBlackVoidShape;
+    DirectX::SimpleMath::Matrix localBlackVoidMatrix;
+    DirectX::SimpleMath::Matrix worldBlackVoidMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    thrustVectorMainShape;
+    DirectX::SimpleMath::Matrix localThrustVectorMainMatrix;
+    DirectX::SimpleMath::Matrix localThrustVectorMainMatrix1;
+    DirectX::SimpleMath::Matrix thrustVectorTrans1;
+    DirectX::SimpleMath::Matrix localThrustVectorMainMatrix2;
+    DirectX::SimpleMath::Matrix thrustVectorTrans2;
+    DirectX::SimpleMath::Matrix localThrustVectorMainMatrix3;
+    DirectX::SimpleMath::Matrix thrustVectorTrans3;
+    DirectX::SimpleMath::Matrix localThrustVectorMainMatrix4;
+    DirectX::SimpleMath::Matrix thrustVectorTrans4;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    thrustConnectingRodShape;
+    DirectX::SimpleMath::Matrix localThrustConnectingRodMatrix2;
+    DirectX::SimpleMath::Matrix thrustConnectingRodTrans2;
+
+    DirectX::SimpleMath::Matrix localThrustConnectingRodMatrix3;
+    DirectX::SimpleMath::Matrix thrustConnectingRodTrans3;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    thrustVectorHousingShape;
+    DirectX::SimpleMath::Matrix localThrustVectorHousingMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    thrustVectorHousingEndCapShape;
+    DirectX::SimpleMath::Matrix localThrustVectorHousingEndCapMatrix;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    testRodShape;
+    DirectX::SimpleMath::Matrix localTestRodMatrix;
+
     std::unique_ptr<DirectX::GeometricPrimitive>    testShape;
     const float testDiameter = 0.25f;
     const float testLength = 1.6;
