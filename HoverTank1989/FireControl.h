@@ -432,6 +432,7 @@ public:
 
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
+    void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta); 
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
@@ -483,11 +484,13 @@ private:
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
 
     //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces2(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForces3(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
