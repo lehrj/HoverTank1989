@@ -59,6 +59,7 @@ struct AmmoData
 
 struct GuidanceSystem
 {
+    unsigned int uniqueId = 0;
     float detonationRadius = 5.0f;
     int targetID = 0;
     DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
@@ -451,6 +452,8 @@ private:
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
 
+    unsigned int GetUniqueMissileID();
+
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
     void InitializeAmmoGuidedMissile(AmmoStruct& aAmmo);
@@ -485,6 +488,7 @@ private:
     void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidance5(MissileData& aMissile, const float aTimeDelta);
 
     //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
@@ -558,6 +562,8 @@ private:
     bool m_isLaserFlickerTrue = false;
 
     bool m_isDebugToggleTrue = false;
+
+    unsigned int m_nextUniqueMissileID = 0;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
