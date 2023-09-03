@@ -3219,6 +3219,9 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             DirectX::SimpleMath::Vector3 destinationLocalized = destination - missilePos;
             //m_debugData->PushDebugLine(missilePos, destinationLocalized, 400.0f, 0.0f, DirectX::Colors::Orange);
             destinationLocalized = DirectX::SimpleMath::Vector3::Transform(destinationLocalized, invsAlign);
+
+            aMissile.guidance.localizedDestinationPos = destinationLocalized;
+
             m_debugData->PushDebugLine(missilePos, destinationLocalized, 500.0f, 0.7f, DirectX::Colors::Orange);
             DirectX::SimpleMath::Vector3 testVec3 = destinationLocalized;
             testVec3 = DirectX::SimpleMath::Vector3::Transform(testVec3, aMissile.projectileData.alignmentQuat);
@@ -3264,6 +3267,9 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
             testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, updateMat);
             m_debugData->PushDebugLine(missilePos, testHeading, 300.0f, 0.1f, DirectX::Colors::Red);
+
+            aMissile.guidance.localizedDestinationDir = testHeading;
+            
             testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
             m_debugData->PushDebugLine(missilePos, testHeading, 300.0f, 0.1f, DirectX::Colors::Blue);
 
@@ -3273,6 +3279,8 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
             DirectX::SimpleMath::Vector3 testHeading2 = -DirectX::SimpleMath::Vector3::UnitZ;
 
+            CalculateGimbaledThrust(aMissile, aTimeDelta);
+            
             m_debugData->ToggleDebugOff();
         }
     }
@@ -6331,5 +6339,6 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
 void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta)
 {
+    DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
 
 }

@@ -99,6 +99,12 @@ struct GuidanceSystem
     float dragCoefficientFull = 0.0f;
 
     float plumeRotation = 0.0f;
+
+    DirectX::SimpleMath::Vector3 gimbaleVec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion gimbaleQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 localizedDestinationPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 localizedDestinationDir = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
