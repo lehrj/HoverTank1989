@@ -49,7 +49,35 @@ void FireControl::ActivateMuzzleFlash(AmmoType aAmmoType)
 void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta)
 {
     DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 angularMomentum = aMissile.projectileData.q.angularMomentum;
+    DirectX::SimpleMath::Vector3 angularVelocity = aMissile.projectileData.q.angularVelocity;
 
+    m_debugData->DebugPushUILineDecimalNumber("angularMomentum.x = ", angularMomentum.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("angularMomentum.y = ", angularMomentum.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("angularMomentum.z = ", angularMomentum.z, "");
+
+    m_debugData->DebugPushUILineDecimalNumber("angularVelocity.x = ", angularVelocity.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("angularVelocity.y = ", angularVelocity.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("angularVelocity.z = ", angularVelocity.z, "");
+
+    //DirectX::SimpleMath::Quaternion updateQuat;
+    updateQuat.x = aMissile.projectileData.q.angularVelocity.x;
+    updateQuat.y = aMissile.projectileData.q.angularVelocity.y;
+    updateQuat.z = aMissile.projectileData.q.angularVelocity.z;
+    updateQuat.w = 0.0f;
+    DirectX::SimpleMath::Quaternion updateOutputQuat = aMissile.projectileData.alignmentQuat;
+    updateOutputQuat.Normalize();
+
+    updateOutputQuat += (0.5f * aTimeDelta) * (updateQuat * aMissile.projectileData.alignmentQuat);
+    updateOutputQuat.Normalize();
+
+    //aMissile.projectileData.alignmentQuat = updateOutputQuat;
+
+    DirectX::SimpleMath::Vector3 testHeading = aMissile.guidance.heading;
+    testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
+
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.heading, 200.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testHeading, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
 }
 
 void FireControl::CastRayLaser()
@@ -4289,6 +4317,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     }
 
     torqueAccum += newQ.angularVelocity;
+    //torqueAccum += newQ.angularMomentum;
     //torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, aHeli->inverseInertiaMatrixTest);
     torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
 
@@ -4297,6 +4326,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
+    //aDQ->angularMomentum = static_cast<float>(aTimeDelta) * newQ.angularVelocity;
 }
 
 void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta)
