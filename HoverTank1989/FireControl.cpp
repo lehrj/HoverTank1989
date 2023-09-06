@@ -51,7 +51,7 @@ void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTi
     DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 angularMomentum = aMissile.projectileData.q.angularMomentum;
     DirectX::SimpleMath::Vector3 angularVelocity = aMissile.projectileData.q.angularVelocity;
-
+    angularVelocity *= -1.0f;
     m_debugData->DebugPushUILineDecimalNumber("angularMomentum.x = ", angularMomentum.x, "");
     m_debugData->DebugPushUILineDecimalNumber("angularMomentum.y = ", angularMomentum.y, "");
     m_debugData->DebugPushUILineDecimalNumber("angularMomentum.z = ", angularMomentum.z, "");
@@ -60,24 +60,59 @@ void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTi
     m_debugData->DebugPushUILineDecimalNumber("angularVelocity.y = ", angularVelocity.y, "");
     m_debugData->DebugPushUILineDecimalNumber("angularVelocity.z = ", angularVelocity.z, "");
 
-    //DirectX::SimpleMath::Quaternion updateQuat;
-    updateQuat.x = aMissile.projectileData.q.angularVelocity.x;
-    updateQuat.y = aMissile.projectileData.q.angularVelocity.y;
-    updateQuat.z = aMissile.projectileData.q.angularVelocity.z;
+    DirectX::SimpleMath::Vector3 angularVelocityModified = angularVelocity;
+    const float angularDamp = 1.0f;
+    angularVelocityModified *= angularDamp;
+    updateQuat.x = angularVelocityModified.x;
+    updateQuat.y = angularVelocityModified.y;
+    updateQuat.z = angularVelocityModified.z;
     updateQuat.w = 0.0f;
     DirectX::SimpleMath::Quaternion updateOutputQuat = aMissile.projectileData.alignmentQuat;
     updateOutputQuat.Normalize();
-
     updateOutputQuat += (0.5f * aTimeDelta) * (updateQuat * aMissile.projectileData.alignmentQuat);
     updateOutputQuat.Normalize();
+    
+    DirectX::SimpleMath::Quaternion updateOutputQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+    updateOutputQuat2.Normalize();
+    updateOutputQuat2 += (0.5f * aTimeDelta) * (updateQuat * aMissile.projectileData.alignmentQuat);
+    updateOutputQuat2.Normalize();
+
+
+    //DirectX::SimpleMath::Vector3 updateHeading = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 updateHeading = aMissile.guidance.heading;
+    updateHeading = DirectX::SimpleMath::Vector3::Transform(updateHeading, updateOutputQuat2);
+    aMissile.guidance.heading = updateHeading;
 
     //aMissile.projectileData.alignmentQuat = updateOutputQuat;
+    m_debugData->DebugClearUI();
+    DirectX::SimpleMath::Vector3 xLine = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 yLine = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 zLine = DirectX::SimpleMath::Vector3::UnitZ;
+
+    xLine = DirectX::SimpleMath::Vector3::Transform(xLine, updateOutputQuat);
+    yLine = DirectX::SimpleMath::Vector3::Transform(yLine, updateOutputQuat);
+    zLine = DirectX::SimpleMath::Vector3::Transform(zLine, updateOutputQuat);
+
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, xLine, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, yLine, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, zLine, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
+
+    xLine = DirectX::SimpleMath::Vector3::UnitX;
+    yLine = DirectX::SimpleMath::Vector3::UnitY;
+    zLine = DirectX::SimpleMath::Vector3::UnitZ;
+
+    xLine = DirectX::SimpleMath::Vector3::Transform(xLine, updateOutputQuat2);
+    yLine = DirectX::SimpleMath::Vector3::Transform(yLine, updateOutputQuat2);
+    zLine = DirectX::SimpleMath::Vector3::Transform(zLine, updateOutputQuat2);
+
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, xLine, 200.0f, 0.5f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, yLine, 200.0f, 0.5f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, zLine, 200.0f, 0.5f, DirectX::Colors::Orange);
 
     DirectX::SimpleMath::Vector3 testHeading = aMissile.guidance.heading;
     testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
-
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.heading, 200.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testHeading, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.heading, 200.0f, 0.0f, DirectX::Colors::Lime);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, testHeading, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
 }
 
 void FireControl::CastRayLaser()
@@ -4912,8 +4947,8 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     torqueForce *= m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage;
 
     Utility::Torque thrustTorque = Utility::GetTorqueForce(torqueArm, torqueForce);
-    aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta * 0.3f);
-    //aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta);
+    //aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta * 0.3f);
+    aMissile.projectileData.angularForceSum = thrustTorque.axis * (thrustTorque.magnitude * aTimeDelta);
 
     const float angularDrageMod = m_missileConsts.angularDragMod;
     DirectX::SimpleMath::Vector3 angularDrag = DirectX::SimpleMath::Vector3::Zero;
