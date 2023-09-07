@@ -48,6 +48,7 @@ void FireControl::ActivateMuzzleFlash(AmmoType aAmmoType)
 
 void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta)
 {
+    DirectX::SimpleMath::Vector3 preHeading = aMissile.guidance.heading;
     DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 angularMomentum = aMissile.projectileData.q.angularMomentum;
     DirectX::SimpleMath::Vector3 angularVelocity = aMissile.projectileData.q.angularVelocity;
@@ -113,6 +114,13 @@ void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTi
     testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.heading, 200.0f, 0.0f, DirectX::Colors::Lime);
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, testHeading, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
+    //aMissile.guidance.heading = aMissile.projectileData.right;
+    //aMissile.guidance.headingLocal = DirectX::SimpleMath::Vector3::UnitZ;
+
+    DirectX::SimpleMath::Vector3 postHeading = aMissile.guidance.heading;
+    float angle = Utility::GetAngleBetweenVectors(preHeading, postHeading);
+    m_debugData->DebugPushUILineDecimalNumber("angle rads = ", angle, "");
+    m_debugData->DebugPushUILineDecimalNumber("angle degs = ", Utility::ToDegrees(angle), "");
 }
 
 void FireControl::CastRayLaser()
@@ -4338,6 +4346,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
         {
             boostForce = aProjectile->guidance.testThrustForce;
         }
+        boostForce = aProjectile->guidance.testThrustForce2;
         velocityUpdate += boostForce;
     }
 
@@ -4350,7 +4359,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     {
         torqueAccum = aProjectile->guidance.testThrustTorque;
     }
-
+    torqueAccum = aProjectile->guidance.testThrustTorque2;
     torqueAccum += newQ.angularVelocity;
     //torqueAccum += newQ.angularMomentum;
     //torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, aHeli->inverseInertiaMatrixTest);
@@ -4965,6 +4974,28 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     //aMissile.guidance.forwardThrust *= 0.5f;
 
     aMissile.guidance.forwardThrust = (aMissile.guidance.forwardThrust + (cos(thrustAngle) * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage))) * 0.5f;
+
+    //////////////////////////////////////////////
+    // Prototype better directional model
+    //static void AddForceAtPoint(const DirectX::SimpleMath::Vector3 & aForce, const DirectX::SimpleMath::Vector3 & aPoint, const DirectX::SimpleMath::Vector3 & aCenterOfMass,
+     //   DirectX::SimpleMath::Vector3 & aForceAccum, DirectX::SimpleMath::Vector3 & aTorqueAccum)
+
+    DirectX::SimpleMath::Vector3 centerOfMass = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 forcePoint = m_missileConsts.thrustPosLocal;
+    DirectX::SimpleMath::Vector3 forceVec = aMissile.guidance.headingLocal;
+    forceVec.Normalize();
+    forceVec *= m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage;
+
+    DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::AddForceAtPoint(forceVec, forcePoint, centerOfMass, forceAccum, torqueAccum);
+    forceAccum = DirectX::SimpleMath::Vector3::Transform(forceAccum, aMissile.projectileData.alignmentQuat);
+    aMissile.guidance.testThrustForce2 = forceAccum;
+    aMissile.guidance.testThrustTorque2 = torqueAccum;
+
+    /////////////////////////////////////////////
+
 
     if (aMissile.guidance.isExplodingTrue == true)
     {
@@ -5625,6 +5656,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
             aMissile.guidance.localizedDestinationDir = testHeading;
             
+            aMissile.guidance.headingLocal = testHeading;
             testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
             m_debugData->PushDebugLine(missilePos, testHeading, 300.0f, 0.1f, DirectX::Colors::Blue);
 

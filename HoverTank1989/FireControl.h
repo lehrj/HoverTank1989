@@ -78,9 +78,13 @@ struct GuidanceSystem
     bool isTargetingLaserOn = false;
     float postExplosionDrawCountDown = 2.0f;
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 headingLocal = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 testThrustForce = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 testThrustTorque = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 testThrustForce2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testThrustTorque2 = DirectX::SimpleMath::Vector3::Zero;
 
     float forwardThrust = 0.0f;
 
