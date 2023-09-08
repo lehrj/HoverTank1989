@@ -473,6 +473,50 @@ int NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay,float& aDis
     aDistance = distanceToTarget;
     return targetID;
 }
+
+void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aDistance, int& aTargetId, bool& aIsTargetLockTrue)
+{
+    bool isTargetHit = false;
+    float distanceToTarget = 10000.0f;
+    int targetID = -1;
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        float distance = 0.0f;
+        DirectX::SimpleMath::Vector3 localizedPos = aRay.position - m_npcVec[i]->GetPos();
+        localizedPos = DirectX::SimpleMath::Vector3::Transform(localizedPos, m_npcVec[i]->GetAlignmentInverseQuat());
+        DirectX::SimpleMath::Vector3 localizedRayDirection = DirectX::SimpleMath::Vector3::Transform(aRay.direction, m_npcVec[i]->GetAlignmentInverseQuat());
+        DirectX::SimpleMath::Ray localizedRay = DirectX::SimpleMath::Ray(localizedPos, localizedRayDirection);
+        DirectX::BoundingOrientedBox testOrientedBox = m_npcVec[i]->GetCollisionData();
+        DirectX::BoundingBox testBox;
+        testBox.Center = testOrientedBox.Center;
+        testBox.Center = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 collisionDimensions = DirectX::SimpleMath::Vector3(16.0f, 8.0f, 10.0f);
+        testBox.Extents = collisionDimensions * 0.5f;
+
+        if (localizedRay.Intersects(testBox, distance) == true)
+        {
+            if (isTargetHit == false)
+            {
+                distanceToTarget = distance;
+                targetID = m_npcVec[i]->GetID();
+                isTargetHit = true;
+            }
+            else
+            {
+                if (distance < distanceToTarget)
+                {
+                    targetID = m_npcVec[i]->GetID();
+                    distanceToTarget = distance;
+                }
+            }
+        }
+    }
+
+    aDistance = distanceToTarget;
+    aTargetId = targetID;
+    aIsTargetLockTrue = isTargetHit;
+}
+
 void NPCController::DebugToggleAI()
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)

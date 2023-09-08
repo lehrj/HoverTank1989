@@ -387,6 +387,7 @@ struct LaserModel
 {
     // colors
     const DirectX::SimpleMath::Vector4 laserColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    const DirectX::SimpleMath::Vector4 laserColorLockTrue = DirectX::SimpleMath::Vector4(0.0f, 1.f, 0.f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 1.0f, 1.0f);
     float distance = 0.0f;
     float flickerRot = 0.0f;
@@ -557,6 +558,7 @@ private:
 
     bool m_isTargetingLaserOn = true;
     int m_currentTargetID = -1;
+    bool m_isTargetingLaserLockTrue = false;
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
