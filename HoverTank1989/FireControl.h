@@ -283,6 +283,8 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;
+
+    const bool isMissleTargetingLaserTrue = true;
 };
 
 enum class ExplosionType
