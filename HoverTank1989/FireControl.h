@@ -284,7 +284,9 @@ struct MissileConsts
 
     const float plumeRotationRate = 0.432f;
 
-    const bool isMissleTargetingLaserTrue = true;
+    const bool isMissleTargetingLaserTrue = false;
+
+    const float headingRadiansPerSecondMax = 1.12f;
 };
 
 enum class ExplosionType
@@ -508,6 +510,7 @@ private:
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces3(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForces4(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
