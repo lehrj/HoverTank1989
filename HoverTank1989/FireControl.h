@@ -251,7 +251,7 @@ struct MissileData
 
 struct MissileStruct
 {
-    AmmoData ammoData;  
+    AmmoData ammoData;
     MissileModel modelData;
 };
 
@@ -259,7 +259,7 @@ struct MissileConsts
 {
     //const float angularDragMod = 0.8f;
     const float angularDragMod = 0.8f;
-    
+
     const float detonationRange = 10.0f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
     //const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
@@ -349,7 +349,7 @@ struct ExplosionStruct
     std::vector<ExplosionData> explosionVec;
     std::vector<std::tuple<DirectX::SimpleMath::Vector3, int>> explosionToPushVec;
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureExplosion;  
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureExplosion;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalMapExplosion;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularExplosion;
 
@@ -414,9 +414,9 @@ public:
     void DrawFireControlObjects(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
-    void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, 
-        const DirectX::SimpleMath::Vector3 aLaunchPos, 
-        const DirectX::SimpleMath::Vector3 aLaunchDirection, 
+    void InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+        const DirectX::SimpleMath::Vector3 aLaunchPos,
+        const DirectX::SimpleMath::Vector3 aLaunchDirection,
         Environment const* aEnvironment, std::shared_ptr<Vehicle> aVehicle);
 
     void InitializeTextureMapsExplosion(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
@@ -448,7 +448,7 @@ public:
 
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
-    void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta); 
+    void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
@@ -484,7 +484,7 @@ private:
     void InitializeProjectileModelGuidedMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
-    void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);   
+    void InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
@@ -493,7 +493,7 @@ private:
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 
-    void UpdateDynamicExplosive(struct ExplosionData& aExplosion,const double aTimeDelta);
+    void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
