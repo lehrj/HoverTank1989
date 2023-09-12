@@ -6177,6 +6177,10 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     aMissile.guidance.testThrustForce2 = forceAccum;
     aMissile.guidance.testThrustTorque2 = torqueAccum;
+
+    aMissile.guidance.testThrustForce2 = forceAccum;
+    aMissile.guidance.testThrustTorque2 = torqueAccum;
+
     //aMissile.guidance.testThrustTorque2 = DirectX::SimpleMath::Vector3::Zero;
     m_debugData->ToggleDebugOn();
 
@@ -6334,7 +6338,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
             DirectX::SimpleMath::Quaternion fromToRotQuat = DirectX::SimpleMath::Quaternion::FromToRotation(prevLocalHeading, postLocalHeading);
             DirectX::SimpleMath::Quaternion testUpdateQuat = DirectX::SimpleMath::Quaternion::Identity;
-
+            
             testUpdateQuat.RotateTowards(fromToRotQuat, m_missileConsts.headingRadiansPerSecondMax * aTimeDelta);
             testHeading = DirectX::SimpleMath::Vector3::UnitX;
             testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, testUpdateQuat);
@@ -6342,7 +6346,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             aMissile.guidance.localizedDestinationDir = testHeading;
             testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
             aMissile.guidance.heading = testHeading;
-
+            
             m_debugData->ToggleDebugOff();
         }
     }
