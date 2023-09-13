@@ -490,6 +490,7 @@ private:
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
+    void RightHandSideMissileTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 
@@ -500,6 +501,7 @@ private:
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidanceTest(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
@@ -508,6 +510,7 @@ private:
     //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForcesTest(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces3(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces4(MissileData& aMissile, const float aTimeDelta);
