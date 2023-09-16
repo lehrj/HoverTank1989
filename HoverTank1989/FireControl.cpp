@@ -84,7 +84,7 @@ void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTi
     aMissile.guidance.heading = updateHeading;
 
     //aMissile.projectileData.alignmentQuat = updateOutputQuat;
-    m_debugData->DebugClearUI();
+    // m_debugData->DebugClearUI();
     DirectX::SimpleMath::Vector3 xLine = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 yLine = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 zLine = DirectX::SimpleMath::Vector3::UnitZ;
@@ -114,10 +114,13 @@ void FireControl::CalculateGimbaledThrust(MissileData& aMissile, const float aTi
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.heading, 200.0f, 0.0f, DirectX::Colors::Lime);
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, testHeading, 200.0f, 0.5f, DirectX::Colors::SkyBlue);
 
-    /*
+    
     //aMissile.guidance.heading = aMissile.projectileData.right;
     //aMissile.guidance.headingLocal = DirectX::SimpleMath::Vector3::UnitZ;
 
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, DirectX::SimpleMath::Vector3::UnitY , 400.0f, 0.5f, DirectX::Colors::White);
+
+    /*
     DirectX::SimpleMath::Vector3 postHeading = aMissile.guidance.heading;
     float angle = Utility::GetAngleBetweenVectors(preHeading, postHeading);
     m_debugData->DebugPushUILineDecimalNumber("angle rads = ", angle, "");
@@ -4235,6 +4238,13 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
     aProjectile->projectileData.collisionData.velocity = q.velocity;
     aProjectile->projectileData.q.angularVelocity = q.angularVelocity;
     aProjectile->projectileData.q.angularMomentum = q.angularMomentum;
+
+    m_debugData->ToggleDebugOn();
+    m_debugData->DebugPushUILineDecimalNumber("aProjectile->guidance.testThrustTorque2.x", aProjectile->guidance.testThrustTorque2.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("aProjectile->guidance.testThrustTorque2.y ", aProjectile->guidance.testThrustTorque2.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("aProjectile->guidance.testThrustTorque2.z ", aProjectile->guidance.testThrustTorque2.z, "");
+    m_debugData->ToggleDebugOff();
+    
 }
 
 void FireControl::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
@@ -5236,15 +5246,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
-        {
-            UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
-        }
-        else
-        {
-            UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
-        }
-        //UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
+        UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
     }
 
@@ -6244,7 +6246,7 @@ void FireControl::UpdateMissileForcesTest(MissileData& aMissile, const float aTi
     //aMissile.guidance.testThrustTorque2 = DirectX::SimpleMath::Vector3::Zero;
     m_debugData->ToggleDebugOn();
 
-    m_debugData->DebugClearUI();
+    //m_debugData->DebugClearUI();
     m_debugData->DebugPushUILineDecimalNumber("forceAccum length = ", forceAccum.Length(), "");
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceAccum, 300.0f, 0.0f, DirectX::Colors::Red);
 
@@ -6525,7 +6527,7 @@ void FireControl::UpdateMissileGuidanceTest(MissileData& aMissile, const float a
 void FireControl::RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
 {
     //  Compute the intermediate values of the 
-//  dependent variables.
+    //  dependent variables.
     ProjectileMotion newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
@@ -6602,7 +6604,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 void FireControl::RightHandSideMissileTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
 {
     //  Compute the intermediate values of the 
-//  dependent variables.
+    //  dependent variables.
     ProjectileMotion newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
