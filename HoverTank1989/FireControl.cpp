@@ -2910,7 +2910,7 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
     }
 }
 
-void FireControl::FireMissile2(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
+void FireControl::FireMissile2(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet)
 {
     AmmoData firedAmmo = m_ammoGuidedMissile.ammoData;
     //AmmoData firedAmmo = m_ammoMissile.ammoData;
@@ -2945,7 +2945,8 @@ void FireControl::FireMissile2(const DirectX::SimpleMath::Vector3 aLaunchPos, co
     firedMissile.projectileData.collisionData.velocity = firedMissile.projectileData.q.velocity;
     firedMissile.projectileData.collisionData.mass = firedAmmo.mass;
     firedMissile.projectileData.collisionData.isCollisionTrue = firedMissile.projectileData.isCollisionTrue;
-    firedMissile.projectileData.time = 0.0f;
+    //firedMissile.projectileData.time = 0.0f;
+    firedMissile.projectileData.time = 0.0f + aTimeOffSet;
 
     firedMissile.guidance.uniqueId = GetUniqueMissileID();
     firedMissile.guidance.heading = aLaunchDirectionForward;
@@ -3334,7 +3335,9 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
             {
                 //FireMissile(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp);
 
-                FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
+                FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
+                const float fireTimeOffset = 0.292f;
+                //FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
 
                 //FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), DirectX::SimpleMath::Vector3::UnitX, aLauncherVelocity, DirectX::SimpleMath::Vector3::UnitY);
                 //FireMissile2(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
