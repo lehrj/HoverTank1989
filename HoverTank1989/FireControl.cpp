@@ -6291,9 +6291,10 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
     {
         aMissile.guidance.isTargetingLaserOn = true;
     }
-    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
+    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay && aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
     {
         aMissile.guidance.isRocketFired = true;
+        aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
     }
     if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay)
     {
@@ -6695,4 +6696,9 @@ void FireControl::RightHandSideMissileTest(struct MissileData* aProjectile, Proj
     aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
     //aDQ->angularMomentum = static_cast<float>(aTimeDelta) * newQ.angularVelocity;
+}
+
+void FireControl::UpdateFlightState(MissileData& aMissile)
+{
+
 }

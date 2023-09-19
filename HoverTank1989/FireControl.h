@@ -57,8 +57,17 @@ struct AmmoData
     bool isGuided = false;
 };
 
+enum class FlightState
+{
+    FLIGHTSTATE_ATTACK,
+    FLIGHTSTATE_CLIMBOUT,
+    FLIGHTSTATE_CRUISE,
+    FLIGHTSTATE_LAUNCH,
+};
+
 struct GuidanceSystem
 {
+    FlightState flightStateCurrent;// = FlightState::FLIGHTSTATE_LAUNCH;
     unsigned int uniqueId = 0;
     float detonationRadius = 5.0f;
     int targetID = 0;
@@ -503,6 +512,7 @@ private:
 
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
+    void UpdateFlightState(MissileData& aMissile);
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
