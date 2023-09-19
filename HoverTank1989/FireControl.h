@@ -287,6 +287,11 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = false;
 
     const float headingRadiansPerSecondMax = 1.12f;
+
+    // flight modeling
+    const float climbOutAltMin = 20.0f;
+    const float maxAlt = 200.0f;
+    const float terminalRange = 300.0f;
 };
 
 enum class ExplosionType
@@ -449,6 +454,7 @@ public:
 
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
+    void AltitudeController(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);

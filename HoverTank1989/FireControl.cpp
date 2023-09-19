@@ -6266,6 +6266,17 @@ void FireControl::UpdateMissileForcesTest(MissileData& aMissile, const float aTi
     UpdateMissileDragLinear(aMissile, aTimeDelta);
 }
 
+void FireControl::AltitudeController(MissileData& aMissile, const float aTimeDelta)
+{
+    const float altBuffer = 50.0f;
+
+    if (aMissile.guidance.targetDistance > m_missileConsts.terminalRange)
+    {
+        aMissile.guidance.targetDestination.y += altBuffer;
+        aMissile.guidance.targetPosition.y += altBuffer;
+    }
+}
+
 void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta)
 {
     if (aMissile.guidance.isExplodingTrue == true)
@@ -6299,6 +6310,9 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity);
             aMissile.guidance.targetDistance = (aMissile.projectileData.q.position - aMissile.guidance.targetPosition).Length();
             aMissile.guidance.targetDestination = aMissile.guidance.targetPosition;
+
+            AltitudeController(aMissile, aTimeDelta);
+
             const float maxAngle = m_missileConsts.stearingAngleMax;
 
             m_debugData->ToggleDebugOn();
