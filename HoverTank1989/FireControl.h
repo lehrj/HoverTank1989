@@ -69,8 +69,11 @@ struct GuidanceSystem
 {
     FlightState flightStateCurrent;// = FlightState::FLIGHTSTATE_LAUNCH;
     unsigned int uniqueId = 0;
-    float detonationRadius = 5.0f;
     int targetID = 0;
+
+    float altitude = 0.0f;
+    float detonationRadius = 5.0f;
+    
     DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
@@ -299,6 +302,7 @@ struct MissileConsts
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
+    const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
     const float terminalRange = 300.0f;
 };

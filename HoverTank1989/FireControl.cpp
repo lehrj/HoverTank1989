@@ -5249,8 +5249,13 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
+        UpdateFlightState(m_missileVec[i]);
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
+        
+        m_debugData->ToggleDebugOn();
+        m_debugData->DebugPushUILineDecimalNumber("Missile Alt = ", m_missileVec[i].guidance.altitude, "");
+        m_debugData->ToggleDebugOff();
     }
 
     CheckCollisionsMissile();
@@ -6279,6 +6284,24 @@ void FireControl::AltitudeController(MissileData& aMissile, const float aTimeDel
 
 void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta)
 {
+    /*
+    DirectX::SimpleMath::Vector3 terainNormal = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Plane groundPlane;
+    float terrainHeightAtPos = 0.0f;
+
+    //bool isVehicleInPlayUpdate = m_environment->GetVehicleUpdateData(m_heli.q.position, m_heli.terrainNormal, m_heli.terrainHightAtPos, m_heli.groundPlane);
+    bool isMissileInPlayTrue = m_environment->GetVehicleUpdateData(aMissile.projectileData.q.position, terainNormal, terrainHeightAtPos, groundPlane);
+    if (isMissileInPlayTrue == false)
+    {
+        // to do: add error handling if out of play
+    }
+    aMissile.guidance.altitude = terrainHeightAtPos;
+    //m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
+    //m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
+    */
+    float terrainHeightAtPos = m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position);
+    aMissile.guidance.altitude = aMissile.projectileData.q.position.y - terrainHeightAtPos;
+
     if (aMissile.guidance.isExplodingTrue == true)
     {
         aMissile.guidance.postExplosionDrawCountDown -= aTimeDelta;
@@ -6291,10 +6314,9 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
     {
         aMissile.guidance.isTargetingLaserOn = true;
     }
-    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay && aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
     {
         aMissile.guidance.isRocketFired = true;
-        aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
     }
     if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay)
     {
@@ -6388,6 +6410,23 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             CalculateGimbaledThrust(aMissile, aTimeDelta);
 
             m_debugData->ToggleDebugOff();
+        }
+    }
+}
+
+void FireControl::UpdateFlightState(MissileData& aMissile)
+{
+    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay && aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    {
+        aMissile.guidance.isRocketFired = true;
+        aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
+    }
+
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    {
+        if (aMissile.guidance.isRocketFired == true)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
         }
     }
 }
@@ -6698,7 +6737,3 @@ void FireControl::RightHandSideMissileTest(struct MissileData* aProjectile, Proj
     //aDQ->angularMomentum = static_cast<float>(aTimeDelta) * newQ.angularVelocity;
 }
 
-void FireControl::UpdateFlightState(MissileData& aMissile)
-{
-
-}
