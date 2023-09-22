@@ -6151,8 +6151,6 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
 
 
 
-
-
 void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDelta)
 {
     float thrustAngle = Utility::GetAngleBetweenVectors(aMissile.guidance.heading, aMissile.projectileData.forward);
@@ -6306,21 +6304,6 @@ void FireControl::AltitudeController(MissileData& aMissile, const float aTimeDel
 
 void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta)
 {
-    /*
-    DirectX::SimpleMath::Vector3 terainNormal = DirectX::SimpleMath::Vector3::UnitY;
-    DirectX::SimpleMath::Plane groundPlane;
-    float terrainHeightAtPos = 0.0f;
-
-    //bool isVehicleInPlayUpdate = m_environment->GetVehicleUpdateData(m_heli.q.position, m_heli.terrainNormal, m_heli.terrainHightAtPos, m_heli.groundPlane);
-    bool isMissileInPlayTrue = m_environment->GetVehicleUpdateData(aMissile.projectileData.q.position, terainNormal, terrainHeightAtPos, groundPlane);
-    if (isMissileInPlayTrue == false)
-    {
-        // to do: add error handling if out of play
-    }
-    aMissile.guidance.altitude = terrainHeightAtPos;
-    //m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
-    //m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
-    */
     float terrainHeightAtPos = m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position);
     aMissile.guidance.altitude = aMissile.projectileData.q.position.y - terrainHeightAtPos;
 
