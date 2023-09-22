@@ -67,7 +67,7 @@ enum class FlightState
 
 struct GuidanceSystem
 {
-    FlightState flightStateCurrent;// = FlightState::FLIGHTSTATE_LAUNCH;
+    FlightState flightStateCurrent = FlightState::FLIGHTSTATE_LAUNCH;
     unsigned int uniqueId = 0;
     int targetID = 0;
 

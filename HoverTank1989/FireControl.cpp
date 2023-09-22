@@ -5255,6 +5255,28 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         
         m_debugData->ToggleDebugOn();
         m_debugData->DebugPushUILineDecimalNumber("Missile Alt = ", m_missileVec[i].guidance.altitude, "");
+
+        if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_ATTACK)
+        {
+            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_ATTACK ", m_missileVec[i].guidance.uniqueId, "");
+        }
+        else if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
+        {
+            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_CLIMBOUT ", m_missileVec[i].guidance.uniqueId, "");
+        }
+        else if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
+        {
+            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_CRUISE ", m_missileVec[i].guidance.uniqueId, "");
+        }
+        else if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+        {
+            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_LAUNCH ", m_missileVec[i].guidance.uniqueId, "");
+        }
+        else 
+        {
+            m_debugData->DebugPushUILineWholeNumber("NO FLIGHT STATE ", m_missileVec[i].guidance.uniqueId, "");
+        }
+
         m_debugData->ToggleDebugOff();
     }
 
@@ -6416,17 +6438,25 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
 void FireControl::UpdateFlightState(MissileData& aMissile)
 {
-    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay && aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
-    {
-        aMissile.guidance.isRocketFired = true;
-        aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
-    }
-
     if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
     {
         if (aMissile.guidance.isRocketFired == true)
         {
             aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
+        }
+    }
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
+    {
+        if (aMissile.guidance.altitude >= m_missileConsts.climbOutAltMin)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CRUISE;
+        }
+    }
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
+    {
+        if (aMissile.guidance.targetDistance <= m_missileConsts.terminalRange)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_ATTACK;
         }
     }
 }
