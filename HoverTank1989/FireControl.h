@@ -98,6 +98,11 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 testThrustForce2 = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 testThrustTorque2 = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Vector3 testThrustForce3 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testThrustTorque3 = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 thrustPosWorldAligned = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
+
     float forwardThrust = 0.0f;
 
     float finAngle1 = 0.0f;
@@ -293,10 +298,11 @@ struct MissileConsts
     const float laserDepoyDelay = 3.9f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfPreasurePosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;
 
-    const bool isMissleTargetingLaserTrue = false;
+    const bool isMissleTargetingLaserTrue = true;
 
     const float headingRadiansPerSecondMax = 1.12f;
 
@@ -304,7 +310,7 @@ struct MissileConsts
     const float climbOutAltMin = 20.0f;
     const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
-    const float terminalRange = 300.0f;
+    const float terminalRange = 100.0f;
 };
 
 enum class ExplosionType
@@ -592,7 +598,6 @@ private:
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
 
-    const float m_missileMass = 10.0f;
     const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
 
     float m_testRot = 0.0f;
