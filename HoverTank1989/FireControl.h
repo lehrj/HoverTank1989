@@ -274,7 +274,6 @@ struct MissileStruct
 
 struct MissileConsts
 {
-    //const float angularDragMod = 0.8f;
     const float angularDragMod = 0.8f;
 
     const float detonationRange = 10.0f;
@@ -474,6 +473,7 @@ public:
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
     void AltitudeController(MissileData& aMissile, const float aTimeDelta);
+    void CalculateAngularDragLocal(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
@@ -526,6 +526,7 @@ private:
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
     void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileDragLinear2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidanceTest(MissileData& aMissile, const float aTimeDelta);

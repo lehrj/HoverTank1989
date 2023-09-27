@@ -3664,12 +3664,40 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     // inertia tensors
     m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
 
-    const float mass = m_missileConsts.mass;
-    const float radius = m_missileDimensions.z;
-    const float height = m_missileDimensions.x;
+    //const float xExtent = m_missileDimensions.x;
+    //const float yExtent = m_missileDimensions.y;
+    //const float zExtent = m_missileDimensions.z;
+    //const float mass = m_missileMass;
+    //const float mass = m_missileConsts.mass;
+
+    // cuboid
+    //m_missileInertiaTensorLocal._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    //m_missileInertiaTensorLocal._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    //m_missileInertiaTensorLocal._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+
+    // cylinder
+    //const float m_missileMass = 10.0f;
+    
+    //const float mass = m_missileConsts.mass;
+    //const float radius = m_missileDimensions.z;
+    //const float height = m_missileDimensions.x;
+
+    const float mass = 10.0f;
+    //const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
+    const float radius = 1.0f;
+    const float height = 4.0f;
     m_missileInertiaTensorLocal._11 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
     m_missileInertiaTensorLocal._22 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
     m_missileInertiaTensorLocal._33 = (1.0f / 2.0f) * (mass) * (radius * radius);
+    /*
+    const float xExtent = 1.0f;
+    const float yExtent = 1.0f;
+    const float zExtent = 1.0f;
+    // cuboid
+    m_missileInertiaTensorLocal._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    m_missileInertiaTensorLocal._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    m_missileInertiaTensorLocal._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+    */
 
     m_missileInverseInertiaTensorLocal = m_missileInertiaTensorLocal;
     m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();
@@ -5090,6 +5118,44 @@ void FireControl::UpdateMissileCoefficients(MissileData& aMissile, const float a
 
 void FireControl::UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta)
 {
+    float airDensity = m_environment->GetAirDensity();
+    float dragCoefficient = aMissile.projectileData.ammoData.dragCoefficient + aMissile.guidance.airFoilDragMod;
+    if (aMissile.guidance.isExplodingTrue == true)
+    {
+        //dragCoefficient = m_missileConsts.postExplosionDragCoefficient;
+        //mass = m_missileConsts.postExplosionMass;
+    }
+
+    float frontSurfaceArea = aMissile.projectileData.ammoData.frontSurfaceArea;
+    float frontSurfaceAreaTest = (aMissile.projectileData.ammoData.radius * 2.0f) * 2.0f;
+    float frontSurfaceAreatTest2 = Utility::GetPi() * (aMissile.projectileData.ammoData.radius * aMissile.projectileData.ammoData.radius);
+    float sideSurfaceArea = aMissile.projectileData.ammoData.length * (aMissile.projectileData.ammoData.radius * 2.0f);
+    float velocity = aMissile.projectileData.q.velocity.Length();
+    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
+    DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
+
+
+    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate += airResistance;
+
+
+    float dragSurfaceArea = 0.0f;
+    dragSurfaceArea += frontSurfaceArea * cos(aMissile.guidance.angleOfAttack);
+    dragSurfaceArea += sideSurfaceArea * sin(aMissile.guidance.angleOfAttack);
+    aMissile.guidance.dragSurfaceArea = dragSurfaceArea;
+
+    float dragCoefficentSum = aMissile.projectileData.ammoData.dragCoefficient;
+    const float sideProfileDragCoefficient = 0.82f; // long cylinder shape
+    const float sideMinusFrontCl = sideProfileDragCoefficient - aMissile.projectileData.ammoData.dragCoefficient;
+
+    dragCoefficentSum += abs(sideMinusFrontCl) * sin(aMissile.guidance.angleOfAttack);
+    aMissile.guidance.dragCoefficientFull = abs(dragCoefficentSum + aMissile.guidance.airFoilDragMod);
+}
+
+void FireControl::UpdateMissileDragLinear2(MissileData& aMissile, const float aTimeDelta)
+{
 
     float airDensity = m_environment->GetAirDensity();
     float dragCoefficient = aMissile.projectileData.ammoData.dragCoefficient + aMissile.guidance.airFoilDragMod;
@@ -5265,9 +5331,15 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->PushDebugLinePositionIndicator(m_missileVec[i].guidance.targetPosition, 50.0f, 0.0f, DirectX::Colors::Yellow);
         
         m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.testThrustForce3 ", m_missileVec[i].guidance.testThrustForce3.Length(), "");
-        
+
         m_debugData->PushDebugLineScaled(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.testThrustForce3, 1.0f, 1.0f, 0.0f, DirectX::Colors::White);
 
+        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].projectileData.angularDragSum.Length() =", m_missileVec[i].projectileData.angularDragSum.Length(), "");
+        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.angularDragSum, 30.0, 0.0f, DirectX::Colors::Red);
+
+        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.throttlePercentage = ", m_missileVec[i].guidance.throttlePercentage, "");
+
+        
         m_debugData->ToggleDebugOff();
     }
 
@@ -6177,9 +6249,12 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     const float angularDrageMod = m_missileConsts.angularDragMod;
     DirectX::SimpleMath::Vector3 angularDrag = DirectX::SimpleMath::Vector3::Zero;
+    //angularDrag = aMissile.projectileData.angularDragSum;
     angularDrag = aMissile.projectileData.q.angularVelocity * -powf(angularDrageMod, aTimeDelta);
-
+    //angularDrag *= 2.5f;
     aMissile.projectileData.angularDragSum = angularDrag;
+
+    CalculateAngularDragLocal(aMissile, aTimeDelta);
 
     // update forward thrust to be fraction remaining after side thrust removed
     //float adjacent = cos(thrustAngle) * m_missileConsts.rocketBoostForceMax;
@@ -6231,7 +6306,7 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     Utility::AddForceAtPoint(forceVec, forcePoint, centerOfMass, forceAccum, torqueAccum);
 
-
+    
 
     aMissile.guidance.testThrustTorque3 = torqueAccum;
     //aMissile.guidance.testThrustTorque3 = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.testThrustTorque3, aMissile.projectileData.inverseAlignmentQuat);
@@ -6763,10 +6838,11 @@ void FireControl::RightHandSideMissileTest(struct MissileData* aProjectile, Proj
     DirectX::SimpleMath::Vector3 dragForce = velocityNorm * (-dragResistanceFull);
 
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate += newQ.velocity;
     //velocityUpdate += airResistance;
-    velocityUpdate += dragForce;
-    velocityUpdate += gravForce;
-    velocityUpdate += liftForce;
+    //velocityUpdate += dragForce;
+    //velocityUpdate += gravForce;
+    //velocityUpdate += liftForce;
 
     if (aProjectile->guidance.isRocketFired == true)
     {
@@ -6804,3 +6880,57 @@ void FireControl::RightHandSideMissileTest(struct MissileData* aProjectile, Proj
     //aDQ->angularMomentum = static_cast<float>(aTimeDelta) * newQ.angularVelocity;
 }
 
+void FireControl::CalculateAngularDragLocal(MissileData& aMissile, const float aTimeDelta)
+{
+    DirectX::SimpleMath::Vector3 angVelocityNorm = aMissile.projectileData.q.angularVelocity;
+    angVelocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 localAngVelocityNorm = angVelocityNorm;
+    //localAngVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localAngVelocityNorm, m_heli.alignmentInverse);
+
+    //const float length = 8.0f;
+    //const float width = 4.0f;
+    //const float height = 2.0f;
+    // float length = m_inertiaModelX;
+    //const float width = m_inertiaModelZ;
+    //const float height = m_inertiaModelY;
+
+    const float length = m_missileDimensions.x;
+    const float width = m_missileDimensions.z;
+    const float height = m_missileDimensions.y;
+
+    float frontSurfaceArea = width * height;
+    float sideSurfaceArea = length * height;
+    float topSurfaceArea = length * width;
+
+    float yawDot = localAngVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
+    float pitchDot = localAngVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    float rollDot = localAngVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX);
+
+    float yawSurface = (width * abs(yawDot)) + (height * abs(yawDot));
+    float pitchSurface = (length * abs(pitchDot)) + (width * abs(pitchDot));
+    //float rollSurface = (length * abs(rollDot)) + (height * abs(rollDot));
+    float rollSurface = (length * abs(rollDot)) + (width * abs(rollDot));
+
+    float yawRadius = (length * abs(yawDot)) * 0.5f;
+    float pitchRadius = (length * abs(pitchDot)) * 0.5f;
+    float rollRadius = (width * abs(rollDot)) * 0.5f;
+
+    float airSurfaceArea = yawSurface + pitchSurface + rollSurface;
+    float radiusSum = yawRadius + pitchRadius + rollRadius;
+
+    float angVelocityF = aMissile.projectileData.q.angularVelocity.Length();
+
+    //float angDragCoefficient = m_angDragCoefficient;
+    float angDragCoefficient = 0.03f;
+
+    float angAirDensity = m_environment->GetAirDensity();
+    //float angFrontSurfaceArea = m_heli.area;
+    float radius = radiusSum;
+    //float angFrontSurfaceArea = airSurfaceArea;
+
+    DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * airSurfaceArea * angAirDensity)));
+    //angularDrag = aAngVelocity * -powf(m_angularDragMod, aTimeStep);
+
+    aMissile.projectileData.angularDragSum = angularDrag;
+    //return angularDrag;
+}
