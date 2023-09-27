@@ -104,7 +104,8 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 thrustPosWorldAligned = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
 
     float forwardThrust = 0.0f;
-
+    
+    float finDeployPercent = 0.0f;
     float finAngle1 = 0.0f;
     float finAngle2 = 0.0f;
     float finAngle3 = 0.0f;
@@ -126,6 +127,8 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 localizedDestinationPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 localizedDestinationDir = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 airDragTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
@@ -297,7 +300,7 @@ struct MissileConsts
     const float laserDepoyDelay = 3.9f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
-    const DirectX::SimpleMath::Vector3 centerOfPreasurePosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfPreasurePosLocal = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;
 
@@ -310,6 +313,8 @@ struct MissileConsts
     const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
     const float terminalRange = 100.0f;
+
+    const bool useAdvancedMoiTensorTrue = false;
 };
 
 enum class ExplosionType
@@ -474,6 +479,7 @@ private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
     void AltitudeController(MissileData& aMissile, const float aTimeDelta);
     void CalculateAngularDragLocal(MissileData& aMissile, const float aTimeDelta);
+    void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);

@@ -3682,25 +3682,50 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     //const float radius = m_missileDimensions.z;
     //const float height = m_missileDimensions.x;
 
-    const float mass = 10.0f;
+    //const float mass = 10.0f;
     //const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
     const float radius = 1.0f;
     const float height = 4.0f;
+    /*
     m_missileInertiaTensorLocal._11 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
     m_missileInertiaTensorLocal._22 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
     m_missileInertiaTensorLocal._33 = (1.0f / 2.0f) * (mass) * (radius * radius);
-    /*
-    const float xExtent = 1.0f;
-    const float yExtent = 1.0f;
-    const float zExtent = 1.0f;
+    */
+
     // cuboid
+    //const float xExtent = 1.0f;
+    //const float yExtent = 1.0f;
+    //const float zExtent = 1.0f;
+    // cuboid
+    const float xExtent = m_missileDimensions.x;
+    const float yExtent = m_missileDimensions.y;
+    const float zExtent = m_missileDimensions.z;
+    const float mass = m_missileConsts.mass;
+    
     m_missileInertiaTensorLocal._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
     m_missileInertiaTensorLocal._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_missileInertiaTensorLocal._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
-    */
+    
 
     m_missileInverseInertiaTensorLocal = m_missileInertiaTensorLocal;
     m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();
+
+    if (m_missileConsts.useAdvancedMoiTensorTrue == true)
+    {
+        const float altMass = 5.0f;
+        const DirectX::SimpleMath::Vector3 altDimensions = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+        const DirectX::SimpleMath::Vector3 altOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 1.0f);
+        DirectX::SimpleMath::Matrix advancedTensor = DirectX::SimpleMath::Matrix::Identity;
+
+        advancedTensor._11 = (1.0f / 12.0f) * (altMass) * ((altDimensions.y * altDimensions.y) + (altDimensions.z * altDimensions.z));
+        advancedTensor._22 = (1.0f / 12.0f) * (altMass) * ((altDimensions.x * altDimensions.x) + (altDimensions.z * altDimensions.z));
+        advancedTensor._33 = (1.0f / 12.0f) * (altMass) * ((altDimensions.x * altDimensions.x) + (altDimensions.y * altDimensions.y));
+
+        advancedTensor.Translation(altOffset);
+        m_missileInertiaTensorLocal *= advancedTensor;
+        m_missileInverseInertiaTensorLocal = m_missileInertiaTensorLocal;
+        m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();
+    }
     ////////////
 
     InitializeAmmoCannon(m_ammoCannon);
@@ -5339,7 +5364,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.throttlePercentage = ", m_missileVec[i].guidance.throttlePercentage, "");
 
-        
+        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.finDeployPercent =", m_missileVec[i].guidance.finDeployPercent, "");
         m_debugData->ToggleDebugOff();
     }
 
@@ -6324,6 +6349,11 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceAccum, 300.0f, 0.0f, DirectX::Colors::Red);
     */
 
+    
+    
+    /////////////////////////////////////////////
+
+    CalculateAirDragTorque(aMissile, aTimeDelta);
     m_debugData->ToggleDebugOff();
     /////////////////////////////////////////////
 
@@ -6433,6 +6463,30 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 {
     float terrainHeightAtPos = m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position);
     aMissile.guidance.altitude = aMissile.projectileData.q.position.y - terrainHeightAtPos;
+
+    if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay)
+    {
+    }
+    if (aMissile.guidance.isFinsDeployEnd == false && aMissile.projectileData.time <= m_missileConsts.finDeployDelay)
+    {
+        aMissile.guidance.finDeployPercent = 0.0f;
+    }
+    if (aMissile.guidance.isFinsDeployEnd == false)
+    {
+        if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time <= m_missileConsts.finDeployDelay)
+        {
+            aMissile.guidance.finDeployPercent = 0.0f;
+        }
+        else if (aMissile.projectileData.time >= m_missileConsts.finDeployDelay && aMissile.projectileData.time <= (m_missileConsts.finDeployDelay + m_missileConsts.finDeployTime))
+        {
+            float finDeployPercent2 = (aMissile.projectileData.time - m_missileConsts.finDeployDelay) / (m_missileConsts.finDeployTime);
+            aMissile.guidance.finDeployPercent = finDeployPercent2;
+        }
+    }
+    else
+    {
+        aMissile.guidance.finDeployPercent = 1.0f;
+    }
 
     if (aMissile.guidance.isExplodingTrue == true)
     {
@@ -6782,6 +6836,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     // angular
     DirectX::SimpleMath::Vector3 torqueAccum = aProjectile->projectileData.angularForceSum;
+    
     if (m_isDebugToggleTrue == true)
     {
         torqueAccum = aProjectile->guidance.testThrustTorque;
@@ -6789,6 +6844,9 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     torqueAccum = aProjectile->guidance.testThrustTorque3;
     torqueAccum += newQ.angularVelocity;
     //torqueAccum += newQ.angularMomentum;
+    
+    torqueAccum += aProjectile->guidance.airDragTorqueLocal;
+    
     //torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, aHeli->inverseInertiaMatrixTest);
     torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
 
@@ -6933,4 +6991,46 @@ void FireControl::CalculateAngularDragLocal(MissileData& aMissile, const float a
 
     aMissile.projectileData.angularDragSum = angularDrag;
     //return angularDrag;
+}
+
+
+void FireControl::CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta)
+{
+    DirectX::SimpleMath::Vector3 airVelocityLocalized = aMissile.projectileData.q.velocity;
+    airVelocityLocalized = DirectX::SimpleMath::Vector3::Transform(airVelocityLocalized, aMissile.projectileData.inverseAlignmentQuat);
+    const float angleOfAttack = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airVelocityLocalized);
+    
+    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack deg = ", Utility::ToDegrees(angleOfAttack), "");
+
+    float sideSlipRatio = angleOfAttack / DirectX::XM_PIDIV2;
+    if (sideSlipRatio > 1.0f)
+    {
+        sideSlipRatio = 1.0f;
+    }
+
+    m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio  = ", sideSlipRatio, "");
+
+    const float airSpeed = airVelocityLocalized.Length();
+    const float frontalArea = m_missileDimensions.y * m_missileDimensions.z;
+    const float sideArea = m_missileDimensions.x * m_missileDimensions.y;
+    const float areaDelta = sideArea - frontalArea;
+    const float area = sideArea * sideSlipRatio;
+
+    DirectX::SimpleMath::Vector3 centerOfMass = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 centerOfPressure = DirectX::SimpleMath::Vector3::Zero;
+    centerOfPressure += m_missileConsts.centerOfPreasurePosLocal * aMissile.guidance.finDeployPercent;
+    DirectX::SimpleMath::Vector3 forcePoint = centerOfPressure;
+    DirectX::SimpleMath::Vector3 forceVec = airVelocityLocalized;
+    forceVec.Normalize();
+    forceVec *= airSpeed * area;
+
+    DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::AddForceAtPoint(forceVec, forcePoint, centerOfMass, forceAccum, torqueAccum);
+
+    m_debugData->DebugPushUILineDecimalNumber("forceAccum.Length() =", forceAccum.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("torqueAccum.Length() =", torqueAccum.Length(), "");
+
+    aMissile.guidance.airDragTorqueLocal = torqueAccum;
 }
