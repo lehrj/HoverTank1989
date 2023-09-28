@@ -103,6 +103,8 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 thrustPosWorldAligned = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
 
+    DirectX::SimpleMath::Vector3 dragLinearSum = DirectX::SimpleMath::Vector3::Zero;
+
     float forwardThrust = 0.0f;
     
     float finDeployPercent = 0.0f;
@@ -480,6 +482,8 @@ private:
     void AltitudeController(MissileData& aMissile, const float aTimeDelta);
     void CalculateAngularDragLocal(MissileData& aMissile, const float aTimeDelta);
     void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    void CalculeDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
