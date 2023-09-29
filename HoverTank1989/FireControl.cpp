@@ -6997,7 +6997,14 @@ void FireControl::CalculateAngularDragLocal(MissileData& aMissile, const float a
 
     float airSurfaceArea = yawSurface + pitchSurface + rollSurface;
     float radiusSum = yawRadius + pitchRadius + rollRadius;
+    m_debugData->ToggleDebugOn();
+    m_debugData->DebugPushUILineDecimalNumber("radiusSum = ", radiusSum, "");
 
+    m_debugData->DebugPushUILineDecimalNumber("yawRadius   = ", yawRadius, "");
+    m_debugData->DebugPushUILineDecimalNumber("pitchRadius = ", pitchRadius, "");
+    m_debugData->DebugPushUILineDecimalNumber("rollRadius  = ", rollRadius, "");
+
+    m_debugData->ToggleDebugOff();
     float angVelocityF = aMissile.projectileData.q.angularVelocity.Length();
 
     //float angDragCoefficient = m_angDragCoefficient;
@@ -7087,6 +7094,8 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForRunge(MissileDat
 
     //float airSurfaceArea = (frontSurfaceArea * frontDot) + (sideSurfaceArea * sideDot) + (topSurfaceArea * topDot);
     float airSurfaceArea = frontSurface + sideSurface + topSurface;
+    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea = ", airSurfaceArea, "");
+
 
     airSurfaceArea = 0.785f;
 
