@@ -302,8 +302,8 @@ struct MissileConsts
     const float laserDepoyDelay = 3.9f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
-    const DirectX::SimpleMath::Vector3 centerOfPreasureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
-    const DirectX::SimpleMath::Vector3 centerOfPreasureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;
 

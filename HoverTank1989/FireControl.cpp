@@ -7047,8 +7047,8 @@ void FireControl::CalculateAirDragTorque(MissileData& aMissile, const float aTim
     const float area = sideArea * sideSlipRatio;
 
     DirectX::SimpleMath::Vector3 centerOfMass = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 centerOfPressure = m_missileConsts.centerOfPreasureBasePosLocal;
-    centerOfPressure += m_missileConsts.centerOfPreasureFullFinDeployOffset * aMissile.guidance.finDeployPercent;
+    DirectX::SimpleMath::Vector3 centerOfPressure = m_missileConsts.centerOfPressureBasePosLocal;
+    centerOfPressure += m_missileConsts.centerOfPressureFullFinDeployOffset * aMissile.guidance.finDeployPercent;
 
     DirectX::SimpleMath::Vector3 forcePoint = centerOfPressure;
     DirectX::SimpleMath::Vector3 forceVec = airVelocityLocalized;
