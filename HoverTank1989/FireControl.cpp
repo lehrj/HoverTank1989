@@ -7047,8 +7047,9 @@ void FireControl::CalculateAirDragTorque(MissileData& aMissile, const float aTim
     const float area = sideArea * sideSlipRatio;
 
     DirectX::SimpleMath::Vector3 centerOfMass = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 centerOfPressure = DirectX::SimpleMath::Vector3::Zero;
-    centerOfPressure += m_missileConsts.centerOfPreasurePosLocal * aMissile.guidance.finDeployPercent;
+    DirectX::SimpleMath::Vector3 centerOfPressure = m_missileConsts.centerOfPreasureBasePosLocal;
+    centerOfPressure += m_missileConsts.centerOfPreasureFullFinDeployOffset * aMissile.guidance.finDeployPercent;
+
     DirectX::SimpleMath::Vector3 forcePoint = centerOfPressure;
     DirectX::SimpleMath::Vector3 forceVec = airVelocityLocalized;
     forceVec.Normalize();
@@ -7063,6 +7064,18 @@ void FireControl::CalculateAirDragTorque(MissileData& aMissile, const float aTim
     m_debugData->DebugPushUILineDecimalNumber("torqueAccum.Length() =", torqueAccum.Length(), "");
 
     aMissile.guidance.airDragTorqueLocal = torqueAccum;
+
+    DirectX::SimpleMath::Vector3 centerOfPressureWorld = centerOfPressure;
+    centerOfPressureWorld = DirectX::SimpleMath::Vector3::Transform(centerOfPressureWorld, aMissile.projectileData.alignmentQuat);
+    centerOfPressureWorld += aMissile.projectileData.q.position;
+    
+    //m_debugData->ToggleDebugOn();
+    //m_debugData->PushDebugLinePositionIndicator(centerOfPressureWorld, 10.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->PushDebugLine(centerOfPressureWorld, aMissile.projectileData.up, 5.0f, 0.0f, DirectX::Colors::LightBlue);
+    m_debugData->PushDebugLine(centerOfPressureWorld, aMissile.projectileData.right, 5.0f, 0.0f, DirectX::Colors::LightBlue);
+    m_debugData->PushDebugLine(centerOfPressureWorld, -aMissile.projectileData.up, 5.0f, 0.0f, DirectX::Colors::LightBlue);
+    m_debugData->PushDebugLine(centerOfPressureWorld, -aMissile.projectileData.right, 5.0f, 0.0f, DirectX::Colors::LightBlue);
+    //m_debugData->ToggleDebugOff();
 }
 
 
