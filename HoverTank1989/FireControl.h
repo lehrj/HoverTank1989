@@ -305,6 +305,8 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
 
+    const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.5f, 0.0, 0.0f);
+
     const float plumeRotationRate = 0.432f;
 
     const bool isMissleTargetingLaserTrue = true;
