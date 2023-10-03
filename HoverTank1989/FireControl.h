@@ -483,7 +483,8 @@ public:
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
     void AltitudeController(MissileData& aMissile, const float aTimeDelta);
-    void CalculateAngularDragLocal(MissileData& aMissile, const float aTimeDelta);
+    //void CalculateAngularDragLocal(MissileData& aMissile, const float aTimeDelta);
+    void CalculateDragAngularSumLocal(MissileData& aMissile, const float aTimeDelta);
     void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     void CalculeDragLinearSum(MissileData& aMissile, const float aTimeDelta);
@@ -553,8 +554,7 @@ private:
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesTest(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces2(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileForces3(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileForces4(MissileData& aMissile, const float aTimeDelta);
+
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
