@@ -131,6 +131,11 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 localizedDestinationDir = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 airDragTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 linearForceSum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 steeringDirNormLocal = - DirectX::SimpleMath::Vector3::UnitX;
 };
 
 struct AmmoStruct
@@ -285,7 +290,7 @@ struct MissileConsts
     const float steeringForceMax = Utility::ToRadians(10.0f);
     //const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
     const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
-    const float stearingAngleMax = Utility::ToRadians(45.0f);
+    const float stearingAngleMax = Utility::ToRadians(105.0f);
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
     const float rocketBoostForceMax = 700.0f;
@@ -305,7 +310,7 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
 
-    const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.5f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;
 
@@ -483,11 +488,12 @@ public:
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
     void AltitudeController(MissileData& aMissile, const float aTimeDelta);
-    //void CalculateAngularDragLocal(MissileData& aMissile, const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 CalculateBoostForceVec(MissileData& aMissile);
     void CalculateDragAngularSumLocal(MissileData& aMissile, const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 CalculateDragAngularSumLocal(MissileData& aMissile);
     void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
-    void CalculeDragLinearSum(MissileData& aMissile, const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 CalculeteDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
@@ -528,6 +534,8 @@ private:
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
+    void ResetMissileForceAccumulators(MissileData& aMissile);
+
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissileTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
@@ -552,13 +560,14 @@ private:
     //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileForcesTest(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces2(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
+
+    void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
