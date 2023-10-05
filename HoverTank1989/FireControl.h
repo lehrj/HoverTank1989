@@ -136,6 +136,9 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 steeringDirNormLocal = - DirectX::SimpleMath::Vector3::UnitX;
+
+    float vertSteeringAng = 0.0f;
+    float horzSteeringAng = 0.0f;
 };
 
 struct AmmoStruct
