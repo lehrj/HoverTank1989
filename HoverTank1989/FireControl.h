@@ -136,7 +136,7 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 steeringDirNormLocal = - DirectX::SimpleMath::Vector3::UnitX;
-
+    DirectX::SimpleMath::Quaternion steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
     float vertSteeringAng = 0.0f;
     float horzSteeringAng = 0.0f;
 };
@@ -320,6 +320,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
 
     const float headingRadiansPerSecondMax = 1.12f;
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(10.0f);
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -571,6 +572,7 @@ private:
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
 
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
+    void UpdateSteeringDirNorm2(MissileData& aMissile, const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
@@ -636,6 +638,8 @@ private:
     bool m_isDebugToggleTrue = false;
 
     unsigned int m_nextUniqueMissileID = 0;
+
+    float m_testRotation = 0.0f;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
