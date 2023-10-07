@@ -1141,9 +1141,15 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             DirectX::SimpleMath::Vector3 dScale2 = DirectX::SimpleMath::Vector3::Zero;
             DirectX::SimpleMath::Quaternion dQuat1 = DirectX::SimpleMath::Quaternion::Identity;
             DirectX::SimpleMath::Quaternion dQuat2 = DirectX::SimpleMath::Quaternion::Identity;
-
+            /*
             DirectX::SimpleMath::Quaternion thrustRotQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-m_missileVec[i].projectileData.forward, -m_missileVec[i].guidance.heading);
             thrustRotQuat.Inverse(thrustRotQuat);
+            DirectX::SimpleMath::Matrix thrustRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(thrustRotQuat);
+            */
+            DirectX::SimpleMath::Quaternion thrustRotQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-m_missileVec[i].projectileData.forward, -m_missileVec[i].guidance.heading);
+            thrustRotQuat.Inverse(thrustRotQuat);
+            thrustRotQuat = m_missileVec[i].guidance.steeringQuat;
+            //thrustRotQuat.Inverse(thrustRotQuat);
             DirectX::SimpleMath::Matrix thrustRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(thrustRotQuat);
 
             DirectX::SimpleMath::Vector3 plumeReposition = -DirectX::SimpleMath::Vector3::UnitX;
@@ -1356,6 +1362,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             projMatPlume2 *= plumePosMat;
             projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBack);
             projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(transToBase);
+
+            m_missileVec[i].guidance.testLine = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, projMatPlume2);
 
             projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
             projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
@@ -4291,7 +4299,7 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
     DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
 
     q.velocity += velocityUpdate;
-    q.position += posUpdate;
+    //q.position += posUpdate;
     q.angularMomentum += angularMomentumUpdate;
     q.angularVelocity += angularVelocityUpdate;
 
@@ -6145,6 +6153,8 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, toDestLocalNorm, destLocalUp);
             DirectX::SimpleMath::Quaternion updateQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(updateMat);
             updateQuat.Normalize();
+            aMissile.guidance.headingQuat = updateQuat;
+
             DirectX::SimpleMath::Quaternion rotLimitQuat = DirectX::SimpleMath::Quaternion::Identity;
             //rotLimitQuat.RotateTowards(updateQuat, maxAngle);
 
@@ -6170,7 +6180,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
             testHeading = DirectX::SimpleMath::Vector3::Transform(testHeading, aMissile.projectileData.alignmentQuat);
             //m_debugData->PushDebugLine(missilePos, testHeading, 300.0f, 0.1f, DirectX::Colors::Blue);
-
+          
             aMissile.guidance.heading = testHeading;
             aMissile.guidance.targetLaserAlignment *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(DirectX::SimpleMath::Quaternion::Identity);
 
@@ -6795,7 +6805,8 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     DirectX::SimpleMath::Vector3 gravForceLocal = DirectX::SimpleMath::Vector3::Transform((m_environment->GetGravityVec() * m_missileConsts.mass), aMissile.projectileData.inverseAlignmentQuat);
     DirectX::SimpleMath::Vector3 dragForceLocal = DirectX::SimpleMath::Vector3::Transform((CalculeteDragLinearSum(aMissile, aTimeDelta)), aMissile.projectileData.inverseAlignmentQuat);
-    DirectX::SimpleMath::Vector3 boostForceLocal = DirectX::SimpleMath::Vector3::Transform((CalculateBoostForceVec(aMissile)), aMissile.projectileData.inverseAlignmentQuat);
+    //DirectX::SimpleMath::Vector3 boostForceLocal = DirectX::SimpleMath::Vector3::Transform((CalculateBoostForceVec(aMissile)), aMissile.projectileData.inverseAlignmentQuat);
+    DirectX::SimpleMath::Vector3 boostForceLocal = CalculateBoostForceVec(aMissile);
 
     m_debugData->DebugPushUILineDecimalNumber("boostForceLocal", boostForceLocal.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.throttlePercentage", aMissile.guidance.throttlePercentage, "");
@@ -6995,7 +7006,8 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateBoostForceVec(MissileData& aM
     {
         m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.heading, 50.0f, 0.0f, DirectX::Colors::Lime);
 
-        return - aMissile.guidance.heading * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
+        //return - aMissile.guidance.heading * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
+        return aMissile.guidance.steeringDirNormLocal * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
     }
 }
 
@@ -7093,6 +7105,30 @@ void FireControl::UpdateSteeringDirNorm(MissileData& aMissile, const float aTime
     m_testRotation += (m_testTimer * 0.004f);
     testVec1 = DirectX::SimpleMath::Vector3::Transform(testVec1, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_testRotation));
     testVec1.Normalize();
+
+    testVec1 = aMissile.guidance.heading;
+    testVec1 = DirectX::SimpleMath::Vector3::Transform(testVec1, aMissile.projectileData.inverseAlignmentQuat);
+
+    DirectX::SimpleMath::Quaternion headingQuat = DirectX::SimpleMath::Quaternion::Identity;
+    headingQuat = aMissile.guidance.headingQuat;
+    headingQuat = aMissile.guidance.headingQuat;
+    //headingQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(1.0f, 0.0, 0.0));
+    DirectX::SimpleMath::Quaternion headingUpdateQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    //headingQuat.Inverse(headingUpdateQuat);
+    //headingUpdateQuat = DirectX::SimpleMath::Quaternion::Identity;
+    //headingUpdateQuat = aMissile.guidance.headingQuat;
+
+    DirectX::SimpleMath::Matrix headingUpdatMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(aMissile.guidance.headingQuat);
+    //headingUpdatMat = headingUpdatMat.Invert();
+    headingUpdateQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(headingUpdatMat);
+    headingUpdateQuat.Normalize();
+
+    //headingQuat = headingQuat.Inverse(headingQuat);
+    const DirectX::SimpleMath::Vector3 toUseVec =  DirectX::SimpleMath::Vector3::UnitZ;
+    testVec1 = toUseVec;
+    testVec1 = DirectX::SimpleMath::Vector3::Transform(testVec1, headingUpdateQuat);
+
     DirectX::SimpleMath::Vector3 testVec1WorldAlign = testVec1;
     testVec1WorldAlign = DirectX::SimpleMath::Vector3::Transform(testVec1WorldAlign, aMissile.projectileData.alignmentQuat);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec1WorldAlign, 70.0f, 0.0f, DirectX::Colors::White);
@@ -7134,7 +7170,7 @@ void FireControl::UpdateSteeringDirNorm(MissileData& aMissile, const float aTime
     float angleSum = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, testLine);
     m_debugData->DebugPushUILineDecimalNumber("angleSum Raw = ", Utility::ToDegrees(angleSum), "");
 
-    const float maxAng = Utility::ToRadians(30.0f);
+    const float maxAng = m_missileConsts.seekerHeadAngleMax;
     if (horzAng > maxAng)
     {
         horzAng = maxAng;
@@ -7202,8 +7238,8 @@ void FireControl::UpdateSteeringDirNorm(MissileData& aMissile, const float aTime
     aMissile.guidance.horzSteeringAng = horzAng;
     aMissile.guidance.vertSteeringAng = vertAng;
 
-    aMissile.guidance.heading = updateVec;
-    aMissile.guidance.heading = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.heading, aMissile.projectileData.alignmentQuat);
+    //aMissile.guidance.heading = updateVec;
+    //aMissile.guidance.heading = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.heading, aMissile.projectileData.alignmentQuat);
 
     m_debugData->DebugPushUILineDecimalNumber("horzAng Lmt = ", Utility::ToDegrees(horzAng), "");
     m_debugData->DebugPushUILineDecimalNumber("vertAng Lmt = ", Utility::ToDegrees(vertAng), "");
@@ -7216,6 +7252,29 @@ void FireControl::UpdateSteeringDirNorm(MissileData& aMissile, const float aTime
     //updateVec = DirectX::SimpleMath::Vector3::UnitX;
     //updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, updateQuat);
     aMissile.guidance.steeringDirNormLocal = updateVec;
+
+
+    //toUseVec = -DirectX::SimpleMath::Vector3::UnitZ;
+    testVec1 = toUseVec;
+    testVec1 = DirectX::SimpleMath::Vector3::Transform(testVec1, headingUpdateQuat);
+    aMissile.guidance.steeringQuat = headingUpdateQuat;
+    aMissile.guidance.steeringDirNormLocal = testVec1;
+    updateVec = testVec1;
+
+    m_debugData->DebugClearUI();
+
+    DirectX::SimpleMath::Vector3 updateVecWorldAligned = updateVec;
+    updateVecWorldAligned = DirectX::SimpleMath::Vector3::Transform(updateVecWorldAligned, aMissile.projectileData.alignmentQuat);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, updateVecWorldAligned, 40.0f, 0.0f, DirectX::Colors::Lime);
+
+    DirectX::SimpleMath::Vector3 updateHeadingWorldAligned = aMissile.guidance.heading;
+    //updateHeadingWorldAligned = DirectX::SimpleMath::Vector3::Transform(updateHeadingWorldAligned, aMissile.projectileData.alignmentQuat);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, updateHeadingWorldAligned, 20.0f, 0.0f, DirectX::Colors::Blue);
+
+    DirectX::SimpleMath::Vector3 testLine2 = aMissile.guidance.testLine;
+    testLine2 = DirectX::SimpleMath::Vector3::Transform(testLine2, aMissile.projectileData.alignmentQuat);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testLine2, 10.0f, 0.0f, DirectX::Colors::Orange);
+
     m_debugData->ToggleDebugOff();
 }
 
@@ -7470,5 +7529,6 @@ void FireControl::UpdateSteeringDirNorm2(MissileData& aMissile, const float aTim
     //updateVec = DirectX::SimpleMath::Vector3::UnitX;
     //updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, updateQuat);
     aMissile.guidance.steeringDirNormLocal = updateVec;
+
     m_debugData->ToggleDebugOff();
 }

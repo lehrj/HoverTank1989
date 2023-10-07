@@ -137,8 +137,12 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 steeringDirNormLocal = - DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion headingQuat = DirectX::SimpleMath::Quaternion::Identity;
+
     float vertSteeringAng = 0.0f;
     float horzSteeringAng = 0.0f;
+
+    DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
@@ -292,7 +296,7 @@ struct MissileConsts
     const float detonationRange = 10.0f;
     const float steeringForceMax = Utility::ToRadians(10.0f);
     //const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
-    const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
+    const float seekerHeadAngleMax = Utility::ToRadians(45.0f);
     const float stearingAngleMax = Utility::ToRadians(105.0f);
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
