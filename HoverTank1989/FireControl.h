@@ -324,7 +324,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(10.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(50.0f);
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -577,6 +577,7 @@ private:
 
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNorm2(MissileData& aMissile, const float aTimeDelta);
+    void UpdateSteeringDirNorm3(MissileData& aMissile, const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
@@ -632,8 +633,6 @@ private:
 
     const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
 
-    float m_testRot = 0.0f;
-    float m_testRot2 = 0.0f;
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
     float m_testAng = 0.0f;
     int m_cameraTrackedMissileID = -1;
