@@ -135,6 +135,9 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 linearForceSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Vector3 steeringDirNormLocal2 = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion steeringQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+
     DirectX::SimpleMath::Vector3 steeringDirNormLocal = - DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion headingQuat = DirectX::SimpleMath::Quaternion::Identity;
