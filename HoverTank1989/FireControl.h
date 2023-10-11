@@ -135,8 +135,11 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 linearForceSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
 
-    //DirectX::SimpleMath::Vector3 steeringDirNormLocal2 = -DirectX::SimpleMath::Vector3::UnitX;
-    //DirectX::SimpleMath::Quaternion steeringQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 steeringDirNormLocal2 = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion steeringQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 steeringDirNormLocal3 = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion steeringQuat3 = DirectX::SimpleMath::Quaternion::Identity;
 
     DirectX::SimpleMath::Vector3 steeringDirNormLocal = - DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
@@ -307,7 +310,7 @@ struct MissileConsts
     const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 1.0f;
     const float wingArea = 0.3f;
-    const float mass = 100.0f;
+    const float mass = 10.0f;
     const float dragCoefficient = 0.3f;
     const float postExplosionMass = 10.0f;
     const float postExplosionDragCoefficient = 0.5f;
