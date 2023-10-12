@@ -3288,6 +3288,11 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_missileInertiaTensorLocal._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_missileInertiaTensorLocal._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
     
+    m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
+    
+    m_missileInertiaTensorLocal._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
+    m_missileInertiaTensorLocal._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
+    m_missileInertiaTensorLocal._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
 
     m_missileInverseInertiaTensorLocal = m_missileInertiaTensorLocal;
     m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();
@@ -6329,7 +6334,7 @@ void FireControl::ResetMissileForceAccumulators(MissileData& aMissile)
 
 void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDelta)
 {
-    m_debugData->ToggleDebugOn();
+    //m_debugData->ToggleDebugOn();
     // Update rocket throttle value
     float rocketThrottle;
     if (aMissile.projectileData.time >= m_missileConsts.rocketFireFullTime + m_missileConsts.rocketFireDelay)
@@ -6396,7 +6401,10 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     forceSumAngular = torqueAccum;
     forceDragAngular = CalculateDragAngularSumLocal(aMissile);
     //DirectX::SimpleMath::Vector3 angularDrag = angVelocityNorm * (-((0.5f) * (angDragCoefficient * (radius * radius * radius)) * ((angVelocityF * angVelocityF) * airSurfaceArea * angAirDensity)));
-    forceDragAngular = aMissile.projectileData.q.angularVelocity * -powf(2.9f, aTimeDelta);
+    // forceDragAngular = aMissile.projectileData.q.angularVelocity * -powf(2.9f, aTimeDelta);
+    m_debugData->ToggleDebugOn();
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceSumLinear, 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->ToggleDebugOff();
 
     aMissile.guidance.linearDragSum = forceDragLinear;
     aMissile.guidance.linearForceSum = forceSumLinear;
@@ -6405,23 +6413,25 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     m_debugData->DebugPushUILineDecimalNumber("!!forceDragAngular  ", forceDragAngular.Length(), "");
     DirectX::SimpleMath::Vector3 forceDragAngular2 = aMissile.projectileData.q.angularVelocity * -powf(0.9f, aTimeDelta);
-    m_debugData->DebugPushUILineDecimalNumber("!!forceDragAngular2 ", forceDragAngular2.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("!!forceDragAngular2 ", forceDragAngular2.Length(), "");
 
     m_debugData->DebugPushUILineDecimalNumber("!!forceSumAngular ", forceSumAngular.Length(), "");
     DirectX::SimpleMath::Vector3 forceSumAngular2 = aMissile.projectileData.q.angularVelocity * -powf(0.9f, aTimeDelta);
-    m_debugData->DebugPushUILineDecimalNumber("!!forceSumAngular2 ", forceSumAngular2.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("!!forceSumAngular2 ", forceSumAngular2.Length(), "");
 
     forceDragAngular2 = DirectX::SimpleMath::Vector3::Transform(forceDragAngular2, aMissile.projectileData.alignmentQuat);
     forceDragAngular = DirectX::SimpleMath::Vector3::Transform(forceDragAngular, aMissile.projectileData.alignmentQuat);
 
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceDragAngular2, 10.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceDragAngular2, 10.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceDragAngular, 10.0f, 0.5f, DirectX::Colors::Lime);
 
     forceSumAngular2 = DirectX::SimpleMath::Vector3::Transform(forceSumAngular, aMissile.projectileData.alignmentQuat);
     forceSumAngular = DirectX::SimpleMath::Vector3::Transform(forceSumAngular, aMissile.projectileData.alignmentQuat);
 
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceSumAngular2, 10.0f, 0.0f, DirectX::Colors::Orange);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceSumAngular2, 10.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceSumAngular, 10.0f, 0.5f, DirectX::Colors::Yellow);
+
+    m_debugData->PushDebugLinePositionIndicator(m_testTargetPos, 50.0f, 0.0f, DirectX::Colors::Red);
 
     m_debugData->ToggleDebugOff();
 }
@@ -6569,8 +6579,8 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateBoostForceVec(MissileData& aM
         testMat = testMat.Invert();
 
         DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitX;
-        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, testMat);
-        //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.steeringQuat);
+        //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, testMat);
+        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.steeringQuat);
 
         return testLine * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
     }
@@ -6624,8 +6634,8 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragAngularSumLocal(MissileDa
     //m_debugData->ToggleDebugOff();
     float angVelocityF = aMissile.projectileData.q.angularVelocity.Length();
 
-    //float angDragCoefficient = m_angDragCoefficient;
-    float angDragCoefficient = 0.03f;
+    //float angDragCoefficient = 0.03f;
+    float angDragCoefficient = m_missileConsts.dragCoefficientAng;
 
     float angAirDensity = m_environment->GetAirDensity();
     //float angFrontSurfaceArea = m_heli.area;
@@ -6652,7 +6662,8 @@ void FireControl::UpdateSteeringDirNorm(MissileData& aMissile, const float aTime
     testDestWorld += aMissile.projectileData.q.position;
     */
 
-    DirectX::SimpleMath::Vector3 destWorld = aMissile.guidance.targetDestination - aMissile.projectileData.q.position;
+    //DirectX::SimpleMath::Vector3 destWorld = aMissile.guidance.targetDestination - aMissile.projectileData.q.position;
+    DirectX::SimpleMath::Vector3 destWorld = m_testTargetPos - aMissile.projectileData.q.position;
     //destWorld = testDestWorld;
     DirectX::SimpleMath::Vector3 destLocal = DirectX::SimpleMath::Vector3::Transform(destWorld, aMissile.projectileData.inverseAlignmentQuat);
     //const DirectX::SimpleMath::Vector3 localUp = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aMissile.projectileData.inverseAlignmentQuat);
@@ -6674,7 +6685,8 @@ void FireControl::UpdateSteeringDirNorm(MissileData& aMissile, const float aTime
 
 
 
-    const float maxAng = Utility::ToRadians(85.0f);
+    //const float maxAng = Utility::ToRadians(15.0f);
+    const float maxAng = m_missileConsts.steerAngMax;
 
     DirectX::SimpleMath::Quaternion steeringConeLimitQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion steeringConeQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-DirectX::SimpleMath::Vector3::UnitX, steeringLine);

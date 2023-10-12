@@ -306,12 +306,14 @@ struct MissileConsts
     const float stearingAngleMax = Utility::ToRadians(105.0f);
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
-    const float rocketBoostForceMax = 700.0f;
+    //const float rocketBoostForceMax = 700.0f;
+    const float rocketBoostForceMax = 20.0f;
     const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 1.0f;
     const float wingArea = 0.3f;
     const float mass = 10.0f;
     const float dragCoefficient = 0.3f;
+    const float dragCoefficientAng = 0.3f;
     const float postExplosionMass = 10.0f;
     const float postExplosionDragCoefficient = 0.5f;
     const float explosionDragCoefficientBase = 0.1f;
@@ -319,7 +321,7 @@ struct MissileConsts
 
     const float laserDepoyDelay = 3.9f;
 
-    const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(1.0f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-2.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
 
@@ -330,7 +332,8 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(250.0f);
+    const float steerAngMax = Utility::ToRadians(20.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(40.0f);
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -649,6 +652,8 @@ private:
     unsigned int m_nextUniqueMissileID = 0;
 
     float m_testRotation = 0.0f;
+
+    const DirectX::SimpleMath::Vector3 m_testTargetPos = DirectX::SimpleMath::Vector3(570.0f, 10.0f, 0.0f);
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
