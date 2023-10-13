@@ -332,7 +332,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(20.0f);
+    const float steerAngMax = Utility::ToRadians(45.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(40.0f);
 
     // flight modeling
@@ -342,6 +342,7 @@ struct MissileConsts
     const float terminalRange = 100.0f;
 
     const bool useAdvancedMoiTensorTrue = false;
+    const bool isMissileFreezeTrue = false;
 };
 
 enum class ExplosionType
@@ -499,6 +500,9 @@ public:
 
     void ToggleTargetingLaser();
     void TriggerMirvDeploy();
+    void ToggleDebug1();
+    void ToggleDebug2();
+    void ToggleDebug3();
 
     void UpdateFireControl(double aTimeDelta);
 
@@ -654,6 +658,13 @@ private:
     float m_testRotation = 0.0f;
 
     const DirectX::SimpleMath::Vector3 m_testTargetPos = DirectX::SimpleMath::Vector3(570.0f, 10.0f, 0.0f);
+
+    float m_testRotYaw = 0.0f;
+    float m_testRotPitch = 0.0f;
+    float m_testRotRoll = 0.0f;
+    bool m_isDebugToggleTrue1 = false;
+    bool m_isDebugToggleTrue2 = false;
+    bool m_isDebugToggleTrue3 = false;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };

@@ -98,6 +98,22 @@ void DebugData::PushDebugLinePositionIndicator(const DirectX::SimpleMath::Vector
     }
 }
 
+void DebugData::PushDebugLinePositionIndicatorAligned(const DirectX::SimpleMath::Vector3 aPoint, const float aLineLength, const float aOffset, const DirectX::SimpleMath::Quaternion aQuat, const DirectX::XMVECTORF32 aColor)
+{
+    if (m_isDebugOn == true)
+    {
+        DirectX::SimpleMath::Vector3 xAligned = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, aQuat);
+        DirectX::SimpleMath::Vector3 yAligned = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aQuat);
+        DirectX::SimpleMath::Vector3 zAligned = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitZ, aQuat);
+        PushDebugLine(aPoint, xAligned, aLineLength, aOffset, DirectX::Colors::Red);
+        PushDebugLine(aPoint, yAligned, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, zAligned, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -xAligned, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -yAligned, aLineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -zAligned, aLineLength, aOffset, aColor);
+    }
+}
+
 void DebugData::DebugPushUILine(std::string aString, float aVal)
 {
     if (m_isDebugOn == true)

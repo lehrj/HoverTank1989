@@ -2029,7 +2029,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_npcController->LoadToQueueAxisAligned(dropPosition, orientation,  columnCount, rowCount, columSpaceing, rowSpacing);
             */
 
-            m_vehicle->DebugToggle();
+            //m_vehicle->DebugToggle();
+
+            m_fireControl->ToggleDebug1();
         }
     }
     if (m_kbStateTracker.pressed.D2)
@@ -2038,6 +2040,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             //m_vehicle->DebugToggle2();
 
+            /*
             const unsigned int columnCount = 1;
             const unsigned int rowCount = 1;
             const float columSpaceing = 15.0f;
@@ -2055,14 +2058,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             const DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicle->GetAlignment());
 
             m_npcController->LoadToQueue(dropPosition, orientation, columnCount, rowCount, spacing, alignQuat);
-
+            */
+            m_fireControl->ToggleDebug2();
         }
     }
     if (m_kbStateTracker.pressed.D3)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle3();
+            //m_vehicle->DebugToggle3();
+            m_fireControl->ToggleDebug3();
         }
     }
     if (m_kbStateTracker.pressed.D4)
