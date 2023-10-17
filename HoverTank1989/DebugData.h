@@ -35,9 +35,9 @@ public:
 
     void PushDebugLinePositionIndicatorAligned(const DirectX::SimpleMath::Vector3 aPoint, const float aLineLength, const float aOffset, const DirectX::SimpleMath::Quaternion aQuat, const DirectX::XMVECTORF32 aColor);
 
-
     void ToggleDebugOff();
     void ToggleDebugOn();
+    void ToggleDebugOnOverRide();
 
 private:
 

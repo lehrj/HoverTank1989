@@ -132,6 +132,9 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 airDragTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Vector3 airDragForceLocalTest = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 airDragTorqueLocalTest = DirectX::SimpleMath::Vector3::Zero;
+
     DirectX::SimpleMath::Vector3 linearForceSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
 
@@ -149,6 +152,8 @@ struct GuidanceSystem
     float horzSteeringAng = 0.0f;
 
     DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::Zero;
+    
+    bool isFacingDestTrue = true;
 };
 
 struct AmmoStruct
@@ -307,11 +312,11 @@ struct MissileConsts
     const float finDeployDelay = 1.0f;
     const float rocketFireDelay = 3.5f;
     //const float rocketBoostForceMax = 700.0f;
-    const float rocketBoostForceMax = 20.0f;
+    
     const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 1.0f;
     const float wingArea = 0.3f;
-    const float mass = 10.0f;
+    //const float mass = 10.0f;
     const float dragCoefficient = 0.3f;
     const float dragCoefficientAng = 0.3f;
     const float postExplosionMass = 10.0f;
@@ -333,7 +338,10 @@ struct MissileConsts
 
     const float headingRadiansPerSecondMax = 1.12f;
     const float steerAngMax = Utility::ToRadians(45.0f);
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(40.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
+
+    const float rocketBoostForceMax = 200.0f;
+    const float mass = 10.0f;
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -512,8 +520,10 @@ private:
     DirectX::SimpleMath::Vector3 CalculateBoostForceVec(MissileData& aMissile);
     void CalculateDragAngularSumLocal(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateDragAngularSumLocal(MissileData& aMissile);
+    DirectX::SimpleMath::Vector3 CalculateDragAngularSumLocalTest(MissileData& aMissile, const float aTimeDelta);
     void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculeteDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     void CastRayLaser();

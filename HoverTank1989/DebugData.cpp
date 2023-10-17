@@ -156,6 +156,10 @@ void DebugData::ToggleDebugOff()
 
 void DebugData::ToggleDebugOn()
 {
-    m_isDebugOn = true;
+    m_isDebugOn = false;
 }
 
+void DebugData::ToggleDebugOnOverRide()
+{
+    m_isDebugOn = true;
+}
