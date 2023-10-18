@@ -10,6 +10,7 @@ public:
     static inline float GetMaxAngularForce() { return 1000000.0f; };
     static inline float GetPi() { return 3.1415926535897931f; };
     static inline float GetHalfPi() { return 1.57079632679f; };
+    static inline float GetQuarterPi() { return 0.785398163395f; };
     static inline float ToDegrees(float r) { return r * 180.0f / GetPi(); };
     static inline float ToRadians(float d) { return d / 180.0f * GetPi(); };
     
@@ -874,6 +875,76 @@ public:
     }
 
     template<typename T>
+    static T WrapAngleOnePi(T aTheta) noexcept
+    {
+        const T twoPi = (T)2 * (T)Utility::GetPi();
+        const T onePi = (T)1 * (T)Utility::GetPi();
+        const T halfPi = (T)1 * (T)Utility::GetHalfPi();
+        const T mod = fmod(aTheta, onePi);
+        if (mod > halfPi)
+        {
+            return mod - onePi;
+        }
+        else if (mod < -halfPi)
+        {
+            return mod + onePi;
+        }
+        return mod;
+    }
+
+    template<typename T>
+    static T WrapAngleOnePiPositive(T aTheta) noexcept
+    {
+        const T twoPi = (T)2 * (T)Utility::GetPi();
+        const T onePi = (T)1 * (T)Utility::GetPi();
+        const T halfPi = (T)1 * (T)Utility::GetHalfPi();
+        const T pi = (T)1 * (T)Utility::GetPi();
+        const T mod = fmod(aTheta, onePi);
+        if (mod > (T)Utility::GetPi())
+        {
+            return mod - pi;
+        }
+        else if (mod < -(T)0.0)
+        {
+            return mod + pi;
+        }
+
+        if (mod > (T)Utility::GetPi())
+        {
+            return mod - pi;
+        }
+        else if (mod < -(T)0.0)
+        {
+            return mod + pi;
+        }
+        return mod;
+    }
+
+    template<typename T>
+    static T WrapAngleHalfPi(T aTheta) noexcept
+    {
+        const T twoPi = (T)2 * (T)Utility::GetPi();
+        const T onePi = (T)1 * (T)Utility::GetPi();
+        const T halfPi = (T)1 * (T)Utility::GetHalfPi();
+        const T quarterPi = (T)1 * (T)Utility::GetQuarterPi();
+        //const T mod = fmod(aTheta, twoPi);
+        const T mod = fmod(aTheta, halfPi);
+        //if (mod > (T)Utility::GetPi())
+        if (mod > quarterPi)
+        {
+            //return mod - twoPi;
+            return mod - halfPi;
+        }
+        //else if (mod < -(T)Utility::GetPi())
+        else if (mod < -quarterPi)
+        {
+            //return mod + twoPi;
+            return mod + halfPi;
+        }
+        return mod;
+    }
+
+    template<typename T>
     static T WrapAnglePositive(T aTheta) noexcept
     {
         const T pi = (T)1 * (T)Utility::GetPi();
@@ -899,44 +970,16 @@ public:
 
         const T mod = fmod(aTheta, pi);
         const T modHalf = fmod(aTheta, halfPi);
-        //if (mod > (T)Utility::GetPi())
         if (mod > halfPi)
         {
-            //return mod - halfPi;
             return halfPi - modHalf;
-            //return modHalf;
         }
-        //else if (mod < -(T)Utility::GetPi())
         else if (mod < -(T)Utility::GetPi())
         {
             return mod + twoPi;
         }
         return mod;
     }
-
-    /*
-    template<typename T>
-    static T WrapAngleRight(T aTheta) noexcept
-    {
-        //const T pi = (T)1 * (T)Utility::GetPi();
-        const T pi = (T)1 * (T)Utility::GetHalfPi();
-        const T halfPi = (T)1 * (T)Utility::GetHalfPi();
-        const T quarterPi = (T)0.5 * (T)Utility::GetHalfPi();
- 
-        const T wrappedAngle = Utility::WrapAngle(aTheta);
-        const T mod = fmod(aTheta, halfPi);
-        //if (mod > (T)Utility::GetPi())
-        if (mod > quarterPi)
-        {
-            return mod - quarterPi;
-        }
-        else if (mod < -(T)0.0)
-        {
-            return mod + pi;
-        }
-        return mod;
-    }
-    */
 
     static float GetAngleBetweenVectors(DirectX::SimpleMath::Vector3 aVec1, DirectX::SimpleMath::Vector3 aVec2)
     {
