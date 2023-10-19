@@ -68,6 +68,7 @@ enum class FlightState
 struct GuidanceSystem
 {
     FlightState flightStateCurrent = FlightState::FLIGHTSTATE_LAUNCH;
+    float timeStepDelta = 0.0f;
     unsigned int uniqueId = 0;
     int targetID = 0;
 
@@ -154,6 +155,8 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::Zero;
     
     bool isFacingDestTrue = true;
+
+    float climbOutTimer = 0.0f;
 };
 
 struct AmmoStruct
@@ -351,6 +354,8 @@ struct MissileConsts
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
+
+    const float climbOutDuration = 2.0f;
 };
 
 enum class ExplosionType
@@ -537,7 +542,6 @@ private:
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawMissiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
-    void DrawMissiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -569,29 +573,25 @@ private:
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
-    void RightHandSideMissileTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
-    void UpdateFlightState(MissileData& aMissile);
+    void UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta);
+    void UpdateFlightStateOld(MissileData& aMissile, const double aTimeDelta);
+
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
-    void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
+
+    //void UpdateMissileData(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileAlignment(MissileData& aMissile, const float aTimeDelta);
+
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileDragLinear2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidanceTest(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance2(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance3(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance4(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance5(MissileData& aMissile, const float aTimeDelta);
 
-    //float UpdateMissileLiftCoefficient(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileForces2(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
@@ -599,8 +599,6 @@ private:
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
 
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
-    void UpdateSteeringDirNorm2(MissileData& aMissile, const float aTimeDelta);
-    void UpdateSteeringDirNorm3(MissileData& aMissile, const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;

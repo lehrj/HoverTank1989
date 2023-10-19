@@ -4266,8 +4266,195 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
     }
 }
 
-void FireControl::UpdateFlightState(MissileData& aMissile)
+void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta)
 {
+    aMissile.projectileData.time += aTimeDelta;
+    aMissile.guidance.timeStepDelta = static_cast<float>(aTimeDelta);
+    float terrainHeightAtPos = m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position);
+    aMissile.guidance.altitude = aMissile.projectileData.q.position.y - terrainHeightAtPos;
+
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    {
+        /*
+        if (aMissile.guidance.isFinsDeployEnd == false && aMissile.projectileData.time <= m_missileConsts.finDeployDelay)
+        {
+            aMissile.guidance.finDeployPercent = 0.0f;
+        }
+        */
+
+        if (aMissile.guidance.isFinsDeployStarted == false)
+        {
+            if (aMissile.projectileData.time <= m_missileConsts.finDeployDelay)
+            {
+                aMissile.guidance.finDeployPercent = 0.0f;
+            }
+            else
+            {
+                aMissile.guidance.isFinsDeployStarted = true;
+                /*
+                float finDeployPercent = (aMissile.projectileData.time - m_missileConsts.finDeployDelay) / (m_missileConsts.finDeployTime);
+                if (finDeployPercent > 1.0f || finDeployPercent < 0.0f)
+                {
+                    int errorBreak = 0;
+                    errorBreak++;
+                    // throw error 
+                    finDeployPercent = 1.0f;
+                }
+                aMissile.guidance.finDeployPercent = finDeployPercent;
+                aMissile.guidance.isFinsDeployStarted = true;
+                */
+            }
+        }
+        if (aMissile.guidance.isFinsDeployStarted == true)
+        {
+            if (aMissile.guidance.isFinsDeployEnd == false)
+            {
+                if (aMissile.projectileData.time >= m_missileConsts.finDeployTime)
+                {
+                    aMissile.guidance.isFinsDeployEnd == true;
+                    aMissile.guidance.finDeployPercent = 1.0f;
+                }
+                else
+                {
+                    float finDeployPercent = (aMissile.projectileData.time - m_missileConsts.finDeployDelay) / (m_missileConsts.finDeployTime);
+                    if (finDeployPercent > 1.0f || finDeployPercent < 0.0f)
+                    {
+                        int errorBreak = 0;
+                        errorBreak++;
+                        // throw error 
+                        finDeployPercent = 1.0f;
+                    }
+                    aMissile.guidance.finDeployPercent = finDeployPercent;
+                }
+            }
+        }
+
+        if (aMissile.guidance.isTargetingLaserOn == false && aMissile.projectileData.time >= m_missileConsts.laserDepoyDelay)
+        {
+            aMissile.guidance.isTargetingLaserOn = true;
+        }
+        if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
+        {
+            aMissile.guidance.isRocketFired = true;
+        }
+
+        if (aMissile.guidance.isRocketFired == true)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
+            aMissile.guidance.isFinsDeployEnd == true;
+            aMissile.guidance.finDeployPercent = 1.0f;
+
+        }
+    }
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
+    {
+        aMissile.guidance.climbOutTimer += static_cast<float>(aTimeDelta);
+        if (aMissile.guidance.climbOutTimer >= m_missileConsts.climbOutDuration)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CRUISE;
+        }
+    }
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
+    {
+        if (aMissile.guidance.targetDistance <= m_missileConsts.terminalRange)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_ATTACK;
+        }
+    }
+
+
+    /*
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    {
+        if (aMissile.guidance.isRocketFired == true)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
+        }
+    }
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
+    {
+        if (aMissile.guidance.altitude >= m_missileConsts.climbOutAltMin)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CRUISE;
+        }
+    }
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
+    {
+        if (aMissile.guidance.targetDistance <= m_missileConsts.terminalRange)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_ATTACK;
+        }
+    }
+    */
+
+    ///////////////////////////////////////////////
+
+    /*
+    //float terrainHeightAtPos = m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position);
+    //aMissile.guidance.altitude = aMissile.projectileData.q.position.y - terrainHeightAtPos;
+
+    if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay)
+    {
+    }
+    if (aMissile.guidance.isFinsDeployEnd == false && aMissile.projectileData.time <= m_missileConsts.finDeployDelay)
+    {
+        aMissile.guidance.finDeployPercent = 0.0f;
+    }
+    if (aMissile.guidance.isFinsDeployEnd == false)
+    {
+        if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time <= m_missileConsts.finDeployDelay)
+        {
+            aMissile.guidance.finDeployPercent = 0.0f;
+        }
+        else if (aMissile.projectileData.time >= m_missileConsts.finDeployDelay && aMissile.projectileData.time <= (m_missileConsts.finDeployDelay + m_missileConsts.finDeployTime))
+        {
+            float finDeployPercent2 = (aMissile.projectileData.time - m_missileConsts.finDeployDelay) / (m_missileConsts.finDeployTime);
+            aMissile.guidance.finDeployPercent = finDeployPercent2;
+        }
+    }
+    else
+    {
+        aMissile.guidance.finDeployPercent = 1.0f;
+    }
+
+    if (aMissile.guidance.isExplodingTrue == true)
+    {
+        aMissile.guidance.postExplosionDrawCountDown -= aTimeDelta;
+        if (aMissile.guidance.postExplosionDrawCountDown <= 0.0f)
+        {
+            aMissile.projectileData.isDeleteTrue = true;
+        }
+    }
+    if (aMissile.guidance.isTargetingLaserOn == false && aMissile.projectileData.time >= m_missileConsts.laserDepoyDelay)
+    {
+        aMissile.guidance.isTargetingLaserOn = true;
+    }
+    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
+    {
+        aMissile.guidance.isRocketFired = true;
+    }
+    if (aMissile.guidance.isFinsDeployStarted == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay)
+    {
+        aMissile.guidance.isFinsDeployStarted = true;
+    }
+    if (aMissile.guidance.isFinsDeployEnd == false && aMissile.projectileData.time >= m_missileConsts.finDeployDelay + m_missileConsts.finDeployTime)
+    {
+        aMissile.guidance.isFinsDeployEnd = true;
+    }
+    if (aMissile.guidance.isRocketFired == true)
+    {
+        if (aMissile.guidance.isTargetLocked == true)
+        {
+            // targeting and rocket boost stuff was here
+        }
+    }
+    */
+}
+
+void FireControl::UpdateFlightStateOld(MissileData& aMissile, const double aTimeDelta)
+{
+    aMissile.projectileData.time += aTimeDelta;
+    aMissile.guidance.timeStepDelta = static_cast<float>(aTimeDelta);
     if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
     {
         if (aMissile.guidance.isRocketFired == true)
@@ -4310,49 +4497,12 @@ void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelt
     }
 }
 
-void FireControl::UpdateMissileData(MissileData& aMissile, const float aTimeDelta)
+//void FireControl::UpdateMissileData(MissileData& aMissile, const float aTimeDelta)
+void FireControl::UpdateMissileAlignment(MissileData& aMissile, const float aTimeDelta)
 {
-    aMissile.projectileData.time += aTimeDelta;
+    //aMissile.projectileData.time += aTimeDelta;
     DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
     velocityNorm.Normalize();
-    const float t = 4.0f;
-    /*
-    aMissile.projectileData.forward = DirectX::SimpleMath::Vector3::SmoothStep(aMissile.projectileData.forward, velocityNorm, t * aTimeDelta);
-    aMissile.projectileData.up = aMissile.projectileData.right.Cross(aMissile.projectileData.forward);
-    aMissile.projectileData.right = aMissile.projectileData.forward.Cross(aMissile.projectileData.up);
-
-    DirectX::SimpleMath::Vector3 pos2 = aMissile.projectileData.q.position;
-    DirectX::SimpleMath::Vector3 up2 = aMissile.projectileData.up;
-    DirectX::SimpleMath::Vector3 right2 = aMissile.projectileData.right;
-
-    DirectX::SimpleMath::Vector3 forward = aMissile.projectileData.forward;
-    if (forward.Length() < 0.00001f)
-    {
-        forward = DirectX::SimpleMath::Vector3::UnitX;
-    }
-    forward.Normalize();
-
-    DirectX::SimpleMath::Vector3 right = aMissile.projectileData.right;
-
-    DirectX::SimpleMath::Vector3 up = aMissile.projectileData.up;
-
-    DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -right, up);
-    */
-
-    /*
-    DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aMissile.projectileData.right, aMissile.projectileData.up);
-    //DirectX::SimpleMath::Matrix alignMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, aMissile.projectileData.forward, aMissile.projectileData.up);
-
-    aMissile.projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(alignMat);
-
-    aMissile.projectileData.inverseAlignmentQuat = aMissile.projectileData.alignmentQuat;
-    aMissile.projectileData.inverseAlignmentQuat.Inverse(aMissile.projectileData.inverseAlignmentQuat);
-
-    aMissile.projectileData.forward = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitX, aMissile.projectileData.alignmentQuat);
-    aMissile.projectileData.right = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitZ, aMissile.projectileData.alignmentQuat);
-    aMissile.projectileData.up = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aMissile.projectileData.alignmentQuat);
-    */
-
 
     DirectX::SimpleMath::Quaternion updateAlignQuat;
     updateAlignQuat.x = aMissile.projectileData.q.angularVelocity.x;
@@ -4520,45 +4670,6 @@ void FireControl::UpdateMissileCoefficients(MissileData& aMissile, const float a
 
 void FireControl::UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta)
 {
-    float airDensity = m_environment->GetAirDensity();
-    float dragCoefficient = aMissile.projectileData.ammoData.dragCoefficient + aMissile.guidance.airFoilDragMod;
-    if (aMissile.guidance.isExplodingTrue == true)
-    {
-        //dragCoefficient = m_missileConsts.postExplosionDragCoefficient;
-        //mass = m_missileConsts.postExplosionMass;
-    }
-
-    float frontSurfaceArea = aMissile.projectileData.ammoData.frontSurfaceArea;
-    float frontSurfaceAreaTest = (aMissile.projectileData.ammoData.radius * 2.0f) * 2.0f;
-    float frontSurfaceAreatTest2 = Utility::GetPi() * (aMissile.projectileData.ammoData.radius * aMissile.projectileData.ammoData.radius);
-    float sideSurfaceArea = aMissile.projectileData.ammoData.length * (aMissile.projectileData.ammoData.radius * 2.0f);
-    float velocity = aMissile.projectileData.q.velocity.Length();
-    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
-    DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
-    velocityNorm.Normalize();
-    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
-
-
-    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    velocityUpdate += airResistance;
-
-
-    float dragSurfaceArea = 0.0f;
-    dragSurfaceArea += frontSurfaceArea * cos(aMissile.guidance.angleOfAttack);
-    dragSurfaceArea += sideSurfaceArea * sin(aMissile.guidance.angleOfAttack);
-    aMissile.guidance.dragSurfaceArea = dragSurfaceArea;
-
-    float dragCoefficentSum = aMissile.projectileData.ammoData.dragCoefficient;
-    const float sideProfileDragCoefficient = 0.82f; // long cylinder shape
-    const float sideMinusFrontCl = sideProfileDragCoefficient - aMissile.projectileData.ammoData.dragCoefficient;
-
-    dragCoefficentSum += abs(sideMinusFrontCl) * sin(aMissile.guidance.angleOfAttack);
-    aMissile.guidance.dragCoefficientFull = abs(dragCoefficentSum + aMissile.guidance.airFoilDragMod);
-}
-
-void FireControl::UpdateMissileDragLinear2(MissileData& aMissile, const float aTimeDelta)
-{
-
     float airDensity = m_environment->GetAirDensity();
     float dragCoefficient = aMissile.projectileData.ammoData.dragCoefficient + aMissile.guidance.airFoilDragMod;
     if (aMissile.guidance.isExplodingTrue == true)
@@ -4962,158 +5073,37 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
 void FireControl::UpdateMissileVec(double aTimeDelta)
 {
-    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
-    {
-        UpdateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
-        RungeKutta4Missile(&m_missileVec[i], aTimeDelta);
-    }
+
 
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        UpdateFlightState(m_missileVec[i]);
+        UpdateFlightStateData(m_missileVec[i], aTimeDelta);
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
-        UpdateMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
-        
+        //UpdateMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
+        UpdateMissileAlignment(m_missileVec[i], static_cast<float>(aTimeDelta));
+
         m_debugData->ToggleDebugOn();
         m_debugData->ToggleDebugOnOverRide();
         m_debugData->DebugPushUILineDecimalNumber("linearDragSum   = ", m_missileVec[i].guidance.linearDragSum.Length(), "");
         m_debugData->DebugPushUILineDecimalNumber("linearForceSum  = ", m_missileVec[i].guidance.linearForceSum.Length(), "");
         m_debugData->DebugPushUILineDecimalNumber("angularDragSum  = ", m_missileVec[i].projectileData.angularDragSum.Length(), "");
         m_debugData->DebugPushUILineDecimalNumber("angularForceSum = ", m_missileVec[i].projectileData.angularForceSum.Length(), "");
-        /*
-        m_debugData->DebugPushUILineDecimalNumber("Missile Alt = ", m_missileVec[i].guidance.altitude, "");
-
-        if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_ATTACK)
-        {
-            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_ATTACK ", m_missileVec[i].guidance.uniqueId, "");
-        }
-        else if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
-        {
-            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_CLIMBOUT ", m_missileVec[i].guidance.uniqueId, "");
-        }
-        else if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
-        {
-            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_CRUISE ", m_missileVec[i].guidance.uniqueId, "");
-        }
-        else if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
-        {
-            m_debugData->DebugPushUILineWholeNumber("FLIGHTSTATE_LAUNCH ", m_missileVec[i].guidance.uniqueId, "");
-        }
-        else 
-        {
-            m_debugData->DebugPushUILineWholeNumber("NO FLIGHT STATE ", m_missileVec[i].guidance.uniqueId, "");
-        }
-
-        m_debugData->PushDebugLinePositionIndicator(m_missileVec[i].guidance.targetDestination, 40.0f, 0.0f, DirectX::Colors::Orange);
-        m_debugData->PushDebugLinePositionIndicator(m_missileVec[i].guidance.targetPosition, 50.0f, 0.0f, DirectX::Colors::Yellow);
-        
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.testThrustForce3 ", m_missileVec[i].guidance.testThrustForce3.Length(), "");
-
-        m_debugData->PushDebugLineScaled(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.testThrustForce3, 1.0f, 1.0f, 0.0f, DirectX::Colors::White);
-
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].projectileData.angularDragSum.Length() =", m_missileVec[i].projectileData.angularDragSum.Length(), "");
-        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.angularDragSum, 30.0, 0.0f, DirectX::Colors::Red);
-
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.throttlePercentage = ", m_missileVec[i].guidance.throttlePercentage, "");
-
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.finDeployPercent =", m_missileVec[i].guidance.finDeployPercent, "");
-        m_debugData->DebugPushUILineDecimalNumber("velocty = ", m_missileVec[i].projectileData.q.velocity.Length(), "");
-        */
 
         m_debugData->DebugPushUILineDecimalNumber("velocty = ", m_missileVec[i].projectileData.q.velocity.Length(), "");
         m_debugData->DebugPushUILineWholeNumber("m_isDebugToggleTrue1 ", m_isDebugToggleTrue1, "");
         m_debugData->DebugPushUILineWholeNumber("m_isDebugToggleTrue2 ", m_isDebugToggleTrue2, "");
         m_debugData->DebugPushUILineWholeNumber("m_isDebugToggleTrue3 ", m_isDebugToggleTrue3, "");
 
-        /*
-        m_uteTestTimer += aTimeDelta;
-        m_uteTestVal += aTimeDelta;
-
-      //  m_uteTestVal = Utility::ToRadians(91.0f);
-        //m_uteTestVal = Utility::WrapAngleOnePi(m_uteTestVal);
-        //m_uteTestVal = Utility::WrapAngle(m_uteTestVal);
-        //m_uteTestVal = Utility::WrapAnglePositive(m_uteTestVal);
-        //m_uteTestVal = Utility::WrapAngleRight(m_uteTestVal);
-        //m_uteTestVal = Utility::WrapAngleHalfPi(m_uteTestVal);
-
-
-        float wrapVal1 = Utility::WrapAngle(m_uteTestVal);
-        float wrapVal2 = Utility::WrapAngleOnePi(m_uteTestVal);
-        float wrapVal3 = Utility::WrapAnglePositive(m_uteTestVal);
-        float wrapVal4 = Utility::WrapAngleHalfPi(m_uteTestVal);
-        float wrapVal5 = Utility::WrapAngleOnePiPositive(m_uteTestVal);
-
-        m_debugData->DebugPushUILineDecimalNumber("wrapVal1 =  ", Utility::ToDegrees(wrapVal1), "");
-        m_debugData->DebugPushUILineDecimalNumber("wrapVal2 =  ", Utility::ToDegrees(wrapVal2), "");
-        m_debugData->DebugPushUILineDecimalNumber("wrapVal3 =  ", Utility::ToDegrees(wrapVal3), "");
-        m_debugData->DebugPushUILineDecimalNumber("wrapVal4 =  ", Utility::ToDegrees(wrapVal4), "");
-        m_debugData->DebugPushUILineDecimalNumber("wrapVal5 =  ", Utility::ToDegrees(wrapVal4), "");
-        //m_uteTestVal = wrapVal4;
-
-        m_debugData->DebugPushUILineDecimalNumber("m_uteTestVal =  ", Utility::ToDegrees(m_uteTestVal), "");
-
-        DirectX::SimpleMath::Vector3 testPoint = m_playerVehicle->GetPos();
-        testPoint.y += 10.0f;
-
-        DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitX;
-        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_uteTestVal));
-        m_debugData->PushDebugLinePositionIndicator(testPoint, 4.0f, 0.0f, DirectX::Colors::White);
-        m_debugData->PushDebugLine(testPoint, testLine, 9.0f, 0.0f, DirectX::Colors::Red);
-
-
-        DirectX::SimpleMath::Vector3 testLine1 = DirectX::SimpleMath::Vector3::UnitX;
-        testLine1 = DirectX::SimpleMath::Vector3::Transform(testLine1, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, wrapVal1));
-        m_debugData->PushDebugLine(testPoint, testLine1, 8.0f, 0.5f, DirectX::Colors::Orange);
-
-        DirectX::SimpleMath::Vector3 testLine2 = DirectX::SimpleMath::Vector3::UnitX;
-        testLine2 = DirectX::SimpleMath::Vector3::Transform(testLine2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, wrapVal2));
-        m_debugData->PushDebugLine(testPoint, testLine2, 7.0f, 1.0f, DirectX::Colors::Yellow);
-
-        DirectX::SimpleMath::Vector3 testLine3 = DirectX::SimpleMath::Vector3::UnitX;
-        testLine3 = DirectX::SimpleMath::Vector3::Transform(testLine3, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, wrapVal3));
-        m_debugData->PushDebugLine(testPoint, testLine3, 6.0f, 1.5f, DirectX::Colors::Green);
-
-        DirectX::SimpleMath::Vector3 testLine4 = DirectX::SimpleMath::Vector3::UnitX;
-        testLine4 = DirectX::SimpleMath::Vector3::Transform(testLine4, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, wrapVal4));
-        m_debugData->PushDebugLine(testPoint, testLine4, 5.0f, 2.0f, DirectX::Colors::Blue);
-
-        DirectX::SimpleMath::Vector3 testLine5 = DirectX::SimpleMath::Vector3::UnitX;
-        testLine5 = DirectX::SimpleMath::Vector3::Transform(testLine5, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, wrapVal5));
-        m_debugData->PushDebugLine(testPoint, testLine5, 6.0f, 2.5f, DirectX::Colors::Violet);
-
-
-        float rawAirVelocityAngle = m_uteTestVal;
-        DirectX::SimpleMath::Vector3 rawAirVelocityVec = DirectX::SimpleMath::Vector3::UnitX;
-        rawAirVelocityVec = DirectX::SimpleMath::Vector3::Transform(rawAirVelocityVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_uteTestVal));
-        m_debugData->PushDebugLine(testPoint, rawAirVelocityVec, 8.0f, 3.5f, DirectX::Colors::Fuchsia);
-
-        //float angleOfAttack = wrapVal5;
-        float angleOfAttack = rawAirVelocityAngle;
-        //angleOfAttack = Utility::WrapAngleOnePiPositive(m_uteTestVal);
-        angleOfAttack = Utility::WrapAngleOnePi(m_uteTestVal);
-
-
-        //angleOfAttack = abs(angleOfAttack);
-        float sideSlipRatio = angleOfAttack / DirectX::XM_PIDIV2;
-        float sideSlipRatio2 = angleOfAttack / DirectX::XM_PI;
-
-        DirectX::SimpleMath::Vector3 toUse = DirectX::SimpleMath::Vector3::UnitX;
-        toUse = DirectX::SimpleMath::Vector3::Transform(toUse, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, angleOfAttack));
-        m_debugData->PushDebugLine(testPoint, toUse, 10.0f, 4.0f, DirectX::Colors::OrangeRed);
-
-        m_debugData->DebugPushUILineDecimalNumber("m_uteTestVal ", m_uteTestVal, "");
-        m_debugData->DebugPushUILineDecimalNumber("angleOfAttack ", angleOfAttack, "");
-        m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio ", sideSlipRatio, "");
-        m_debugData->DebugPushUILineDecimalNumber("sideSlipRati2 ", sideSlipRatio2, "");
-        m_debugData->DebugPushUILineDecimalNumber("rawAirVelocityAngle ", Utility::ToDegrees(rawAirVelocityAngle), "");
-
-        */
-
-
         m_debugData->ToggleDebugOff();
 
         ResetMissileForceAccumulators(m_missileVec[i]);
+    }
+
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+    {
+        UpdateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
+        RungeKutta4Missile(&m_missileVec[i], aTimeDelta);
     }
 
     CheckCollisionsMissile();
