@@ -62,6 +62,8 @@ enum class FlightState
     FLIGHTSTATE_ATTACK,
     FLIGHTSTATE_CLIMBOUT,
     FLIGHTSTATE_CRUISE,
+    FLIGHTSTATE_DEBUG,
+    FLIGHTSTATE_EXPLODING,
     FLIGHTSTATE_LAUNCH,
 };
 
@@ -154,6 +156,9 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::Zero;
     
+    DirectX::SimpleMath::Vector3 headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
+
     bool isFacingDestTrue = true;
 
     float climbOutTimer = 0.0f;
@@ -589,6 +594,7 @@ private:
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileGuidanceOld(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
@@ -599,6 +605,8 @@ private:
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
 
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
+    void UpdateSteeringDirNormOld(MissileData& aMissile, const float aTimeDelta);
+    void UpdateSteeringDirNormOld2(MissileData& aMissile, const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
