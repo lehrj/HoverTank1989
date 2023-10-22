@@ -115,6 +115,7 @@ struct GuidanceSystem
     float finAngle2 = 0.0f;
     float finAngle3 = 0.0f;
     float finAngle4 = 0.0f;
+
     float throttlePercentage = 0.0f;
 
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
@@ -598,6 +599,7 @@ private:
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
+    void UpdateMissileForcesOld(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
