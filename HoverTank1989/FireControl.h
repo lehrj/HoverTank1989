@@ -163,6 +163,8 @@ struct GuidanceSystem
     bool isFacingDestTrue = true;
 
     float climbOutTimer = 0.0f;
+
+    DirectX::SimpleMath::Vector3 centerOfPressureLocalPos = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
