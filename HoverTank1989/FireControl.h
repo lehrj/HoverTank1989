@@ -351,7 +351,7 @@ struct MissileConsts
     const float steerAngMax = Utility::ToRadians(45.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
 
-    const float rocketBoostForceMax = 200.0f;
+    const float rocketBoostForceMax = 20.0f;
     const float mass = 10.0f;
 
     // flight modeling

@@ -59,7 +59,7 @@ void FireControl::AltitudeController(MissileData& aMissile, const float aTimeDel
 
 void FireControl::CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta)
 {
-    m_debugData->DebugClearUI();
+    //m_debugData->DebugClearUI();
     //m_debugData->ToggleDebugOnOverRide();
 
     DirectX::SimpleMath::Vector3 airVelocityLocalized = aMissile.projectileData.q.velocity;
@@ -4646,8 +4646,6 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 {
     m_debugData->ToggleDebugOnOverRide();
 
-    m_debugData->DebugPushUILineDecimalNumber(" Draw Me!!!!!! ", 0.0f, "");
-
     DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
 
@@ -4708,6 +4706,17 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
     
   //  forceSumAngular = DirectX::SimpleMath::Vector3::Transform(forceSumAngular, aMissile.projectileData.alignmentQuat);
   //  forceDragAngular = DirectX::SimpleMath::Vector3::Transform(forceDragAngular, aMissile.projectileData.alignmentQuat);
+
+    m_debugData->ToggleDebugOff();
+    CalculateAirDragTorque(aMissile, aTimeDelta);
+    m_debugData->ToggleDebugOnOverRide();
+    DirectX::SimpleMath::Vector3 airDragTorque = aMissile.guidance.airDragTorqueLocalTest;
+    //forceSumAngular += airDragTorque;
+    DirectX::SimpleMath::Vector3 airDragTorqueWorld = airDragTorque;
+    airDragTorqueWorld = DirectX::SimpleMath::Vector3::Transform(airDragTorqueWorld, aMissile.projectileData.alignmentQuat);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, airDragTorqueWorld, 25.0f, 0.0f, DirectX::Colors::Purple);
+    m_debugData->DebugPushUILineDecimalNumber("!!! airDragTorqueWorld  ", airDragTorqueWorld.Length(), "");
+
 
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceSumAngular, 25.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, forceDragAngular, 15.0f, 0.0f, DirectX::Colors::Orange);
