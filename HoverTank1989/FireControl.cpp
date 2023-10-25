@@ -1571,7 +1571,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         projMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         projMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
 
-     //   m_ammoMissile.modelData.mainBodyShape->Draw(projMat, aView, aProj, projectileColor);
+        m_ammoMissile.modelData.mainBodyShape->Draw(projMat, aView, aProj, projectileColor);
 
         // nose cone
         DirectX::SimpleMath::Matrix noseConeProjMat = m_ammoMissile.modelData.localNoseConeMatrix;
@@ -2173,6 +2173,7 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
     }
 }
 
+/*
 void FireControl::DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     DirectX::SimpleMath::Vector4 projectileColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2244,7 +2245,10 @@ void FireControl::DrawProjectiles2(const DirectX::SimpleMath::Matrix aView, cons
         }
     }
 }
+*/
 
+
+/*
 void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
 {
     if (m_isCoolDownActive == false)
@@ -2298,11 +2302,12 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
         m_missileVec.push_back(firedMissile);
     }
 }
+*/
 
 void FireControl::FireMissile2(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet)
 {
-    AmmoData firedAmmo = m_ammoGuidedMissile.ammoData;
-    //AmmoData firedAmmo = m_ammoMissile.ammoData;
+    //AmmoData firedAmmo = m_ammoGuidedMissile.ammoData;
+    AmmoData firedAmmo = m_ammoMissile.ammoData;
 
     m_isCoolDownActive = true;
     m_coolDownTimer = firedAmmo.cooldown;
@@ -2501,6 +2506,7 @@ void FireControl::FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLa
     }
 }
 
+/*
 void FireControl::FireProjectileGuidedMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
 {
     if (m_isCoolDownActive == false)
@@ -2541,6 +2547,7 @@ void FireControl::FireProjectileGuidedMissile(const DirectX::SimpleMath::Vector3
         m_projectileVec.push_back(firedProjectile);
     }
 }
+*/
 
 void FireControl::FireProjectileMachineGun(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp)
 {
@@ -2734,7 +2741,8 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
                 //FireMissile2(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight());
 
                 m_isCoolDownActive = true;
-                m_coolDownTimer = m_ammoGuidedMissile.ammoData.cooldown;
+                //m_coolDownTimer = m_ammoGuidedMissile.ammoData.cooldown;
+                m_coolDownTimer = m_ammoMissile.ammoData.cooldown;
             }
         }
         if (m_isTestBoolTrue == true)
@@ -2895,6 +2903,7 @@ void FireControl::InitializeAmmoExplosive(AmmoStruct& aAmmo)
     aAmmo.ammoData.isGuided = false;
 }
 
+
 void FireControl::InitializeAmmoGuidedMissile(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
@@ -2912,6 +2921,7 @@ void FireControl::InitializeAmmoGuidedMissile(AmmoStruct& aAmmo)
     aAmmo.ammoData.isGuided = true;
 }
 
+
 void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
@@ -2921,9 +2931,11 @@ void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
     aAmmo.ammoData.launchVelocity = 25.0f;
+    //aAmmo.ammoData.length = 4.0f;
+    //aAmmo.ammoData.radius = 0.75f;
     aAmmo.ammoData.length = 4.0f;
+    aAmmo.ammoData.radius = 0.33f;
     aAmmo.ammoData.mass = m_missileConsts.mass;
-    aAmmo.ammoData.radius = 0.75f;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.isGuided = true;
@@ -3122,7 +3134,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
 
     InitializeAmmoCannon(m_ammoCannon);
     InitializeAmmoExplosive(m_ammoExplosive);
-    InitializeAmmoGuidedMissile(m_ammoGuidedMissile);
+    //InitializeAmmoGuidedMissile(m_ammoGuidedMissile);
     InitializeAmmoMachineGun(m_ammoMachineGun);
     InitializeAmmoMirv(m_ammoMirv);
     InitializeAmmoShotgun(m_ammoShotgun);
@@ -3134,7 +3146,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     InitializeMuzzleFlashModel(aContext, m_muzzleFlash);
     InitializeProjectileModelCannon(aContext, m_ammoCannon);
     InitializeProjectileModelExplosive(aContext, m_ammoExplosive);
-    InitializeProjectileModelGuidedMissile(aContext, m_ammoGuidedMissile);
+    //InitializeProjectileModelGuidedMissile(aContext, m_ammoGuidedMissile);
     InitializeProjectileModelMachineGun(aContext, m_ammoMachineGun);
     InitializeProjectileModelMirv(aContext, m_ammoMirv);
     InitializeProjectileModelShotgun(aContext, m_ammoShotgun);
@@ -3190,6 +3202,7 @@ void FireControl::InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
 
+
 void FireControl::InitializeProjectileModelGuidedMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
     const float ammoSize = aAmmo.ammoData.radius;
@@ -3202,6 +3215,7 @@ void FireControl::InitializeProjectileModelGuidedMissile(Microsoft::WRL::ComPtr<
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
 }
+
 
 void FireControl::InitializeProjectileModelMachineGun(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo)
 {
@@ -4433,7 +4447,6 @@ void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelt
     }
 }
 
-//void FireControl::UpdateMissileData(MissileData& aMissile, const float aTimeDelta)
 void FireControl::UpdateMissileAlignment(MissileData& aMissile, const float aTimeDelta)
 {
     //aMissile.projectileData.time += aTimeDelta;
@@ -5254,6 +5267,28 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         */
         m_debugData->ToggleDebugOff();
 
+
+        m_debugData->ToggleDebugOnOverRide();
+
+        DirectX::SimpleMath::Vector3 frontPos = DirectX::SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
+        DirectX::SimpleMath::Vector3 backPos = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
+        DirectX::SimpleMath::Vector3 rightPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.33f);
+
+        frontPos = DirectX::SimpleMath::Vector3::Transform(frontPos, m_missileVec[i].projectileData.alignmentQuat);
+        backPos = DirectX::SimpleMath::Vector3::Transform(backPos, m_missileVec[i].projectileData.alignmentQuat);
+        rightPos = DirectX::SimpleMath::Vector3::Transform(rightPos, m_missileVec[i].projectileData.alignmentQuat);
+
+        frontPos += m_missileVec[i].projectileData.q.position;
+        backPos += m_missileVec[i].projectileData.q.position;
+        rightPos += m_missileVec[i].projectileData.q.position;
+
+        m_debugData->PushDebugLinePositionIndicatorAligned(frontPos, 5.0f, 0.0f, m_missileVec[i].projectileData.alignmentQuat, DirectX::Colors::Blue);
+        m_debugData->PushDebugLinePositionIndicatorAligned(backPos, 5.0f, 0.0f, m_missileVec[i].projectileData.alignmentQuat, DirectX::Colors::Blue);
+        m_debugData->PushDebugLinePositionIndicatorAligned(rightPos, 5.0f, 0.0f, m_missileVec[i].projectileData.alignmentQuat, DirectX::Colors::Blue);
+
+
+
+        m_debugData->ToggleDebugOff();
         ResetMissileForceAccumulators(m_missileVec[i]);
     }
 
