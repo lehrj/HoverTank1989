@@ -55,8 +55,13 @@ public:
     void ActivateMissleTrackCamera();
     void CycleNpcFocus(const bool isCycleIncrease);
 
+    void FreeLookSpeedUp();
+    void FreeLookSpeedDown();
+
     CameraState GetCameraState() const { return m_cameraState; };
     float GetAimTurnRate() const { return m_aimTurnRate; };
+    float GetFreeLookSpeed() const { return m_posTravelSpeed; };
+
     DirectX::BoundingFrustum GetCameraFrustum() const { return m_boundingFrustum; };
     DirectX::SimpleMath::Vector3 GetHomePos() const { return m_homePosition; };
     float GetPitch() const { return m_pitch; };
@@ -176,7 +181,9 @@ private:
     int                             m_clientWidth;
     int                             m_clientHeight;
 
-    const float                     m_nearPlane = 0.3f;
+    //const float                     m_nearPlane = 0.3f;
+    //const float                     m_farPlane = 255000.0f;
+    const float                     m_nearPlane = 0.1f;
     const float                     m_farPlane = 255000.0f;
     const float                     m_fov = DirectX::XM_PI / 4.f;
 
@@ -188,7 +195,11 @@ private:
     const float                     m_frustumPlanePaddingVertical = Utility::ToRadians(15.0f);
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
-    const float                     m_posTravelSpeed = 34.0f;
+    float                           m_posTravelSpeed = 24.0f;
+    const float                     m_freeLookSpeedDelta = 2.0f;
+    const float                     m_freeLookSpeedMax = 150.0f;
+    const float                     m_freeLookSpeedMin = 1.0f;
+
     const float                     m_rotationTravelSpeed = 2.3f;
     const float                     m_aimTurnRate = 0.3f;
 

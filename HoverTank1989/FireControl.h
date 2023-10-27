@@ -295,8 +295,14 @@ struct MissileModel
 
     //std::unique_ptr<DirectX::GeometricPrimitive>    testShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    finAxelShape;
+    DirectX::SimpleMath::Vector3 finAxelTranslation;
     //const float testDiameter = 0.25f;
     //const float testLength = 1.6;
+
+    DirectX::SimpleMath::Vector3 afterBurnPlumeBasePos;
+    DirectX::SimpleMath::Vector3 afterBurnPlumeThrottleModPos;
+    float afterBurnBaseSize;
+    float afterBurnConeBaseLength;
 };
 
 struct MissileData
@@ -364,6 +370,9 @@ struct MissileConsts
     const bool isMissileFreezeTrue = false;
 
     const float climbOutDuration = 2.0f;
+
+    const float testVal = 1.0f;
+    const float testVal2 = testVal * 2.0f;
 };
 
 enum class ExplosionType

@@ -94,6 +94,30 @@ void Camera::CycleNpcFocus(const bool isCycleIncrease)
 	}
 }
 
+void Camera::FreeLookSpeedUp()
+{
+	if (m_posTravelSpeed + m_freeLookSpeedDelta > m_freeLookSpeedMax)
+	{
+		m_posTravelSpeed = m_freeLookSpeedMax;
+	}
+	else
+	{
+		m_posTravelSpeed += m_freeLookSpeedDelta;
+	}
+}
+
+void Camera::FreeLookSpeedDown()
+{
+	if (m_posTravelSpeed - m_freeLookSpeedDelta < m_freeLookSpeedMin)
+	{
+		m_posTravelSpeed = m_freeLookSpeedMin;
+	}
+	else
+	{
+		m_posTravelSpeed -= m_freeLookSpeedDelta;
+	}
+}
+
 DirectX::SimpleMath::Vector3 Camera::GetPreSwingCamPos(DirectX::SimpleMath::Vector3 aPosition, float aDirection)
 {
 	DirectX::SimpleMath::Vector3 newCamPosition = DirectX::SimpleMath::Vector3::Transform(m_preSwingCamPosOffset,

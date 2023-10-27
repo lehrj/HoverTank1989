@@ -2132,11 +2132,28 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
 
 
-
     auto mouse = m_mouse->GetState();
 
     if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
     {
+        if (mouse.scrollWheelValue > 0)
+        {
+            m_debugData->ToggleDebugOnOverRide();
+            m_camera->FreeLookSpeedUp();
+            m_debugData->DebugPushUILineDecimalNumber("GetFreeLookSpeed = ", m_camera->GetFreeLookSpeed(), "");
+            m_mouse->ResetScrollWheelValue();
+            m_debugData->ToggleDebugOff();
+
+        }
+        else if (mouse.scrollWheelValue < 0)
+        {
+            m_debugData->ToggleDebugOnOverRide();
+            m_camera->FreeLookSpeedDown();
+            m_debugData->DebugPushUILineDecimalNumber("GetFreeLookSpeed = ", m_camera->GetFreeLookSpeed(), "");
+            m_mouse->ResetScrollWheelValue();
+            m_debugData->ToggleDebugOff();
+        }
+
         if (mouse.positionMode == Mouse::MODE_RELATIVE)
         {
             const float ROTATION_GAIN = 0.004f;
