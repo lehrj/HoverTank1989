@@ -116,6 +116,11 @@ struct GuidanceSystem
     float finAngle3 = 0.0f;
     float finAngle4 = 0.0f;
 
+    float tfinAngle1 = 0.0f;
+    float tfinAngle2 = 0.0f;
+    float tfinAngle3 = 0.0f;
+    float tfinAngle4 = 0.0f;
+
     float throttlePercentage = 0.0f;
 
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
@@ -165,6 +170,10 @@ struct GuidanceSystem
     float climbOutTimer = 0.0f;
 
     DirectX::SimpleMath::Vector3 centerOfPressureLocalPos = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Matrix afterBurnPlumeSphereMat = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix afterBurnPlumeConeMat = DirectX::SimpleMath::Matrix::Identity;
+    bool testBool = false;
 };
 
 struct AmmoStruct
@@ -199,15 +208,18 @@ struct ProjectileData
 
 struct MissileModel
 {
+    // consts & colors
     // colors
     const DirectX::SimpleMath::Vector4 bodyColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-    const DirectX::SimpleMath::Vector4 finColor = DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
+    const DirectX::SimpleMath::Vector4 finColor1 = DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
+    const DirectX::SimpleMath::Vector4 finColor2 = DirectX::SimpleMath::Vector4(0.6f, 0.6f, 0.6f, 1.0f);
+    const DirectX::SimpleMath::Vector4 axelColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
 
-    // consts
     const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
-    const float wingFinDeployAngleMax = Utility::ToRadians(100.0f);
+    //const float wingFinDeployAngleMax = Utility::ToRadians(100.0f);
+    const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
     //const float finDeployTime = 0.7f;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
@@ -229,6 +241,8 @@ struct MissileModel
     DirectX::SimpleMath::Matrix plumeBaseTranslation;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    tailFinShape;
+    DirectX::SimpleMath::Matrix localTailFinMat;
+    DirectX::SimpleMath::Matrix tailFinTransMat;
     DirectX::SimpleMath::Matrix localTailFinMatrix1;
     DirectX::SimpleMath::Matrix tailFinTranslation1;
 
@@ -610,7 +624,7 @@ private:
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesOld(MissileData& aMissile, const float aTimeDelta);
-
+    void UpdateMissileModelData(MissileData& aMissile);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
