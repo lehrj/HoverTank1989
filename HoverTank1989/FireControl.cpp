@@ -1773,7 +1773,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
             DirectX::SimpleMath::Vector3 plumeConeBaseTrans = DirectX::SimpleMath::Vector3::Zero;
             plumeConeBaseTrans.x -= (m_ammoMissile.modelData.afterBurnConeBaseLength * 0.5f) * plumeConeScale;
-           // plumeConeBaseTrans.x += plumeBaseScale * (m_ammoMissile.modelData.afterBurnBaseSize * 0.5f);
+            // plumeConeBaseTrans.x += plumeBaseScale * (m_ammoMissile.modelData.afterBurnBaseSize * 0.5f);
 
             projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(plumeConeBaseTrans);
 
@@ -1786,7 +1786,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
           //  projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(toUseSteeringQuat);
           //  projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(plumeLocalPos);
           //  projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(toUseSteeringQuat);
- 
+
 //            projMatPlume2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_ammoMissile.modelData.afterBurnPlumeBasePos);
 
 
@@ -1863,8 +1863,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         m_missileVec[i].guidance.finAngle2 = (m_missileVec[i].guidance.finAngle2 - horzAng) * 0.5f;
         m_missileVec[i].guidance.finAngle3 = (m_missileVec[i].guidance.finAngle3 + vertAng) * 0.5f;
         m_missileVec[i].guidance.finAngle4 = (m_missileVec[i].guidance.finAngle4 - vertAng) * 0.5f;
-        
-        
+
+
 
         // tail fins
         DirectX::SimpleMath::Matrix tailFinProjMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -1967,9 +1967,9 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         finAxelMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         m_ammoMissile.modelData.finAxelShape->Draw(finAxelMat2, aView, aProj, axelColor);
 
-        
 
-        
+
+
 
         // thrust vector 1
         DirectX::SimpleMath::Matrix thrustVectorMainMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -2031,11 +2031,11 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         thrustVectorHousingMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         thrustVectorHousingMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         m_ammoMissile.modelData.thrustVectorHousingShape->Draw(thrustVectorHousingMat4, aView, aProj, projectileColor);
-        
-        
 
 
-        
+
+
+
         // thrust vector housing end cap 1
         DirectX::SimpleMath::Matrix thrustVectorHousingEndCapMat1 = DirectX::SimpleMath::Matrix::Identity;
         thrustVectorHousingEndCapMat1 *= m_ammoMissile.modelData.localThrustVectorHousingEndCapMatrix;
@@ -2079,10 +2079,10 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         testRodMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         m_ammoMissile.modelData.thrustAxelShape->Draw(testRodMat2, aView, aProj, axelColor);
 
-        
 
 
-        
+
+
         // wing fins
         DirectX::SimpleMath::Matrix wingFinProjMat1 = DirectX::SimpleMath::Matrix::Identity;
         wingFinProjMat1 *= m_ammoMissile.modelData.localWingFinMatrix1;
@@ -2090,7 +2090,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         wingFinProjMat1 *= m_ammoMissile.modelData.wingTranslation1;
         wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat1, aView, aProj, finColor1);
+        //m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat1, aView, aProj, finColor1);
 
         // wing fin 2
         DirectX::SimpleMath::Matrix wingFinProjMat2 = DirectX::SimpleMath::Matrix::Identity;
@@ -2099,7 +2099,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         wingFinProjMat2 *= m_ammoMissile.modelData.wingTranslation2;
         wingFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat2, aView, aProj, finColor1);
+        //m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat2, aView, aProj, finColor1);
 
         // wing fin 3
         DirectX::SimpleMath::Matrix wingFinProjMat3 = DirectX::SimpleMath::Matrix::Identity;
@@ -2108,7 +2108,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         wingFinProjMat3 *= m_ammoMissile.modelData.wingTranslation3;
         wingFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat3 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat3, aView, aProj, finColor1);
+        //m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat3, aView, aProj, finColor1);
 
         // wing fin 4
         DirectX::SimpleMath::Matrix wingFinProjMat4 = DirectX::SimpleMath::Matrix::Identity;
@@ -2117,9 +2117,43 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         wingFinProjMat4 *= m_ammoMissile.modelData.wingTranslation4;
         wingFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         wingFinProjMat4 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
-        m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat4, aView, aProj, finColor1);
-        
-        
+        //m_ammoMissile.modelData.wingFinShape->Draw(wingFinProjMat4, aView, aProj, finColor1);
+
+
+        m_debugData->ToggleDebugOnOverRide();
+
+        DirectX::SimpleMath::Vector3 testPos = m_playerVehicle->GetPos();
+        testPos.y += 5.0f;
+        m_debugData->PushDebugLinePositionIndicator(testPos, 5.0f, 0.0f, DirectX::Colors::White);
+
+        float testRot = Utility::WrapAngle(cos(m_testTimer));
+        //testRot = Utility::ToRadians(90.0f);
+        testRot -= Utility::ToRadians(45.0f);
+        float testWingDeployAngle = 0.0f + m_ammoMissile.modelData.wingFinDeployAngleMax * m_missileVec[i].guidance.finDeployPercent;
+        DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::Identity;
+        testMat *= m_ammoMissile.modelData.testWingMat;
+        testMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-testRot);
+        testMat *= m_ammoMissile.modelData.testWingTrans;
+        //testMat *= DirectX::SimpleMath::Matrix::CreateTranslation(testPos);
+        testMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        testMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+        m_ammoMissile.modelData.testWingShape->Draw(testMat, aView, aProj, finColor1);
+
+        DirectX::SimpleMath::Vector3 frontPos = DirectX::SimpleMath::Vector3::UnitX;
+        frontPos = DirectX::SimpleMath::Vector3::Transform(frontPos, m_missileVec[i].projectileData.alignmentQuat);
+        frontPos = DirectX::SimpleMath::Vector3::Transform(frontPos, DirectX::SimpleMath::Matrix::CreateTranslation
+        (m_missileVec[i].projectileData.q.position));
+        DirectX::SimpleMath::Vector3 backPos = -DirectX::SimpleMath::Vector3::UnitX;
+        backPos = DirectX::SimpleMath::Vector3::Transform(backPos, m_missileVec[i].projectileData.alignmentQuat);
+        backPos = DirectX::SimpleMath::Vector3::Transform(backPos, DirectX::SimpleMath::Matrix::CreateTranslation
+        (m_missileVec[i].projectileData.q.position));
+
+        m_debugData->PushDebugLinePositionIndicatorAligned(frontPos, 1.0f, 0.0f, m_missileVec[i].projectileData.alignmentQuat, DirectX::Colors::Orange);
+        m_debugData->PushDebugLinePositionIndicatorAligned(backPos, 1.0f, 0.0f, m_missileVec[i].projectileData.alignmentQuat, DirectX::Colors::Orange);
+        m_debugData->PushDebugLinePositionIndicatorAligned(m_missileVec[i].projectileData.q.position, 1.0f, 0.0f, m_missileVec[i].projectileData.alignmentQuat, DirectX::Colors::Lime);
+
+        m_debugData->DebugPushUILineDecimalNumber("m_testTimer ", m_testTimer, "");
+        m_debugData->ToggleDebugOff();
     }
 }
 
@@ -3261,7 +3295,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.worldPlumeMatrix = aAmmo.modelData.localTailFinMatrix1;
     //DirectX::SimpleMath::Vector3 plumeTranslation = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
     //aAmmo.modelData.tailFinTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-ammoLength * 0.4f, aAmmo.ammoData.radius, 0.0f));
-    
+
     const float tailOffset = -ammoLength * 0.45f;
     aAmmo.modelData.tailFinTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailOffset, aAmmo.ammoData.radius * 0.9f, 0.0f));
 
@@ -3313,8 +3347,8 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     const float testFloat = cos(aAmmo.modelData.wingFinDeployAngleMax);
     //aAmmo.modelData.finAxelTranslation -= testTrans * cos(aAmmo.modelData.wingFinDeployAngleMax);
     //aAmmo.modelData.localTailFinMatrix1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailFinLength * 0.5f, 0.0f, 0.0f));
-    
-    
+
+
     // thrust vector fin 1
     const float thrustPosZ = aAmmo.ammoData.radius * 0.5f;
     //DirectX::SimpleMath::Vector3 thrustVectorMainDimensions = DirectX::SimpleMath::Vector3(tailFinLength * 0.25f, aAmmo.ammoData.radius * 0.6f, tailFinWidth * 0.15f);
@@ -3378,7 +3412,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //DirectX::SimpleMath::Vector3 trustHousingDimensions = DirectX::SimpleMath::Vector3(tailFinLength * 0.5f, tailEndCapThickness * 0.9f, trustVectorMainDimensions.z * 1.05f);
     //DirectX::SimpleMath::Vector3 thrustHousingDimensions = DirectX::SimpleMath::Vector3(thrustVectorMainDimensions.x * 1.1f, tailEndCapThickness * 0.4f, thrustVectorMainDimensions.z * 3.15f);
     DirectX::SimpleMath::Vector3 thrustHousingDimensions = DirectX::SimpleMath::Vector3(thrustVectorMainDimensions.x * 1.1f, tailEndCapThickness * 0.4f, thrustVectorMainDimensions.z * 3.15f);
-    
+
     /*
     thrustHousingDimensions.x = -0.572687507f;
     thrustHousingDimensions.y = 0.0635000020f;
@@ -3388,7 +3422,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     thrustHousingDimensions.y = 0.00508000050f;
     thrustHousingDimensions.z = 0.0311850067f;
     */
-    
+
     thrustHousingDimensions.x = thrustVectorMainDimensions.x * 1.1f;
     thrustHousingDimensions.y = tailEndCapThickness * 0.6f;
     thrustHousingDimensions.z = thrustVectorMainDimensions.z * 3.15f;
@@ -3396,7 +3430,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //DirectX::SimpleMath::Vector3 trustHousingTrans = DirectX::SimpleMath::Vector3(-aAmmo.ammoData.length * 0.5f - (trustHousingDimensions.x * 0.9f), aAmmo.ammoData.radius * 0.45f, 0.0f);
     DirectX::SimpleMath::Vector3 thrustHousingTrans = DirectX::SimpleMath::Vector3(-aAmmo.ammoData.length * 0.5f - (thrustHousingDimensions.x * 0.5f), aAmmo.ammoData.radius, 0.0f);
 
- //   thrustHousingTrans = trustVectorTrans1;
+    //   thrustHousingTrans = trustVectorTrans1;
     thrustHousingTrans.x += thrustHousingDimensions.x * 0.4f;
     //thrustHousingTrans.x -= thrustHousingDimensions.z * 0.5f;
     thrustHousingTrans.y += (thrustVectorMainDimensions.y * 0.5f) + (thrustHousingDimensions.y * 0.5f);
@@ -3452,9 +3486,10 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
 
 
     // wing fins
-    const float wingFinLength = aAmmo.ammoData.length * 0.3f;
+    float wingFinLength = aAmmo.ammoData.length * 0.3f;
     const float wingFinWidth = wingFinLength * 0.2f;
     const DirectX::SimpleMath::Vector3 wingFinDimensions = DirectX::SimpleMath::Vector3(wingFinLength, wingFinWidth, wingFinWidth * 0.3f);
+    wingFinLength = 0.7f;
     aAmmo.modelData.wingFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), wingFinDimensions);
     //aAmmo.modelData.wingFinShape = DirectX::GeometricPrimitive::CreateTetrahedron(aContext.Get(), 2.0f);
     aAmmo.modelData.wingFinShape = DirectX::GeometricPrimitive::CreateTetrahedron(aContext.Get(), aAmmo.ammoData.length * 0.3f);
@@ -3482,15 +3517,17 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.localWingFinMatrix1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, aAmmo.ammoData.radius, 0.0f));
     const float mainWingLongPos = 0.2f * aAmmo.ammoData.length;
-    const float posOffset = -0.6f * aAmmo.ammoData.radius;
+    //const float posOffset = -0.6f * aAmmo.ammoData.radius;
+    const float posOffset = -2.0f * aAmmo.ammoData.radius;
+
     //const float posOffset = -0.6f;
     aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, aAmmo.ammoData.radius + posOffset, 0.0f));
-    
+
     DirectX::SimpleMath::Vector3 wingTrans = DirectX::SimpleMath::Vector3(mainWingLongPos, aAmmo.ammoData.radius + posOffset, 0.0f);
     aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wingTrans.x, wingTrans.y, wingTrans.z));
-   // aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::Identity;
+    // aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::Identity;
 
-    // wing fin 2
+     // wing fin 2
     aAmmo.modelData.localWingFinMatrix2 = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.localWingFinMatrix2 *= wingScale2;
     //aAmmo.modelData.localWingFinMatrix2 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f));
@@ -3526,8 +3563,37 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.wingTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -aAmmo.ammoData.radius));
     aAmmo.modelData.wingTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(mainWingLongPos, 0.0f, aAmmo.ammoData.radius + posOffset));
     //aAmmo.modelData.wingTranslation4 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(wingTrans.x, wingTrans.z, wingTrans.y));
-    
-    
+
+
+    //////////////////////////////////////////////
+    float modelSizeVal = 1.0f;
+    float x = 0.06f;
+    float y = 0.015f;
+    float z = 0.3f;
+    float xMod = modelSizeVal * x;
+    float yMod = modelSizeVal * y;
+    float zMod = modelSizeVal * z;
+    //aAmmo.modelData.localWingFinMatrix1 = DirectX::SimpleMath::Matrix::Identity;
+    //aAmmo.modelData.localWingFinMatrix2 = aAmmo.modelData.localWingFinMatrix1;
+    //aAmmo.modelData.localWingFinMatrix3 = aAmmo.modelData.localWingFinMatrix1;
+    //aAmmo.modelData.localWingFinMatrix4 = aAmmo.modelData.localWingFinMatrix1;
+    //DirectX::SimpleMath::Matrix wingScale2 = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.3f, 0.05f, 1.0f));
+    //DirectX::SimpleMath::Matrix testWingScale = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.3f, 0.05f, 1.0f));
+    //DirectX::SimpleMath::Matrix testWingScale = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.15f, 0.025f, 0.5f));
+    DirectX::SimpleMath::Matrix testWingScale = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(x, y, z));
+    aAmmo.modelData.testWingMat = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.modelData.testWingMat *= testWingScale;
+    // aAmmo.modelData.testWingMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f));
+    //aAmmo.modelData.testWingMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.2f, 0.0f, 0.3f));
+    //aAmmo.modelData.testWingMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.1f, 0.0f));
+    aAmmo.modelData.testWingMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.02f, 0.0f, 0.1f));
+    aAmmo.modelData.testWingTrans = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.modelData.testWingTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, aAmmo.ammoData.radius * 1.0f));
+    aAmmo.modelData.testWingShape = DirectX::GeometricPrimitive::CreateTetrahedron(aContext.Get(), modelSizeVal);
+
+
+    ////////////////////////////////////////////
+
     DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 5.0));
     /*
     aAmmo.modelData.wingTranslation1 = DirectX::SimpleMath::Matrix::Identity;
@@ -3553,7 +3619,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.modelData.thustRodLocalPos = DirectX::SimpleMath::Vector3(-ammoLength * 0.4f, aAmmo.ammoData.radius, 0.0f);
     //aAmmo.modelData.thustRodLocalPos = DirectX::SimpleMath::Vector3((-ammoLength * 0.5f) + (-thrustRodLength * 0.5f), aAmmo.ammoData.radius, 0.0f);
     aAmmo.modelData.thustRodLocalPos = DirectX::SimpleMath::Vector3((-ammoLength * 0.5f) + (-thrustRodLength * 0.0f), aAmmo.ammoData.radius, 0.0f);
- 
+
 
 
 
@@ -3566,7 +3632,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //thrustHousingTrans.y = (finAxelLength * 0.5f) - (zOffset * 2.0f) - (thrustHousingDimensions.y * 0.5f);
     //const float thrustVectorFinYOffset = (thrustAxelRodLength * 0.5f) - (thrustVectorMainDimensions.y * 0.5f);
     //const float thrustVectorFinYOffset = thrustHousingTrans.y;// -(thrustHousingDimensions.y * 0.5f) - (zOffset * 2.0f);
-    const float thrustVectorFinYOffset = thrustHousingTrans.y - (thrustVectorMainDimensions.y * 0.5f) - (thrustHousingDimensions.y * 0.5f) -(zOffset * 2.0f);
+    const float thrustVectorFinYOffset = thrustHousingTrans.y - (thrustVectorMainDimensions.y * 0.5f) - (thrustHousingDimensions.y * 0.5f) - (zOffset * 2.0f);
     //thrustPosZ = (thrustAxelRodLength * 0.5f) - (thrustHousingDimensions.y);
 
     //DirectX::SimpleMath::Vector3 trustVectorTrans1 = DirectX::SimpleMath::Vector3(-aAmmo.ammoData.length * 0.52f, aAmmo.ammoData.radius * 0.5f, 0.0f);
@@ -6013,3 +6079,9 @@ void FireControl::UpdateSteeringDirNormOld2(MissileData& aMissile, const float a
     }
     */
 }
+
+
+
+
+
+

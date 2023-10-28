@@ -303,6 +303,11 @@ struct MissileModel
     DirectX::SimpleMath::Vector3 afterBurnPlumeThrottleModPos;
     float afterBurnBaseSize;
     float afterBurnConeBaseLength;
+
+    DirectX::SimpleMath::Matrix testWingMat;
+    DirectX::SimpleMath::Matrix testWingTrans;
+    std::unique_ptr<DirectX::GeometricPrimitive> testWingShape;
+
 };
 
 struct MissileData
