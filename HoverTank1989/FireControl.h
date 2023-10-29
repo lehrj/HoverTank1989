@@ -216,6 +216,7 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 finColor1 = DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
     const DirectX::SimpleMath::Vector4 finColor2 = DirectX::SimpleMath::Vector4(0.6f, 0.6f, 0.6f, 1.0f);
     const DirectX::SimpleMath::Vector4 axelColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
+    const DirectX::SimpleMath::Vector4 voidBlackColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
     const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
     //const float wingFinDeployAngleMax = Utility::ToRadians(100.0f);
