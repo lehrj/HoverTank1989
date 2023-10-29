@@ -219,9 +219,7 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 voidBlackColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
     const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
-    //const float wingFinDeployAngleMax = Utility::ToRadians(100.0f);
     const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
-    //const float finDeployTime = 0.7f;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
     DirectX::SimpleMath::Matrix localBodyMatrix;
@@ -244,30 +242,10 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    tailFinShape;
     DirectX::SimpleMath::Matrix localTailFinMat;
     DirectX::SimpleMath::Matrix tailFinTransMat;
-    DirectX::SimpleMath::Matrix localTailFinMatrix1;
-    DirectX::SimpleMath::Matrix tailFinTranslation1;
-
-    DirectX::SimpleMath::Matrix localTailFinMatrix2;
-    DirectX::SimpleMath::Matrix tailFinTranslation2;
-
-    DirectX::SimpleMath::Matrix localTailFinMatrix3;
-    DirectX::SimpleMath::Matrix tailFinTranslation3;
-
-    DirectX::SimpleMath::Matrix localTailFinMatrix4;
-    DirectX::SimpleMath::Matrix tailFinTranslation4;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    wingFinShape;
-    DirectX::SimpleMath::Matrix localWingFinMatrix1;
-    DirectX::SimpleMath::Matrix wingTranslation1;
-
-    DirectX::SimpleMath::Matrix localWingFinMatrix2;
-    DirectX::SimpleMath::Matrix wingTranslation2;
-
-    DirectX::SimpleMath::Matrix localWingFinMatrix3;
-    DirectX::SimpleMath::Matrix wingTranslation3;
-
-    DirectX::SimpleMath::Matrix localWingFinMatrix4;
-    DirectX::SimpleMath::Matrix wingTranslation4;
+    DirectX::SimpleMath::Matrix localWingFinMatrix;
+    DirectX::SimpleMath::Matrix wingTranslation;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    thrustRodShape;
     DirectX::SimpleMath::Vector3 thustRodLocalPos;
@@ -308,11 +286,8 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    thrustAxelShape;
     DirectX::SimpleMath::Matrix localThrustAxelMatrix;
 
-    //std::unique_ptr<DirectX::GeometricPrimitive>    testShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    finAxelShape;
     DirectX::SimpleMath::Vector3 finAxelTranslation;
-    //const float testDiameter = 0.25f;
-    //const float testLength = 1.6;
 
     DirectX::SimpleMath::Vector3 afterBurnPlumeBasePos;
     DirectX::SimpleMath::Vector3 afterBurnPlumeThrottleModPos;
