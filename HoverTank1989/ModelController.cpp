@@ -338,8 +338,8 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
 
     // missile tubes
     const float missileTubeVerticalRot = Utility::ToRadians(40.0f);
-    //const float missileTubeHorizontalRot = Utility::ToRadians(10.0f);
-    const float missileTubeHorizontalRot = Utility::ToRadians(0.0f);
+    const float missileTubeHorizontalRot = Utility::ToRadians(10.0f);
+    //const float missileTubeHorizontalRot = Utility::ToRadians(0.0f);
 
     aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
     aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));

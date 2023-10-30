@@ -512,6 +512,19 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
         }
     }
 
+    /////////////////////////////////////////////
+    // force target for testing
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {   
+        float distance = (m_npcVec[i]->GetPos() - aRay.position).Length();
+        distanceToTarget = distance;
+        targetID = m_npcVec[i]->GetID();
+        isTargetHit = true;
+    }
+
+    /////////////////////////////////////////////
+
     aDistance = distanceToTarget;
     aTargetId = targetID;
     aIsTargetLockTrue = isTargetHit;
@@ -676,6 +689,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
+    //const int columns = 12;
     const int columns = 12;
     //const float xOrgVal = -500.0f;
     //const float xOrgVal = -200.0f;
@@ -684,8 +698,9 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float xOrgVal = 570.0f;
     const float zOrgVal = -375.0f;
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
-    DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, zOrgVal);
-    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, zOrgVal);
+    DirectX::SimpleMath::Vector3 pos = m_startPos;
+    /*
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -699,6 +714,10 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
+    */
+
+    pos = m_startPos;
+    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 
     const float xLine = 85.0f;
     const float yLine = 10.0f;

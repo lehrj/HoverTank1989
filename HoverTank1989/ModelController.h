@@ -43,8 +43,8 @@ struct TankModel
     DirectX::SimpleMath::Matrix  muzzleTransMatrix;
 
     // missile tubes
-    //DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(-0.9f, -0.3f, -0.9f);
-    DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(-0.9f, -0.3f, -0.9f);
+    //DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
     DirectX::SimpleMath::Vector3 localMissileTubeRightPos = DirectX::SimpleMath::Vector3(0.9f, -0.3f, -0.9f);
     DirectX::SimpleMath::Vector3 worldMissileTubeLeftPos = DirectX::SimpleMath::Vector3::Zero;

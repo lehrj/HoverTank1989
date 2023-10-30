@@ -338,9 +338,12 @@ struct MissileConsts
 
     const float laserDepoyDelay = 3.9f;
 
-    const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-2.0f, 0.0, 0.0f);
+    //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-2.0f, 0.0, 0.0f);
+    //const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
+    //const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
-    const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
 
     const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
@@ -349,11 +352,11 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(45.0f);
+    const float steerAngMax = Utility::ToRadians(25.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
 
-    const float rocketBoostForceMax = 20.0f;
-    const float mass = 10.0f;
+    const float rocketBoostForceMax = 40.0f;
+    const float mass = 22.0f;
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -365,6 +368,8 @@ struct MissileConsts
     const bool isMissileFreezeTrue = false;
 
     const float climbOutDuration = 2.0f;
+
+    const float launchVelocity = 0.0f;
 
     const float testVal = 1.0f;
     const float testVal2 = testVal * 2.0f;
@@ -660,8 +665,8 @@ private:
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
-
-    const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
+    //const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
+    const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
 
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
     float m_testAng = 0.0f;
@@ -682,6 +687,10 @@ private:
     bool m_isDebugToggleTrue1 = false;
     bool m_isDebugToggleTrue2 = false;
     bool m_isDebugToggleTrue3 = false;
+
+    DirectX::SimpleMath::Vector3 m_debugHeadingVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Quaternion m_debugHeadingQuat = DirectX::SimpleMath::Quaternion::Identity;
+    float m_debugDistanceToTarget = 0.0f;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
