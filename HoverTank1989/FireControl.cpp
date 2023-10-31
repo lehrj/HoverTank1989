@@ -3371,7 +3371,7 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
 
     m_debugData->ToggleDebugOff();
 
-    aProjectile->projectileData.time = aProjectile->projectileData.time + static_cast<float>(aTimeDelta);
+    //aProjectile->projectileData.time = aProjectile->projectileData.time + static_cast<float>(aTimeDelta);
 
     DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
@@ -3828,7 +3828,7 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
 void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta)
 {
-    aMissile.projectileData.time += aTimeDelta;
+    aMissile.projectileData.time += static_cast<float>(aTimeDelta);
     aMissile.guidance.timeStepDelta = static_cast<float>(aTimeDelta);
     float terrainHeightAtPos = m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position);
     aMissile.guidance.altitude = aMissile.projectileData.q.position.y - terrainHeightAtPos;
@@ -3986,7 +3986,6 @@ void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelt
 
 void FireControl::UpdateMissileAlignment(MissileData& aMissile, const float aTimeDelta)
 {
-    //aMissile.projectileData.time += aTimeDelta;
     DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
     velocityNorm.Normalize();
 
@@ -4865,6 +4864,15 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
         RungeKutta4Missile(&m_missileVec[i], aTimeDelta);
 
+        ////// debug set missle to player cords & align
+        /*
+        m_missileVec[i].projectileData.q.position = m_playerVehicle->GetPos();
+        m_missileVec[i].projectileData.q.velocity = m_playerVehicle->GetVelocity();
+        m_missileVec[i].projectileData.q.angularVelocity = m_playerVehicle->GetAngularVelocity();
+        m_missileVec[i].projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
+        */
+        ////// end : debug set missle to player cords & align
+
         UpdateMissileAlignment(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateMissileModelData(m_missileVec[i]);
@@ -5012,6 +5020,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 10.0f, 0.0f, DirectX::Colors::Red);
 
         m_debugData->PushDebugLinePositionIndicator(m_missileVec[i].guidance.targetDestination, 20.0f, 0.0f, DirectX::Colors::Teal);
+
+        //m_debugData->DebugPushUILineDecimalNumber("m_testTimer2      = ", m_testTimer2, "");
+        //m_debugData->DebugPushUILineDecimalNumber("projectileData.t  = ", m_missileVec[i].projectileData.time, "");
 
         m_debugData->ToggleDebugOff();
         ResetMissileForceAccumulators(m_missileVec[i]);
