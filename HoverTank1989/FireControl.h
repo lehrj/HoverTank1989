@@ -321,12 +321,14 @@ struct MissileConsts
     //const float seekerHeadAngleMax = Utility::ToRadians(40.0f);
     const float seekerHeadAngleMax = Utility::ToRadians(45.0f);
     const float stearingAngleMax = Utility::ToRadians(105.0f);
-    const float finDeployDelay = 1.0f;
-    const float rocketFireDelay = 3.5f;
+    const float finDeployDelay = 0.2f;
+    const float rocketFireDelay = 1.0f;
     //const float rocketBoostForceMax = 700.0f;
     
-    const float finDeployTime = 0.7f;
-    const float rocketFireFullTime = 1.0f;
+    //const float finDeployTime = 0.7f;
+    const float finDeployTime = 0.4f;
+    //const float rocketFireFullTime = 1.0f;
+    const float rocketFireFullTime = 0.5f;
     const float wingArea = 0.3f;
     //const float mass = 10.0f;
     const float dragCoefficient = 0.3f;
@@ -367,7 +369,8 @@ struct MissileConsts
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
 
-    const float climbOutDuration = 2.0f;
+    //const float climbOutDuration = 2.0f;
+    const float climbOutDuration = 0.5f;
 
     const float launchVelocity = 0.0f;
 
@@ -673,7 +676,6 @@ private:
     int m_cameraTrackedMissileID = -1;
     bool m_isLaserFlickerTrue = false;
 
-    bool m_isDebugToggleTrue = false;
 
     unsigned int m_nextUniqueMissileID = 0;
 
@@ -684,13 +686,32 @@ private:
     float m_testRotYaw = 0.0f;
     float m_testRotPitch = 0.0f;
     float m_testRotRoll = 0.0f;
+
+    bool m_isDebugToggleTrue = false;
+
     bool m_isDebugToggleTrue1 = false;
     bool m_isDebugToggleTrue2 = false;
     bool m_isDebugToggleTrue3 = false;
 
-    DirectX::SimpleMath::Vector3 m_debugHeadingVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-    DirectX::SimpleMath::Quaternion m_debugHeadingQuat = DirectX::SimpleMath::Quaternion::Identity;
+    const bool m_isDebugToggleTrueTestConst = false;
+    const bool m_isDebugToggleTrueTestConst1 = false;
+    const bool m_isDebugToggleTrueTestConst2 = false;
+    const bool m_isDebugToggleTrueTestConst3 = false;
+
+    //DirectX::SimpleMath::Vector3 m_debugHeadingVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    //DirectX::SimpleMath::Quaternion m_debugHeadingQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 m_debugHeadingVec1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_debugHeadingVec2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_debugHeadingVec3 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_debugHeadingVec4 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Quaternion m_debugHeadingQuat1 = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion m_debugHeadingQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion m_debugHeadingQuat3 = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion m_debugHeadingQuat4 = DirectX::SimpleMath::Quaternion::Identity;
+
     float m_debugDistanceToTarget = 0.0f;
+    float m_debugDistanceToTarget2 = 0.0f;
+    float m_debugDistanceToTarget3 = 0.0f;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
