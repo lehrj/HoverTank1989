@@ -357,8 +357,10 @@ struct MissileConsts
     const float steerAngMax = Utility::ToRadians(25.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
 
-    const float rocketBoostForceMax = 40.0f;
-    const float mass = 22.0f;
+    //const float rocketBoostForceMax = 40.0f;
+    const float rocketBoostForceMax = 80.0f;
+    //const float mass = 22.0f;
+    const float mass = 42.0f;
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -548,6 +550,8 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculeteDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
+
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
@@ -698,6 +702,10 @@ private:
     const bool m_isDebugToggleTrueTestConst2 = false;
     const bool m_isDebugToggleTrueTestConst3 = false;
 
+
+    DirectX::SimpleMath::Vector3 m_debugVec1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_debugVec2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_debugVec3 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     //DirectX::SimpleMath::Vector3 m_debugHeadingVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     //DirectX::SimpleMath::Quaternion m_debugHeadingQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 m_debugHeadingVec1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
