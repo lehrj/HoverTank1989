@@ -972,8 +972,10 @@ void Camera::UpdateFollowMissile(DX::StepTimer const& aTimer)
 		//const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 1.0f, -4.0f);
 		//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
 		//DirectX::SimpleMath::Vector3 targPos = m_snapTargBase;
-		const DirectX::SimpleMath::Vector3 snapPosBaseMissile = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
-		const DirectX::SimpleMath::Vector3 snapTargBaseMissle = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
+		//const DirectX::SimpleMath::Vector3 snapPosBaseMissile = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
+		const DirectX::SimpleMath::Vector3 snapPosBaseMissile = m_missileSnapPos;
+		//const DirectX::SimpleMath::Vector3 snapTargBaseMissle = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
+		const DirectX::SimpleMath::Vector3 snapTargBaseMissle = m_missileSnapTarg;
 
 		DirectX::SimpleMath::Vector3 camPos = snapPosBaseMissile;
 		DirectX::SimpleMath::Vector3 targPos = snapTargBaseMissle;
@@ -1019,8 +1021,14 @@ void Camera::UpdateFollowMissile(DX::StepTimer const& aTimer)
 		//targPos += m_vehicleFocus->GetPos();
 		targPos += missilePos;
 
-		DirectX::SimpleMath::Vector3 camOffset = DirectX::SimpleMath::Vector3(0.0f, -3.0f, -15.0f);
-
+		//DirectX::SimpleMath::Vector3 camOffset = DirectX::SimpleMath::Vector3(0.0f, -3.0f, -15.0f);
+		DirectX::SimpleMath::Vector3 camOffset = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -5.0f);
+		//DirectX::SimpleMath::Vector3 camOffset = m_missileSnapPos;
+		
+		camOffset.x = m_missileSnapPos.z;
+		camOffset.y = -m_missileSnapPos.y;
+		camOffset.z = m_missileSnapPos.x;
+	
 		camPos = missilePos;
 		targPos = targetPos;
 		//DirectX::SimpleMath::Matrix camToTargetMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
@@ -1066,8 +1074,10 @@ void Camera::UpdateFollowMissile2(DX::StepTimer const& aTimer)
 		//const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 1.0f, -4.0f);
 		//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
 		//DirectX::SimpleMath::Vector3 targPos = m_snapTargBase;
-		const DirectX::SimpleMath::Vector3 snapPosBaseMissile = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
-		const DirectX::SimpleMath::Vector3 snapTargBaseMissle = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
+		//const DirectX::SimpleMath::Vector3 snapPosBaseMissile = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
+		//const DirectX::SimpleMath::Vector3 snapPosBaseMissile = DirectX::SimpleMath::Vector3(-4.0f, 1.0f, 0.0f);
+		const DirectX::SimpleMath::Vector3 snapPosBaseMissile = m_missileSnapPos;
+		const DirectX::SimpleMath::Vector3 snapTargBaseMissle = m_missileSnapTarg;
 
 		DirectX::SimpleMath::Vector3 camPos = snapPosBaseMissile;
 		DirectX::SimpleMath::Vector3 targPos = snapTargBaseMissle;

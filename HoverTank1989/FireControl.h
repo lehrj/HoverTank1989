@@ -330,7 +330,6 @@ struct MissileConsts
     //const float rocketFireFullTime = 1.0f;
     const float rocketFireFullTime = 0.5f;
     const float wingArea = 0.3f;
-    //const float mass = 10.0f;
     const float dragCoefficient = 0.3f;
     const float dragCoefficientAng = 0.3f;
     const float postExplosionMass = 10.0f;
@@ -343,7 +342,8 @@ struct MissileConsts
     //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-2.0f, 0.0, 0.0f);
     //const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     //const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
-    const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
+    //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
 
