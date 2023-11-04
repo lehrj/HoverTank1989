@@ -28,8 +28,10 @@ struct ProjectileMotion
 {
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
-    DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
+    //DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
+    //DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 angularMomentum;
+    DirectX::SimpleMath::Vector3 angularVelocity;
 };
 
 struct ProjectileModel
@@ -370,6 +372,7 @@ struct MissileConsts
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
+    const bool isUseDebugRG4True = false;
 
     //const float climbOutDuration = 2.0f;
     const float climbOutDuration = 0.5f;
@@ -592,6 +595,7 @@ private:
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
+    void RightHandSideMissileDebugTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 

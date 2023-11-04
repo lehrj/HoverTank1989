@@ -2108,9 +2108,6 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
 
     firedMissile.projectileData.forward.Normalize();
     firedMissile.projectileData.up = aUp;
-
-    //firedMissile.projectileData.up = DirectX::SimpleMath::Vector3::Transform(firedMissile.projectileData.up, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(firedMissile.projectileData.forward, Utility::ToRadians(45.0f)));
-
     firedMissile.projectileData.up.Normalize();
     firedMissile.projectileData.right = -firedMissile.projectileData.up.Cross(firedMissile.projectileData.forward);
     firedMissile.projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -firedMissile.projectileData.right, firedMissile.projectileData.up));
@@ -2474,10 +2471,10 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
         {
             if (m_currentTargetID != -1)
             {
-                //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
-                FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
-                const float fireTimeOffset = 0.292f;
-                //FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
+                FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
+                //FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
+                const float fireTimeOffset = 0.0f;
+                FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
 
                 //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), DirectX::SimpleMath::Vector3::UnitX, aLauncherVelocity, DirectX::SimpleMath::Vector3::UnitY);
                 //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
@@ -3296,135 +3293,56 @@ void FireControl::RightHandSide(struct ProjectileData* aProjectile, ProjectileMo
 
 void FireControl::RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
 {
-    //  Compute the intermediate values of the 
-    //  dependent variables.
+    //  Compute the intermediate values of the dependent variables.
+    
     ProjectileMotion newQ;
     newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
     newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+    newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
+    newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
 
-    float mass = aProjectile->projectileData.collisionData.mass;
-
-    //  Compute the total drag force.
-    float airDensity = m_environment->GetAirDensity();
-    //float dragCoefficient = aProjectile->projectileData.ammoData.dragCoefficient;
-    float dragCoefficient = aProjectile->projectileData.ammoData.dragCoefficient + aProjectile->guidance.airFoilDragMod;
-    if (aProjectile->guidance.isExplodingTrue == true)
-    {
-        //dragCoefficient = m_missileConsts.postExplosionDragCoefficient;
-        //mass = m_missileConsts.postExplosionMass;
-    }
-
-    float frontSurfaceArea = aProjectile->projectileData.ammoData.frontSurfaceArea;
-    float velocity = newQ.velocity.Length();
-    float frontDragResistance = 0.5f * airDensity * frontSurfaceArea * dragCoefficient * velocity * velocity;
-    DirectX::SimpleMath::Vector3 velocityNorm = newQ.velocity;
-    velocityNorm.Normalize();
-    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-frontDragResistance);
-
-    DirectX::SimpleMath::Vector3 gravForce = (m_environment->GetGravityVec() * mass) * m_gravityMod;
-    //DirectX::SimpleMath::Vector3 liftForce = aProjectile->projectileData.up * aProjectile->guidance.liftForceFloat;
-    DirectX::SimpleMath::Vector3 liftForce = aProjectile->guidance.liftForce;
-
-    DirectX::SimpleMath::Vector3 linearDrag = DirectX::SimpleMath::Vector3::Zero;
-    //float dragSurfaceArea = aProjectile->guidance.dragSurfaceArea;
-    float dragSurfaceArea = Utility::GetPi() * (1.0f * 1.0f);
-    dragSurfaceArea = m_missileDimensions.z * m_missileDimensions.x;
-    dragCoefficient = aProjectile->guidance.dragCoefficientFull;
-    dragCoefficient = m_missileConsts.dragCoefficient;
-    float dragResistanceFull = 0.5f * airDensity * dragSurfaceArea * dragCoefficient * velocity * velocity;
-    DirectX::SimpleMath::Vector3 dragForce = velocityNorm * (-dragResistanceFull);
-
-    //m_debugData->DebugPushUILineDecimalNumber("dragForce", dragForce.Length(), "");
-
-
-    //dragForce = CalculateDragLinearForRunge(aProjectile, newQ.velocity);
-
+    // linear
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    /*
     velocityUpdate += newQ.velocity;
-    //velocityUpdate += airResistance;
-    velocityUpdate += dragForce;
-    velocityUpdate += gravForce;
-    velocityUpdate += liftForce;
-    */
-    if (m_isDebugToggleTrueTestConst == true)
-    {
-        velocityUpdate += newQ.velocity;
-        //velocityUpdate += airResistance;
-        velocityUpdate += dragForce;
-        velocityUpdate += gravForce;
-        velocityUpdate += liftForce;
-
-        DirectX::SimpleMath::Vector3 boostForce = aProjectile->guidance.testThrustForce3;
-        velocityUpdate += boostForce;
-    }
-    else
-    {
-        velocityUpdate += newQ.velocity;
-        //velocityUpdate += airResistance;
-        velocityUpdate += dragForce;
-        velocityUpdate += gravForce;
-        velocityUpdate += liftForce;
-
-        DirectX::SimpleMath::Vector3 boostForce = aProjectile->guidance.testThrustForce3;
-        velocityUpdate += boostForce;
-
-        velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-        velocityUpdate += newQ.velocity;
-        //velocityUpdate += aProjectile->guidance.linearDragSum; // update drag in step
-        //velocityUpdate += CalculateDragLinearForRunge(aProjectile, newQ.velocity);
-        ////// dragForce = CalculateDragLinearForRunge(aProjectile, newQ.velocity);
-        //velocityUpdate += dragForce;
-
-
-        if (m_isDebugToggleTrueTestConst1 == false)
-        {
-            velocityUpdate += aProjectile->guidance.linearDragSum;
-        }
-        else
-        {
-            velocityUpdate += CalculateDragLinearForRungeTest(aProjectile, newQ.velocity);
-        }
-        
-        velocityUpdate += aProjectile->guidance.linearForceSum;
-        //velocityUpdate -= aProjectile->guidance.linearDragSum;
-
-        /*
-        //m_debugData->DebugClearUI();
-        DirectX::SimpleMath::Vector3 toUseLine = dragForce;
-        //DirectX::SimpleMath::Vector3 toUseLine = aProjectile->guidance.linearDragSum;
-        //m_debugData->ToggleDebugOn();
-        //m_debugData->DebugPushUILineDecimalNumber("", , "");
-        m_debugData->DebugPushUILineDecimalNumber("toUseLine.Length() ", toUseLine.Length(), "");
-        m_debugData->PushDebugLine(aProjectile->projectileData.q.position, toUseLine, 150.0f, 10.0f, DirectX::Colors::Cyan);
-        //m_debugData->ToggleDebugOff();
-        */
-    }
-
-    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / mass);
+    velocityUpdate += aProjectile->guidance.linearDragSum;
+    velocityUpdate += aProjectile->guidance.linearForceSum;
+    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_missileConsts.mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
 
     // angular
-    DirectX::SimpleMath::Vector3 torqueAccum = aProjectile->projectileData.angularForceSum;
+    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+    torqueAccum = newQ.angularVelocity;
+    torqueAccum += aProjectile->projectileData.angularForceSum;
+    torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
+    torqueAccum += aProjectile->projectileData.angularDragSum;
+    aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
+    aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
+}
 
-    if (m_isDebugToggleTrueTestConst == true)
-    {
-        torqueAccum = aProjectile->guidance.testThrustTorque3;
-        torqueAccum += newQ.angularVelocity;
-        torqueAccum += aProjectile->guidance.airDragTorqueLocal;
-        torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
-        torqueAccum += (aProjectile->projectileData.angularDragSum);
-    }
-    else
-    {
-        torqueAccum = newQ.angularVelocity;
-        torqueAccum += aProjectile->projectileData.angularForceSum;
-        torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
-        torqueAccum += aProjectile->projectileData.angularDragSum;
-        //torqueAccum += newQ.angularVelocity * -powf(0.8f, aTimeDelta);
-        //torqueAccum += newQ.angularVelocity * -powf(0.8f, 1.0f);
-    }
+void FireControl::RightHandSideMissileDebugTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
+{
+    //  Compute the intermediate values of the dependent variables.
 
+    ProjectileMotion newQ;
+    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
+    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
+    //newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
+    //newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
+
+    // linear
+    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
+    velocityUpdate += newQ.velocity;
+    velocityUpdate += aProjectile->guidance.linearDragSum;
+    velocityUpdate += aProjectile->guidance.linearForceSum;
+    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_missileConsts.mass);
+    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
+
+    // angular
+    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+    torqueAccum = newQ.angularVelocity;
+    torqueAccum += aProjectile->projectileData.angularForceSum;
+    torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
+    torqueAccum += aProjectile->projectileData.angularDragSum;
     aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
 }
@@ -3465,32 +3383,35 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
     //  Define a convenience variables
     const float numEqns = static_cast<float>(6);
     //  Retrieve the current values of the dependent and independent variables.
-    //ProjectileMotion q = aProjectile->q;
     ProjectileMotion q = aProjectile->projectileData.q;
     ProjectileMotion dq1;
     ProjectileMotion dq2;
     ProjectileMotion dq3;
     ProjectileMotion dq4;
 
-    m_debugData->ToggleDebugOn();
-
     // Compute the four Runge-Kutta steps, The return 
     // value of RightHandSide method is an array
     // of delta-q values for each of the four steps.
-    RightHandSideMissile(aProjectile, &q, &q, aTimeDelta, 0.0, &dq1);
-    RightHandSideMissile(aProjectile, &q, &dq1, aTimeDelta, 0.5, &dq2);
-    RightHandSideMissile(aProjectile, &q, &dq2, aTimeDelta, 0.5, &dq3);
-    RightHandSideMissile(aProjectile, &q, &dq3, aTimeDelta, 1.0, &dq4);
 
-    m_debugData->ToggleDebugOff();
-
-    //aProjectile->projectileData.time = aProjectile->projectileData.time + static_cast<float>(aTimeDelta);
+    if (aProjectile->guidance.uniqueId % 2 == 0 || m_missileConsts.isUseDebugRG4True == false)
+    {
+        RightHandSideMissile(aProjectile, &q, &q, aTimeDelta, 0.0, &dq1);
+        RightHandSideMissile(aProjectile, &q, &dq1, aTimeDelta, 0.5, &dq2);
+        RightHandSideMissile(aProjectile, &q, &dq2, aTimeDelta, 0.5, &dq3);
+        RightHandSideMissile(aProjectile, &q, &dq3, aTimeDelta, 1.0, &dq4);
+    }
+    else
+    {
+        RightHandSideMissileDebugTest(aProjectile, &q, &q, aTimeDelta, 0.0, &dq1);
+        RightHandSideMissileDebugTest(aProjectile, &q, &dq1, aTimeDelta, 0.5, &dq2);
+        RightHandSideMissileDebugTest(aProjectile, &q, &dq2, aTimeDelta, 0.5, &dq3);
+        RightHandSideMissileDebugTest(aProjectile, &q, &dq3, aTimeDelta, 1.0, &dq4);
+    }
 
     DirectX::SimpleMath::Vector3 posUpdate = (dq1.position + 2.0 * dq2.position + 2.0 * dq3.position + dq4.position) / numEqns;
     DirectX::SimpleMath::Vector3 velocityUpdate = (dq1.velocity + 2.0 * dq2.velocity + 2.0 * dq3.velocity + dq4.velocity) / numEqns;
     DirectX::SimpleMath::Vector3 angularMomentumUpdate = (dq1.angularMomentum + 2.0 * dq2.angularMomentum + 2.0 * dq3.angularMomentum + dq4.angularMomentum) / numEqns;
     DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
-
 
     if (m_missileConsts.isMissileFreezeTrue == false)
     {
@@ -3499,10 +3420,6 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
         q.angularMomentum += angularMomentumUpdate;
         q.angularVelocity += angularVelocityUpdate;
     }
-    //q.velocity += velocityUpdate;
-    //q.position += posUpdate;
-    //q.angularMomentum += angularMomentumUpdate;
-    //q.angularVelocity += angularVelocityUpdate;
 
     aProjectile->projectileData.q.velocity = q.velocity;
     aProjectile->projectileData.q.position = q.position;
@@ -3510,15 +3427,6 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
     aProjectile->projectileData.collisionData.velocity = q.velocity;
     aProjectile->projectileData.q.angularVelocity = q.angularVelocity;
     aProjectile->projectileData.q.angularMomentum = q.angularMomentum;
-
-    /*
-    m_debugData->ToggleDebugOn();
-    m_debugData->DebugPushUILineDecimalNumber("aProjectile->guidance.testThrustTorque2.x", aProjectile->guidance.testThrustTorque2.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("aProjectile->guidance.testThrustTorque2.y ", aProjectile->guidance.testThrustTorque2.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("aProjectile->guidance.testThrustTorque2.z ", aProjectile->guidance.testThrustTorque2.z, "");
-    m_debugData->ToggleDebugOff();
-    */
-    
 }
 
 void FireControl::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
@@ -5760,6 +5668,12 @@ void FireControl::UpdateMissileForces(MissileData& aMissile, const float aTimeDe
 
     m_debugData->ToggleDebugOff();
 
+
+    DirectX::SimpleMath::Vector3 sumLinear = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 sumDragLinear = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 sumAngular = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 sumDragAngular = DirectX::SimpleMath::Vector3::Zero;
+    
     aMissile.guidance.linearDragSum = forceDragLinear;
     aMissile.guidance.linearForceSum = forceSumLinear;
     aMissile.projectileData.angularForceSum = forceSumAngular;

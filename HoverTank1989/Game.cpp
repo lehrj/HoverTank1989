@@ -1715,7 +1715,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.T)
     {
-        m_npcController->DebugToggleAI();
+        //m_npcController->DebugToggleAI();
     }
     if (m_kbStateTracker.pressed.Y)
     {
