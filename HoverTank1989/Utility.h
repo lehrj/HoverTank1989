@@ -714,7 +714,7 @@ public:
         }
         */
     }
-
+    
     static void AddForce(DirectX::SimpleMath::Vector3& aForceSum, const DirectX::SimpleMath::Vector3 aForceAdded)
     {
         const float tolMax = 1000000.0f;
@@ -1068,6 +1068,50 @@ public:
         aDir3 = aDir1;
         aDir3 = DirectX::SimpleMath::Vector3::TransformNormal(aDir3, DirectX::SimpleMath::Matrix::CreateFromAxisAngle(aPrimeDirection, Utility::ToRadians(240.0f)));
     }
+
+    struct ForceAccum
+    {
+        DirectX::SimpleMath::Vector3 linear = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 torque = DirectX::SimpleMath::Vector3::Zero;
+
+        static void ZeroValues(ForceAccum& aAccum)
+        {
+            aAccum.linear = DirectX::SimpleMath::Vector3::Zero;
+            aAccum.torque = DirectX::SimpleMath::Vector3::Zero;
+        }
+
+        static void AlignLinear(ForceAccum& aAccum, const DirectX::SimpleMath::Quaternion& aQuat)
+        {
+            aAccum.linear = DirectX::SimpleMath::Vector3::Transform(aAccum.linear, aQuat);
+        }
+
+        static void AlignLinearAndTorque(ForceAccum& aAccum, const DirectX::SimpleMath::Quaternion& aQuat)
+        {
+            aAccum.linear = DirectX::SimpleMath::Vector3::Transform(aAccum.linear, aQuat);
+            aAccum.torque = DirectX::SimpleMath::Vector3::Transform(aAccum.torque, aQuat);
+        }
+
+        inline Utility::ForceAccum& operator+= (const ForceAccum& aAccum) noexcept
+        {
+            this->linear += aAccum.linear;
+            this->torque += aAccum.torque;
+            return *this;
+        }
+
+        inline Utility::ForceAccum& operator-= (const ForceAccum& aAccum) noexcept
+        {
+            this->linear -= aAccum.linear;
+            this->torque -= aAccum.torque;
+            return *this;
+        }
+
+        inline Utility::ForceAccum& operator*= (const ForceAccum& aAccum) noexcept
+        {
+            this->linear *= aAccum.linear;
+            this->torque *= aAccum.torque;
+            return *this;
+        }
+    };
 
     struct MotionData
     {

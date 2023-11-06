@@ -550,7 +550,10 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragAngularSumLocalTest(MissileData& aMissile, const float aTimeDelta);
     void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
-    DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+
+    //DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData& aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+
     DirectX::SimpleMath::Vector3 CalculeteDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
@@ -614,8 +617,17 @@ private:
     void UpdateMissileGuidanceOld(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
+
+    
+    // Missile accumulators
+    Utility::ForceAccum AeroAccum(MissileData& aMissile);
+    Utility::ForceAccum BoosterAccum(MissileData& aMissile);
+    Utility::ForceAccum DragAccum(MissileData& aMissile, const float aTimeDelta);
+    void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
+
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesOld(MissileData& aMissile, const float aTimeDelta);
+
     void UpdateMissileModelData(MissileData& aMissile);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
