@@ -172,10 +172,13 @@ struct GuidanceSystem
     float climbOutTimer = 0.0f;
 
     DirectX::SimpleMath::Vector3 centerOfPressureLocalPos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 centerOfThrustLocalPos = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Matrix afterBurnPlumeSphereMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix afterBurnPlumeConeMat = DirectX::SimpleMath::Matrix::Identity;
     bool testBool = false;
+
+    float thrustAngle = 0.0f;
 };
 
 struct AmmoStruct
@@ -347,7 +350,7 @@ struct MissileConsts
     //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
-    const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
 
     const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
@@ -552,7 +555,8 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
 
     //DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
-    DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData& aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulator(MissileData& aMissile);
 
     DirectX::SimpleMath::Vector3 CalculeteDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);

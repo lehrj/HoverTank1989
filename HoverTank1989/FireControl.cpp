@@ -418,15 +418,13 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForRunge(MissileDat
     //return linearDrag;
 }
 
-//DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
-DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForRungeTest(MissileData& aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
+DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
 {
     DirectX::SimpleMath::Vector3 velocityNorm = aVelocity;
     velocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 localVelocityNorm = aVelocity;
     localVelocityNorm.Normalize();
-    //localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile->projectileData.inverseAlignmentQuat);
-    localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile.projectileData.inverseAlignmentQuat);
+    localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile->projectileData.inverseAlignmentQuat);
 
     float frontSurfaceArea = m_missileDimensions.y * m_missileDimensions.z;
     float sideSurfaceArea = m_missileDimensions.x * m_missileDimensions.y;
@@ -452,6 +450,45 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForRungeTest(Missil
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
+    return drag;
+}
+
+DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForAccumulator(MissileData& aMissile)
+{
+    //DirectX::SimpleMath::Vector3 velocityNorm = aVelocity;
+    DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 localVelocityNorm = aMissile.projectileData.q.velocity;
+    localVelocityNorm.Normalize();
+    //localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile->projectileData.inverseAlignmentQuat);
+    localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile.projectileData.inverseAlignmentQuat);
+
+    float frontSurfaceArea = m_missileDimensions.y * m_missileDimensions.z;
+    float sideSurfaceArea = m_missileDimensions.x * m_missileDimensions.y;
+    float topSurfaceArea = m_missileDimensions.x * m_missileDimensions.z;
+
+    float frontDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX);
+    float sideDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    float topDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
+
+    float frontSurface = abs(frontSurfaceArea * frontDot);
+    float sideSurface = abs(sideSurfaceArea * sideDot);
+    float topSurface = abs(topSurfaceArea * topDot);
+
+    //float airSurfaceArea = (frontSurfaceArea * frontDot) + (sideSurfaceArea * sideDot) + (topSurfaceArea * topDot);
+    float airSurfaceArea = frontSurface + sideSurface + topSurface;
+    airSurfaceArea = 0.785f;
+
+    //  Compute the total drag force.
+    float airDensity = m_environment->GetAirDensity();
+    const float dragCoefficient = 0.17f;
+    float velocity = aMissile.projectileData.q.velocity.Length();
+    float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
+
+    DirectX::SimpleMath::Vector3 drag = airResistance;
+    drag = DirectX::SimpleMath::Vector3::Transform(drag, aMissile.projectileData.inverseAlignmentQuat);
+
     return drag;
 }
 
@@ -3316,7 +3353,13 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     torqueAccum = newQ.angularVelocity;
     torqueAccum += aProjectile->projectileData.angularForceSum;
     torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
-    torqueAccum += aProjectile->projectileData.angularDragSum;
+    //torqueAccum += aProjectile->projectileData.angularDragSum;
+
+    //DirectX::SimpleMath::Vector3 dragTorqueTest = aProjectile->projectileData.q.angularVelocity * -powf(m_missileConsts.angularDragMod, aTimeDelta);
+    DirectX::SimpleMath::Vector3 dragTorqueTest = aProjectile->projectileData.q.angularVelocity * -powf(m_missileConsts.angularDragMod, 1.0f);
+    torqueAccum += dragTorqueTest;
+    //torqueAccum += aProjectile->projectileData.angularDragSum;
+
     aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
 }
@@ -3966,7 +4009,8 @@ void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTim
     }
 
     // Update center of pressure 
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH || aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH || aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT || 
+        aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
     {
         float finDeployPercent = aMissile.guidance.finDeployPercent;
         if (finDeployPercent > 1.0f)
@@ -3978,9 +4022,15 @@ void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTim
             finDeployPercent = 0.0f;
         }
 
+        const float thrustAnglePercent = aMissile.guidance.thrustAngle / m_missileConsts.steerAngMax;
+        const DirectX::SimpleMath::Vector3 thrustPosOffset = DirectX::SimpleMath::Vector3(0.3f, 0.0f, 0.0f);
+        DirectX::SimpleMath::Vector3 centerOfThrust = m_missileConsts.thrustPosLocal;
+        centerOfThrust += thrustPosOffset * thrustAnglePercent;
+        aMissile.guidance.centerOfThrustLocalPos = centerOfThrust;
+
         DirectX::SimpleMath::Vector3 centerOfPressure = m_missileConsts.centerOfPressureBasePosLocal;
         centerOfPressure += m_missileConsts.centerOfPressureFullFinDeployOffset * aMissile.guidance.finDeployPercent;
-
+        
         aMissile.guidance.centerOfPressureLocalPos = centerOfPressure;
     }
 }
@@ -4788,7 +4838,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateMissileModelData(m_missileVec[i]);
 
         ////// start debug drawing
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         m_debugData->DebugPushUILineDecimalNumber("velocty = ", m_missileVec[i].projectileData.q.velocity.Length(), "");
         if (m_missileVec[i].guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
         {
@@ -5127,7 +5177,7 @@ void FireControl::UpdateSteeringDirNorm(MissileData& aMissile, const float aTime
 
         aMissile.guidance.steeringDirNormLocal = steeringUpdateVec;
         aMissile.guidance.steeringQuat = updateQuat;
-
+        aMissile.guidance.thrustAngle = Utility::GetAngleBetweenVectors(steeringUpdateVec, -DirectX::SimpleMath::Vector3::UnitX);
         m_debugHeadingVec1 = steeringUpdateVec;
         m_debugHeadingQuat1 = updateQuat;
         m_debugDistanceToTarget = aMissile.guidance.targetDistance;
@@ -5709,14 +5759,44 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     sumDrag += DragAccum(aMissile, aTimeDelta);
 
 
+    m_debugData->ToggleDebugOnOverRide();
+
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, sumDrag.linear, 8.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->DebugPushUILineDecimalNumber("sumDrag.linear.Length() = ", sumDrag.linear.Length(), "");
+
+    DirectX::SimpleMath::Vector3 thrustPosWorld = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.centerOfThrustLocalPos, aMissile.projectileData.alignmentQuat) + aMissile.projectileData.q.position;
+    DirectX::SimpleMath::Vector3 centerOfPressurePosWorld = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.centerOfPressureLocalPos, aMissile.projectileData.alignmentQuat) + aMissile.projectileData.q.position;
+    DirectX::SimpleMath::Vector3 centerOfMassWorld = DirectX::SimpleMath::Vector3::Transform(m_missileConsts.centerOfMassLocal, aMissile.projectileData.alignmentQuat) + aMissile.projectileData.q.position;
+
+    //DirectX::SimpleMath::Vector3 boostForcesWorld = DirectX::SimpleMath::Vector3::Transform(sumForce.linear, aMissile.projectileData.alignmentQuat) + aMissile.projectileData.q.position;
+    DirectX::SimpleMath::Vector3 boostForcesWorld = DirectX::SimpleMath::Vector3::Transform(sumForce.linear, aMissile.projectileData.alignmentQuat);
+    DirectX::SimpleMath::Vector3 dragBoostForceWorld = DirectX::SimpleMath::Vector3::Transform(sumDrag.linear, aMissile.projectileData.alignmentQuat);
+
+    DirectX::SimpleMath::Vector3 boostTorqueWorld = DirectX::SimpleMath::Vector3::Transform(sumForce.torque, aMissile.projectileData.alignmentQuat);
+    DirectX::SimpleMath::Vector3 dragBoostTorqueWorld = DirectX::SimpleMath::Vector3::Transform(sumDrag.torque, aMissile.projectileData.alignmentQuat);
+
+    //m_debugData->PushDebugLinePositionIndicatorAligned(thrustPosWorld, 2.0f, 0.1f, aMissile.projectileData.alignmentQuat, DirectX::Colors::Red);
+    //m_debugData->PushDebugLinePositionIndicatorAligned(centerOfPressurePosWorld, 2.0f, 0.0f, aMissile.projectileData.alignmentQuat, DirectX::Colors::Teal);
+    //m_debugData->PushDebugLinePositionIndicatorAligned(centerOfMassWorld, 2.0f, 0.2f, aMissile.projectileData.alignmentQuat, DirectX::Colors::White);
+    
+    m_debugData->PushDebugLinePositionIndicator(thrustPosWorld, 2.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLinePositionIndicator(centerOfPressurePosWorld, 2.0f, 0.0f,  DirectX::Colors::Teal);
+    m_debugData->PushDebugLinePositionIndicator(centerOfMassWorld, 2.0f, 0.0f, DirectX::Colors::White);
+
+    m_debugData->PushDebugLine(thrustPosWorld, boostForcesWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLine(centerOfMassWorld, dragBoostForceWorld, 3.0f, 0.0f, DirectX::Colors::Blue);
+
+    //m_debugData->PushDebugLine(centerOfMassWorld, boostTorqueWorld, 3.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLine(centerOfMassWorld, dragBoostTorqueWorld, 3.0f, 0.0f, DirectX::Colors::LimeGreen);
+
+    m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.thrustAngle = ", Utility::ToDegrees(aMissile.guidance.thrustAngle), "");
+
+    m_debugData->ToggleDebugOff();
+
+    sumForce.torque += sumDrag.torque;
+
     Utility::ForceAccum::AlignLinear(sumForce, aMissile.projectileData.alignmentQuat);
     Utility::ForceAccum::AlignLinear(sumDrag, aMissile.projectileData.alignmentQuat);
-
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
 
     aMissile.guidance.linearForceSum = sumForce.linear;
     aMissile.guidance.linearDragSum = sumDrag.linear;
@@ -5724,11 +5804,9 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     aMissile.projectileData.angularDragSum = sumDrag.torque;
 }
 
-
-
 Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
 {
-    DirectX::SimpleMath::Vector3 forcePos = m_missileConsts.thrustPosLocal;
+    DirectX::SimpleMath::Vector3 forcePos = aMissile.guidance.centerOfThrustLocalPos;
     DirectX::SimpleMath::Vector3 forceDir = CalculateBoostForceVec(aMissile);
     DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
 
@@ -5742,32 +5820,29 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
 
    // Utility::ForceAccum::AlignLinear(accum, aMissile.projectileData.alignmentQuat);
 
-    m_debugData->ToggleDebugOnOverRide();
-
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, accum.linear, 8.0f, 0.0f, DirectX::Colors::Red);
-
-
-    m_debugData->ToggleDebugOff();
-
     return accum;
 }
 
-
 Utility::ForceAccum FireControl::DragAccum(MissileData& aMissile, const float aTimeDelta)
 {
-    DirectX::SimpleMath::Vector3 forcePos = m_missileConsts.thrustPosLocal;
-    DirectX::SimpleMath::Vector3 forceDir = CalculateBoostForceVec(aMissile);
+    DirectX::SimpleMath::Vector3 forcePos = aMissile.guidance.centerOfPressureLocalPos;
+    DirectX::SimpleMath::Vector3 forceDir = CalculateDragLinearForAccumulator(aMissile);
     DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
 
     DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
 
+    Utility::AddForceAtPoint(forceDir, forcePos, centerOfMass, forceAccum, torqueAccum);
+
     Utility::ForceAccum accum;
     Utility::ForceAccum::ZeroValues(accum);
 
-    forceAccum = CalculateDragLinearForRungeTest(aMissile, aMissile.projectileData.q.velocity);
+    /*
+    forceAccum = CalculateDragLinearForAccumulator(aMissile);
     torqueAccum = aMissile.projectileData.q.angularVelocity * -powf(m_missileConsts.angularDragMod, aTimeDelta);
+    */
 
+    //accum.linear = forceDir;
     accum.linear = forceAccum;
     accum.torque = torqueAccum;
 
