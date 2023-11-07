@@ -1713,9 +1713,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
         }
     }
-    if (m_kbStateTracker.pressed.T)
+    if (m_kbStateTracker.pressed.P)
     {
-        //m_npcController->DebugToggleAI();
+        m_npcController->DebugToggleAI();
     }
     if (m_kbStateTracker.pressed.Y)
     {

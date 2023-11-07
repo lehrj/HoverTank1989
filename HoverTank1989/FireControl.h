@@ -83,6 +83,8 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
     float targetDistance = 0.0f;
+    float targetDistanceDelta = 0.0f;
+
     DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
 
     bool isFinsDeployStarted = false;
@@ -179,6 +181,15 @@ struct GuidanceSystem
     bool testBool = false;
 
     float thrustAngle = 0.0f;
+
+    DirectX::SimpleMath::Vector3 losCurrent = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 losDelta = DirectX::SimpleMath::Vector3::Zero;
+    float losRate = 0.0f;
+
+    float closingVelocityToTarget = 0.0f;
+    DirectX::SimpleMath::Vector3 latax = DirectX::SimpleMath::Vector3::Zero;
+    float navigationTime = 0.0f;
+    DirectX::SimpleMath::Vector3 pnAdjusted = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
@@ -349,6 +360,7 @@ struct MissileConsts
     //const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-1.5f, 0.0, 0.0f);
     //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 thrustPosLocalOffset = DirectX::SimpleMath::Vector3(0.01f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
 
@@ -360,10 +372,11 @@ struct MissileConsts
 
     const float headingRadiansPerSecondMax = 1.12f;
     const float steerAngMax = Utility::ToRadians(25.0f);
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
+    //const float steeringAngPerSecDeltaMax = Utility::ToRadians(280.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
 
     //const float rocketBoostForceMax = 40.0f;
-    const float rocketBoostForceMax = 80.0f;
+    const float rocketBoostForceMax = 380.0f;
     //const float mass = 22.0f;
     const float mass = 42.0f;
 
@@ -384,6 +397,8 @@ struct MissileConsts
 
     const float testVal = 1.0f;
     const float testVal2 = testVal * 2.0f;
+
+    const float navigationGain = 3.0f;
 };
 
 enum class ExplosionType
@@ -613,6 +628,7 @@ private:
 
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
 
+    void UpdateLOSData(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileAlignment(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
