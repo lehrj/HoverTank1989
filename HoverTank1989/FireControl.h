@@ -371,7 +371,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(25.0f);
+    const float steerAngMax = Utility::ToRadians(10.5f);
     //const float steeringAngPerSecDeltaMax = Utility::ToRadians(280.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
 
@@ -545,7 +545,7 @@ public:
     void FireDefaultProjectile(const AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     AmmoType GetCurrentAmmoType() const { return m_currentAmmoType; };
     bool GetIsMissileActiveTrue() const;
-    void GetCameraMissieData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const;
+    void GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const;
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);

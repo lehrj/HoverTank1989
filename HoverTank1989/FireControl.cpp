@@ -2510,10 +2510,10 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
         {
             if (m_currentTargetID != -1)
             {
-                //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
-                FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
+                FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
+                //FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
                 const float fireTimeOffset = 0.0f;
-                //FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
+                FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
 
                 //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), DirectX::SimpleMath::Vector3::UnitX, aLauncherVelocity, DirectX::SimpleMath::Vector3::UnitY);
                 //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
@@ -2538,11 +2538,26 @@ bool FireControl::GetIsMissileActiveTrue() const
     }
 }
 
-void FireControl::GetCameraMissieData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const
+void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const
 {
     if (m_missileVec.size() > 0)
     {
-        const int missileId = 0;
+        // create list of valid missile IDs
+        std::vector<unsigned int> validIds;
+        for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+        {
+            if (m_missileVec[i].projectileData.isDeleteTrue == true)
+            {
+                validIds.push_back(m_missileVec[i].guidance.uniqueId);
+            }
+        }
+        
+        unsigned int missileId = 0;
+        if (m_missileVec.size() >= 2)
+        {
+            missileId = 1;
+        }
+        
         //DirectX::SimpleMath::Matrix missileAlignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[missileId].projectileData.alignmentQuat);
         DirectX::SimpleMath::Quaternion missileAlignment = m_missileVec[missileId].projectileData.alignmentQuat;
         DirectX::SimpleMath::Vector3 missilePos = m_missileVec[missileId].projectileData.q.position;
@@ -4830,10 +4845,26 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         ////// debug set missle to player cords & align
         if (m_isDebugToggleTrue1 == true)
         {
+            if (m_missileVec[i].guidance.uniqueId % 2 == 0)
+            {
+                m_missileVec[i].projectileData.q.position = m_playerVehicle->GetMissleTubePosLeft();
+                m_missileVec[i].projectileData.q.velocity = m_playerVehicle->GetVelocity();
+                //m_missileVec[i].projectileData.q.angularVelocity = m_playerVehicle->GetAngularVelocity();
+                //m_missileVec[i].projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
+            }
+            else
+            {
+                m_missileVec[i].projectileData.q.position = m_playerVehicle->GetMissleTubePosRight();
+                m_missileVec[i].projectileData.q.velocity = m_playerVehicle->GetVelocity();
+                //m_missileVec[i].projectileData.q.angularVelocity = m_playerVehicle->GetAngularVelocity();
+                //m_missileVec[i].projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
+            }
+            /*
             m_missileVec[i].projectileData.q.position = m_playerVehicle->GetPos();
             m_missileVec[i].projectileData.q.velocity = m_playerVehicle->GetVelocity();
             m_missileVec[i].projectileData.q.angularVelocity = m_playerVehicle->GetAngularVelocity();
             m_missileVec[i].projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
+            */
         }
         ////// end : debug set missle to player cords & align
 
@@ -5817,16 +5848,62 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
 
     DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 forceAccum2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum2 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 forceAccum3 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum3 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 forceAccum4 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum4 = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 forceDir2;
+    DirectX::SimpleMath::Vector3 forceDir3;
+    DirectX::SimpleMath::Vector3 forceDir4;
+
+    const float boreThrustPercent = 0.5f;
+    const float turnThrustPercent = 1.0f - boreThrustPercent;
+    if (aMissile.guidance.isRocketFired == false)
+    {
+        forceDir = DirectX::SimpleMath::Vector3::Zero;
+        forceDir2 = DirectX::SimpleMath::Vector3::Zero;
+        forceDir3 = DirectX::SimpleMath::Vector3::Zero;
+        forceDir4 = DirectX::SimpleMath::Vector3::Zero;
+    }
+    else
+    {
+        DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitX;
+        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.steeringQuat);
+        forceDir = testLine * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
+        forceDir2 = DirectX::SimpleMath::Vector3::UnitX * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
+        forceDir3 = (testLine * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage)) * turnThrustPercent;
+        forceDir4 = (DirectX::SimpleMath::Vector3::UnitX * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage)) * boreThrustPercent;
+    }
+
     Utility::AddForceAtPoint(forceDir, forcePos, centerOfMass, forceAccum, torqueAccum);
+    Utility::AddForceAtPoint(forceDir2, forcePos, centerOfMass, forceAccum2, torqueAccum2);
+    Utility::AddForceAtPoint(forceDir3, forcePos, centerOfMass, forceAccum3, torqueAccum3);
+    Utility::AddForceAtPoint(forceDir4, forcePos, centerOfMass, forceAccum4, torqueAccum4);
 
     Utility::ForceAccum accum;
-    accum.linear = forceAccum;
-    accum.torque = torqueAccum;
 
-   // Utility::ForceAccum::AlignLinear(accum, aMissile.projectileData.alignmentQuat);
-   // DirectX::SimpleMath::Vector3 testVec = forceAccum;
+    
+    if (aMissile.guidance.uniqueId % 2 == 0)
+    {
+        //accum.linear = forceAccum;
+        //accum.torque = torqueAccum;
 
-    //m_debugData->ToggleDebugOnOverRide();
+        accum.linear = forceAccum2;
+        accum.torque = torqueAccum;
+    }
+    else
+    {
+        accum.linear = forceAccum;
+        accum.torque = torqueAccum;
+
+        //accum.linear = forceAccum3 + forceAccum4;
+        //accum.torque = torqueAccum;
+    }
+    
+
 
     return accum;
 }
@@ -5975,5 +6052,5 @@ void FireControl::UpdateLOSData(MissileData& aMissile, const float aTimeDelta)
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 4.0f, 0.05f, DirectX::Colors::Blue);
     m_debugData->ToggleDebugOff();
 
-    aMissile.guidance.headingLocalVecTest = lookPosLocal;
+    //aMissile.guidance.headingLocalVecTest = lookPosLocal;
 }
