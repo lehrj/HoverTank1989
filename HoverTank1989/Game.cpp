@@ -1855,11 +1855,11 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->ActivateMissleTrackCamera();
         }
     }
-    if (kb.I)
+    if (m_kbStateTracker.pressed.I)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_camera->SpinClockwise(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_fireControl->CamMissileSelectNext();
         }
     }
     if (kb.O)

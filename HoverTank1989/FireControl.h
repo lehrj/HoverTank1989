@@ -84,6 +84,7 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
     float targetDistance = 0.0f;
     float targetDistanceDelta = 0.0f;
+    float closureRate = 0.0f;
 
     DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
 
@@ -230,7 +231,9 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 finColor1 = DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
-    const DirectX::SimpleMath::Vector4 finColor2 = DirectX::SimpleMath::Vector4(0.6f, 0.6f, 0.6f, 1.0f);
+    const DirectX::SimpleMath::Vector4 finColor1Alt = DirectX::SimpleMath::Vector4(1.f, 0.647058845f, 0.f, 1.f);
+    const DirectX::SimpleMath::Vector4 finColor2 = DirectX::SimpleMath::Vector4(1.f, 0.647058845f, 0.f, 1.f);
+    const DirectX::SimpleMath::Vector4 finColor2Alt = DirectX::SimpleMath::Vector4(0.6f, 0.6f, 0.6f, 1.0f);
     const DirectX::SimpleMath::Vector4 axelColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     const DirectX::SimpleMath::Vector4 voidBlackColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -577,6 +580,8 @@ private:
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
 
+  //  void CameraUpdateMissileTracking();
+
     void CastRayLaser();
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
@@ -716,8 +721,8 @@ private:
     int m_cameraTrackedMissileID = -1;
     bool m_isLaserFlickerTrue = false;
 
-
     unsigned int m_nextUniqueMissileID = 0;
+    unsigned int m_camTrackMissileId = 0;
 
     float m_testRotation = 0.0f;
 
@@ -737,7 +742,6 @@ private:
     const bool m_isDebugToggleTrueTestConst1 = false;
     const bool m_isDebugToggleTrueTestConst2 = false;
     const bool m_isDebugToggleTrueTestConst3 = false;
-
 
     DirectX::SimpleMath::Vector3 m_debugVec1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_debugVec2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -763,5 +767,7 @@ public:
     float GetMaxExplosionForce() const { return m_explosionStruct.maxExplosionForce; };
     float GetMaxExplosionImpactRadius() const { return m_explosionStruct.maxExplosionImpactRadius; };
 
+    void CamMissileSelectNext();
+    //void CamMissileSelectPrev();
 };
 

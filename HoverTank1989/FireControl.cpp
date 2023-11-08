@@ -1758,7 +1758,15 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= m_ammoMissile.modelData.tailFinTransMat;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, DirectX::Colors::Red);
+        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
+        }
+        else
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
+        }
+
         // tail fin 2
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
@@ -1768,7 +1776,15 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
+        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
+        }
+        else
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
+        }
+
         // tail fin 3
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
@@ -1778,7 +1794,16 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
+
+        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
+        }
+        else
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
+        }
+
         // tail fin 4
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
@@ -1788,7 +1813,14 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(270.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
+        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
+        }
+        else
+        {
+            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
+        }
 
         // fin axel 1
         updateMat = DirectX::SimpleMath::Matrix::Identity;
@@ -2544,19 +2576,29 @@ void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignme
     {
         // create list of valid missile IDs
         std::vector<unsigned int> validIds;
+        unsigned int idIndex = 0;
+        bool isIdFound = false;
         for (unsigned int i = 0; i < m_missileVec.size(); ++i)
         {
-            if (m_missileVec[i].projectileData.isDeleteTrue == true)
+            if (m_missileVec[i].projectileData.isDeleteTrue == false && m_missileVec[i].guidance.uniqueId == m_camTrackMissileId)
             {
+                idIndex = i;
+                isIdFound = true;
                 validIds.push_back(m_missileVec[i].guidance.uniqueId);
             }
         }
         
         unsigned int missileId = 0;
+        if (isIdFound == true)
+        {
+            missileId = idIndex;
+        }
+        /*
         if (m_missileVec.size() >= 2)
         {
             missileId = 1;
         }
+        */
         
         //DirectX::SimpleMath::Matrix missileAlignment = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[missileId].projectileData.alignmentQuat);
         DirectX::SimpleMath::Quaternion missileAlignment = m_missileVec[missileId].projectileData.alignmentQuat;
@@ -2570,6 +2612,38 @@ void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignme
     {
         aAlignment = DirectX::SimpleMath::Quaternion::Identity;
         aPos = DirectX::SimpleMath::Vector3::Zero;
+    }
+}
+
+void FireControl::CamMissileSelectNext()
+{
+    if (m_missileVec.size() > 1)
+    {
+        unsigned int j = 0;
+        for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+        {
+            if (m_missileVec[i].guidance.uniqueId == m_camTrackMissileId)
+            {
+                j = i;
+            }
+        }
+        if (j >= m_missileVec.size() - 1)
+        {
+            m_camTrackMissileId = m_missileVec[0].guidance.uniqueId;
+        }
+        else
+        {
+            m_camTrackMissileId = m_missileVec[j+1].guidance.uniqueId;
+        }
+    }
+    else if (m_missileVec.size() > 0)
+    {
+        m_camTrackMissileId = m_missileVec[0].guidance.uniqueId;
+    }
+    else
+    {
+        m_camTrackMissileId = 0;
+        // throw error
     }
 }
 
@@ -3925,6 +3999,7 @@ void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTim
     float prevDistance = aMissile.guidance.targetDistance;
     aMissile.guidance.targetDistance = (aMissile.projectileData.q.position - aMissile.guidance.targetPosition).Length();
     aMissile.guidance.targetDistanceDelta = prevDistance - aMissile.guidance.targetDistance;
+    aMissile.guidance.closureRate = aMissile.guidance.targetDistanceDelta / aTimeDelta;
     aMissile.guidance.targetDestination = aMissile.guidance.targetPosition;
 
     //AltitudeController(aMissile, aTimeDelta);
@@ -4536,6 +4611,9 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
     }
     else if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
     {
+        DirectX::SimpleMath::Vector3 prevHeadingLocalVecTest = aMissile.guidance.headingLocalVecTest;
+        DirectX::SimpleMath::Quaternion prevHeadingLocalQuatTest = aMissile.guidance.headingLocalQuatTest;
+  
         DirectX::SimpleMath::Vector3 destLocal = aMissile.guidance.targetDestination - aMissile.projectileData.q.position;
         //DirectX::SimpleMath::Vector3 destLocal = aMissile.projectileData.q.position - aMissile.guidance.targetDestination;
         float distToTargetTest = destLocal.Length();
@@ -4546,41 +4624,85 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
         if (destLocal.x >= 0.0f)
         {
             isHeadingToDestTrue = true;
-            m_debugData->DebugPushUILineWholeNumber("!$!isHeadingToDestTrue ", isHeadingToDestTrue, "");
         }
-        else
-        {
-            isHeadingToDestTrue = false;
-            m_debugData->DebugPushUILineWholeNumber("!$!isHeadingToDestTrue ", isHeadingToDestTrue, "");
-        }
-
-        /*
-        if (isHeadingToDestTrue == false)
-        {
-            destLocal = aMissile.projectileData.q.position - aMissile.guidance.targetDestination;
-            distToTargetTest = destLocal.Length();
-            destLocal.Normalize();
-            destLocal = DirectX::SimpleMath::Vector3::Transform(destLocal, aMissile.projectileData.inverseAlignmentQuat);
-        }
-        */
 
         aMissile.guidance.isFacingDestTrue = isHeadingToDestTrue;
         DirectX::SimpleMath::Quaternion destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
         destQuat.Normalize();
         destQuat.Inverse(destQuat);
 
-        aMissile.guidance.headingLocalVecTest = destLocal;
-        aMissile.guidance.headingLocalQuatTest = destQuat;
+        //aMissile.guidance.headingLocalVecTest = destLocal;
+        //aMissile.guidance.headingLocalQuatTest = destQuat;
 
-        m_debugHeadingVec2 = destLocal;
-        m_debugHeadingQuat2 = destQuat;
-        m_debugDistanceToTarget2 = distToTargetTest;
+        /////////////////////////////////
+        // test slerp
+        aMissile.guidance.headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
+        aMissile.guidance.headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
+
+        DirectX::SimpleMath::Quaternion slerpQuat = DirectX::SimpleMath::Quaternion::Identity;
+        const float slerpT = 0.3f;
+        slerpQuat = DirectX::SimpleMath::Quaternion::Slerp(prevHeadingLocalQuatTest, destQuat, slerpT);
+        DirectX::SimpleMath::Vector3 slerpedVec = DirectX::SimpleMath::Vector3::UnitX;
+        slerpedVec = DirectX::SimpleMath::Vector3::Transform(slerpedVec, slerpQuat);
+
+        //aMissile.guidance.headingLocalVecTest = slerpedVec;
+        //aMissile.guidance.headingLocalQuatTest = slerpQuat;
+
+        //aMissile.guidance.headingLocalVecTest = destLocal;
+        //aMissile.guidance.headingLocalQuatTest = destQuat;
+        
+        /*
+        DirectX::SimpleMath::Quaternion slerpQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+        const float slerpT2 = 0.1f;
+        slerpQuat2 = DirectX::SimpleMath::Quaternion::Slerp(prevHeadingLocalQuatTest, destQuat, slerpT2);
+        DirectX::SimpleMath::Vector3 slerpedVec2 = DirectX::SimpleMath::Vector3::UnitX;
+        slerpedVec2 = DirectX::SimpleMath::Vector3::Transform(slerpedVec2, slerpQuat2);
+        */
+
+        if (aMissile.guidance.uniqueId % 2 == 0)
+        {
+            aMissile.guidance.headingLocalVecTest = slerpedVec;
+            aMissile.guidance.headingLocalQuatTest = slerpQuat;
+        }
+        else
+        {
+            //aMissile.guidance.headingLocalVecTest = destLocal;
+            //aMissile.guidance.headingLocalQuatTest = destQuat;
+
+            //aMissile.guidance.headingLocalVecTest = slerpedVec;
+            //aMissile.guidance.headingLocalQuatTest = slerpQuat;
+
+            aMissile.guidance.headingLocalVecTest = destLocal;
+            aMissile.guidance.headingLocalQuatTest = destQuat;
+        }
+        
+        m_debugData->ToggleDebugOnOverRide();
+
+        DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitX;
+        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.headingLocalQuatTest);
+        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.projectileData.alignmentQuat);
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, testLine, 7.0f, 0.0f, DirectX::Colors::Red);
+
+        testLine = aMissile.guidance.headingLocalVecTest;
+        //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.headingLocalQuatTest);
+        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.projectileData.alignmentQuat);
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, testLine, 5.0f, 0.0f, DirectX::Colors::Blue);
+
+        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.targetDistance ", aMissile.guidance.targetDistance, "");
+        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.targetDistanceDelta ", aMissile.guidance.targetDistanceDelta, "");
+        m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.closureRate ", aMissile.guidance.closureRate, "");
+
+        m_debugData->ToggleDebugOff();
 
         /*
         aMissile.guidance.isFacingDestTrue = true;
         aMissile.guidance.headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
         aMissile.guidance.headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
         */
+
+        m_debugHeadingVec2 = destLocal;
+        m_debugHeadingQuat2 = destQuat;
+        m_debugDistanceToTarget2 = distToTargetTest;
     }
     else if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_ATTACK)
     {
@@ -5885,7 +6007,7 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
 
     Utility::ForceAccum accum;
 
-    
+    /*
     if (aMissile.guidance.uniqueId % 2 == 0)
     {
         //accum.linear = forceAccum;
@@ -5902,8 +6024,10 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
         //accum.linear = forceAccum3 + forceAccum4;
         //accum.torque = torqueAccum;
     }
-    
+    */
 
+    accum.linear = forceAccum;
+    accum.torque = torqueAccum;
 
     return accum;
 }
@@ -6033,7 +6157,26 @@ void FireControl::UpdateLOSData(MissileData& aMissile, const float aTimeDelta)
     DirectX::SimpleMath::Vector3 desiredHeading = targetRelativeInterceptPosition;
     desiredHeading.Normalize();
 
-    const float pValue = 3.0f;
+    float pValue = 3.0f;
+    if (aMissile.guidance.uniqueId % 2 == 0)
+    {
+        if (aMissile.guidance.closureRate <= 0.0f)
+        {
+            pValue = 1.0f;
+        }
+        else if (aMissile.guidance.closureRate <= 2.0f)
+        {
+            pValue = 2.0f;
+        }
+        else if (aMissile.guidance.closureRate <= 10.0f)
+        {
+            pValue = 3.0f;
+        }
+        else if (aMissile.guidance.closureRate <= 40.0f)
+        {
+            pValue = 4.0f;
+        }
+    }
     targetRelativeInterceptPosition *= pValue;
 
     DirectX::SimpleMath::Vector3 lookPos = (aMissile.guidance.targetPosition + targetRelativeInterceptPosition) - aMissile.projectileData.q.position;
