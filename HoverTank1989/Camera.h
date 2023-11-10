@@ -43,6 +43,8 @@ enum class MissileTrackState
     MISSILETRACKSTATE_TOPDOWN,
     MISSILETRACKSTATE_TOTARGET,
     MISSILETRACKSTATE_SPRING,
+    MISSILETRACKSTATE_STEADYTOTARGET,
+    MISSILETRACKSTATE_STEADYTOTARGET3QTR,
 };
 
 // spring camera target
@@ -165,9 +167,11 @@ private:
     void UpdateChaseCameraNPC();
     void UpdateChaseCamera();
     void UpdateChaseCameraTest();
-    void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
+    
     void UpdateFollowMissile(DX::StepTimer const& aTimer);
     void UpdateFollowMissile2(DX::StepTimer const& aTimer);
+    void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
+    void UpdateMissileSteadyCam(DX::StepTimer const& aTimer);
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateSpinCamera(DX::StepTimer const& aTimer);
@@ -349,8 +353,15 @@ private:
 
     int m_npcFocusID = 0;
 
+    const DirectX::SimpleMath::Vector3 m_missileCamSide = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 3.0f);
+    const DirectX::SimpleMath::Vector3 m_missileCamTop = DirectX::SimpleMath::Vector3(0.0f, 18.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_missileCamToTarget = DirectX::SimpleMath::Vector3(-3.0f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_missileCamToTarget3Qrt = DirectX::SimpleMath::Vector3(-3.0f, 1.0f, 0.0f);
+
+    const DirectX::SimpleMath::Vector3 m_missileFollowCamPos = DirectX::SimpleMath::Vector3(-3.0f, 0.0f, 0.0f);
+
     const DirectX::SimpleMath::Vector3 m_missileSnapPos = DirectX::SimpleMath::Vector3(-3.0f, 0.3f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_missileSnapPosSide = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -3.3f);
+    const DirectX::SimpleMath::Vector3 m_missileSnapPosSide = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 13.0f);
     const DirectX::SimpleMath::Vector3 m_missileSnapPosTop = DirectX::SimpleMath::Vector3(0.0f, 3.3f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_missileSnapTarg = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 

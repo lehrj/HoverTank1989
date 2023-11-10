@@ -23,12 +23,8 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homePitch = -0.053f;
 	m_homeYaw = 0.0f;
 
-	m_cameraState = CameraState::CAMERASTATE_SPRINGCAMERA;
-	//m_cameraState = CameraState::CAMERASTATE_FIRSTPERSON;
-	//m_cameraState = CameraState::CAMERASTATE_FOLLOWVEHICLETEST;
-	m_cameraState = CameraState::CAMERASTATE_SNAPCAM;	
-
-	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_FOLLOW;
+	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET;
+	m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
@@ -98,9 +94,9 @@ void Camera::CycleNpcFocus(const bool isCycleIncrease)
 
 void Camera::CycleMissileTrackState()
 {
-	if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_FOLLOW)
+	if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET)
 	{
-		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_SIDE;
+	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_SIDE;
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
 	{
@@ -108,19 +104,15 @@ void Camera::CycleMissileTrackState()
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWN)
 	{
-		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_SPRING;
-	}
-	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SPRING)
-	{
-		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TOTARGET;
-	}
-	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOTARGET)
-	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_FOLLOW;
 	}
-	else
+	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_FOLLOW)
 	{
-		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_FOLLOW;
+		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR;
+	}
+	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR)
+	{
+		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET;
 	}
 }
 
@@ -934,13 +926,13 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_FOLLOWMISSILE)
 	{
-		if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOTARGET)
+		if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_FOLLOW)
 		{
-			UpdateFollowMissile(aTimer);
+			UpdateFollowMissile2(aTimer);
 		}
 		else
 		{
-			UpdateMissileTrackCam(aTimer);
+			UpdateMissileSteadyCam(aTimer);
 		}
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
@@ -989,6 +981,85 @@ void Camera::UpdateFirstPersonCamera()
 	m_target = m_position + m_target;
 }
 
+void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
+{
+	if (m_fireControl->GetIsMissileActiveTrue() == false)
+	{
+		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+	}
+	else
+	{
+		DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
+		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
+		DirectX::SimpleMath::Vector3 camTargetPos = DirectX::SimpleMath::Vector3::Zero;
+		DirectX::SimpleMath::Vector3 missileTargetPos = DirectX::SimpleMath::Vector3::Zero;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, missileTargetPos);
+		
+		const DirectX::SimpleMath::Vector3 missileTargetPosWorld = missileTargetPos;
+		const DirectX::SimpleMath::Vector3 missilePosWorld = missilePos;
+
+		DirectX::SimpleMath::Vector3 camPos = -DirectX::SimpleMath::Vector3::UnitX;
+		DirectX::SimpleMath::Vector3 camUp = DirectX::SimpleMath::Vector3::UnitY;
+
+		if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET)
+		{
+			DirectX::SimpleMath::Vector3 vecToTarget = missileTargetPosWorld - missilePosWorld;
+			vecToTarget.Normalize();
+			camPos = vecToTarget * m_missileCamToTarget.x;
+			camPos += missilePosWorld;
+
+			camTargetPos = missilePosWorld;
+
+			DirectX::SimpleMath::Vector3 vecToTargetRight = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
+			camUp = vecToTarget.Cross(-vecToTargetRight);	
+		}
+		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR)
+		{
+			DirectX::SimpleMath::Vector3 vecToTarget = missileTargetPosWorld - missilePosWorld;
+			vecToTarget.Normalize();
+			camPos = vecToTarget * m_missileCamToTarget3Qrt.x;
+			camPos += missilePosWorld;
+			camPos.y += m_missileCamToTarget3Qrt.y;
+
+			camTargetPos = missilePosWorld;
+
+			DirectX::SimpleMath::Vector3 vecToTargetRight = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
+			camUp = vecToTarget.Cross(-vecToTargetRight);
+		}
+		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
+		{
+			DirectX::SimpleMath::Vector3 vecToTarget = missileTargetPosWorld - missilePosWorld;
+			vecToTarget.Normalize();
+			camPos = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
+			camPos *= m_missileCamSide.z;
+			camPos += missilePosWorld;
+
+			camTargetPos = missilePosWorld;
+			camUp = DirectX::SimpleMath::Vector3::UnitY;
+		}
+		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWN)
+		{
+			camPos = missilePosWorld;
+			camPos.y += m_missileCamTop.y;
+
+			camTargetPos = missilePosWorld;
+
+			camUp = missileTargetPosWorld - missilePosWorld;
+			camUp.Normalize();
+		}
+		else
+		{
+			camTargetPos += missilePosWorld;
+			camPos = DirectX::SimpleMath::Vector3::Transform(-DirectX::SimpleMath::Vector3::UnitX, missileAlignQuat) + missilePosWorld;
+			camUp = DirectX::SimpleMath::Vector3::UnitY;
+		}
+
+		m_position = camPos;
+		m_target = camTargetPos;
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, camTargetPos, camUp);;
+	}
+}
+
 void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 {
 	if (m_fireControl->GetIsMissileActiveTrue() == true)
@@ -1034,7 +1105,7 @@ void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 targPosLocal = DirectX::SimpleMath::Vector3::Zero;
 		if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_FOLLOW)
 		{
-			camPosLocal = m_missileSnapPos;
+			camPosLocal = m_missileFollowCamPos;
 			targPosLocal = m_missileSnapTarg;
 
 			camPos = camPosLocal;
@@ -1042,11 +1113,31 @@ void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 			camPos += missilePos;
 
 			targetPos = targPosLocal;
-			targetPos = DirectX::SimpleMath::Vector3::Transform(targetPos, missileAlignQuat);
+			//targetPos = DirectX::SimpleMath::Vector3::Transform(targetPos, missileAlignQuat);
 			targetPos += missilePos;
 		}
 		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
 		{
+			camPos = camPosLocal;
+			camPos = DirectX::SimpleMath::Vector3::Transform(camPos, missileAlignQuat);
+			camPos += missilePos;
+
+			targetPos = targPosLocal;
+			targetPos = DirectX::SimpleMath::Vector3::Transform(targetPos, missileAlignQuat);
+			targetPos += missilePos;
+
+			targetPos = missilePosWorld;
+
+			DirectX::SimpleMath::Vector3 vecToTarget = missileTargetPosWorld - missilePosWorld;
+			vecToTarget.Normalize();
+
+			camPos = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
+			camPos *= 3.0f;
+			camPos += missilePosWorld;
+		
+			camUp = DirectX::SimpleMath::Vector3::UnitY;
+
+			/*
 			DirectX::SimpleMath::Vector3 eulerVec = DirectX::SimpleMath::Vector3::Zero;
 			eulerVec = missileAlignQuat.ToEuler();
 			DirectX::SimpleMath::Vector3 YawPitchRollVec = eulerVec;
@@ -1068,6 +1159,18 @@ void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 			targetPos = targPosLocal;
 			targetPos = DirectX::SimpleMath::Vector3::Transform(targetPos, missileAlignQuat);
 			targetPos += missilePos;
+
+			//targetPos = missileTargetPosWorld;
+
+			DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3::UnitX;
+			testVec = DirectX::SimpleMath::Vector3::Transform(testVec, missileAlignQuat);
+			testVec.y = 0.0f;
+			testVec.Normalize();
+			DirectX::SimpleMath::Vector3 rightVec = DirectX::SimpleMath::Vector3::UnitY.Cross(testVec);
+			rightVec *= 2.0f;
+			camPos = rightVec;
+			camPos += missilePos;
+			*/
 		}
 		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWN)
 		{
@@ -1094,6 +1197,13 @@ void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 
 			camUp = DirectX::SimpleMath::Vector3::UnitX;
 			camUp = DirectX::SimpleMath::Vector3::Transform(camUp, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, eulerVec.y));
+			///////////////////////////////////////////////
+
+			targetPos = missilePosWorld;
+			camPos = missilePosWorld;
+			camPos.y += 20.0f;;
+			camUp = missileTargetPosWorld - missilePosWorld;
+			camUp.Normalize();
 		}
 		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SPRING)
 		{
