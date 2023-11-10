@@ -1862,11 +1862,11 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_fireControl->CamMissileSelectNext();
         }
     }
-    if (kb.O)
+    if (m_kbStateTracker.pressed.O)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_camera->CycleMissileTrackState();
         }
     }
     if (kb.L)

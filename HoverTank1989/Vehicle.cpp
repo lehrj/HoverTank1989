@@ -1330,11 +1330,6 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.cameraOrientation = m_heli.alignment;
     m_heli.cameraOrientationPrevious = m_heli.cameraOrientation;
 
-    m_heli.q.position = DirectX::SimpleMath::Vector3(0.0f, 8.8f, 0.0f);
-    //m_heli.q.position = DirectX::SimpleMath::Vector3(950.0f, 8.8f, 0.0f);
-    m_heli.q.position = DirectX::SimpleMath::Vector3(-900.0f, 55.0f, 0.0f);
-    m_heli.q.position = DirectX::SimpleMath::Vector3(-400.0f, 9.0f, 0.0f);
-    //m_heli.q.position = DirectX::SimpleMath::Vector3(-975.0f, 60.0f, -750.0f);
     m_heli.q.position = m_startPos;
     m_heli.boundingBox.Center = m_heli.q.position;
     m_heli.boundingBox.Extents = m_heli.dimensions;

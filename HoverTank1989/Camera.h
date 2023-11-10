@@ -36,6 +36,15 @@ enum class CameraState
     CAMERASTATE_SNAPCAM,
 };
 
+enum class MissileTrackState
+{
+    MISSILETRACKSTATE_FOLLOW,
+    MISSILETRACKSTATE_SIDE,
+    MISSILETRACKSTATE_TOPDOWN,
+    MISSILETRACKSTATE_TOTARGET,
+    MISSILETRACKSTATE_SPRING,
+};
+
 // spring camera target
 struct Target
 {
@@ -53,6 +62,7 @@ public:
     ~Camera();
 
     void ActivateMissleTrackCamera();
+    void CycleMissileTrackState();
     void CycleNpcFocus(const bool isCycleIncrease);
 
     void FreeLookSpeedUp();
@@ -155,6 +165,7 @@ private:
     void UpdateChaseCameraNPC();
     void UpdateChaseCamera();
     void UpdateChaseCameraTest();
+    void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
     void UpdateFollowMissile(DX::StepTimer const& aTimer);
     void UpdateFollowMissile2(DX::StepTimer const& aTimer);
     void UpdateProjectionMatrix();
@@ -206,6 +217,7 @@ private:
     bool                            m_isCameraAtDestination = false;
 
     CameraState                     m_cameraState;
+    MissileTrackState               m_missileTrackState;
 
     DirectX::SimpleMath::Matrix     m_rotationMatrix;
 
@@ -338,6 +350,8 @@ private:
     int m_npcFocusID = 0;
 
     const DirectX::SimpleMath::Vector3 m_missileSnapPos = DirectX::SimpleMath::Vector3(-3.0f, 0.3f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_missileSnapPosSide = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -3.3f);
+    const DirectX::SimpleMath::Vector3 m_missileSnapPosTop = DirectX::SimpleMath::Vector3(0.0f, 3.3f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_missileSnapTarg = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
@@ -355,5 +369,7 @@ private:
     DirectX::SimpleMath::Vector3 m_snapTargPrev = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Quaternion m_snapQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+
 };
 
