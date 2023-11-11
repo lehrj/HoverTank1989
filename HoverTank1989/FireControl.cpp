@@ -530,6 +530,9 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForAccumulator(Miss
     }
     ////////////////////////////////////////////////////////////////////////////////////
 
+    airSurfaceArea = airSurfaceAreaToAdd;
+    dragCoefficient = dragCoefficientToAdd;
+
     //  Compute the total drag force.
     float airDensity = m_environment->GetAirDensity();
     //const float dragCoefficient = 0.17f;
@@ -2623,7 +2626,7 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
                 FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
                 //FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
                 const float fireTimeOffset = 0.0f;
-                FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
+                //FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
 
                 //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), DirectX::SimpleMath::Vector3::UnitX, aLauncherVelocity, DirectX::SimpleMath::Vector3::UnitY);
                 //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft());
@@ -4993,6 +4996,11 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         testLine = m_missileVec[i].guidance.linearDragSum;
         m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 12.0f, 0.1f, DirectX::Colors::Orange);
         m_debugData->DebugPushUILineDecimalNumber("linearDragSum.Length() = ", m_missileVec[i].guidance.linearDragSum.Length(), "");
+
+        testLine = m_missileVec[i].projectileData.q.velocity;
+        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 12.0f, 0.1f, DirectX::Colors::Lime);
+        m_debugData->DebugPushUILineDecimalNumber("projectileData.q.velocity.Length() = ", m_missileVec[i].projectileData.q.velocity.Length(), "");
+
 
         m_debugData->ToggleDebugOff();
         ResetMissileForceAccumulators(m_missileVec[i]);

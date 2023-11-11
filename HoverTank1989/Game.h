@@ -72,6 +72,7 @@ private:
     void DrawDebugDataUI();
     void DrawEndUI();   
     void DrawSky();
+    void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawTerrainNew(Terrain& aTerrain);
     void DrawTestTrack();
     void DrawUIDisplay();
@@ -418,4 +419,6 @@ private:
     const float m_gamePadInputRateBodySideStrafe = 1.0f;
     const float m_gamePadInputDeadZone = 0.1f;
 
+    const DirectX::SimpleMath::Vector3 m_skyBoxTerrainBaseOffset = DirectX::SimpleMath::Vector3(0.0f, 1000.0f, 0.0f);
+    const float m_skyBoxSize = 200000.0f;
 };

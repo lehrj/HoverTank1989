@@ -643,6 +643,8 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
+        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
@@ -651,7 +653,8 @@ void Game::Render()
         //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
         m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-        DrawSky();
+        //DrawSky();
+        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         //DrawTestTrack();
     }
 
@@ -801,7 +804,8 @@ void Game::CreateDeviceDependentResources()
     device;
 
     // sky texture
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
 
     // metal tests
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest1.ReleaseAndGetAddressOf()));
@@ -899,7 +903,7 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType3>(device, m_effect3.get(), m_inputLayout3.ReleaseAndGetAddressOf()));
     m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(context);
 
-    m_skyShape = GeometricPrimitive::CreateSphere(context, 200000.0f, 32, false);
+    m_skyShape = GeometricPrimitive::CreateSphere(context, m_skyBoxSize, 32, false);
     m_skyShape->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
 
     m_font = std::make_unique<SpriteFont>(device, L"Art/Fonts/myfile.spritefont");
@@ -1231,6 +1235,26 @@ void Game::DrawSky()
     m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
 }
 
+void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
+    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
+    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
+    //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
+    //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
+
+    DirectX::SimpleMath::Matrix worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_skyBoxTerrainBaseOffset);
+
+    aEffect->EnableDefaultLighting();
+    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
+
+    aEffect->SetColorAndAlpha(skyColor);
+    aEffect->SetWorld(worldMat);
+    m_skyShape->Draw(aEffect.get(), aInputLayout.Get(), false, true);
+}
+
 void Game::DrawTestTrack()
 {
     const float yOffset = 0.5f;
@@ -1323,6 +1347,23 @@ void Game::DrawTerrainNew(Terrain& aTerrain)
 {
     //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
+
+    DirectX::SimpleMath::Vector3 vertNorm = -DirectX::SimpleMath::Vector3::UnitY;
+    const float baseSize = m_skyBoxSize;
+    const float heightOffSet = -m_skyBoxTerrainBaseOffset.y;
+
+    DirectX::SimpleMath::Vector3 v1 = DirectX::SimpleMath::Vector3(baseSize, heightOffSet, -baseSize);
+    DirectX::SimpleMath::Vector3 v2 = DirectX::SimpleMath::Vector3(baseSize, heightOffSet, baseSize);
+    DirectX::SimpleMath::Vector3 v3 = DirectX::SimpleMath::Vector3(-baseSize, heightOffSet, baseSize);
+    DirectX::SimpleMath::Vector3 v4 = DirectX::SimpleMath::Vector3(-baseSize, heightOffSet, -baseSize);
+
+    DirectX::SimpleMath::Vector4 vertColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+    DirectX::VertexPositionNormalColor vpn1(v1, vertNorm, vertColor);
+    DirectX::VertexPositionNormalColor vpn2(v2, vertNorm, vertColor);
+    DirectX::VertexPositionNormalColor vpn3(v3, vertNorm, vertColor);
+    DirectX::VertexPositionNormalColor vpn4(v4, vertNorm, vertColor);
+
+    m_batch2->DrawQuad(vpn1, vpn2, vpn3, vpn4);
 }
 
 void Game::FadeOutMusic()
