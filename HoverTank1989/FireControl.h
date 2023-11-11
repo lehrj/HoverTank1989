@@ -629,7 +629,6 @@ private:
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
     void UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta);
-    void UpdateFlightStateOld(MissileData& aMissile, const double aTimeDelta);
 
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
 
@@ -639,7 +638,6 @@ private:
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidanceOld(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
 
@@ -651,7 +649,6 @@ private:
     void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileForcesOld(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileModelData(MissileData& aMissile);
     void UpdateMissileVec(double aTimeDelta);
