@@ -69,8 +69,58 @@ enum class FlightState
     FLIGHTSTATE_LAUNCH,
 };
 
+struct Seeker
+{
+    DirectX::SimpleMath::Vector3 targetDest;
+    DirectX::SimpleMath::Vector3 targetPos;
+    DirectX::SimpleMath::Vector3 targetVel;
+    float targetDistance;
+    float targetDistanceDelta;
+    float closureRate;
+
+    DirectX::SimpleMath::Matrix laserAlignment;
+};
+
+struct Controller
+{
+    DirectX::SimpleMath::Vector3 prevVec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion prevQuat = DirectX::SimpleMath::Quaternion::Identity;
+    float prevControlVal = 0.0f;
+
+    DirectX::SimpleMath::Vector3 deltaVec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion deltaQuat = DirectX::SimpleMath::Quaternion::Identity;
+    float deltaControlVal = 0.0f;
+
+    DirectX::SimpleMath::Vector3 currentVec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
+    float currentControlVal = 0.0f;
+
+    DirectX::SimpleMath::Vector3 vec = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion quat = DirectX::SimpleMath::Quaternion::Identity;
+    float controlVal = 0.0f;
+
+    DirectX::SimpleMath::Vector3 prevVecConed = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion prevQuatConed = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 prevVecRaw = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion prevQuatRaw = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 currentVecConed = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion currentQuatConed = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 currentVecRaw = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion currentQuatRaw = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 deltaVecRaw = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion deltaQuatRaw = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 deltaVecConed = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Quaternion deltaQuatConed = DirectX::SimpleMath::Quaternion::Identity;
+};
+
 struct GuidanceSystem
 {
+    //Seeker seeker;
+    Controller controller;
     FlightState flightStateCurrent = FlightState::FLIGHTSTATE_LAUNCH;
     float timeStepDelta = 0.0f;
     unsigned int uniqueId = 0;
@@ -79,15 +129,6 @@ struct GuidanceSystem
     float altitude = 0.0f;
     float detonationRadius = 5.0f;
     
-    DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
-    float targetDistance = 0.0f;
-    float targetDistanceDelta = 0.0f;
-    float closureRate = 0.0f;
-
-    DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
-
     bool isFinsDeployStarted = false;
     bool isFinsDeployEnd = false;
     bool isRocketFired = false;
@@ -97,21 +138,8 @@ struct GuidanceSystem
     bool isExplodingTrue = false;
     bool isTargetingLaserOn = false;
     float postExplosionDrawCountDown = 2.0f;
-    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 headingLocal = DirectX::SimpleMath::Vector3::Zero;
-
-    DirectX::SimpleMath::Vector3 testThrustForce = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 testThrustTorque = DirectX::SimpleMath::Vector3::Zero;
-
-    DirectX::SimpleMath::Vector3 testThrustForce2 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 testThrustTorque2 = DirectX::SimpleMath::Vector3::Zero;
-
-    DirectX::SimpleMath::Vector3 testThrustForce3 = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 testThrustTorque3 = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 thrustPosWorldAligned = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
-
-    DirectX::SimpleMath::Vector3 dragLinearSum = DirectX::SimpleMath::Vector3::Zero;
 
     float forwardThrust = 0.0f;
     
@@ -141,36 +169,34 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 gimbaleVec = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Quaternion gimbaleQuat = DirectX::SimpleMath::Quaternion::Identity;
 
-    DirectX::SimpleMath::Vector3 localizedDestinationPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3 localizedDestinationDir = DirectX::SimpleMath::Vector3::Zero;
-
     DirectX::SimpleMath::Vector3 airDragTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
-
     DirectX::SimpleMath::Vector3 airDragForceLocalTest = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 airDragTorqueLocalTest = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 linearForceSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
 
-    DirectX::SimpleMath::Vector3 steeringDirNormLocal2 = -DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Quaternion steeringQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+    // heading, steering, targeting, & seeker data, needs to be streamlined
+    DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 headingLocal = DirectX::SimpleMath::Vector3::Zero;
 
-    DirectX::SimpleMath::Vector3 steeringDirNormLocal3 = -DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Quaternion steeringQuat3 = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
+    float targetDistance = 0.0f;
+    float targetDistanceDelta = 0.0f;
+    float closureRate = 0.0f;
 
-    DirectX::SimpleMath::Vector3 steeringDirNormLocal = - DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 steeringDirNormLocal = -DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Quaternion headingQuat = DirectX::SimpleMath::Quaternion::Identity;
 
-    float vertSteeringAng = 0.0f;
-    float horzSteeringAng = 0.0f;
-
-    DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::Zero;
-    
     DirectX::SimpleMath::Vector3 headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
 
+    DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
+
     bool isFacingDestTrue = true;
+    // end seeker data
 
     float climbOutTimer = 0.0f;
 
@@ -660,6 +686,8 @@ private:
     void UpdateSteeringDirNormOld(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld2(MissileData& aMissile, const float aTimeDelta);
 
+    void ControllerUpdate(MissileData& aMissile, const float aTimeDelta);
+
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
     std::shared_ptr<NPCController> m_npcController;
@@ -757,6 +785,14 @@ private:
     float m_debugDistanceToTarget = 0.0f;
     float m_debugDistanceToTarget2 = 0.0f;
     float m_debugDistanceToTarget3 = 0.0f;
+
+    const int m_selectMissileFire = 1;
+
+    float m_dragSumMax1 = 0.0f;
+    float m_dragSumMax2 = 0.0f;
+    float m_dragSumMax3 = 0.0f;
+    float m_dragSumMax4 = 0.0f;
+    float m_dragSumMax5 = 0.0f;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };

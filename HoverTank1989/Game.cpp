@@ -656,6 +656,7 @@ void Game::Render()
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         //DrawTestTrack();
+        DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
     m_effect->EnableDefaultLighting();
@@ -860,7 +861,7 @@ void Game::CreateDeviceDependentResources()
 
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_effect = std::make_unique<NormalMapEffect>(device);
-
+   
     // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
@@ -903,7 +904,8 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType3>(device, m_effect3.get(), m_inputLayout3.ReleaseAndGetAddressOf()));
     m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(context);
 
-    m_skyShape = GeometricPrimitive::CreateSphere(context, m_skyBoxSize, 32, false);
+    //m_skyShape = GeometricPrimitive::CreateSphere(context, m_skyBoxSize, 32, false);
+    m_skyShape = GeometricPrimitive::CreateSphere(context, -m_skyBoxSize, 32);
     m_skyShape->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
 
     m_font = std::make_unique<SpriteFont>(device, L"Art/Fonts/myfile.spritefont");
@@ -958,7 +960,9 @@ void Game::CreateDeviceDependentResources()
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
-    m_testShape3 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
+    //m_testShape3 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
+    //m_testShape3 = DirectX::GeometricPrimitive::CreateCylinder(context, -m_baseTerrainHeight, -m_baseTerrainDiameter);
+    m_testShape3 = DirectX::GeometricPrimitive::CreateTorus(context, m_ringDiameter, m_ringHeight);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -1244,15 +1248,34 @@ void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::Simp
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
 
-    DirectX::SimpleMath::Matrix worldMat = DirectX::SimpleMath::Matrix::Identity;
-    worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_skyBoxTerrainBaseOffset);
-
     aEffect->EnableDefaultLighting();
-    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
 
+    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
     aEffect->SetColorAndAlpha(skyColor);
+    DirectX::SimpleMath::Vector3 skyBoxTransVec = DirectX::SimpleMath::Vector3::Zero;
+    skyBoxTransVec.y -= m_skyBoxSize * 0.17f;
+
+    DirectX::SimpleMath::Matrix worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(skyBoxTransVec);
     aEffect->SetWorld(worldMat);
     m_skyShape->Draw(aEffect.get(), aInputLayout.Get(), false, true);
+}
+
+void Game::DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    aEffect->EnableDefaultLighting();
+
+    aEffect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.0f, 0.f));
+
+    DirectX::SimpleMath::Vector3 baseTransVec = DirectX::SimpleMath::Vector3::Zero;
+    baseTransVec.y = m_ringOffset;
+
+    DirectX::SimpleMath::Matrix worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, m_ringScale, 1.0f));
+    worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(baseTransVec);
+    aEffect->SetWorld(worldMat);
+    m_testShape3->Draw(aEffect.get(), aInputLayout.Get());
 }
 
 void Game::DrawTestTrack()
@@ -1350,7 +1373,7 @@ void Game::DrawTerrainNew(Terrain& aTerrain)
 
     DirectX::SimpleMath::Vector3 vertNorm = -DirectX::SimpleMath::Vector3::UnitY;
     const float baseSize = m_skyBoxSize;
-    const float heightOffSet = -m_skyBoxTerrainBaseOffset.y;
+    const float heightOffSet = -m_groundBlackHeight;
 
     DirectX::SimpleMath::Vector3 v1 = DirectX::SimpleMath::Vector3(baseSize, heightOffSet, -baseSize);
     DirectX::SimpleMath::Vector3 v2 = DirectX::SimpleMath::Vector3(baseSize, heightOffSet, baseSize);

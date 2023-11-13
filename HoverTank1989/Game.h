@@ -73,6 +73,7 @@ private:
     void DrawEndUI();   
     void DrawSky();
     void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawTerrainNew(Terrain& aTerrain);
     void DrawTestTrack();
     void DrawUIDisplay();
@@ -419,6 +420,14 @@ private:
     const float m_gamePadInputRateBodySideStrafe = 1.0f;
     const float m_gamePadInputDeadZone = 0.1f;
 
+    // variables for place holder skybox and ground box, less visually abtrusive to aid in tunning missiles in flight
     const DirectX::SimpleMath::Vector3 m_skyBoxTerrainBaseOffset = DirectX::SimpleMath::Vector3(0.0f, 1000.0f, 0.0f);
     const float m_skyBoxSize = 200000.0f;
+    const float m_baseTerrainDiameter = 100000.0f;
+    const float m_baseTerrainHeight = 3000.0f;
+    const float m_groundBlackHeight = 5000.0f;
+    const float m_ringDiameter = 100000.0f;
+    const float m_ringHeight = 230.0f;
+    const float m_ringScale = 100.0f;
+    const float m_ringOffset = -3000.0f;
 };
