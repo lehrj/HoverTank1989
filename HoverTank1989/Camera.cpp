@@ -23,7 +23,7 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homePitch = -0.053f;
 	m_homeYaw = 0.0f;
 
-	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET;
+	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TRACKALLCAM;
 	m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 
 	Target springTarget;
@@ -111,6 +111,10 @@ void Camera::CycleMissileTrackState()
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR;
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR)
+	{
+		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TRACKALLCAM;
+	}
+	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TRACKALLCAM)
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET;
 	}
@@ -930,6 +934,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		{
 			UpdateFollowMissile2(aTimer);
 		}
+		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TRACKALLCAM)
+		{
+			UpdateTrackAllMissilesCam(aTimer);
+		}
 		else
 		{
 			UpdateMissileSteadyCam(aTimer);
@@ -948,6 +956,26 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
 	UpdateBoundingFrustum();
+}
+
+void Camera::UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer)
+{
+	if (m_fireControl->GetIsMissileActiveTrue() == false)
+	{
+		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+	}
+	else
+	{
+		DirectX::SimpleMath::Vector3 camPos;
+		DirectX::SimpleMath::Vector3 targetPos;
+		DirectX::SimpleMath::Vector3 up;
+		DirectX::SimpleMath::Quaternion alignmentQuat;
+		m_fireControl->GetCameraTrackAllData(alignmentQuat, camPos, targetPos, up);
+
+		m_position = camPos;
+		m_target = targetPos;
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targetPos, up);;
+	}
 }
 
 void Camera::UpdateFirstPersonCamera()

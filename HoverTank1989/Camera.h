@@ -45,6 +45,7 @@ enum class MissileTrackState
     MISSILETRACKSTATE_SPRING,
     MISSILETRACKSTATE_STEADYTOTARGET,
     MISSILETRACKSTATE_STEADYTOTARGET3QTR,
+    MISSILETRACKSTATE_TRACKALLCAM,
 };
 
 // spring camera target
@@ -176,6 +177,7 @@ private:
     void UpdateOrthoganalMatrix();
     void UpdateSpinCamera(DX::StepTimer const& aTimer);
     void UpdateSpinCameraGamePlayStart(DX::StepTimer const& aTimer);
+    void UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera2(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera3(DX::StepTimer const& aTimer);

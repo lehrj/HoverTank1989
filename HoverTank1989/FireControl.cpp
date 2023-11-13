@@ -518,7 +518,7 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForAccumulator(Miss
         testBreak++;
     }
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio = ", sideSlipRatio, "");
     float sideSlipDeg = sideSlipRatio * 90.0f;
@@ -1796,6 +1796,16 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
+        DirectX::SimpleMath::Vector4 finColor = m_ammoMissile.modelData.finColor2;
+        if (m_missileVec[i].guidance.type == MissileType::TYPE_BLUE)
+        {
+            finColor = DirectX::Colors::Blue;
+        }
+        else if (m_missileVec[i].guidance.type == MissileType::TYPE_RED)
+        {
+            finColor = DirectX::Colors::Red;
+        }
+
         const DirectX::SimpleMath::Matrix alignRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         const DirectX::SimpleMath::Matrix posTransMat = DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::Identity;
@@ -1849,14 +1859,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= m_ammoMissile.modelData.tailFinTransMat;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
-        }
-        else
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
-        }
+        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
 
         // tail fin 2
         updateMat = DirectX::SimpleMath::Matrix::Identity;
@@ -1867,14 +1870,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
-        }
-        else
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
-        }
+        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, finColor);
 
         // tail fin 3
         updateMat = DirectX::SimpleMath::Matrix::Identity;
@@ -1885,16 +1881,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-
-        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
-        }
-        else
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
-        }
-
+        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, finColor);
+        
         // tail fin 4
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
@@ -1904,14 +1892,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(270.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        if (m_missileVec[i].guidance.uniqueId % 2 == 0)
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2);
-        }
-        else
-        {
-            m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor2Alt);
-        }
+        m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, finColor);
 
         // fin axel 1
         updateMat = DirectX::SimpleMath::Matrix::Identity;
@@ -2041,7 +2022,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= m_ammoMissile.modelData.wingTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
+        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, finColor);
         // main wing lower
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localWingFinMatrix;
@@ -2050,7 +2031,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
+        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, finColor);
         // main wing port
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localWingFinMatrix;
@@ -2059,7 +2040,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
+        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, finColor);
         // main wing upper
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localWingFinMatrix;
@@ -2068,7 +2049,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, DirectX::Colors::Red);
+        m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
     }
 }
 
@@ -2290,6 +2271,16 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
     firedMissile.projectileData.time = 0.0f + aTimeOffSet;
 
     firedMissile.guidance.uniqueId = GetUniqueMissileID();
+
+    if (firedMissile.guidance.uniqueId % 2 == 0)
+    {
+        firedMissile.guidance.type = MissileType::TYPE_RED;
+    }
+    else
+    {
+        firedMissile.guidance.type = MissileType::TYPE_BLUE;
+    }
+
     firedMissile.guidance.heading = aLaunchDirectionForward;
     firedMissile.guidance.targetID = m_currentTargetID;
     if (m_currentTargetID != -1)
@@ -2709,6 +2700,77 @@ void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignme
     {
         aAlignment = DirectX::SimpleMath::Quaternion::Identity;
         aPos = DirectX::SimpleMath::Vector3::Zero;
+    }
+}
+
+void FireControl::GetCameraTrackAllData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget, DirectX::SimpleMath::Vector3& aUp) const
+{
+    if (m_missileVec.size() > 0)
+    {
+        DirectX::SimpleMath::Vector3 targetPos = m_npcController->GetNpcPos(m_currentTargetID);
+        DirectX::SimpleMath::Vector3 avgMissilePos = DirectX::SimpleMath::Vector3::Zero;
+        int avgCount = 0;
+        float maxDistance = 0.0f;
+        
+        for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+        {
+            if (m_missileVec[i].projectileData.isDeleteTrue == false)
+            {
+                avgMissilePos += m_missileVec[i].projectileData.q.position;
+                ++avgCount;
+                for (unsigned int j = 0; j < m_missileVec.size(); ++j)
+                {
+                    if (j != i)
+                    {
+                        float distance = DirectX::SimpleMath::Vector3::Distance(m_missileVec[i].projectileData.q.position, m_missileVec[j].projectileData.q.position);
+                        if (distance > maxDistance)
+                        {
+                            maxDistance = distance;
+                        }
+                    }
+                }
+            }
+        }
+
+        const float minDistance = 1.0f;
+        if (maxDistance < minDistance)
+        {
+            maxDistance = minDistance;
+        }
+
+        if (avgCount <= 0)
+        {
+            aAlignment = DirectX::SimpleMath::Quaternion::Identity;
+            aPos = DirectX::SimpleMath::Vector3::Zero;
+            aTarget = DirectX::SimpleMath::Vector3::UnitX;
+            aUp = DirectX::SimpleMath::Vector3::UnitY;
+        }
+        else
+        {
+            avgMissilePos /= static_cast<float>(avgCount);
+
+            DirectX::SimpleMath::Vector3 targToPosNorm = targetPos - avgMissilePos;
+            targToPosNorm.Normalize();
+            DirectX::SimpleMath::Vector3 toAddVec = targToPosNorm * maxDistance;
+            avgMissilePos -= toAddVec;
+
+            DirectX::SimpleMath::Quaternion missileAlignment = DirectX::SimpleMath::Quaternion::Identity;
+            DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
+
+            aAlignment = missileAlignment;
+            aPos = avgMissilePos;
+            aTarget = targetPos;
+
+            DirectX::SimpleMath::Vector3 targToPosNormRight = targToPosNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
+            aUp = targToPosNorm.Cross(-targToPosNorm.Cross(DirectX::SimpleMath::Vector3::UnitY));
+        }
+    }
+    else
+    {
+        aAlignment = DirectX::SimpleMath::Quaternion::Identity;
+        aPos = DirectX::SimpleMath::Vector3::Zero;
+        aTarget = DirectX::SimpleMath::Vector3::UnitX;
+        aUp = DirectX::SimpleMath::Vector3::UnitY;
     }
 }
 
@@ -4899,7 +4961,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         DirectX::SimpleMath::Vector3 vDeltaLinear = (postVelocityLinear - preVelocityLinear) * static_cast<float>(aTimeDelta);
         DirectX::SimpleMath::Vector3 vDeltaAngular = (postVelocityAngular - preVelocityAngular) * static_cast<float>(aTimeDelta);
 
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
    
         DirectX::SimpleMath::Vector3 testLine = m_missileVec[i].guidance.linearDragSum;
         m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 12.0f, 0.1f, DirectX::Colors::Orange);
@@ -5644,8 +5706,8 @@ void FireControl::ControllerUpdate(MissileData& aMissile, const float aTimeDelta
 
     m_debugData->ToggleDebugOnOverRide();
 
-    m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.controller.deltaVecRaw = ", aMissile.guidance.controller.deltaVecRaw.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.controller.deltaQuatRaw = ", aMissile.guidance.controller.deltaQuatRaw.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.controller.deltaVecRaw = ", aMissile.guidance.controller.deltaVecRaw.Length(), "");
+    //m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.controller.deltaQuatRaw = ", aMissile.guidance.controller.deltaQuatRaw.Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("", , "");
 
     m_debugData->ToggleDebugOff();
@@ -5659,6 +5721,9 @@ void FireControl::ControllerUpdate(MissileData& aMissile, const float aTimeDelta
     updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, updateQuat);
     updateVec.Normalize();
 
-    //aMissile.guidance.headingLocalVecTest = updateVec;
-    //aMissile.guidance.headingLocalQuatTest = updateQuat;
+    if (aMissile.guidance.type == MissileType::TYPE_RED)
+    {
+        aMissile.guidance.headingLocalVecTest = updateVec;
+        aMissile.guidance.headingLocalQuatTest = updateQuat;
+    }
 }

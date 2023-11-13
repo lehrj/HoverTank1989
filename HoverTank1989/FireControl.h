@@ -117,11 +117,19 @@ struct Controller
     DirectX::SimpleMath::Quaternion deltaQuatConed = DirectX::SimpleMath::Quaternion::Identity;
 };
 
+enum class MissileType
+{
+    TYPE_BASE,
+    TYPE_BLUE,
+    TYPE_RED,
+};
+
 struct GuidanceSystem
 {
     //Seeker seeker;
     Controller controller;
     FlightState flightStateCurrent = FlightState::FLIGHTSTATE_LAUNCH;
+    MissileType type = MissileType::TYPE_BASE;
     float timeStepDelta = 0.0f;
     unsigned int uniqueId = 0;
     int targetID = 0;
@@ -575,6 +583,7 @@ public:
     AmmoType GetCurrentAmmoType() const { return m_currentAmmoType; };
     bool GetIsMissileActiveTrue() const;
     void GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const;
+    void GetCameraTrackAllData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget, DirectX::SimpleMath::Vector3& aUp) const;
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
@@ -786,7 +795,7 @@ private:
     float m_debugDistanceToTarget2 = 0.0f;
     float m_debugDistanceToTarget3 = 0.0f;
 
-    const int m_selectMissileFire = 1;
+    const int m_selectMissileFire = 2;
 
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;
