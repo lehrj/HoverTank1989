@@ -1801,9 +1801,9 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         {
             finColor = DirectX::Colors::Blue;
         }
-        else if (m_missileVec[i].guidance.type == MissileType::TYPE_RED)
+        else if (m_missileVec[i].guidance.type == MissileType::TYPE_ORANGE)
         {
-            finColor = DirectX::Colors::Red;
+            finColor = DirectX::Colors::Orange;
         }
 
         const DirectX::SimpleMath::Matrix alignRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
@@ -2274,11 +2274,11 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
 
     if (firedMissile.guidance.uniqueId % 2 == 0)
     {
-        firedMissile.guidance.type = MissileType::TYPE_RED;
+        firedMissile.guidance.type = MissileType::TYPE_BLUE;
     }
     else
     {
-        firedMissile.guidance.type = MissileType::TYPE_BLUE;
+        firedMissile.guidance.type = MissileType::TYPE_ORANGE;
     }
 
     firedMissile.guidance.heading = aLaunchDirectionForward;
@@ -4655,8 +4655,33 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
         DirectX::SimpleMath::Vector3 prevHeadingLocalVecTest = aMissile.guidance.headingLocalVecTest;
         DirectX::SimpleMath::Quaternion prevHeadingLocalQuatTest = aMissile.guidance.headingLocalQuatTest;
 
+        ////////////////////////////////
+        // pos offset
+        float timeToTarget = aMissile.guidance.targetDistance / aMissile.guidance.closureRate;
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineDecimalNumber("timeToTarget = ", timeToTarget, "");
+  
+        m_debugData->ToggleDebugOff();
+        const float offSetMod = 0.1f;
+        DirectX::SimpleMath::Vector3 targPosOffset = aMissile.guidance.targetVelocity * timeToTarget * offSetMod;
+        DirectX::SimpleMath::Vector3 missilePosOffset = aMissile.projectileData.q.velocity * abs(timeToTarget) * offSetMod;
+        DirectX::SimpleMath::Vector3 missileVelocityStep = aMissile.projectileData.q.velocity * aTimeDelta;
+        //
+        ///////////////////////////////
+
+        DirectX::SimpleMath::Vector3 targetDestinationRaw = aMissile.guidance.targetDestination;
+        DirectX::SimpleMath::Vector3 positionRaw = aMissile.projectileData.q.position;
+
         DirectX::SimpleMath::Vector3 destLocal = aMissile.guidance.targetDestination - aMissile.projectileData.q.position;
-        //DirectX::SimpleMath::Vector3 destLocal = aMissile.projectileData.q.position - aMissile.guidance.targetDestination;
+
+        //destLocal = (aMissile.guidance.targetDestination - missilePosOffset) - (aMissile.projectileData.q.position);
+        if (aMissile.guidance.type == MissileType::TYPE_ORANGE && timeToTarget > 0.0f)
+        {
+            //destLocal = (targetDestinationRaw + missilePosOffset) - (positionRaw + targPosOffset);
+            //destLocal = (targetDestinationRaw + targPosOffset) - (positionRaw + missilePosOffset);
+        }
+
         float distToTargetTest = destLocal.Length();
         destLocal.Normalize();
         destLocal = DirectX::SimpleMath::Vector3::Transform(destLocal, aMissile.projectileData.inverseAlignmentQuat);
@@ -4672,13 +4697,21 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
         destQuat.Normalize();
         destQuat.Inverse(destQuat);
 
-        //aMissile.guidance.headingLocalVecTest = destLocal;
-        //aMissile.guidance.headingLocalQuatTest = destQuat;
 
+        if (aMissile.guidance.type == MissileType::TYPE_ORANGE && timeToTarget > 0.0f)
+        {
+            aMissile.guidance.headingLocalVecTest = destLocal;
+            aMissile.guidance.headingLocalQuatTest = destQuat;
+        }
+        else
+        {
+            aMissile.guidance.headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
+            aMissile.guidance.headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
+        }
         /////////////////////////////////
         // test slerp
-        aMissile.guidance.headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
-        aMissile.guidance.headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
+        //aMissile.guidance.headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
+        //aMissile.guidance.headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
 
         //const float slerpT = 0.3f;
         float slerpT = 0.5f;
@@ -4710,8 +4743,6 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
         slerpQuat = slerpQuat;
         DirectX::SimpleMath::Vector3 slerpedVec = DirectX::SimpleMath::Vector3::UnitX;
         slerpedVec = DirectX::SimpleMath::Vector3::Transform(slerpedVec, slerpQuat);
-
-
 
         //aMissile.guidance.headingLocalVecTest = slerpedVec;
         //aMissile.guidance.headingLocalQuatTest = slerpQuat;
@@ -4745,8 +4776,16 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
             //aMissile.guidance.headingLocalQuatTest = destQuat;
         }
         */
-        aMissile.guidance.headingLocalVecTest = slerpedVec;
-        aMissile.guidance.headingLocalQuatTest = slerpQuat;
+        
+        //aMissile.guidance.headingLocalVecTest = slerpedVec;
+        //aMissile.guidance.headingLocalQuatTest = slerpQuat;
+
+
+        if (aMissile.guidance.type == MissileType::TYPE_BLUE && timeToTarget > 0.0f)
+        {
+            aMissile.guidance.headingLocalVecTest = slerpedVec;
+            aMissile.guidance.headingLocalQuatTest = slerpQuat;
+        }
 
         //m_debugData->ToggleDebugOnOverRide();
 
@@ -4769,7 +4808,6 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
         testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.projectileData.alignmentQuat);
         m_debugData->PushDebugLine(aMissile.projectileData.q.position, testLine, 5.0f, 0.0f, DirectX::Colors::Yellow);
         m_debugData->DebugPushUILineDecimalNumber("aMissile.projectileData.q.angularVelocity ", aMissile.projectileData.q.angularVelocity.Length(), "");
-
 
 
         testLine = aMissile.guidance.linearDragSum;
@@ -5489,7 +5527,8 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
     }
     */
 
-    accum.linear = forceAccum3 + forceAccum4;
+    //accum.linear = forceAccum3 + forceAccum4;
+    accum.linear = forceAccum;
     accum.torque = torqueAccum;
 
     return accum;
@@ -5704,6 +5743,31 @@ void FireControl::ControllerUpdate(MissileData& aMissile, const float aTimeDelta
     aMissile.guidance.controller.prevQuatRaw = aMissile.guidance.controller.currentQuatRaw;
     aMissile.guidance.controller.prevVecRaw = aMissile.guidance.controller.currentVecRaw;
 
+
+    /////////////////
+    // Instantanious angular offset
+
+    DirectX::SimpleMath::Quaternion instQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
+    velocityNorm.Normalize();
+
+    DirectX::SimpleMath::Quaternion updateAlignQuat;
+    updateAlignQuat.x = aMissile.projectileData.q.angularVelocity.x;
+    updateAlignQuat.y = aMissile.projectileData.q.angularVelocity.y;
+    updateAlignQuat.z = aMissile.projectileData.q.angularVelocity.z;
+    updateAlignQuat.w = 0.0f;
+    //DirectX::SimpleMath::Quaternion updateAlignOutputQuat = aMissile.projectileData.alignmentQuat;
+    DirectX::SimpleMath::Quaternion updateAlignOutputQuat = DirectX::SimpleMath::Quaternion::Identity;
+    updateAlignOutputQuat.Normalize();
+
+    //updateAlignOutputQuat += (0.5f * aTimeDelta) * (updateAlignQuat * aMissile.projectileData.alignmentQuat);
+    updateAlignOutputQuat += (0.5f * aTimeDelta) * (updateAlignQuat * DirectX::SimpleMath::Quaternion::Identity);
+    updateAlignOutputQuat.Normalize();
+
+    //
+    //////////////////
+
     m_debugData->ToggleDebugOnOverRide();
 
     //m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.controller.deltaVecRaw = ", aMissile.guidance.controller.deltaVecRaw.Length(), "");
@@ -5716,14 +5780,17 @@ void FireControl::ControllerUpdate(MissileData& aMissile, const float aTimeDelta
     DirectX::SimpleMath::Quaternion updateQuat = aMissile.guidance.headingLocalQuatTest; 
     updateQuat = DirectX::SimpleMath::Quaternion::Identity;
     const float t = 0.5f;
-    updateQuat = DirectX::SimpleMath::Quaternion::Slerp(aMissile.guidance.headingLocalQuatTest, -aMissile.guidance.controller.deltaQuatRaw, t);
+    //updateQuat = DirectX::SimpleMath::Quaternion::Slerp(aMissile.guidance.headingLocalQuatTest, -aMissile.guidance.controller.deltaQuatRaw, t);
+    updateQuat = DirectX::SimpleMath::Quaternion::Slerp(aMissile.guidance.headingLocalQuatTest, -updateAlignOutputQuat, t);
     updateQuat.Normalize();
     updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, updateQuat);
     updateVec.Normalize();
 
-    if (aMissile.guidance.type == MissileType::TYPE_RED)
+    if (aMissile.guidance.type == MissileType::TYPE_ORANGE)
     {
-        aMissile.guidance.headingLocalVecTest = updateVec;
-        aMissile.guidance.headingLocalQuatTest = updateQuat;
+        //aMissile.guidance.headingLocalVecTest = updateVec;
+        //aMissile.guidance.headingLocalQuatTest = updateQuat;
     }
+    aMissile.guidance.headingLocalVecTest = updateVec;
+    aMissile.guidance.headingLocalQuatTest = updateQuat;
 }

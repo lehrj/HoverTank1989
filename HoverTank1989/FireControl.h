@@ -121,7 +121,7 @@ enum class MissileType
 {
     TYPE_BASE,
     TYPE_BLUE,
-    TYPE_RED,
+    TYPE_ORANGE,
 };
 
 struct GuidanceSystem

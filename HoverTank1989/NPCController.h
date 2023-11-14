@@ -109,6 +109,6 @@ private:
 
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(570.0f, 11.0f, -375.0f);
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-570.0f, 11.0f, -375.0f);
-    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-570.0f, 11.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(570.0f, 11.0f, 0.0f);
 };
 
