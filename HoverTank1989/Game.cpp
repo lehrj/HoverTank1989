@@ -2183,8 +2183,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //m_vehicle->DebugToggle0();
             //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
             //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
-            AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_UNSTOPPABLE_DRIVER);
+            //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_UNSTOPPABLE_DRIVER);
             //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
+            m_fireControl->ZeroMissileVelocities();
         }
     }
     if (m_kbStateTracker.pressed.K)

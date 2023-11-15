@@ -204,6 +204,9 @@ struct GuidanceSystem
     DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
 
     bool isFacingDestTrue = true;
+
+    DirectX::SimpleMath::Quaternion angularStepQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 he = DirectX::SimpleMath::Vector3::UnitX;
     // end seeker data
 
     float climbOutTimer = 0.0f;
@@ -597,6 +600,8 @@ public:
 
     void UpdateFireControl(double aTimeDelta);
 
+    void ZeroMissileVelocities();
+
 private:
     void ActivateMuzzleFlash(AmmoType aAmmoType);
     void AltitudeController(MissileData& aMissile, const float aTimeDelta);
@@ -673,6 +678,8 @@ private:
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
+
+    void CruiseGuidance(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
 
