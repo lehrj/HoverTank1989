@@ -75,6 +75,7 @@ private:
     void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawTerrainNew(Terrain& aTerrain);
+    void DrawTestRangeMissile();
     void DrawTestTrack();
     void DrawUIDisplay();
     void DrawUnlockUI();
@@ -430,4 +431,10 @@ private:
     const float m_ringHeight = 230.0f;
     const float m_ringScale = 100.0f;
     const float m_ringOffset = -3000.0f;
+
+    const float m_missileRangeDepth = 300.0f;
+    const float m_missileRangeDistance = 1400.0f;
+    const float m_missileRangeHeight = 0.5f;
+    const DirectX::SimpleMath::Vector3 m_missileRangePos1 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, (m_missileRangeDistance * 0.5f));
+    const DirectX::SimpleMath::Vector3 m_missileRangePos2 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, -(m_missileRangeDistance * 0.5f));
 };

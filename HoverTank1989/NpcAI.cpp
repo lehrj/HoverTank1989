@@ -70,22 +70,6 @@ void NpcAI::AvoidPosCurrent()
     }
 }
 
-void NpcAI::CreateWayPathTestFireRange()
-{
-    Utility::ClearWayPath(m_currentWayPath);
-    m_currentWayPath.isPathLooped = true;
-    const float radius = 85.0f;
-
-    DirectX::SimpleMath::Vector3 pos;
-    Utility::Waypoint wp;
-
-    pos = m_npcOwner->GetPos();
-    wp = Utility::CreateWaypoint(pos, radius);
-
-    Utility::PushWaypointToPath(m_currentWayPath, wp);
-    m_currentWayPath.targetNode = 0;
-}
-
 void NpcAI::CreateWayPath()
 {
     Utility::ClearWayPath(m_currentWayPath);
@@ -153,6 +137,43 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
     Utility::PushWaypointToPath(m_currentWayPath, wp7);
+    m_currentWayPath.targetNode = 0;
+}
+
+void NpcAI::CreateWayPathTestFireRange()
+{
+    Utility::ClearWayPath(m_currentWayPath);
+    m_currentWayPath.isPathLooped = true;
+    const float radius = 85.0f;
+
+    DirectX::SimpleMath::Vector3 pos;
+    Utility::Waypoint wp;
+
+    pos = m_npcOwner->GetPos();
+    wp = Utility::CreateWaypoint(pos, radius);
+
+    Utility::PushWaypointToPath(m_currentWayPath, wp);
+    m_currentWayPath.targetNode = 0;
+}
+
+void NpcAI::CreateWayPathTestMissileRange()
+{
+    Utility::ClearWayPath(m_currentWayPath);
+    m_currentWayPath.isPathLooped = true;
+    const float radius = 85.0f;
+
+    Utility::Waypoint wp1;
+    DirectX::SimpleMath::Vector3 pos = m_missileRangeWP1;
+    wp1 = Utility::CreateWaypoint(pos, radius);
+
+
+    Utility::Waypoint wp2;
+    pos = m_missileRangeWP2;
+    wp2 = Utility::CreateWaypoint(pos, radius);
+
+    Utility::PushWaypointToPath(m_currentWayPath, wp1);
+    Utility::PushWaypointToPath(m_currentWayPath, wp2);
+    
     m_currentWayPath.targetNode = 0;
 }
 
@@ -243,8 +264,9 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicl
 
     Utility::ClearWayPath(m_currentWayPath);
 
-    CreateWayPath();
+    //CreateWayPath();
     //CreateWayPathTestFireRange();
+    CreateWayPathTestMissileRange();
 
     m_currentDestination = DirectX::SimpleMath::Vector3::Zero;
 

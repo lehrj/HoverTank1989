@@ -656,6 +656,7 @@ void Game::Render()
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         //DrawTestTrack();
+        DrawTestRangeMissile();
         DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
@@ -959,7 +960,9 @@ void Game::CreateDeviceDependentResources()
     m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret, context);
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
-    m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
+    //m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
+    m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(m_missileRangeDistance, 1.0f, 6.0f));
+  
     //m_testShape3 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
     //m_testShape3 = DirectX::GeometricPrimitive::CreateCylinder(context, -m_baseTerrainHeight, -m_baseTerrainDiameter);
     m_testShape3 = DirectX::GeometricPrimitive::CreateTorus(context, m_ringDiameter, m_ringHeight);
@@ -1276,6 +1279,28 @@ void Game::DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::
     worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(baseTransVec);
     aEffect->SetWorld(worldMat);
     m_testShape3->Draw(aEffect.get(), aInputLayout.Get());
+}
+
+void Game::DrawTestRangeMissile()
+{
+    const DirectX::SimpleMath::Vector3 wPos1 = m_missileRangePos1;
+    const DirectX::SimpleMath::Vector3 wPos2 = m_missileRangePos2;
+    const float wpDistance = wPos1.z - wPos2.z;
+    const float rodOffset = 0.05f;
+    // waypoint 1 & cross bar
+    DirectX::SimpleMath::Vector3 pos1 = wPos1;
+    DirectX::SimpleMath::Matrix posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    DirectX::SimpleMath::Vector3 pos2 = pos1;
+    pos2.z -= wpDistance * 0.5f;
+    pos2.y -= rodOffset;
+    DirectX::SimpleMath::Matrix posMat2 = DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
+
+    // waypoint 2
+    pos1 = wPos2;
+    posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
 }
 
 void Game::DrawTestTrack()

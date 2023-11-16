@@ -96,6 +96,7 @@ private:
     void AvoidPosCurrent();
     void CreateWayPath();
     void CreateWayPathTestFireRange();
+    void CreateWayPathTestMissileRange();
     void InitializeControlOutput();
     void InitializeDestinationTargets();
     void InitializeBehavior();
@@ -156,5 +157,11 @@ private:
     int m_lapCounter = 0;
 
     float m_startTimer = 0.0f;
+
+    const float m_missileRangeDepth = 300.0f;
+    const float m_missileRangeDistance = 1400.0f;
+    const float m_missileRangeHeight = 0.5f;
+    const DirectX::SimpleMath::Vector3 m_missileRangeWP1 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, (m_missileRangeDistance * 0.5f));
+    const DirectX::SimpleMath::Vector3 m_missileRangeWP2 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, -(m_missileRangeDistance * 0.5f));
 };
 

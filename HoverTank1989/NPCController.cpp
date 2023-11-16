@@ -679,7 +679,9 @@ void NPCController::InitializeTextureMaps(NpcTextureMapType aTextureMapType, Mic
 
 void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController)
 {
-    DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
+    //DirectX::SimpleMath::Vector3 heading = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 heading = m_startHeading;
+    
     const float low = 0.1f;
     const float high = 5.0f;
     //const float zPosOffSet = 12.0f;

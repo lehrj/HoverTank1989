@@ -673,6 +673,7 @@ private:
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
 
     void UpdateLOSData(MissileData& aMissile, const float aTimeDelta);
+    void UpdateLOSData2(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileAlignment(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
