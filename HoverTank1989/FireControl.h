@@ -658,6 +658,8 @@ private:
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
+    void ProNav(MissileData& aMissile, const float aTimeDelta);
+
     void ResetMissileForceAccumulators(MissileData& aMissile);
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
@@ -803,7 +805,7 @@ private:
     float m_debugDistanceToTarget2 = 0.0f;
     float m_debugDistanceToTarget3 = 0.0f;
 
-    const int m_selectMissileFire = 2;
+    const int m_selectMissileFire = 1;
 
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;

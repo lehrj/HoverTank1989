@@ -2630,7 +2630,14 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
                 }
                 else if (m_selectMissileFire == 1)
                 {
-                    FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
+                    DirectX::SimpleMath::Vector3 launchDir = m_playerVehicle->GetWeaponDirection();
+                    DirectX::SimpleMath::Vector3 launchDirUp = m_playerVehicle->GetVehicleUp();      
+                    DirectX::SimpleMath::Vector3 launchDirRight = launchDirUp.Cross(launchDir);
+                    const float missileTubeVerticalRot = Utility::ToRadians(-40.0f);
+                    launchDir = DirectX::SimpleMath::Vector3::Transform(launchDir, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(launchDirRight, missileTubeVerticalRot));
+                    launchDirUp = DirectX::SimpleMath::Vector3::Transform(launchDirUp, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(launchDirRight, missileTubeVerticalRot));
+                    FireMissile(m_playerVehicle->GetWeaponPos(), launchDir, aLauncherVelocity, launchDirUp, 0.0f);
+                    //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
                 }
                 else
                 {
@@ -4778,9 +4785,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         UpdateFlightStateData(m_missileVec[i], aTimeDelta);
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
-        UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
-
-        ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
+        //UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
+        ProNav(m_missileVec[i], static_cast<float>(aTimeDelta));
+        //ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
 
@@ -4822,7 +4829,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         ////// start debug drawing
         //////////////////////////////////////////
         //
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitX;
         testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].guidance.steeringQuat);
         testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].projectileData.alignmentQuat);
@@ -5498,21 +5505,68 @@ void FireControl::UpdateLOSData(MissileData& aMissile, const float aTimeDelta)
     //aMissile.guidance.headingLocalVecTest = destLocal;
     //aMissile.guidance.headingLocalQuatTest = destQuat;
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     testVec = DirectX::SimpleMath::Vector3::UnitX;
     testVec = DirectX::SimpleMath::Vector3::Transform(testVec, destQuat);
     testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
 
+    ////////////////////////////////////
+    ////////////////////////////////////
 
-    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 7.0f, 0.0f, DirectX::Colors::CornflowerBlue);
+
+
+    // target velocity relative to missile
+    //vec2 Vr = Vt - Vm;
+    DirectX::SimpleMath::Vector3 Vr = aMissile.guidance.targetVelocity - aMissile.projectileData.q.velocity;
+    // range from missile to target
+    //vec2 R = Rt - Rm;
+    DirectX::SimpleMath::Vector3 R = aMissile.guidance.targetPosition - aMissile.projectileData.q.position;
+    //some constant
+    //float N = ...;
+    float N = 3.0f;
+    //rotation vector of line of sight
+    //vec3 Omega = cross(R, Vr) / dot(R, R);
+    DirectX::SimpleMath::Vector3 Omega = R.Cross(Vr) / R.Dot(R);
+
+    // the cross product of orthogonal vector to R and Vr from previous cross
+    // product, and Vr again, will produce vector which lies on the plane of R 
+    // and Vr again, hence we can ignore the last dimension of the cross product 
+    // it will be zero anyway for 2d.
+    //vec2 a = N * cross(Vr, Omega);
+    DirectX::SimpleMath::Vector3 a = N * Vr.Cross(Omega);
+    DirectX::SimpleMath::Vector3 aCrossForward = a.Cross(aMissile.projectileData.forward);
+    DirectX::SimpleMath::Vector3 aCrossCross = aCrossForward.Cross(a);
+
+    DirectX::SimpleMath::Vector3 aCrossCrossLocal = aCrossCross;
+    aCrossCrossLocal = DirectX::SimpleMath::Vector3::Transform(aCrossCrossLocal, aMissile.projectileData.inverseAlignmentQuat);
+
+    destLocal = aCrossCrossLocal;
+    destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
+    destQuat.Normalize();
+   // destQuat.Inverse(destQuat);
+
+    testVec = DirectX::SimpleMath::Vector3::UnitX;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, destQuat);
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
+    //aMissile.guidance.headingLocalVecTest = destLocal;
+    //aMissile.guidance.headingLocalQuatTest = destQuat;
+
+    DirectX::SimpleMath::Vector3 headingLocalVecTestWorld = aMissile.guidance.headingLocalVecTest;
+    headingLocalVecTestWorld = DirectX::SimpleMath::Vector3::Transform(headingLocalVecTestWorld, aMissile.projectileData.alignmentQuat);
+    m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 10.0f, 0.0f, DirectX::Colors::Lime);
+    /*
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, a, 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aCrossForward, 10.0f, 0.0f, DirectX::Colors::Violet);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aCrossCross, 10.0f, 0.0f, DirectX::Colors::Lime);
+    */
+    m_debugData->DebugPushUILineDecimalNumber("a.l = ", a.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("a.D = ", Utility::ToDegrees(a.Length()), "");
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.headingLocalVecTest, 8.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, headingLocalVecTestWorld, 8.0f, 0.0f, DirectX::Colors::Yellow);
 
     m_debugData->ToggleDebugOff();
-
-    if (aMissile.guidance.type == MissileType::TYPE_ORANGE)
-    {
-        //aMissile.guidance.headingLocalVecTest = destLocal;
-        //aMissile.guidance.headingLocalQuatTest = destQuat;
-    }
 }
 
 void FireControl::UpdateLOSData2(MissileData& aMissile, const float aTimeDelta)
@@ -5716,7 +5770,7 @@ void FireControl::ControllerUpdate(MissileData& aMissile, const float aTimeDelta
     //
     //////////////////
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     //m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.controller.deltaVecRaw = ", aMissile.guidance.controller.deltaVecRaw.Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.controller.deltaQuatRaw = ", aMissile.guidance.controller.deltaQuatRaw.Length(), "");
@@ -5863,4 +5917,155 @@ void FireControl::CruiseGuidance(MissileData& aMissile, const float aTimeDelta)
     DirectX::SimpleMath::Vector3 slerpedVec = DirectX::SimpleMath::Vector3::UnitX;
     slerpedVec = DirectX::SimpleMath::Vector3::Transform(slerpedVec, slerpQuat);
     */
+}
+
+
+void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
+{
+    const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
+    const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
+    const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
+    const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
+    const DirectX::SimpleMath::Vector3 targPosAlt = aMissile.guidance.targetDestination;
+
+    const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
+    const DirectX::SimpleMath::Vector3 targPosL = DirectX::SimpleMath::Vector3::Transform((targPosW - selfPosW), aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
+
+    //m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.navigationTime", aMissile.guidance.navigationTime, "");
+    m_debugData->PushDebugLinePositionIndicator(targPosW, 30.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLinePositionIndicator(selfPosW, 10.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->PushDebugLinePositionIndicator(targPosAlt, 20.0f, 0.0f, DirectX::Colors::Violet);
+
+    m_debugData->PushDebugLine(selfPosW, selfVelW, 6.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(targPosW, targVelW, 36.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->ToggleDebugOff();
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // target velocity relative to missile
+    //vec2 Vr = Vt - Vm;
+    DirectX::SimpleMath::Vector3 Vr = aMissile.guidance.targetVelocity - aMissile.projectileData.q.velocity;
+    // range from missile to target
+    //vec2 R = Rt - Rm;
+    DirectX::SimpleMath::Vector3 R = aMissile.guidance.targetPosition - aMissile.projectileData.q.position;
+    //some constant
+    //float N = ...;
+    float N = 3.0f;
+    //rotation vector of line of sight
+    //vec3 Omega = cross(R, Vr) / dot(R, R);
+    DirectX::SimpleMath::Vector3 Omega = R.Cross(Vr) / R.Dot(R);
+
+    // the cross product of orthogonal vector to R and Vr from previous cross
+    // product, and Vr again, will produce vector which lies on the plane of R 
+    // and Vr again, hence we can ignore the last dimension of the cross product 
+    // it will be zero anyway for 2d.
+    //vec2 a = N * cross(Vr, Omega);
+    DirectX::SimpleMath::Vector3 a = N * Vr.Cross(Omega);
+    DirectX::SimpleMath::Vector3 aCrossForward = a.Cross(aMissile.projectileData.forward);
+    DirectX::SimpleMath::Vector3 aCrossCross = aCrossForward.Cross(a);
+
+    DirectX::SimpleMath::Vector3 aCrossCrossLocal = aCrossCross;
+    aCrossCrossLocal = DirectX::SimpleMath::Vector3::Transform(aCrossCrossLocal, aMissile.projectileData.inverseAlignmentQuat);
+
+    DirectX::SimpleMath::Vector3 aW = a;
+    aW = DirectX::SimpleMath::Vector3::Transform(aW, aMissile.projectileData.alignmentQuat);
+
+    DirectX::SimpleMath::Vector3 destLocal = aCrossCrossLocal;
+    DirectX::SimpleMath::Quaternion destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
+    destQuat.Normalize();
+    destQuat.Inverse(destQuat);
+
+    DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3::UnitX;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, destQuat);
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
+    //aMissile.guidance.headingLocalVecTest = destLocal;
+    //aMissile.guidance.headingLocalQuatTest = destQuat;
+
+    DirectX::SimpleMath::Vector3 headingLocalVecTestWorld = aMissile.guidance.headingLocalVecTest;
+    headingLocalVecTestWorld = DirectX::SimpleMath::Vector3::Transform(headingLocalVecTestWorld, aMissile.projectileData.alignmentQuat);
+    //m_debugData->ToggleDebugOnOverRide();
+
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 10.0f, 0.0f, DirectX::Colors::Lime);
+
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, a, 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, selfVelL, 10.0f, 0.0f, DirectX::Colors::Green);
+    /*
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, a, 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aCrossForward, 10.0f, 0.0f, DirectX::Colors::Violet);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aCrossCross, 10.0f, 0.0f, DirectX::Colors::Lime);
+    */
+    m_debugData->DebugPushUILineDecimalNumber("a.x = ", a.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("a.y = ", a.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("a.z = ", a.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("a.l = ", a.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("a.D = ", Utility::ToDegrees(a.Length()), "");
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.headingLocalVecTest, 8.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, headingLocalVecTestWorld, 8.0f, 0.0f, DirectX::Colors::Yellow);
+    
+    m_debugData->ToggleDebugOff();
+
+    testVec = DirectX::SimpleMath::Vector3::UnitX;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(10.0f)));
+
+   // aMissile.guidance.headingLocalVecTest = testVec;
+
+
+    DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-DirectX::SimpleMath::Vector3::UnitX, aMissile.guidance.headingLocalVecTest);
+    testQuat.Normalize();
+    //testQuat.Inverse(testQuat);
+   // aMissile.guidance.headingLocalQuatTest = testQuat;
+
+    DirectX::SimpleMath::Vector3 testTargPosW = targPosL;
+    testTargPosW = DirectX::SimpleMath::Vector3::Transform(testTargPosW, aMissile.projectileData.alignmentQuat);
+    testTargPosW += aMissile.projectileData.q.position;
+
+
+    DirectX::SimpleMath::Vector3 testTargVelW = targVelL;
+    testTargVelW = DirectX::SimpleMath::Vector3::Transform(testTargVelW, aMissile.projectileData.alignmentQuat);
+    testTargVelW += aMissile.projectileData.q.position;
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLinePositionIndicator(testTargPosW, 30.0f, 0.0f, DirectX::Colors::Blue);
+
+    m_debugData->ToggleDebugOff();
+
+
+    auto desiredVelocity = targPosW - selfPosW;
+    desiredVelocity -= selfVelW;
+    auto desiredVelocityNorm = desiredVelocity;
+    desiredVelocityNorm.Normalize();
+    desiredVelocityNorm = DirectX::SimpleMath::Vector3::Transform(desiredVelocityNorm, aMissile.projectileData.inverseAlignmentQuat);
+
+    auto dVelNormWorld = desiredVelocityNorm;
+    dVelNormWorld = DirectX::SimpleMath::Vector3::Transform(dVelNormWorld, aMissile.projectileData.alignmentQuat);
+
+
+
+
+
+    destLocal = desiredVelocityNorm;
+    destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
+    destQuat.Normalize();
+    destQuat.Inverse(destQuat);
+
+    testVec = DirectX::SimpleMath::Vector3::UnitX;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, destQuat);
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
+    aMissile.guidance.headingLocalVecTest = destLocal;
+    aMissile.guidance.headingLocalQuatTest = destQuat;
+
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 10.0f, 0.0f, DirectX::Colors::Orange);
+
+
+    m_debugData->ToggleDebugOff();
+
+
 }

@@ -46,6 +46,7 @@ enum class MissileTrackState
     MISSILETRACKSTATE_STEADYTOTARGET,
     MISSILETRACKSTATE_STEADYTOTARGET3QTR,
     MISSILETRACKSTATE_TRACKALLCAM,
+    MISSILETRACKSTATE_TRACKFROMVEHICLE,
 };
 
 // spring camera target
@@ -173,11 +174,13 @@ private:
     void UpdateFollowMissile2(DX::StepTimer const& aTimer);
     void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
     void UpdateMissileSteadyCam(DX::StepTimer const& aTimer);
+    void UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer);
+    void UpdateMissileTrackFromVehicleCam(DX::StepTimer const& aTimer);
+
     void UpdateProjectionMatrix();
     void UpdateOrthoganalMatrix();
     void UpdateSpinCamera(DX::StepTimer const& aTimer);
     void UpdateSpinCameraGamePlayStart(DX::StepTimer const& aTimer);
-    void UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera2(DX::StepTimer const& aTimer);
     void UpdateTrailerCamera3(DX::StepTimer const& aTimer);
@@ -212,7 +215,7 @@ private:
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
     float                           m_posTravelSpeed = 24.0f;
-    const float                     m_freeLookSpeedDelta = 2.0f;
+    const float                     m_freeLookSpeedDelta = 6.0f;
     const float                     m_freeLookSpeedMax = 150.0f;
     const float                     m_freeLookSpeedMin = 1.0f;
 
