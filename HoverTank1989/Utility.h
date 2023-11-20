@@ -1204,6 +1204,23 @@ public:
         aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
     };
 
+    static int IntervalComparison(float x, float lowerBound, float upperBound)
+    {
+        if (x < lowerBound)
+        {
+            return -1;
+        }
+        else if (x > upperBound)
+        {
+            return +1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+
 private:
 
 

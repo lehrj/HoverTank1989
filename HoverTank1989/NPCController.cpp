@@ -886,7 +886,7 @@ void NPCController::UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
     }
 }
 
-void NPCController::UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity)
+void NPCController::UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward)
 {
     int idIndex = -1;
     for (int i = 0; i < m_npcVec.size(); ++i)

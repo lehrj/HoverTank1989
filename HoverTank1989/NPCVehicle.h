@@ -44,7 +44,8 @@ struct HoverData
     const float hoverNeutralBoyantAlt = hoverRangeMid;
 
     float forwardThrust;
-    const float forwardThrustMax = 50000.0f;
+    //const float forwardThrustMax = 50000.0f;
+    const float forwardThrustMax =   5000.0f;
     const float reverseThrustMax = forwardThrustMax * 1.0f;
     float omniThrust;
     const float omniThrustMax = 65000.0f;

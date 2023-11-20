@@ -191,6 +191,7 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetForward = DirectX::SimpleMath::Vector3::UnitX;
     float targetDistance = 0.0f;
     float targetDistanceDelta = 0.0f;
     float closureRate = 0.0f;
@@ -416,9 +417,9 @@ struct MissileConsts
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
 
     //const float rocketBoostForceMax = 40.0f;
-    const float rocketBoostForceMax = 380.0f;
+    const float rocketBoostForceMax = 80.0f;
     //const float mass = 22.0f;
-    const float mass = 42.0f;
+    const float mass = 22.0f;
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -659,7 +660,8 @@ private:
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
     void ProNav(MissileData& aMissile, const float aTimeDelta);
-
+    void ProNav2(MissileData& aMissile, const float aTimeDelta);
+    void ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta);
     void ResetMissileForceAccumulators(MissileData& aMissile);
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);

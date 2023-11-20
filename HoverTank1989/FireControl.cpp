@@ -2291,7 +2291,7 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
     {
         firedMissile.guidance.isTargetLocked = false;
     }
-    m_npcController->UpdateMissleGuidance(m_currentTargetID, firedMissile.guidance.targetPosition, firedMissile.guidance.targetVelocity);
+    m_npcController->UpdateMissleGuidance(m_currentTargetID, firedMissile.guidance.targetPosition, firedMissile.guidance.targetVelocity, firedMissile.guidance.targetForward);
     firedMissile.guidance.targetDistance = (aLaunchPos - firedMissile.guidance.targetPosition).Length();
 
     m_missileVec.push_back(firedMissile);
@@ -4166,7 +4166,7 @@ void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTim
     float terrainHeightAtPos = m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position);
     aMissile.guidance.altitude = aMissile.projectileData.q.position.y - terrainHeightAtPos;
 
-    m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity);
+    m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
     float prevDistance = aMissile.guidance.targetDistance;
     aMissile.guidance.targetDistance = (aMissile.projectileData.q.position - aMissile.guidance.targetPosition).Length();
     aMissile.guidance.targetDistanceDelta = prevDistance - aMissile.guidance.targetDistance;
@@ -4787,7 +4787,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         //UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ProNav(m_missileVec[i], static_cast<float>(aTimeDelta));
-        //ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
+        ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
 
@@ -5920,7 +5920,7 @@ void FireControl::CruiseGuidance(MissileData& aMissile, const float aTimeDelta)
 }
 
 
-void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
+void FireControl::ProNav2(MissileData& aMissile, const float aTimeDelta)
 {
     const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
     const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
@@ -6007,13 +6007,13 @@ void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("a.D = ", Utility::ToDegrees(a.Length()), "");
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, aMissile.guidance.headingLocalVecTest, 8.0f, 0.0f, DirectX::Colors::Yellow);
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, headingLocalVecTestWorld, 8.0f, 0.0f, DirectX::Colors::Yellow);
-    
+
     m_debugData->ToggleDebugOff();
 
     testVec = DirectX::SimpleMath::Vector3::UnitX;
     testVec = DirectX::SimpleMath::Vector3::Transform(testVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(10.0f)));
 
-   // aMissile.guidance.headingLocalVecTest = testVec;
+    // aMissile.guidance.headingLocalVecTest = testVec;
 
 
     DirectX::SimpleMath::Quaternion testQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-DirectX::SimpleMath::Vector3::UnitX, aMissile.guidance.headingLocalVecTest);
@@ -6069,3 +6069,326 @@ void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
 
 
 }
+
+void FireControl::ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta)
+{
+    const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
+    const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
+    const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
+    const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
+    //const DirectX::SimpleMath::Vector3 targPosAlt = aMissile.guidance.targetDestination;
+
+    const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
+    const DirectX::SimpleMath::Vector3 targPosL = DirectX::SimpleMath::Vector3::Transform((targPosW - selfPosW), aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const float maxPredictionTime = 45.0f;
+
+    // offset from this to quarry, that distance, unit vector toward quarry
+    const auto offset = targPosW - selfPosW;
+    const float distance = offset.Length();
+    const auto unitOffset = offset / distance;
+
+    // how parallel are the paths of "this" and the quarry
+    // (1 means parallel, 0 is pependicular, -1 is anti-parallel)
+    //const float parallelness = aMissile.projectileData.forward.Dot(aMissile.guidance.targetForward);
+    auto forwardTest = aMissile.projectileData.q.velocity;
+    forwardTest.Normalize();
+    const float parallelness = forwardTest.Dot(aMissile.guidance.targetForward);
+
+    // how "forward" is the direction to the quarry
+    // (1 means dead ahead, 0 is directly to the side, -1 is straight back)
+    //const float forwardness = aMissile.projectileData.forward.Dot(unitOffset);
+    const float forwardness = forwardTest.Dot(unitOffset);
+
+    const float directTravelTime = distance / aMissile.projectileData.q.velocity.Length();
+    const int f = Utility::IntervalComparison(forwardness, -0.707f, 0.707f);
+    const int p = Utility::IntervalComparison(parallelness, -0.707f, 0.707f);
+    float timeFactor = 0.0f;
+
+    // Break the pursuit into nine cases, the cross product of the
+    // quarry being [ahead, aside, or behind] us and heading
+    // [parallel, perpendicular, or anti-parallel] to us.
+
+    auto color = DirectX::Colors::White;
+
+    switch (f)
+    {
+    case +1:
+        switch (p)
+        {
+        case +1:          // ahead, parallel
+            timeFactor = 4.0f;
+            color = DirectX::Colors::Black;
+            break;
+        case 0:           // ahead, perpendicular
+            timeFactor = 1.8f;
+            color = DirectX::Colors::Gray;// 50;
+            break;
+        case -1:          // ahead, anti-parallel
+            timeFactor = 0.85f;
+            color = DirectX::Colors::White;
+            break;
+        }
+        break;
+    case 0:
+        switch (p)
+        {
+        case +1:          // aside, parallel
+            timeFactor = 1.0f;
+            color = DirectX::Colors::Red;
+            break;
+        case 0:           // aside, perpendicular
+            timeFactor = 0.8f;
+            color = DirectX::Colors::Yellow;
+            break;
+        case -1:          // aside, anti-parallel
+            timeFactor = 4.0f;
+            color = DirectX::Colors::Green;
+            break;
+        }
+        break;
+    case -1:
+        switch (p)
+        {
+        case +1:          // behind, parallel
+            timeFactor = 0.5f;
+            color = DirectX::Colors::Cyan;
+            break;
+        case 0:           // behind, perpendicular
+            timeFactor = 2.0f;
+            color = DirectX::Colors::Blue;
+            break;
+        case -1:          // behind, anti-parallel
+            timeFactor = 2.0f;
+            color = DirectX::Colors::Magenta;
+            break;
+        }
+        break;
+    }
+
+    // estimated time until intercept of quarry
+    const float et = directTravelTime * timeFactor;
+
+    // xxx experiment, if kept, this limit should be an argument
+    const float etl = (et > maxPredictionTime) ? maxPredictionTime : et;
+
+    // estimated position of quarry at intercept
+    const DirectX::SimpleMath::Vector3 target = aMissile.guidance.targetPosition + (aMissile.guidance.targetVelocity * etl);
+
+    m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->DebugPushUILineDecimalNumber("etl  = ", etl, "");
+    m_debugData->DebugPushUILineDecimalNumber("et  = ", et, "");
+    m_debugData->ToggleDebugOff();
+
+
+    /*
+    OpenSteer::SimpleVehicle::predictFuturePosition(const float predictionTime) const
+{
+    return position() + (velocity() * predictionTime);
+}
+*/
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    auto desiredVelocity = targPosW - selfPosW;
+    desiredVelocity -= selfVelW;
+
+    desiredVelocity = target - selfPosW;
+
+    auto desiredVelocityNorm = desiredVelocity;
+    desiredVelocityNorm.Normalize();
+    desiredVelocityNorm = DirectX::SimpleMath::Vector3::Transform(desiredVelocityNorm, aMissile.projectileData.inverseAlignmentQuat);
+
+    auto dVelNormWorld = desiredVelocityNorm;
+    dVelNormWorld = DirectX::SimpleMath::Vector3::Transform(dVelNormWorld, aMissile.projectileData.alignmentQuat);
+
+    auto destLocal = desiredVelocityNorm;
+    auto destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
+    destQuat.Normalize();
+    destQuat.Inverse(destQuat);
+
+    auto testVec = DirectX::SimpleMath::Vector3::UnitX;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, destQuat);
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
+    aMissile.guidance.headingLocalVecTest = destLocal;
+    aMissile.guidance.headingLocalQuatTest = destQuat;
+
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 10.0f, 0.0f, color);
+
+    m_debugData->PushDebugLinePositionIndicator(target, 20.0f, 0.0f, color);
+
+    m_debugData->DebugPushUILineDecimalNumber("missile Vel = ", aMissile.projectileData.q.velocity.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("target Vel  = ", aMissile.guidance.targetVelocity.Length(), "");
+
+    m_debugData->ToggleDebugOff();
+
+
+}
+
+void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
+{
+    const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
+    const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
+    const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
+    const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
+    //const DirectX::SimpleMath::Vector3 targPosAlt = aMissile.guidance.targetDestination;
+
+    const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
+    const DirectX::SimpleMath::Vector3 targPosL = DirectX::SimpleMath::Vector3::Transform((targPosW - selfPosW), aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    auto mVelLocal = aMissile.projectileData.q.velocity;
+    mVelLocal = DirectX::SimpleMath::Vector3::Transform(mVelLocal, aMissile.projectileData.inverseAlignmentQuat);
+
+    auto mVelWorld = mVelLocal;
+    mVelWorld = DirectX::SimpleMath::Vector3::Transform(mVelWorld, aMissile.projectileData.alignmentQuat);
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //aMissile.guidance.navigationTime = ((aMissile.guidance.targetPosition - aMissile.projectileData.q.position).Length()) / aMissile.projectileData.q.velocity.Length();
+    const float navigationTime = ((aMissile.guidance.targetPosition - aMissile.projectileData.q.position).Length()) / aMissile.projectileData.q.velocity.Length();
+    DirectX::SimpleMath::Vector3 prevLos = aMissile.guidance.losCurrent;
+    DirectX::SimpleMath::Vector3 currentLos = aMissile.guidance.targetPosition - aMissile.projectileData.q.position;
+    auto currentLosLocal = DirectX::SimpleMath::Vector3::Transform(currentLos, aMissile.projectileData.inverseAlignmentQuat);
+    currentLosLocal.Normalize();
+    //aMissile.guidance.losCurrent = currentLos;
+    aMissile.guidance.losCurrent = currentLosLocal;
+
+    prevLos.Normalize();
+    currentLos.Normalize();
+    DirectX::SimpleMath::Vector3 losDelta = currentLos - prevLos;
+    DirectX::SimpleMath::Vector3 losDeltaLocal = currentLosLocal - prevLos;
+
+    //aMissile.guidance.losDelta = losDelta;
+    aMissile.guidance.losDelta = losDeltaLocal;
+    //aMissile.guidance.losRate = losDelta.Length();
+    aMissile.guidance.losRate = losDeltaLocal.Length();
+    //aMissile.guidance.closingVelocityToTarget = -aMissile.guidance.losRate;
+    aMissile.guidance.closingVelocityToTarget = aMissile.guidance.targetDistanceDelta / aTimeDelta;
+
+    // latax = RTM_new * N * Vc * LOS_Rate + LOS_Delta
+    //aMissile.guidance.latax = aMissile.guidance.losCurrent * m_missileConsts.navigationGain * aMissile.guidance.closingVelocityToTarget * aMissile.guidance.losDelta;
+    
+    const auto lataxCal = aMissile.guidance.losCurrent * 3.0f * aMissile.guidance.closingVelocityToTarget * aMissile.guidance.losDelta;
+    const auto lataxCalWorld = DirectX::SimpleMath::Vector3::Transform(lataxCal, aMissile.projectileData.alignmentQuat);
+    const auto lataxCalLocal = DirectX::SimpleMath::Vector3::Transform(lataxCal, aMissile.projectileData.inverseAlignmentQuat);
+
+    aMissile.guidance.latax = lataxCal;
+
+    aMissile.guidance.latax = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.latax, aMissile.projectileData.inverseAlignmentQuat);
+    auto lataxTest = aMissile.guidance.latax;
+    auto lataxTestNorm = lataxTest;
+    lataxTestNorm.Normalize();
+
+    const float boostForce = aMissile.guidance.throttlePercentage * m_missileConsts.rocketBoostForceMax;
+    
+    float tan = 0.0f;
+    if (boostForce > 0.0f)
+    {
+        tan = atan(aMissile.guidance.latax.Length() / boostForce);
+        tan *= 10000.0f;
+    }
+    //float tan = atan(2.0 / 500.0);
+    auto lataxWorld = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.latax, aMissile.projectileData.alignmentQuat);
+
+    /////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    auto mVelLocalNorm = mVelLocal;
+    mVelLocalNorm.Normalize();
+    auto lataxCalNorm = lataxCal;
+    lataxCalNorm.Normalize();
+
+    //auto velLataxCrossLocal = mVelLocalNorm.Cross(lataxCalNorm);
+    auto velLataxCrossLocal = lataxCalNorm.Cross(mVelLocalNorm);
+    velLataxCrossLocal.Normalize();
+    if (velLataxCrossLocal.Length() < 0.5f || velLataxCrossLocal.Length() > 2.0f)
+    {
+        velLataxCrossLocal = DirectX::SimpleMath::Vector3::UnitY;
+    }
+    
+
+    auto updateVec = DirectX::SimpleMath::Vector3::UnitX;
+    updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(velLataxCrossLocal, tan));
+    auto updateQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    auto destLocal = updateVec;
+    auto destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
+    destQuat.Normalize();
+    //destQuat.Inverse(destQuat);
+
+    //aMissile.guidance.headingLocalVecTest = destLocal;
+    //aMissile.guidance.headingLocalQuatTest = destQuat;
+
+
+
+
+    /////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    auto losWorld = aMissile.guidance.losCurrent;
+    losWorld = DirectX::SimpleMath::Vector3::Transform(losWorld, aMissile.projectileData.alignmentQuat);
+
+    m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, losWorld, 10.0f, 0.0f, DirectX::Colors::Orange);
+
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, lataxCal, 10.0f, 0.0f, DirectX::Colors::LightBlue);
+  //  m_debugData->PushDebugLine(aMissile.projectileData.q.position, lataxCalWorld, 10.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, lataxCalLocal, 10.0f, 0.0f, DirectX::Colors::Orange);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, lataxWorld, 10.0f, 0.0f, DirectX::Colors::Yellow);
+  //  m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.latax = ", aMissile.guidance.latax.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("tan = ", Utility::ToDegrees(tan), "");
+
+    auto tanDeg = Utility::ToDegrees(tan);
+
+    //m_debugData->DebugPushUILineDecimalNumber("lataxTest.x ", lataxTest.x, "");
+    //m_debugData->DebugPushUILineDecimalNumber("lataxTest.y ", lataxTest.y, "");
+    //m_debugData->DebugPushUILineDecimalNumber("lataxTest.z ", lataxTest.z, "");
+
+    m_debugData->DebugPushUILineDecimalNumber("lataxTest.x ", lataxTestNorm.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("lataxTest.y ", lataxTestNorm.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("lataxTest.z ", lataxTestNorm.z, "");
+
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, mVelWorld, 10.0f, 0.0f, DirectX::Colors::Blue);
+    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, mVelLocal, 10.0f, 0.0f, DirectX::Colors::Violet);
+    
+    float angleDeg = Utility::ToDegrees(Utility::GetAngleBetweenVectors(velLataxCrossLocal, lataxCal));
+    m_debugData->DebugPushUILineDecimalNumber("angleDeg = ", angleDeg, "");
+    
+    angleDeg = Utility::ToDegrees(Utility::GetAngleBetweenVectors(lataxCal, mVelLocal));
+    m_debugData->DebugPushUILineDecimalNumber("angleDeg = ", angleDeg, "");
+
+
+    angleDeg = Utility::ToDegrees(Utility::GetAngleBetweenVectors(mVelLocal, velLataxCrossLocal));
+    m_debugData->DebugPushUILineDecimalNumber("angleDeg = ", angleDeg, "");
+
+    /////////////////////////
+
+    auto testVec = velLataxCrossLocal;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 10.0f, 0.0f, DirectX::Colors::Blue);
+    
+    testVec = lataxCal;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 10.0f, 0.0f, DirectX::Colors::Red);
+
+    testVec = mVelLocal;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aMissile.projectileData.alignmentQuat);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testVec, 10.0f, 0.0f, DirectX::Colors::Lime);
+
+
+    m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.closingVelocityToTarget = ", aMissile.guidance.closingVelocityToTarget, "");
+    
+
+    m_debugData->ToggleDebugOff();
+}
+
