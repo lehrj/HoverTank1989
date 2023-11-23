@@ -229,6 +229,15 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 latax = DirectX::SimpleMath::Vector3::Zero;
     float navigationTime = 0.0f;
     DirectX::SimpleMath::Vector3 pnAdjusted = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 losNormTest = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 losDeltaTest = DirectX::SimpleMath::Vector3::Zero;
+
+    float losAngTest = 0.0f;
+    float losAngDeltaTest = 0.0f;
+
+    DirectX::SimpleMath::Vector3 targVelNormToLos = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targAccelNormalToLOS = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
@@ -411,10 +420,13 @@ struct MissileConsts
 
     const bool isMissleTargetingLaserTrue = true;
 
+    //const float headingRadiansPerSecondMax = 1.12f;
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(10.5f);
+    //const float steerAngMax = Utility::ToRadians(10.5f);
+    const float steerAngMax = Utility::ToRadians(45.0f);
     //const float steeringAngPerSecDeltaMax = Utility::ToRadians(280.0f);
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
+    //const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(48.0f);
 
     //const float rocketBoostForceMax = 40.0f;
     const float rocketBoostForceMax = 80.0f;
@@ -662,6 +674,7 @@ private:
     void ProNav(MissileData& aMissile, const float aTimeDelta);
     void ProNav2(MissileData& aMissile, const float aTimeDelta);
     void ProNav3(MissileData& aMissile, const float aTimeDelta);
+    void ProNavOld(MissileData& aMissile, const float aTimeDelta);
     void ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta);
     void ResetMissileForceAccumulators(MissileData& aMissile);
 
