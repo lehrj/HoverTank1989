@@ -4787,7 +4787,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         //UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ProNav(m_missileVec[i], static_cast<float>(aTimeDelta));
-      //  ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
+        ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
 
@@ -6805,8 +6805,12 @@ void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
     auto lataxTestVec = DirectX::SimpleMath::Vector3::UnitX.Cross(losLocal);
     auto lataxTestVecWorld = lataxTestVec;
     lataxTestVecWorld = DirectX::SimpleMath::Vector3::Transform(lataxTestVecWorld, aMissile.projectileData.alignmentQuat);
+    //auto lataxTest = lataxTestVec * m_missileConsts.navigationGain * aMissile.guidance.closingVelocityToTarget * aMissile.guidance.losRate + aMissile.guidance.losDelta * aMissile.guidance.targAccelNormalToLOS * (0.5 * m_missileConsts.navigationGain);
+    
+    aMissile.guidance.targAccelNormalToLOS.Normalize();
     auto lataxTest = lataxTestVec * m_missileConsts.navigationGain * aMissile.guidance.closingVelocityToTarget * aMissile.guidance.losRate
         + aMissile.guidance.losDelta * aMissile.guidance.targAccelNormalToLOS * (0.5 * m_missileConsts.navigationGain);
+
     auto lataxTestWorld = lataxTest;
     lataxTestWorld = DirectX::SimpleMath::Vector3::Transform(lataxTestWorld, aMissile.projectileData.alignmentQuat);
 
@@ -6832,7 +6836,7 @@ void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
         }
     }
     //float tan = atan(2.0 / 500.0);
-
+    const float thrustAngle = sin;
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("tan = ", Utility::ToDegrees(tan), "");
     m_debugData->DebugPushUILineDecimalNumber("lataxTest.Length() = ", lataxTest.Length(), "");
@@ -6845,7 +6849,7 @@ void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
     //updateVec = losLocal;
     auto quatAxis = lataxTest;
     quatAxis.Normalize();
-    updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(quatAxis, tan));
+    updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(quatAxis, thrustAngle));
     updateQuat = DirectX::SimpleMath::Quaternion::Identity;
 
     destLocal = updateVec;
@@ -6853,8 +6857,8 @@ void FireControl::ProNav(MissileData& aMissile, const float aTimeDelta)
     destQuat.Normalize();
     //destQuat.Inverse(destQuat);
 
-//    aMissile.guidance.headingLocalVecTest = destLocal;
-//    aMissile.guidance.headingLocalQuatTest = destQuat;
+    aMissile.guidance.headingLocalVecTest = destLocal;
+    aMissile.guidance.headingLocalQuatTest = destQuat;
     
     auto updateVecWorld = updateVec;
     updateVecWorld = DirectX::SimpleMath::Vector3::Transform(updateVecWorld, aMissile.projectileData.alignmentQuat);

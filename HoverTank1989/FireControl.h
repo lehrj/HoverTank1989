@@ -423,10 +423,10 @@ struct MissileConsts
     //const float headingRadiansPerSecondMax = 1.12f;
     const float headingRadiansPerSecondMax = 1.12f;
     //const float steerAngMax = Utility::ToRadians(10.5f);
-    const float steerAngMax = Utility::ToRadians(45.0f);
+    const float steerAngMax = Utility::ToRadians(10.0f);
     //const float steeringAngPerSecDeltaMax = Utility::ToRadians(280.0f);
     //const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(48.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
 
     //const float rocketBoostForceMax = 40.0f;
     const float rocketBoostForceMax = 80.0f;
