@@ -674,7 +674,8 @@ private:
     void ProNav(MissileData& aMissile, const float aTimeDelta);
     void ProNav2(MissileData& aMissile, const float aTimeDelta);
     void ProNav3(MissileData& aMissile, const float aTimeDelta);
-    void ProNavOld(MissileData& aMissile, const float aTimeDelta);
+    void ProNav4(MissileData& aMissile, const float aTimeDelta);
+    void ProNav5(MissileData& aMissile, const float aTimeDelta);
     void ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta);
     void ResetMissileForceAccumulators(MissileData& aMissile);
 
@@ -822,6 +823,7 @@ private:
     float m_debugDistanceToTarget3 = 0.0f;
 
     const int m_selectMissileFire = 0;
+    const bool m_isDebugAngularStabilityOn = true;
 
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;
