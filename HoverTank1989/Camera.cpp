@@ -118,6 +118,10 @@ void Camera::CycleMissileTrackState()
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET;
 	}
+	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR)
+	{
+		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET;
+	}
 
 
 	/*
