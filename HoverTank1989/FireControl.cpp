@@ -288,9 +288,9 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateBoostForceVec(MissileData& aM
         //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(45.0f)));
 
 
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         auto testAng = Utility::GetAngleBetweenVectors(testLine, DirectX::SimpleMath::Vector3::UnitX);
-        m_debugData->DebugPushUILineDecimalNumber("xxxxxxxxxxxxxxxxtestAng", Utility::ToDegrees(testAng), "");
+        m_debugData->DebugPushUILineDecimalNumber("testAng", Utility::ToDegrees(testAng), "");
         m_debugData->ToggleDebugOff();
 
         return testLine * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
@@ -1339,7 +1339,7 @@ void FireControl::CruiseGuidance(MissileData& aMissile, const float aTimeDelta)
     destWorld = DirectX::SimpleMath::Vector3::Transform(destWorld, aMissile.projectileData.alignmentQuat);
     //destWorld += aMissile.projectileData.q.position;
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLinePositionIndicator(destWorld, 10.0f, 0.0f, color);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
 
@@ -1394,6 +1394,29 @@ void FireControl::CycleLoadedAmmo()
     {
         m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
     }
+}
+
+void FireControl::DebugIntputValUpdate(const float aInput)
+{
+    const float updatedTurretYaw = (aInput * m_debugValDeltaRate) + m_debugVal1;
+    if (updatedTurretYaw > m_debugValMax)
+    {
+        m_debugVal1 = m_debugValMax;
+    }
+    else if (updatedTurretYaw < m_debugValMin)
+    {
+        m_debugVal1 = m_debugValMin;
+    }
+
+    else
+    {
+        m_debugVal1 = updatedTurretYaw;
+    }
+}
+
+void FireControl::DebugInputZero()
+{
+    m_debugVal1 = 0.0f;
 }
 
 void FireControl::DeleteMissileFromVec(const unsigned int aIndex)
@@ -5359,10 +5382,6 @@ void FireControl::ToggleDebug1()
 
 void FireControl::ToggleDebug2()
 {
-    m_dragSumMax1 = 0.0f;
-    m_dragSumMax2 = 0.0f;
-    m_dragSumMax3 = 0.0f;
-    /*
     if (m_isDebugToggleTrue2 == true)
     {
         m_isDebugToggleTrue2 = false;
@@ -5371,7 +5390,6 @@ void FireControl::ToggleDebug2()
     {
         m_isDebugToggleTrue2 = true;
     }
-    */
 }
 
 void FireControl::ToggleDebug3()
@@ -6814,8 +6832,15 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         //UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
-        ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
 
+        HardBurnModeActivator(m_missileVec[i], static_cast<float>(aTimeDelta));
+        
+        if (m_missileVec[i].guidance.isHardBurnModeTrue == true)
+        {
+            HardBurnModeTest(m_missileVec[i], static_cast<float>(aTimeDelta));
+        }
+
+        ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         //UpdateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
@@ -6925,7 +6950,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
        
         
 
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         m_debugData->DebugPushUILineDecimalNumber("q.velocity. = ", m_missileVec[i].projectileData.q.velocity.Length(), "");
         m_debugData->DebugPushUILineDecimalNumber("velDeltaLinear = ", velDeltaLinear.Length(), "");
         //m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, vDeltaNorm, 12.0f, 0.1f, DirectX::Colors::Violet);
@@ -6935,6 +6960,11 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         m_debugData->DebugPushUILineDecimalNumber("m_debugVal1 Rads = ", m_debugVal1, "");
         m_debugData->DebugPushUILineDecimalNumber("m_debugVal1 Degs = ", Utility::ToDegrees(m_debugVal1), "");
+
+        m_debugData->DebugPushUILineWholeNumber("m_missileVec[i].guidance.isHardBurnModeTrue = ", m_missileVec[i].guidance.isHardBurnModeTrue, "");
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineWholeNumber("m_isDebugToggleTrue2 = ", m_isDebugToggleTrue2, "");
         m_debugData->ToggleDebugOff();
 
         PrintFlightStateData(m_missileVec[i]);
@@ -7280,7 +7310,7 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     auto perpLosWorld = perpLosLocal;
     perpLosWorld = DirectX::SimpleMath::Vector3::Transform(perpLosWorld, aMissile.projectileData.alignmentQuat);
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     //m_debugData->ToggleDebugOff();
     m_debugData->DebugPushUILineDecimalNumber("trueProNav ", trueProNav, "");
     m_debugData->DebugPushUILineDecimalNumber("closingSpeed ", closingSpeed, "");
@@ -7302,9 +7332,7 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     m_debugData->PushDebugLineScaled(aMissile.projectileData.q.position, perpLosWorld * trueProNav, 1.0, 1.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
 
-
     //////////////////////////////////////////////////////////////////////////////////
-
 
         //////////////////////
     const float boostForce = aMissile.guidance.throttlePercentage * m_missileConsts.rocketBoostForceMax;
@@ -7323,7 +7351,7 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     float lataxNeeded = trueProNav;
     float latForceNeeded = lataxNeeded * m_missileConsts.mass;
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("lataxNeeded = ", lataxNeeded, "");
     m_debugData->DebugPushUILineDecimalNumber("latForceNeeded = ", latForceNeeded, "");
     m_debugData->DebugPushUILineDecimalNumber("boostAccel = ", boostAccel, "");
@@ -7425,7 +7453,6 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
         testBreak++;
     }
 
-
     auto rotQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_debugVal1);
 
     destLocal = DirectX::SimpleMath::Vector3::UnitX;
@@ -7438,13 +7465,11 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     //aMissile.guidance.headingLocalVecTest = destLocal;
     //aMissile.guidance.headingLocalQuatTest = destQuat;
 
-
     destWorld = destLocal;
     destWorld = DirectX::SimpleMath::Vector3::Transform(destWorld, aMissile.projectileData.alignmentQuat);
     auto destWorld2 = DirectX::SimpleMath::Vector3::UnitX;
     destWorld2 = DirectX::SimpleMath::Vector3::Transform(destWorld2, destQuat);
     destWorld2 = DirectX::SimpleMath::Vector3::Transform(destWorld2, aMissile.projectileData.alignmentQuat);
-
 
     if (m_debugThrustAngMax < thrustAngle)
     {
@@ -7455,7 +7480,6 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
         m_debugThrustAngMin = thrustAngle;
     }
 
-  
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld, 9.0f, 0.0f, DirectX::Colors::CornflowerBlue);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld2, 9.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->DebugPushUILineDecimalNumber("thrustAngle ___ = ", thrustAngle, "");
@@ -7468,11 +7492,6 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("losAngDelta = ", losAngDelta, "");
     m_debugData->DebugPushUILineWholeNumber("isTriggered  = ", isTriggered, "");
     m_debugData->DebugPushUILineWholeNumber("isTriggered2 = ", isTriggered2, "");
-
-    float x = asin(1.5f);
-    float xDeg = Utility::ToDegrees(x);
-
-
 
     m_debugData->ToggleDebugOff();
 }
@@ -7488,25 +7507,91 @@ void FireControl::IRSeekerTest(MissileData& aMissile, const float aTimeDelta)
 }
 
 
-void FireControl::DebugIntputValUpdtate(const float aInput)
+void FireControl::HardBurnModeTest(MissileData& aMissile, const float aTimeDelta)
 {
-    const float updatedTurretYaw = (aInput * m_debugValDeltaRate) + m_debugVal1;
-    if (updatedTurretYaw > m_debugValMax)
-    {
-        m_debugVal1 = m_debugValMax;
-    }
-    else if (updatedTurretYaw < m_debugValMin)
-    {
-        m_debugVal1 = m_debugValMin;
-    }
+    const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
+    const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
+    const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
+    const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
 
-    else
+    const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
+    const DirectX::SimpleMath::Vector3 targPosL = DirectX::SimpleMath::Vector3::Transform((targPosW - selfPosW), aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
+    
+    auto tmp = selfPosL - targPosL;
+    const float closingSpeed = -((selfVelL - targVelL).Dot(tmp) / tmp.Length());
+
+    auto velNormLocal = selfVelL;
+    velNormLocal.Normalize();
+
+    auto vecToTargWorld = targPosW - selfPosW;
+    auto vecToTargLocal = vecToTargWorld;
+    vecToTargLocal = DirectX::SimpleMath::Vector3::Transform(vecToTargLocal, aMissile.projectileData.inverseAlignmentQuat);
+    auto vecToTargLocNorm = vecToTargLocal;
+    vecToTargLocNorm.Normalize();
+    auto velNormToTargLocalDot = velNormLocal.Dot(vecToTargLocNorm);
+    auto forToVelNormLocalDot = DirectX::SimpleMath::Vector3::UnitX.Dot(velNormLocal);
+
+    auto velQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, velNormLocal);
+    auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, vecToTargLocNorm);
+    auto velToTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(velNormLocal, vecToTargLocNorm);
+    velToTargQuat.Normalize();
+
+    auto testQuat = DirectX::SimpleMath::Quaternion::Identity;
+    testQuat.RotateTowards(velToTargQuat, (m_missileConsts.hardBurnRadPerSec * aTimeDelta));
+
+    auto destLocal = DirectX::SimpleMath::Vector3::UnitX;
+    destLocal = DirectX::SimpleMath::Vector3::Transform(destLocal, testQuat);
+
+    auto destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
+    destQuat.Normalize();
+    destQuat.Inverse(destQuat);
+    
+    if (m_isDebugToggleTrue2 == true)
     {
-        m_debugVal1 = updatedTurretYaw;
+
+    }
+    aMissile.guidance.headingLocalVecTest = destLocal;
+    aMissile.guidance.headingLocalQuatTest = destQuat;
+
+    auto destWorld = destLocal;
+    destWorld = DirectX::SimpleMath::Vector3::Transform(destWorld, aMissile.projectileData.alignmentQuat);
+
+    m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->DebugPushUILineDecimalNumber("velNormToTargLocalDot ", velNormToTargLocalDot, "");
+    m_debugData->DebugPushUILineDecimalNumber("forToVelNormLocalDot ", forToVelNormLocalDot, "");
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, vecToTargLocal, 4.0f, 0.0f, DirectX::Colors::Lavender);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, vecToTargWorld, 4.0f, 0.0f, DirectX::Colors::Blue);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld, 4.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->ToggleDebugOff();
+}
+
+
+void FireControl::HardBurnModeActivator(MissileData& aMissile, const float aTimeDelta)
+{
+    if (aMissile.guidance.isHardBurnModeTrue == false)
+    {
+        if (aMissile.guidance.isFacingDestTrue == false) // initialize vars needes
+        {
+            aMissile.guidance.isHardBurnModeTrue = true;
+
+            aMissile.guidance.hardBurnVec = DirectX::SimpleMath::Vector3::UnitX;
+            aMissile.guidance.hardBurnQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+            //aMissile.guidance.hardBurnVec = aMissile.projectileData.forward;
+            aMissile.guidance.hardBurnVec = aMissile.projectileData.q.velocity;
+            aMissile.guidance.hardBurnVec.Normalize();
+            aMissile.guidance.hardBurnQuat = aMissile.projectileData.alignmentQuat;
+        }
+    }
+    else if (aMissile.guidance.isHardBurnModeTrue == true)
+    {
+        if (aMissile.guidance.isFacingDestTrue == true)
+        {
+            aMissile.guidance.isHardBurnModeTrue = false;
+        }
     }
 }
 
-void FireControl::DebugInputZero()
-{
-    m_debugVal1 = 0.0f;
-}

@@ -245,6 +245,10 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 uiTargPosRaw = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 uiTargPosMod = DirectX::SimpleMath::Vector3::Zero;
+
+    bool isHardBurnModeTrue = false;
+    DirectX::SimpleMath::Vector3 hardBurnVec = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion hardBurnQuat = DirectX::SimpleMath::Quaternion::Identity;
 };
 
 struct AmmoStruct
@@ -436,7 +440,7 @@ struct MissileConsts
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
 
     //const float rocketBoostForceMax = 40.0f;
-    const float rocketBoostForceMax = 30.0f;
+    const float rocketBoostForceMax = 130.0f;
     //const float mass = 22.0f;
     const float mass = 22.0f;
 
@@ -459,6 +463,8 @@ struct MissileConsts
     const float testVal2 = testVal * 2.0f;
 
     const float navigationGain = 3.0f;
+
+    const float hardBurnRadPerSec = Utility::ToRadians(25.0f);
 };
 
 enum class ExplosionType
@@ -664,6 +670,9 @@ private:
 
     unsigned int GetUniqueMissileID();
 
+    void HardBurnModeActivator(MissileData& aMissile, const float aTimeDelta);
+    void HardBurnModeTest(MissileData& aMissile, const float aTimeDelta);
+
     void InitializeAmmoCannon(AmmoStruct& aAmmo);
     void InitializeAmmoExplosive(AmmoStruct& aAmmo);
     void InitializeAmmoMachineGun(AmmoStruct& aAmmo);
@@ -840,6 +849,8 @@ private:
     const int m_selectMissileFire = 0;
     const bool m_isDebugAngularStabilityOn = false;
 
+    const bool m_isHardBurnModeTestOn = true;
+
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;
     float m_dragSumMax3 = 0.0f;
@@ -863,7 +874,7 @@ public:
     void CamMissileSelectNext();
     //void CamMissileSelectPrev();
 
-    void DebugIntputValUpdtate(const float aInput);
+    void DebugIntputValUpdate(const float aInput);
     void DebugInputZero();
 };
 

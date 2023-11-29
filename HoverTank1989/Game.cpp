@@ -2224,14 +2224,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->DebugIntputValUpdtate(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_fireControl->DebugIntputValUpdate(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.OemCloseBrackets)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->DebugIntputValUpdtate(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_fireControl->DebugIntputValUpdate(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.OemQuestion)
