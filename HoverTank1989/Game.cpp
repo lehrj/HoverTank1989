@@ -2220,7 +2220,27 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->ToggleFireControlLaser();
         }
     }
-
+    if (kb.OemOpenBrackets)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_fireControl->DebugIntputValUpdtate(static_cast<float>(aTimer.GetElapsedSeconds()));
+        }
+    }
+    if (kb.OemCloseBrackets)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_fireControl->DebugIntputValUpdtate(static_cast<float>(-aTimer.GetElapsedSeconds()));
+        }
+    }
+    if (kb.OemQuestion)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_fireControl->DebugInputZero();
+        }
+    }
 
     auto mouse = m_mouse->GetState();
 

@@ -38,7 +38,7 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
 
     Utility::ForceAccum::AlignLinear(sumForce, aMissile.projectileData.alignmentQuat);
     Utility::ForceAccum::AlignLinear(sumDrag, aMissile.projectileData.alignmentQuat);
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("sumDrag.linear= ", sumDrag.linear.Length(), "");
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, sumDrag.linear, 7.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->DebugPushUILineDecimalNumber("sumForce.linear= ", sumForce.linear.Length(), "");
@@ -286,6 +286,13 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateBoostForceVec(MissileData& aM
         //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, testMat);
         testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.steeringQuat);
         //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(45.0f)));
+
+
+        m_debugData->ToggleDebugOnOverRide();
+        auto testAng = Utility::GetAngleBetweenVectors(testLine, DirectX::SimpleMath::Vector3::UnitX);
+        m_debugData->DebugPushUILineDecimalNumber("xxxxxxxxxxxxxxxxtestAng", Utility::ToDegrees(testAng), "");
+        m_debugData->ToggleDebugOff();
+
         return testLine * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
     }
 }
@@ -1333,9 +1340,12 @@ void FireControl::CruiseGuidance(MissileData& aMissile, const float aTimeDelta)
     //destWorld += aMissile.projectileData.q.position;
 
     m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->PushDebugLinePositionIndicator(destWorld, 10.0f, 0.0f, color);
-    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLinePositionIndicator(destWorld, 10.0f, 0.0f, color);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
 
+    m_debugData->DebugPushUILineDecimalNumber("destLocal.x = ", destLocal.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("destLocal.y = ", destLocal.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("destLocal.z = ", destLocal.z, "");
     m_debugData->ToggleDebugOff();
 
     /*
@@ -6908,6 +6918,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.linearForceSum, 9.0f, 0.0f, DirectX::Colors::White);
         m_debugData->DebugPushUILineDecimalNumber("linearForceSum = ", m_missileVec[i].guidance.linearForceSum.Length(), "");
+
+        m_debugData->DebugPushUILineDecimalNumber("m_debugVal1 Rads = ", m_debugVal1, "");
+        m_debugData->DebugPushUILineDecimalNumber("m_debugVal1 Degs = ", Utility::ToDegrees(m_debugVal1), "");
         m_debugData->ToggleDebugOff();
 
         PrintFlightStateData(m_missileVec[i]);
@@ -7213,9 +7226,17 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
 
     auto prevLosNorm = aMissile.guidance.losNormTest;
     prevLosNorm.Normalize();
+
+    auto losNormWorld = targPosW - selfPosW;
+    losNormWorld.Normalize();
+    aMissile.guidance.losNormTest = losNormWorld;
+
+    auto losAngDelta1 = (Utility::GetAngleBetweenVectors(losNormWorld, prevLosNorm));
+    auto losAngDelta2 = (Utility::GetAngleBetweenVectors(losNormWorld, prevLosNorm) * aTimeDelta);
+    auto losAngDelta3 = (Utility::GetAngleBetweenVectors(losNormWorld, prevLosNorm) / aTimeDelta);
+
     auto losNormLocal = targPosL - selfPosL;
     losNormLocal.Normalize();
-    aMissile.guidance.losNormTest = losNormLocal;
 
     auto selfVelNormLocal = aMissile.projectileData.q.velocity;
     selfVelNormLocal = DirectX::SimpleMath::Vector3::Transform(selfVelNormLocal, aMissile.projectileData.inverseAlignmentQuat);
@@ -7228,16 +7249,16 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
         isLosForward = false;
     }
     
-
-    auto losAngDelta = (Utility::GetAngleBetweenVectors(losNormLocal, prevLosNorm) / aTimeDelta);
+    //auto losAngDelta = (Utility::GetAngleBetweenVectors(losNormLocal, prevLosNorm) / aTimeDelta);
+    auto losAngDelta = (Utility::GetAngleBetweenVectors(losNormWorld, prevLosNorm) / aTimeDelta);
     //auto losAngDelta = Utility::GetAngleBetweenVectors(losNormLocal, prevLosNorm);
     auto losAng = Utility::GetAngleBetweenVectors(losNormLocal, DirectX::SimpleMath::Vector3::UnitX);
     const float N = 5.0f;
-    auto trueProNav = N * closingSpeed * losAngDelta;
-
+    //auto trueProNav = N * closingSpeed * losAngDelta;
+    auto trueProNav = (N * closingSpeed * losAngDelta) * aTimeDelta;
     if (isLosForward == false)
     {
-        trueProNav = N * closingSpeed * -losAngDelta;
+     //   trueProNav = N * closingSpeed * -losAngDelta;
     }
 
     auto perpLosLocal = losNormLocal.Cross(DirectX::SimpleMath::Vector3::UnitX);
@@ -7254,6 +7275,9 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("closingSpeed", closingSpeed, "");
     m_debugData->DebugPushUILineDecimalNumber("losAngDelta ", losAngDelta, "");
 
+    m_debugData->DebugPushUILineDecimalNumber("losAngDelta1 ", losAngDelta1, "");
+    m_debugData->DebugPushUILineDecimalNumber("losAngDelta2 ", losAngDelta2, "");
+    m_debugData->DebugPushUILineDecimalNumber("losAngDelta3 ", losAngDelta3, "");
     m_debugData->PushDebugLinePositionIndicator(targPosW, 10.0f, 0.0f, DirectX::Colors::White);
 
     auto testTargPosW = targPosL;
@@ -7269,46 +7293,56 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
 
 
         //////////////////////
-    //const float boostForce = aMissile.guidance.throttlePercentage * m_missileConsts.rocketBoostForceMax;
-    const float boostForce = 30.0f;
+    const float boostForce = aMissile.guidance.throttlePercentage * m_missileConsts.rocketBoostForceMax;
+    //float boostForce = 30.0f;
+    const float boostAccel = boostForce / m_missileConsts.mass;
+    //boostForce = boostAccel;
+
+    const float latAccelMax = (1.0f - sin(m_missileConsts.steerAngMax)) * boostAccel;
+    const float latForceMax = (1.0f - sin(m_missileConsts.steerAngMax)) * boostForce;
+
     //const float boostAccel = (aMissile.guidance.throttlePercentage * m_missileConsts.rocketBoostForceMax) / m_missileConsts.mass;
-    trueProNav = 1.0f;
-    m_debugData->ToggleDebugOnOverRide();
-
-    m_debugData->DebugPushUILineDecimalNumber("boostForce ", boostForce, "");
-    //m_debugData->DebugPushUILineDecimalNumber("boostAccel ", boostAccel, "");
-
-    m_debugData->ToggleDebugOff();
-
-    /*
-    float tan = 0.0f;
-    tan = atan(a.Length() / boostForce);
-    //tan *= 1.0f / aTimeDelta;
-    //float tan = atan(2.0 / 500.0);
-    */
-
+   // trueProNav = 1.0f;
+    
     //float lataxNeeded = m_missileConsts.mass * trueProNav;
     //float lataxNeeded = m_missileConsts.mass * (trueProNav * aTimeDelta);
     float lataxNeeded = trueProNav;
+    float latForceNeeded = lataxNeeded * m_missileConsts.mass;
 
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("lataxNeeded = ", lataxNeeded, "");
+    m_debugData->DebugPushUILineDecimalNumber("latForceNeeded = ", latForceNeeded, "");
+    m_debugData->DebugPushUILineDecimalNumber("boostAccel = ", boostAccel, "");
+    m_debugData->DebugPushUILineDecimalNumber("boostForce = ", boostForce, "");
+    m_debugData->DebugPushUILineDecimalNumber("ratioA  = ", lataxNeeded / boostAccel, "");
+    m_debugData->DebugPushUILineDecimalNumber("ratioF  = ", latForceNeeded / boostForce, "");
+    m_debugData->ToggleDebugOff();
+
+    bool isTriggered = false;
+    bool isTriggered2 = false;
+    lataxNeeded = latForceNeeded;
     if (lataxNeeded > boostForce)
     {
         lataxNeeded = boostForce;
+        isTriggered = true;
     }
     else if (lataxNeeded < -boostForce)
     {
         lataxNeeded = -boostForce;
+        isTriggered = true;
+    }
+    else
+    {
+        isTriggered2 = true;
+        int testBreak = 0;
+        testBreak++;
     }
 
-    //tan = 0.0f;
     auto sin = 0.0f;
     if (boostForce > 0.0f)
     {
-        //tan = atan(lataxTest.Length() / boostForce);
-        //tan *= 1.0f / aTimeDelta;
-        //tan = asin(lataxNeeded / boostForce);
         sin = asin(lataxNeeded / boostForce);
-        //tan += Utility::ToRadians(-90.0f);
+  
         if (targPosL.x >= 0.0f)
         {
             //tan += Utility::ToRadians(-90.0f);
@@ -7318,10 +7352,24 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
             //tan += Utility::ToRadians(180.0f);
         }
     }
-    //float tan = atan(2.0 / 500.0);
+ 
     const float thrustAngle = sin;
     const float thrustAngleDeg = Utility::ToDegrees(thrustAngle);
+    auto trueProNavForce = trueProNav * m_missileConsts.mass;
+    auto trueProNavForce2 = trueProNav / m_missileConsts.mass;
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("!!!!!thrustAngleDeg = ", thrustAngleDeg, "");
+    m_debugData->DebugPushUILineDecimalNumber("latAccelMax= ", latAccelMax, "");
+    m_debugData->DebugPushUILineDecimalNumber("latForceMax = ", latForceMax, "");
+    m_debugData->DebugPushUILineDecimalNumber("trueProNav = ", trueProNav, "");
+    m_debugData->DebugPushUILineDecimalNumber("trueProNavForce = ", trueProNavForce, "");
+    m_debugData->DebugPushUILineDecimalNumber("trueProNavForce2 = ", trueProNavForce2, "");
+    m_debugData->DebugPushUILineDecimalNumber("trueProNav * m_missileConsts.mass = ", trueProNav* m_missileConsts.mass, "");
 
+    m_debugData->DebugPushUILineDecimalNumber("lataxNeeded = ", lataxNeeded, "");
+    m_debugData->DebugPushUILineDecimalNumber("boostForce = ", boostForce, "");
+    m_debugData->DebugPushUILineDecimalNumber("ratio  = ", lataxNeeded / boostForce, "");
+    m_debugData->ToggleDebugOff();
     auto updateVec = DirectX::SimpleMath::Vector3::UnitX;
     //updateVec = losLocal;
     auto quatAxis = perpLosLocal;
@@ -7332,12 +7380,12 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     }
     if (losVelDot < 0.0f)
     {
-        quatAxis *= -1.0f;
+        //quatAxis *= -1.0f;
         //updateVec = -DirectX::SimpleMath::Vector3::UnitX;
     }
     //quatAxis *= -1.0f;
     quatAxis.Normalize();
-    updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(quatAxis, -thrustAngle));
+    updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(quatAxis, thrustAngle));
     //auto updateQuat = DirectX::SimpleMath::Quaternion::Identity;
 
     auto destLocal = updateVec;
@@ -7354,22 +7402,8 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
       //  aMissile.guidance.headingLocalQuatTest = destQuat;
     }
 
-    m_debugData->ToggleDebugOnOverRide();
-    float angTest = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, destLocal);
-    m_debugData->DebugPushUILineDecimalNumber("angTest!!! ", Utility::ToDegrees(angTest), "");
-
-    m_debugData->ToggleDebugOff();
-
     auto destWorld = destLocal;
     destWorld = DirectX::SimpleMath::Vector3::Transform(destWorld, aMissile.projectileData.alignmentQuat);
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld, 2.0f, 0.0f, DirectX::Colors::Violet);
-    m_debugData->DebugPushUILineDecimalNumber("destLocal = ", destLocal.Length(), "");
-
-    //float testVal = asin(lataxNeeded / boostForce);
-    float testVal = asin(80.0696030f / 80.0000000f);
-    float testVal2 = asin(100.0f / 80.0f);
 
     if (destLocal.Length() < 0.5f)
     {
@@ -7377,21 +7411,56 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
         testBreak++;
     }
 
-    m_debugData->DebugPushUILineWholeNumber(".isVelocityForward ", aMissile.guidance.isVelocityForward, "");
-    m_debugData->DebugPushUILineWholeNumber(".isFacingDestTrue ", aMissile.guidance.isFacingDestTrue, "");
-    m_debugData->DebugPushUILineWholeNumber(".isLosForward ", isLosForward, "");
 
-    m_debugData->DebugPushUILineDecimalNumber("sin = ", sin, "");
-    
-    m_debugData->DebugPushUILineDecimalNumber("thrustAngle rads = ", thrustAngle, "");
-    m_debugData->DebugPushUILineDecimalNumber("thrustAngle degs = ", Utility::ToDegrees(thrustAngle), "");
-    m_debugData->DebugPushUILineDecimalNumber("lataxNeeded = ", lataxNeeded, "");
+    auto rotQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_debugVal1);
 
-    m_debugData->DebugPushUILineDecimalNumber("losVelDot = ", losVelDot, "");
-    
+    destLocal = DirectX::SimpleMath::Vector3::UnitX;
+    destLocal = DirectX::SimpleMath::Vector3::Transform(destLocal, rotQuat);
+    destLocal.Normalize();
+    destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, destLocal);
+    destQuat.Normalize();
+    destQuat.Inverse(destQuat);
+
+    //aMissile.guidance.headingLocalVecTest = destLocal;
+    //aMissile.guidance.headingLocalQuatTest = destQuat;
+
+
+    destWorld = destLocal;
+    destWorld = DirectX::SimpleMath::Vector3::Transform(destWorld, aMissile.projectileData.alignmentQuat);
+    auto destWorld2 = DirectX::SimpleMath::Vector3::UnitX;
+    destWorld2 = DirectX::SimpleMath::Vector3::Transform(destWorld2, destQuat);
+    destWorld2 = DirectX::SimpleMath::Vector3::Transform(destWorld2, aMissile.projectileData.alignmentQuat);
+
+
+    if (m_debugThrustAngMax < thrustAngle)
+    {
+        m_debugThrustAngMax = thrustAngle;
+    }
+    if (m_debugThrustAngMin > thrustAngle)
+    {
+        m_debugThrustAngMin = thrustAngle;
+    }
+
+  
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld, 9.0f, 0.0f, DirectX::Colors::CornflowerBlue);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, destWorld2, 9.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->DebugPushUILineDecimalNumber("thrustAngle ___ = ", thrustAngle, "");
+    m_debugData->DebugPushUILineDecimalNumber("thrustAngle Degs= ", Utility::ToDegrees(thrustAngle), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_debugThrustAngMax Degs= ", Utility::ToDegrees(m_debugThrustAngMax), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_debugThrustAngMin Degs= ", Utility::ToDegrees(m_debugThrustAngMin), "");
+    m_debugData->DebugPushUILineDecimalNumber("trueProNav = ", trueProNav, "");
+    m_debugData->DebugPushUILineDecimalNumber("N = ", N, "");
+    m_debugData->DebugPushUILineDecimalNumber("closingSpeed = ", closingSpeed, "");
+    m_debugData->DebugPushUILineDecimalNumber("losAngDelta = ", losAngDelta, "");
+    m_debugData->DebugPushUILineWholeNumber("isTriggered  = ", isTriggered, "");
+    m_debugData->DebugPushUILineWholeNumber("isTriggered2 = ", isTriggered2, "");
+
+    float x = asin(1.5f);
+    float xDeg = Utility::ToDegrees(x);
+
+
+
     m_debugData->ToggleDebugOff();
-
-    //IRSeekerTest(aMissile, aTimeDelta);
 }
 
 void FireControl::IRSeekerTest(MissileData& aMissile, const float aTimeDelta)
@@ -7402,4 +7471,28 @@ void FireControl::IRSeekerTest(MissileData& aMissile, const float aTimeDelta)
     auto irPosWorld = irPosLocal; 
     irPosWorld = DirectX::SimpleMath::Vector3::Transform(irPosWorld, aMissile.projectileData.alignmentQuat);
     irPosWorld += aMissile.projectileData.q.position;
+}
+
+
+void FireControl::DebugIntputValUpdtate(const float aInput)
+{
+    const float updatedTurretYaw = (aInput * m_debugValDeltaRate) + m_debugVal1;
+    if (updatedTurretYaw > m_debugValMax)
+    {
+        m_debugVal1 = m_debugValMax;
+    }
+    else if (updatedTurretYaw < m_debugValMin)
+    {
+        m_debugVal1 = m_debugValMin;
+    }
+
+    else
+    {
+        m_debugVal1 = updatedTurretYaw;
+    }
+}
+
+void FireControl::DebugInputZero()
+{
+    m_debugVal1 = 0.0f;
 }

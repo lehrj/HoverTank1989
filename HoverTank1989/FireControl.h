@@ -839,6 +839,14 @@ private:
     float m_dragSumMax4 = 0.0f;
     float m_dragSumMax5 = 0.0f;
 
+    float m_debugVal1 = Utility::ToRadians(0.0f);
+    const float m_debugValMax = Utility::ToRadians(180.0f);
+    const float m_debugValMin = Utility::ToRadians(-180.0f);
+    const float m_debugValDeltaRate = Utility::ToRadians(10.0f);
+
+    float m_debugThrustAngMax = 0.0f;
+    float m_debugThrustAngMin = 0.0f;
+
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
@@ -847,5 +855,8 @@ public:
 
     void CamMissileSelectNext();
     //void CamMissileSelectPrev();
+
+    void DebugIntputValUpdtate(const float aInput);
+    void DebugInputZero();
 };
 
