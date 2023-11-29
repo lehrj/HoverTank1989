@@ -161,6 +161,9 @@ public:
     void TurnEndPosAroundPoint(float aTurn, DirectX::SimpleMath::Vector3 aCenterPoint);
 
 private:
+
+    void DrawUI();
+
     void InitializeOrthoganalMatrix(); //Pavel
     void InitializeProjectionMatrix(); //Pavel
     void InitializeViewMatrix(); //Pavel

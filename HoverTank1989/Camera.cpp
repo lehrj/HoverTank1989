@@ -153,6 +153,160 @@ void Camera::CycleMissileTrackState()
 
 }
 
+void Camera::DrawUI()
+{
+	auto toTargNorm = m_target - m_position;
+	toTargNorm.Normalize();
+
+	auto toTargNormCross = toTargNorm.Cross(m_up);
+	toTargNormCross.Normalize();
+
+	auto targPosRaw = DirectX::SimpleMath::Vector3::Zero;
+	auto targPosMod = DirectX::SimpleMath::Vector3::Zero;
+	
+	m_fireControl->GetUIData(targPosRaw, targPosMod);
+	auto playerPos = m_vehicleFocus->GetPos();
+
+	auto targVec = m_target - m_position;
+	targVec.Normalize();
+	auto targDot = targVec.Dot(DirectX::SimpleMath::Vector3::UnitX);
+
+	float offset = 0.0f;
+	float mod = 1.0f;
+	if (targDot < 0.0f)
+	{
+		offset *= -1.0f;
+		mod *= -1.0f;
+	}
+
+	const float uiRadius = 1.0f;
+	auto targPos = m_target;
+	auto camPos = m_position;
+	auto origin = DirectX::SimpleMath::Vector3::Zero;
+	origin.z += 1.0f * mod;
+	origin.x += offset;
+	origin.x += 0.5f;
+	auto top = origin;
+	top.y += uiRadius;
+	auto bottom = origin;
+	bottom.y -= uiRadius;
+	auto right = origin;
+	right.z += uiRadius * mod;
+	auto left = origin;
+	left.z -= uiRadius * mod;
+
+	top.x += offset;
+	bottom.x += offset;
+	right.x += offset;
+	left.x += offset;
+
+	right.z += 3.0f;
+
+	auto targDrawPosRaw = origin;
+	auto targDrawPosMod = origin;
+	auto testDraw1 = origin;
+
+	targDrawPosMod.x += offset;
+	targDrawPosRaw.x += offset;
+	testDraw1.x += offset;
+	testDraw1.x += 0.3f;
+	//testDraw1 += toTargNormCross * mod;
+	testDraw1.Normalize();
+
+	auto testPos0 = DirectX::SimpleMath::Vector3::Zero;
+	auto testPos1 = DirectX::SimpleMath::Vector3::UnitZ;
+
+	testPos0.x += 5.0f;
+	testPos1.x += 5.0f;
+
+	//DirectX::SimpleMath::Matrix cameraWorld = DirectX::SimpleMath::Matrix::CreateWorld(m_position, m_target - m_position, m_up);
+	//DirectX::SimpleMath::Matrix cameraWorld = DirectX::SimpleMath::Matrix::CreateWorld(m_position, m_target - m_position, m_up);
+	//DirectX::SimpleMath::Matrix projectionMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspectRatio, nearPlane, farPlane);
+	DirectX::SimpleMath::Matrix cameraWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -toTargNorm, m_up);
+	auto destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, -targVec);
+	auto destQuatMod = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVec);
+	if (targDot < 0.0f)
+	{
+		destQuat = DirectX::SimpleMath::Quaternion::FromToRotation(-DirectX::SimpleMath::Vector3::UnitX, targVec);
+		destQuatMod = DirectX::SimpleMath::Quaternion::FromToRotation(-DirectX::SimpleMath::Vector3::UnitX, targVec);
+		cameraWorld = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, toTargNorm, m_up);
+	}
+
+	destQuatMod.Inverse(destQuatMod);
+
+	destQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(cameraWorld);
+	//destQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(cameraWorld);
+	//testPos0 = DirectX::SimpleMath::Vector3::Transform(testPos0, cameraWorld);
+	//testPos1 = DirectX::SimpleMath::Vector3::Transform(testPos0, cameraWorld);
+	testPos0 = DirectX::SimpleMath::Vector3::Transform(testPos0, destQuat);
+	testPos1 = DirectX::SimpleMath::Vector3::Transform(testPos0, destQuat);
+	testPos0 += m_position;
+	testPos1 += m_position;
+
+	top = DirectX::SimpleMath::Vector3::Transform(top, destQuat);
+	bottom = DirectX::SimpleMath::Vector3::Transform(bottom, destQuat);
+	right = DirectX::SimpleMath::Vector3::Transform(right, destQuat);
+	left = DirectX::SimpleMath::Vector3::Transform(left, destQuat);
+
+	targDrawPosRaw = DirectX::SimpleMath::Vector3::Transform(targDrawPosRaw, destQuat);
+	targDrawPosMod = DirectX::SimpleMath::Vector3::Transform(targDrawPosMod, destQuat);
+	//testDraw1 = DirectX::SimpleMath::Vector3::Transform(testDraw1, destQuatMod);
+	testDraw1 = DirectX::SimpleMath::Vector3::Transform(testDraw1, destQuat);
+
+	top += m_position;
+	bottom += m_position;
+	right += m_position;
+	left += m_position;
+
+	targDrawPosRaw += m_position;
+	targDrawPosMod += m_position;
+	testDraw1 += m_position;
+
+	m_debugData->ToggleDebugOnOverRide();
+	/*
+	m_debugData->PushTestDebugBetweenPoints(testPos0, testPos1, DirectX::Colors::Red);
+	m_debugData->PushDebugLinePositionIndicator(testPos0, 20.0f, 0.0f, DirectX::Colors::Blue);
+	m_debugData->PushDebugLinePositionIndicator(testPos1, 20.0f, 0.0f, DirectX::Colors::Yellow);
+	m_debugData->PushDebugLinePositionIndicator(DirectX::SimpleMath::Vector3::Zero, 20.0f, 0.0f, DirectX::Colors::Yellow);
+
+	m_debugData->PushTestDebugBetweenPoints(m_target, testPos0, DirectX::Colors::Orange);
+	m_debugData->PushTestDebugBetweenPoints(m_target, testPos1, DirectX::Colors::Lime);
+	m_debugData->PushTestDebugBetweenPoints(DirectX::SimpleMath::Vector3::Zero, testPos0, DirectX::Colors::Orange);
+	m_debugData->PushTestDebugBetweenPoints(DirectX::SimpleMath::Vector3::Zero, testPos1, DirectX::Colors::Lime);
+	*/
+	
+	m_debugData->PushTestDebugBetweenPoints(top, right, DirectX::Colors::Lime);
+	m_debugData->PushTestDebugBetweenPoints(right, bottom, DirectX::Colors::Orange);
+	m_debugData->PushTestDebugBetweenPoints(bottom, left, DirectX::Colors::Yellow);
+	m_debugData->PushTestDebugBetweenPoints(left, top, DirectX::Colors::Blue);
+
+	m_debugData->PushDebugLinePositionIndicator(targDrawPosRaw, 1.0f, 0.0f, DirectX::Colors::Red);
+	m_debugData->PushDebugLinePositionIndicator(targDrawPosMod, 0.5f, 0.0f, DirectX::Colors::Yellow);
+	m_debugData->DebugPushUILineDecimalNumber("targDot" ,targDot,"");
+
+	
+	//m_debugData->PushTestDebugBetweenPoints(m_target, top, DirectX::Colors::Violet);
+	//m_debugData->PushTestDebugBetweenPoints(m_target, right, DirectX::Colors::Lime);
+	//m_debugData->PushTestDebugBetweenPoints(m_target, bottom, DirectX::Colors::Lime);
+	//m_debugData->PushTestDebugBetweenPoints(m_target, left, DirectX::Colors::Lime);
+
+	//m_debugData->PushTestDebugBetweenPoints(playerPos, right, DirectX::Colors::Red);
+	//m_debugData->PushTestDebugBetweenPoints(playerPos, bottom, DirectX::Colors::Lime);
+
+
+	//m_debugData->PushTestDebugBetweenPoints(targDrawPosRaw, top, DirectX::Colors::Orange);
+	//m_debugData->PushTestDebugBetweenPoints(targDrawPosMod, right, DirectX::Colors::Lime);
+	//m_debugData->PushTestDebugBetweenPoints(targDrawPosRaw, left, DirectX::Colors::Orange);
+	//m_debugData->PushTestDebugBetweenPoints(targDrawPosMod, bottom, DirectX::Colors::Lime);
+
+	auto length = (m_target - right).Length();
+	m_debugData->DebugPushUILineDecimalNumber("length ", length, "");
+
+	m_debugData->PushTestDebugBetweenPoints(targDrawPosMod, testDraw1, DirectX::Colors::Lime);
+
+	m_debugData->ToggleDebugOff();
+}
+
 void Camera::FreeLookSpeedUp()
 {
 	if (m_posTravelSpeed + m_freeLookSpeedDelta > m_freeLookSpeedMax)
@@ -993,6 +1147,8 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
 	UpdateBoundingFrustum();
+
+	//DrawUI();
 }
 
 void Camera::UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer)

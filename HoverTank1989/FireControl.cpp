@@ -3279,6 +3279,20 @@ unsigned int FireControl::GetUniqueMissileID()
     return idVal;
 }
 
+void FireControl::GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod)
+{
+    if (m_missileVec.size() > 0)
+    {
+        aPosRaw = m_missileVec[0].guidance.uiTargPosRaw;
+        aPosMod = m_missileVec[0].guidance.uiTargPosMod;
+    }
+    else
+    {
+        aPosRaw = DirectX::SimpleMath::Vector3::Zero;
+        aPosMod = DirectX::SimpleMath::Vector3::Zero;
+    }
+}
+
 void FireControl::InitializeAmmoCannon(AmmoStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_CANNON;

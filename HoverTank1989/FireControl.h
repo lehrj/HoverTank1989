@@ -242,6 +242,9 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 targAccelNormalToLOS = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 localVel = DirectX::SimpleMath::Vector3::Zero;
+
+    DirectX::SimpleMath::Vector3 uiTargPosRaw = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 uiTargPosMod = DirectX::SimpleMath::Vector3::Zero;
 };
 
 struct AmmoStruct
@@ -605,6 +608,10 @@ public:
     void GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const;
     void GetCameraTrackAllData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget, DirectX::SimpleMath::Vector3& aUp) const;
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
+    
+    void GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod);
+
+
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
