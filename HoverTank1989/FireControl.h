@@ -122,6 +122,9 @@ enum class MissileType
     TYPE_BASE,
     TYPE_BLUE,
     TYPE_ORANGE,
+    TYPE_CANARDCONTROL,
+    TYPE_TAILCONTRTROL,
+    TYPE_THRUSTVECCONTROL,
 };
 
 struct GuidanceSystem
@@ -731,6 +734,8 @@ private:
     // Missile accumulators
     Utility::ForceAccum AeroAccum(MissileData& aMissile);
     Utility::ForceAccum BoosterAccum(MissileData& aMissile);
+    Utility::ForceAccum BoosterAccumStatic(MissileData& aMissile);
+    Utility::ForceAccum BoosterAccumVectored(MissileData& aMissile);
     Utility::ForceAccum DragAccum(MissileData& aMissile, const float aTimeDelta);
     void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
 
@@ -847,9 +852,13 @@ private:
     float m_debugDistanceToTarget3 = 0.0f;
 
     const int m_selectMissileFire = 0;
-    const bool m_isDebugAngularStabilityOn = false;
 
+    const bool m_isDebugAngularStabilityOn = false;
     const bool m_isHardBurnModeTestOn = true;
+    bool m_isUseProNavOn = false;
+
+    MissileType m_currantMissileType = MissileType::TYPE_THRUSTVECCONTROL;
+    //MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
 
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;
