@@ -378,6 +378,10 @@ struct MissileModel
     DirectX::SimpleMath::Matrix testWingTrans;
     std::unique_ptr<DirectX::GeometricPrimitive> testWingShape;
 
+    // canards
+    DirectX::SimpleMath::Matrix localCanardFinMat;
+    DirectX::SimpleMath::Matrix canardFinTransMat;
+    DirectX::SimpleMath::Vector3 canardAxelTranslation;
 };
 
 struct MissileData
@@ -857,8 +861,8 @@ private:
     const bool m_isHardBurnModeTestOn = true;
     bool m_isUseProNavOn = false;
 
-    MissileType m_currantMissileType = MissileType::TYPE_THRUSTVECCONTROL;
-    //MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
+    //MissileType m_currantMissileType = MissileType::TYPE_THRUSTVECCONTROL;
+    MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
 
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;
