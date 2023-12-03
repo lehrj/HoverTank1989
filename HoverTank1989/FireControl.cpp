@@ -7662,13 +7662,9 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     auto airSpeedLocalNorm = airSpeedLocal;
     airSpeedLocalNorm.Normalize();
 
-    
     auto finAxis = DirectX::SimpleMath::Vector3::UnitY;
     auto finAngle = aMissile.guidance.finAngle1;
-
-
     //finAngle = Utility::ToRadians(0.0f);
-
     finAngle -= Utility::ToRadians(180.0f);
 
     auto finVec = DirectX::SimpleMath::Vector3::UnitX;
@@ -7684,6 +7680,16 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     auto lift = cl * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * surface;
    
     auto finNorm = DirectX::SimpleMath::Vector3::UnitZ;
+
+    if (aMissile.guidance.finAngle1 > 0.0f)
+    {
+        finNorm = DirectX::SimpleMath::Vector3::UnitZ;
+    }
+    else if (aMissile.guidance.finAngle1 < 0.0f)
+    {
+        finNorm = -DirectX::SimpleMath::Vector3::UnitZ;
+    }
+
     finNorm = DirectX::SimpleMath::Vector3::Transform(finNorm, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, -finAngle));
 
     auto finLiftVec = finNorm * lift.Length();
@@ -7691,7 +7697,7 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     auto finLiftVecWorld = finLiftVec;
     finLiftVecWorld = DirectX::SimpleMath::Vector3::Transform(finLiftVecWorld, aMissile.projectileData.alignmentQuat);
 
-    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, finLiftVecWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, lift, 3.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->DebugPushUILineDecimalNumber("lift = ", lift.Length(), "");
@@ -7830,13 +7836,28 @@ float FireControl::TestCalcLifCoefficient(const float aAngleOfAttack)
         ClTarget += ClRemove;
     }
 
+    //////////////////////////////////////////////////////////
+    const float clSet = 0.5f;
+    if (aAngleOfAttack > 0.0f)
+    {
+        ClTarget = clSet;
+    }
+    else if (aAngleOfAttack < 0.0f)
+    {
+        ClTarget = -clSet;
+    }
+    else
+    {
+        ClTarget = 0.0f;
+    }
+
     return ClTarget;
 }
 
 Utility::ForceAccum FireControl::TestAeroAccum(MissileData& aMissile, const float aTimeDelta)
 {
     DirectX::SimpleMath::Vector3 forcePos = -DirectX::SimpleMath::Vector3::UnitX;
-    DirectX::SimpleMath::Vector3 forceDir = -TestAirFoil(aMissile, aTimeDelta);
+    DirectX::SimpleMath::Vector3 forceDir = TestAirFoil(aMissile, aTimeDelta);
     DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
 
     DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
