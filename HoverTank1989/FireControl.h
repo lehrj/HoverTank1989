@@ -757,6 +757,11 @@ private:
 
     void ControllerUpdate(MissileData& aMissile, const float aTimeDelta);
 
+    DirectX::SimpleMath::Vector3 TestAirFoil(MissileData& aMissile, const float aTimeDelta);
+    float TestCalcLifCoefficient(const float aAngleOfAttack);
+    Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
+
+
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
     std::shared_ptr<NPCController> m_npcController;
