@@ -414,6 +414,7 @@ struct MissileConsts
     //const float rocketFireFullTime = 1.0f;
     const float rocketFireFullTime = 0.5f;
     const float wingArea = 0.3f;
+    const float testFinArea = 0.3f;
     const float dragCoefficient = 0.3f;
     const float dragCoefficientAng = 0.3f;
     const float postExplosionMass = 10.0f;
@@ -447,7 +448,7 @@ struct MissileConsts
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
 
     //const float rocketBoostForceMax = 40.0f;
-    const float rocketBoostForceMax = 130.0f;
+    const float rocketBoostForceMax = 40.0f;
     //const float mass = 22.0f;
     const float mass = 22.0f;
 
@@ -862,7 +863,7 @@ private:
 
     const int m_selectMissileFire = 0;
 
-    const bool m_isDebugAngularStabilityOn = false;
+    const bool m_isDebugAngularStabilityOn = true;
     const bool m_isHardBurnModeTestOn = true;
     bool m_isUseProNavOn = false;
 

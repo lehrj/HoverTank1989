@@ -6887,13 +6887,13 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         if (m_isUseProNavOn == true)
         {
-            ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
+            //ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
         }
 
         HardBurnModeActivator(m_missileVec[i], static_cast<float>(aTimeDelta));
         if (m_missileVec[i].guidance.isHardBurnModeTrue == true)
         {
-            HardBurnModeTest(m_missileVec[i], static_cast<float>(aTimeDelta));
+            //HardBurnModeTest(m_missileVec[i], static_cast<float>(aTimeDelta));
         }
 
         ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
@@ -7670,10 +7670,8 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     auto finVec = DirectX::SimpleMath::Vector3::UnitX;
     finVec = DirectX::SimpleMath::Vector3::Transform(finVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, finAngle));
     float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
-    //const float cl = TestCalcLifCoefficient(angleOfAttack);
-    const float cl = 0.8f;
-    float surface = 1.0f;
-
+    const float cl = TestCalcLifCoefficient(angleOfAttack);
+    const float surface = m_missileConsts.testFinArea;
     const float rho = m_environment->GetAirDensity();
 
     // lift = coefficient * density * (vel^2 / two) * wing area
@@ -7776,82 +7774,84 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
 
 float FireControl::TestCalcLifCoefficient(const float aAngleOfAttack)
 {
-    //const float angleMax = m_heli.mainRotor.pitchAngleMax;
-    //const float angleMax = Utility::ToRadians(24.0f);
-    const float angleMax = m_missileConsts.steerAngMax;
-    //const float angleMin = m_heli.mainRotor.pitchAngleMin;
-    //const float angleMin = 0.0f;
-    const float angleMin = -m_missileConsts.steerAngMax;
-    float inputAngle = aAngleOfAttack;
-    if (inputAngle > angleMax)
-    {
-        inputAngle = angleMax;
-    }
-    if (inputAngle < angleMin)
-    {
-        inputAngle = angleMin;
-    }
+    m_debugData->ToggleDebugOnOverRide();
 
-    const float currentCurvePos = (inputAngle / angleMax);
+    if (aAngleOfAttack > Utility::ToRadians(180.0f) || aAngleOfAttack > Utility::ToRadians(-180.0f))
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+    }
+    
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    const float inputAngle = abs(Utility::ToDegrees(aAngleOfAttack));
+    const float angleMin = 0.0f;
+    const float angleMax = 15.0f;
+    const float stallZeroAngle = 16.0f;
+    const float inflectionAngle = 10.0f;
+    const float stableFlightCurveDelta = 0.1f;
+    const float maxFlightCurveDelta = -0.1f;
+    const float stallFlightCurveDelta = -0.5f;
 
-    float Cl;
+
+    const float inflectionHeight = inflectionAngle * stableFlightCurveDelta;
+    //const float maxHeight = inflectionHeight - (angleMax * maxFlightCurveDelta );
+    //const float maxHeight = (angleMax * maxFlightCurveDelta) - inflectionHeight;
+    const float maxHeight = inflectionHeight + ((angleMax - inflectionAngle) * maxFlightCurveDelta);
+    const float currentCurvePos = inputAngle / stallZeroAngle;
+
+    if (inputAngle >= stallZeroAngle)
+    {
+
+        m_debugData->DebugPushUILineDecimalNumber("cl = ", 0.0f, "");
+        m_debugData->DebugPushUILineDecimalNumber("clTarget ", 0.0f, "");
+        m_debugData->ToggleDebugOff();
+        return 0.0f; // stalling has occured
+    }
+    
+    float cl;
     float curveDeltaRate;
-    float ClTarget;
-    if (currentCurvePos < 0.666f)
+    float clTarget;
+    if (inputAngle < inflectionAngle)
     {
-        curveDeltaRate = 1.0f;
-        Cl = curveDeltaRate * currentCurvePos;
+        cl = inputAngle * stableFlightCurveDelta;
     }
-    else if (currentCurvePos < 0.80f)
+    else if (inputAngle < angleMax)
     {
-        curveDeltaRate = 1.0f;
-        Cl = curveDeltaRate * currentCurvePos;
+        const float inputAngMod = inputAngle - inflectionAngle;
+        cl = inflectionHeight - (inputAngMod * maxFlightCurveDelta);
     }
-    else
+    else if (inputAngle < stallZeroAngle)
     {
-        curveDeltaRate = -0.85f;
-        Cl = curveDeltaRate * currentCurvePos;
-    }
-    // ////////////////////////////
-    //const float ClMax = 1.7;
-    const float ClMax = 1.8;
-    //const float inflectionPoint = 0.75f;
-    const float inflectionPoint = 0.99f;
-    const float curvePos2 = currentCurvePos / inflectionPoint;
-    if (currentCurvePos < inflectionPoint)
-    {
-        curveDeltaRate = 1.0f;
-        Cl = curveDeltaRate * currentCurvePos;
-        ClTarget = 1.5f;
-        ClTarget = curvePos2 * ClMax;
+        const float inputAngMod = inputAngle - angleMax;
+        cl = maxHeight - (inputAngMod * maxFlightCurveDelta);
     }
     else
     {
-        float rightBound = 1.3f;
-        float downCurve = rightBound - ClMax;
-
-        const float curvePos4 = (currentCurvePos - inflectionPoint) / (1.0f - inflectionPoint);
-        float ClRemove = curvePos4 * downCurve;
-        ClTarget = ClMax;
-        ClTarget += ClRemove;
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
     }
 
-    //////////////////////////////////////////////////////////
-    const float clSet = 0.5f;
-    if (aAngleOfAttack > 0.0f)
+    if (aAngleOfAttack >= 0.0f)
     {
-        ClTarget = clSet;
-    }
-    else if (aAngleOfAttack < 0.0f)
-    {
-        ClTarget = -clSet;
+        clTarget = cl;
     }
     else
     {
-        ClTarget = 0.0f;
+        clTarget = -cl;
     }
 
-    return ClTarget;
+    m_debugData->DebugPushUILineDecimalNumber("xxcl = ", cl, "");
+    m_debugData->DebugPushUILineDecimalNumber("xxclTarget ", clTarget, "");
+    m_debugData->DebugPushUILineDecimalNumber("aAngleOfAttack rads ", aAngleOfAttack, "");
+    m_debugData->DebugPushUILineDecimalNumber("aAngleOfAttack degs ", Utility::ToDegrees(aAngleOfAttack), "");
+
+    m_debugData->DebugPushUILineDecimalNumber("inputAngle = ", inputAngle, "");
+    m_debugData->ToggleDebugOff();
+    //clTarget = 0.0f;
+    return clTarget;
 }
 
 Utility::ForceAccum FireControl::TestAeroAccum(MissileData& aMissile, const float aTimeDelta)
