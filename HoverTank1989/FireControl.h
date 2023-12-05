@@ -127,12 +127,20 @@ enum class MissileType
     TYPE_THRUSTVECCONTROL,
 };
 
+enum class AeroType
+{
+    AERO_CLASSIC,
+    AERO_HIGHAOA,
+    AERO_STABILITYMAX,
+};
+
 struct GuidanceSystem
 {
     //Seeker seeker;
     Controller controller;
     FlightState flightStateCurrent = FlightState::FLIGHTSTATE_LAUNCH;
     MissileType type = MissileType::TYPE_BASE;
+    AeroType testFinType = AeroType::AERO_CLASSIC;
     float timeStepDelta = 0.0f;
     unsigned int uniqueId = 0;
     int targetID = 0;
@@ -473,6 +481,10 @@ struct MissileConsts
     const float navigationGain = 3.0f;
 
     const float hardBurnRadPerSec = Utility::ToRadians(25.0f);
+
+    const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
+
+    const AeroType testFinType = AeroType::AERO_CLASSIC;
 };
 
 enum class ExplosionType
@@ -760,6 +772,8 @@ private:
 
     DirectX::SimpleMath::Vector3 TestAirFoil(MissileData& aMissile, const float aTimeDelta);
     float TestCalcLifCoefficient(const float aAngleOfAttack);
+    float TestCalcLifCoefficientClassic(const float aAngleOfAttack);
+    float TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack, const float aTimeDelta);
     Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
 
 
@@ -884,6 +898,11 @@ private:
     float m_debugThrustAngMax = 0.0f;
     float m_debugThrustAngMin = 0.0f;
 
+    float m_aeroDebugVal1 = 0.0f;
+    float m_aeroDebugVal2 = 0.0f;
+    const float m_aeroDebugDelta1 = 0.1f;
+    const float m_aeroDebugDelta2 = 0.4f;
+
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
@@ -893,7 +912,9 @@ public:
     void CamMissileSelectNext();
     //void CamMissileSelectPrev();
 
+    const float m_testDebugAng = Utility::ToRadians(15.0f);
     void DebugIntputValUpdate(const float aInput);
+    void DebugIntputValUpdateStatic(const bool aIsTrue);
     void DebugInputZero();
 };
 

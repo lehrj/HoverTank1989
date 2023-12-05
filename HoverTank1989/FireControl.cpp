@@ -25,7 +25,7 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     aeroAcuumAligned = aeroAcuum;
     Utility::ForceAccum::AlignLinearAndTorque(aeroAcuumAligned, aMissile.projectileData.alignmentQuat);
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAcuumAligned.linear, 7.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAcuumAligned.torque, 7.0f, 0.0f, DirectX::Colors::Blue);
     m_debugData->ToggleDebugOff();
@@ -1209,9 +1209,8 @@ void FireControl::CruiseGuidance(MissileData& aMissile, const float aTimeDelta)
     // pos offset
     float timeToTarget = aMissile.guidance.targetDistance / aMissile.guidance.closureRate;
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("timeToTarget = ", timeToTarget, "");
-
     m_debugData->ToggleDebugOff();
     float offSetMod = 0.1f;
     if (timeToTarget < 0.0f)
@@ -1361,6 +1360,18 @@ void FireControl::DebugIntputValUpdate(const float aInput)
     else
     {
         m_debugVal1 = updatedTurretYaw;
+    }
+}
+
+void FireControl::DebugIntputValUpdateStatic(const bool aIsTrue)
+{
+    if (aIsTrue == true)
+    {
+        m_debugVal1 = m_testDebugAng;
+    }
+    else
+    {
+        m_debugVal1 = -m_testDebugAng;
     }
 }
 
@@ -6331,7 +6342,7 @@ void FireControl::UpdateMissileAlignment(MissileData& aMissile, const float aTim
     auto testAngRads = DirectX::SimpleMath::Quaternion::Angle(prevQuat, aMissile.projectileData.alignmentQuat);
     auto testAngDegs = Utility::ToDegrees(testAngRads);
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("testAngDegs per sec", testAngDegs / aTimeDelta, "");
 
     m_debugData->ToggleDebugOff();
@@ -6889,6 +6900,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         {
             //ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
         }
+        ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         HardBurnModeActivator(m_missileVec[i], static_cast<float>(aTimeDelta));
         if (m_missileVec[i].guidance.isHardBurnModeTrue == true)
@@ -7520,8 +7532,8 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     destQuat.Normalize();
     destQuat.Inverse(destQuat);
 
-    //aMissile.guidance.headingLocalVecTest = destLocal;
-    //aMissile.guidance.headingLocalQuatTest = destQuat;
+    aMissile.guidance.headingLocalVecTest = destLocal;
+    aMissile.guidance.headingLocalQuatTest = destQuat;
 
     destWorld = destLocal;
     destWorld = DirectX::SimpleMath::Vector3::Transform(destWorld, aMissile.projectileData.alignmentQuat);
@@ -7670,7 +7682,13 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     auto finVec = DirectX::SimpleMath::Vector3::UnitX;
     finVec = DirectX::SimpleMath::Vector3::Transform(finVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, finAngle));
     float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
-    const float cl = TestCalcLifCoefficient(angleOfAttack);
+    
+    //const float cl = TestCalcLifCoefficientFullSpectrum(angleOfAttack);
+    const float cl = TestCalcLifCoefficientFullSpectrum(angleOfAttack, aTimeDelta);
+    //const float cl = TestCalcLifCoefficientFullSpectrum(m_aeroDebugVal2, aTimeDelta);
+    //const float cl = TestCalcLifCoefficientFullSpectrum(Utility::ToRadians(5.0f), aTimeDelta);
+    
+    //const float cl = 0.2f;
     const float surface = m_missileConsts.testFinArea;
     const float rho = m_environment->GetAirDensity();
 
@@ -7689,13 +7707,26 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     }
 
     finNorm = DirectX::SimpleMath::Vector3::Transform(finNorm, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, -finAngle));
+    ///////////////////////////////////////
+    auto finNormTest = finNorm;
+    finNormTest = DirectX::SimpleMath::Vector3::Transform(finNormTest, aMissile.projectileData.alignmentQuat);
+    auto finNormTestPos = m_missileConsts.testFinPosLocal;
+    finNormTestPos = DirectX::SimpleMath::Vector3::Transform(finNormTestPos, aMissile.projectileData.alignmentQuat);
+    finNormTestPos += aMissile.projectileData.q.position;
 
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(finNormTestPos, finNormTest, 3.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->DebugPushUILineDecimalNumber("finNormTest = ", finNormTest.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("lift = ", lift.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("cl = ", cl, "");
+    m_debugData->ToggleDebugOff();
+    ///////////////////////////////////////
     auto finLiftVec = finNorm * lift.Length();
 
     auto finLiftVecWorld = finLiftVec;
     finLiftVecWorld = DirectX::SimpleMath::Vector3::Transform(finLiftVecWorld, aMissile.projectileData.alignmentQuat);
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, finLiftVecWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, lift, 3.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->DebugPushUILineDecimalNumber("lift = ", lift.Length(), "");
@@ -7763,7 +7794,7 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     auto finLiftVecAng = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitZ, finLiftVec);
     auto testFinDragAng = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, testFinDrag);
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("resultAng      = ", Utility::ToDegrees(resultAng), "");
     m_debugData->DebugPushUILineDecimalNumber("finLiftVecAng  = ", Utility::ToDegrees(finLiftVecAng), "");
     m_debugData->DebugPushUILineDecimalNumber("testFinDragAng = ", Utility::ToDegrees(testFinDragAng), "");
@@ -7774,7 +7805,7 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
 
 float FireControl::TestCalcLifCoefficient(const float aAngleOfAttack)
 {
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     if (aAngleOfAttack > Utility::ToRadians(180.0f) || aAngleOfAttack > Utility::ToRadians(-180.0f))
     {
@@ -7854,9 +7885,265 @@ float FireControl::TestCalcLifCoefficient(const float aAngleOfAttack)
     return clTarget;
 }
 
+float FireControl::TestCalcLifCoefficientClassic(const float aAngleOfAttack)
+{
+    //m_debugData->ToggleDebugOnOverRide();
+
+    if (aAngleOfAttack > Utility::ToRadians(180.0f) || aAngleOfAttack > Utility::ToRadians(-180.0f))
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    float mapAoAMax;
+    float mapInflectionAoA;
+    float mapStableCurveDelta;
+    float mapPreStallCurveDelta;
+    float mapPostStallCurveDelta;
+    float mapStallZeroAng;
+
+    if (m_missileConsts.testFinType == AeroType::AERO_HIGHAOA)
+    {
+        mapAoAMax = 15.0f;
+        mapInflectionAoA = 20.0f;
+        mapStableCurveDelta = 0.1f;
+        mapPreStallCurveDelta = -0.1f;
+        mapPostStallCurveDelta = -0.5f;
+        mapStallZeroAng = 16.0f;
+    }
+    else if (m_missileConsts.testFinType == AeroType::AERO_STABILITYMAX)
+    {
+        mapAoAMax = 15.0f;
+        mapInflectionAoA = 10.0f;
+        mapStableCurveDelta = 0.1f;
+        mapPreStallCurveDelta = -0.1f;
+        mapPostStallCurveDelta = -0.5f;
+        mapStallZeroAng = 16.0f;
+    }
+    else
+    {
+        mapAoAMax = 15.0f;
+        mapInflectionAoA = 10.0f;
+        mapStableCurveDelta = 0.1f;
+        mapPreStallCurveDelta = -0.1f;
+        mapPostStallCurveDelta = -0.5f;
+        mapStallZeroAng = 16.0f;
+    }
+
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    const float inputAngle = abs(Utility::ToDegrees(aAngleOfAttack));
+    const float angleMin = 0.0f;
+    const float angleMax = mapAoAMax;
+    const float stallZeroAngle = mapStallZeroAng;
+    const float inflectionAngle = mapInflectionAoA;
+    const float stableFlightCurveDelta = mapStableCurveDelta;
+    const float maxFlightCurveDelta = mapPreStallCurveDelta;
+    const float stallFlightCurveDelta = mapPostStallCurveDelta;
+
+    const float inflectionHeight = inflectionAngle * stableFlightCurveDelta;
+    const float maxAngHeight = inflectionHeight + ((angleMax - inflectionAngle) * maxFlightCurveDelta);
+    const float currentCurvePos = inputAngle / stallZeroAngle;
+
+    if (inputAngle >= angleMax)
+    {
+        return 0.0f; // stalling has occured
+    }
+
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+    if (inputAngle < inflectionAngle)
+    {
+        cl = inputAngle * stableFlightCurveDelta;
+    }
+    else if (inputAngle <= angleMax)
+    {
+        const float inputAngMod = inputAngle - inflectionAngle;
+        cl = inflectionHeight - (inputAngMod * maxFlightCurveDelta);
+    }
+    else
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
+    }
+
+    if (aAngleOfAttack >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    return clTarget;
+}
+
+float FireControl::TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack, const float aTimeDelta)
+{
+    //m_debugData->ToggleDebugOnOverRide();
+
+    if (aAngleOfAttack > Utility::ToRadians(180.0f) || aAngleOfAttack > Utility::ToRadians(-180.0f))
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
+    float inputAngleMod = inputAngleRaw;
+    if (inputAngleRaw > 180.0f)
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+    }
+    bool isAoAReversed = false;
+    if (inputAngleRaw > 90.0f)
+    {
+        float testVal = inputAngleRaw - 90.0f;
+        float testVal2 = 90.0f - testVal;
+        inputAngleMod = testVal2;
+        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        isAoAReversed = true;
+    }
+    const float inputAngle = inputAngleMod;
+
+
+    const float angleMin = 0.0f;
+    const float angleMax = 15.0f;
+    const float stallZeroAngle = 16.0f;
+    const float inflectionAngle = 10.0f;
+    const float stableFlightCurveDelta = 0.1f;
+    const float maxFlightCurveDelta = -0.1f;
+    const float stallFlightCurveDelta = -0.5f;
+    
+    const float posKey0 = 0.0f;
+    const float angKey0 = 0.0f;
+    const float deltaKey0 = 0.0f;
+
+    const float posKey1 = 1.2f;
+    const float angKey1 = 10.0f;
+    const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
+
+    const float posKey2 = 1.0f;
+    const float angKey2 = 15.0f;
+    const float deltaKey2 = (posKey2 - posKey1) / (angKey2 - angKey1);
+
+    const float posKey3 = 0.6f;
+    const float angKey3 = 17.0f;
+    const float deltaKey3 = (posKey3 - posKey2) / (angKey3 - angKey2);
+
+    const float posKey4 = 0.6f;
+    const float angKey4 = 23.0f;
+    const float deltaKey4 = (posKey4 - posKey3) / (angKey4 - angKey3);
+
+    const float posKey5 = 0.9f;
+    const float angKey5 = 45.0f;
+    const float deltaKey5 = (posKey5 - posKey4) / (angKey5 - angKey4);
+
+    const float posKey6 = 0.0f;
+    const float angKey6 = 90.0f;
+    const float deltaKey6 = (posKey6 - posKey5) / (angKey6 - angKey5);
+
+
+    const float inflectionHeight = inflectionAngle * stableFlightCurveDelta;
+    //const float maxHeight = inflectionHeight - (angleMax * maxFlightCurveDelta );
+    //const float maxHeight = (angleMax * maxFlightCurveDelta) - inflectionHeight;
+    const float maxHeight = inflectionHeight + ((angleMax - inflectionAngle) * maxFlightCurveDelta);
+    const float currentCurvePos = inputAngle / stallZeroAngle;
+
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+    
+    if (inputAngle < angKey1)
+    {
+        cl = inputAngle * deltaKey1;
+    }
+    else if (inputAngle < angKey2)
+    {
+        const float inputAngMod = inputAngle - angKey1;
+        cl = posKey1 - (inputAngMod * deltaKey1);
+    }
+    else if (inputAngle < angKey3)
+    {
+        const float inputAngMod = inputAngle - angKey2;
+        cl = posKey2 - (inputAngMod * deltaKey2);
+    }
+    else if (inputAngle < angKey4)
+    {
+        const float inputAngMod = inputAngle - angKey3;
+        cl = posKey3 - (inputAngMod * deltaKey3);
+    }
+    else if (inputAngle < angKey5)
+    {
+        const float inputAngMod = inputAngle - angKey4;
+        cl = posKey4 - (inputAngMod * deltaKey4);
+    }
+    else if (inputAngle < angKey6)
+    {
+        const float inputAngMod = inputAngle - angKey5;
+        cl = posKey5 - (inputAngMod * deltaKey5);
+    }
+    else
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
+    }
+
+    if (isAoAReversed == true)
+    {
+        cl *= -1.0f;
+    }
+
+    if (aAngleOfAttack >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    m_aeroDebugVal1 = cos(m_testTimer);
+    m_aeroDebugVal2 += aTimeDelta * m_aeroDebugDelta2;
+    //m_aeroDebugVal2 = Utility::WrapAngleOnePi(m_aeroDebugVal2);
+    m_aeroDebugVal2 = Utility::WrapAngle(m_aeroDebugVal2);
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("inputAngleRaw  = ", inputAngleRaw, "");
+    
+
+    m_debugData->DebugPushUILineDecimalNumber("aAngleOfAttack = ", Utility::ToDegrees(aAngleOfAttack), "");
+    m_debugData->DebugPushUILineDecimalNumber("cl       = ", cl, "");
+    m_debugData->DebugPushUILineDecimalNumber("clTarget = ", clTarget, "");
+
+    m_debugData->DebugPushUILineDecimalNumber("inputAngle     = ", inputAngle, "");
+    m_debugData->DebugPushUILineDecimalNumber("aAngleOfAttack = ", Utility::ToDegrees(aAngleOfAttack), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_testTimer = ", m_testTimer, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal1 Rads = ", m_aeroDebugVal1, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal1 Degs = ", Utility::ToDegrees(m_aeroDebugVal1), "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal2 = ", m_aeroDebugVal2, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal2 Rads = ", m_aeroDebugVal2, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal2 Degs = ", Utility::ToDegrees(m_aeroDebugVal2), "");
+
+    
+    m_debugData->ToggleDebugOff();
+
+    //return 0.0f;
+    return clTarget;
+}
+
 Utility::ForceAccum FireControl::TestAeroAccum(MissileData& aMissile, const float aTimeDelta)
 {
-    DirectX::SimpleMath::Vector3 forcePos = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 forcePos = m_missileConsts.testFinPosLocal;
     DirectX::SimpleMath::Vector3 forceDir = TestAirFoil(aMissile, aTimeDelta);
     DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
 
@@ -7874,10 +8161,8 @@ Utility::ForceAccum FireControl::TestAeroAccum(MissileData& aMissile, const floa
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, accum.linear, 4.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, accum.torque, 3.0f, 0.1f, DirectX::Colors::Lime);
-
     m_debugData->DebugPushUILineDecimalNumber("accum.linear = ", accum.linear.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("accum.torque = ", accum.torque.Length(), "");
-
     m_debugData->ToggleDebugOff();
 
     return accum;

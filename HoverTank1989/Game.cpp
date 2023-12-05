@@ -2225,6 +2225,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_fireControl->DebugIntputValUpdate(static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_fireControl->DebugIntputValUpdateStatic(true);
         }
     }
     if (kb.OemCloseBrackets)
@@ -2232,9 +2233,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_fireControl->DebugIntputValUpdate(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            //m_fireControl->DebugIntputValUpdateStatic(false);
         }
     }
-    if (kb.OemQuestion)
+    if (kb.OemQuotes)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
