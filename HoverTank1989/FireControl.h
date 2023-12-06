@@ -771,6 +771,7 @@ private:
     void ControllerUpdate(MissileData& aMissile, const float aTimeDelta);
 
     DirectX::SimpleMath::Vector3 TestAirFoil(MissileData& aMissile, const float aTimeDelta);
+    DirectX::SimpleMath::Vector3 TestAirFoilPitch(MissileData& aMissile, const float aTimeDelta);
     float TestCalcLifCoefficient(const float aAngleOfAttack);
     float TestCalcLifCoefficientClassic(const float aAngleOfAttack);
     float TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack, const float aTimeDelta);
@@ -893,7 +894,7 @@ private:
     float m_debugVal1 = Utility::ToRadians(0.0f);
     const float m_debugValMax = Utility::ToRadians(180.0f);
     const float m_debugValMin = Utility::ToRadians(-180.0f);
-    const float m_debugValDeltaRate = Utility::ToRadians(10.0f);
+    const float m_debugValDeltaRate = Utility::ToRadians(30.0f);
 
     float m_debugThrustAngMax = 0.0f;
     float m_debugThrustAngMin = 0.0f;

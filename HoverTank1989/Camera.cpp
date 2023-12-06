@@ -101,6 +101,10 @@ void Camera::CycleMissileTrackState()
 {
 	if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_FOLLOW)
 	{
+		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_SIDE;
+	}
+	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
+	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC;
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC)
