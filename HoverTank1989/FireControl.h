@@ -770,11 +770,15 @@ private:
 
     void ControllerUpdate(MissileData& aMissile, const float aTimeDelta);
 
+    void TestFuncGraph(MissileData& aMissile, const float aTimeDelta);
+
     DirectX::SimpleMath::Vector3 TestAirFoil(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 TestAirFoilPitch(MissileData& aMissile, const float aTimeDelta);
     float TestCalcLifCoefficient(const float aAngleOfAttack);
     float TestCalcLifCoefficientClassic(const float aAngleOfAttack);
     float TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack, const float aTimeDelta);
+    float TestCalcLifCoefficientFullSpectrumOld(const float aAngleOfAttack, const float aTimeDelta);
+    float TestCalcLifCoefficientFullSpectrumTest(const float aAngleOfAttack, const float aTimeDelta);
     Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
 
 

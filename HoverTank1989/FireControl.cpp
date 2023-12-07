@@ -6889,6 +6889,8 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
+        //TestFuncGraph(m_missileVec[i], aTimeDelta);
+
         DirectX::SimpleMath::Vector3 preVelocityLinear = m_missileVec[i].projectileData.q.velocity;
         DirectX::SimpleMath::Vector3 preVelocityAngular = m_missileVec[i].projectileData.q.angularVelocity;
 
@@ -7667,6 +7669,7 @@ void FireControl::HardBurnModeActivator(MissileData& aMissile, const float aTime
 }
 
 
+
 DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, const float aTimeDelta)
 {
     auto velLocal = aMissile.projectileData.q.velocity;
@@ -7685,7 +7688,7 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
     
     //const float cl = TestCalcLifCoefficientFullSpectrum(angleOfAttack);
-    const float cl = TestCalcLifCoefficientFullSpectrum(angleOfAttack, aTimeDelta);
+    const float cl = TestCalcLifCoefficientFullSpectrumTest(angleOfAttack, aTimeDelta);
     //const float cl = TestCalcLifCoefficientFullSpectrum(m_aeroDebugVal2, aTimeDelta);
     //const float cl = TestCalcLifCoefficientFullSpectrum(Utility::ToRadians(5.0f), aTimeDelta);
     
@@ -7722,6 +7725,23 @@ DirectX::SimpleMath::Vector3 FireControl::TestAirFoil(MissileData& aMissile, con
     m_debugData->DebugPushUILineDecimalNumber("cl = ", cl, "");
     m_debugData->ToggleDebugOff();
     ///////////////////////////////////////
+
+
+    auto liftNorm = DirectX::SimpleMath::Vector3::UnitY.Cross(airSpeedLocal);
+    if (aMissile.guidance.finAngle1 > 0.0f)
+    {
+        //finNorm = DirectX::SimpleMath::Vector3::UnitY;
+        liftNorm = DirectX::SimpleMath::Vector3::UnitY.Cross(airSpeedLocal);
+    }
+    else if (aMissile.guidance.finAngle1 < 0.0f)
+    {
+        //finNorm = -DirectX::SimpleMath::Vector3::UnitY;
+        liftNorm = -DirectX::SimpleMath::Vector3::UnitY.Cross(airSpeedLocal);
+    }
+
+    liftNorm.Normalize();
+    //auto finLiftVec = finNorm * lift.Length();
+    //auto finLiftVec = liftNorm * lift.Length();
     auto finLiftVec = finNorm * lift.Length();
 
     auto finLiftVecWorld = finLiftVec;
@@ -8219,6 +8239,173 @@ float FireControl::TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack
     const float angKey0 = 0.0f;
     const float deltaKey0 = 0.0f;
 
+    const float posKey1 = 0.2f;
+    const float angKey1 = 2.0f;
+    const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
+
+    const float posKey2 = 1.2f;
+    const float angKey2 = 10.0f;
+    const float deltaKey2 = (posKey2 - posKey1) / (angKey2 - angKey1);
+
+    const float posKey3 = 1.0f;
+    const float angKey3 = 15.0f;
+    const float deltaKey3 = (posKey3 - posKey2) / (angKey3 - angKey2);
+
+    const float posKey4 = 0.6f;
+    const float angKey4 = 17.0f;
+    const float deltaKey4 = (posKey4 - posKey3) / (angKey4 - angKey3);
+
+    const float posKey5 = 0.6f;
+    const float angKey5 = 23.0f;
+    const float deltaKey5 = (posKey5 - posKey4) / (angKey5 - angKey4);
+
+    const float posKey6 = 0.9f;
+    const float angKey6 = 45.0f;
+    const float deltaKey6 = (posKey6 - posKey5) / (angKey6 - angKey5);
+
+    const float posKey7 = 0.0f;
+    const float angKey7 = 90.0f;
+    const float deltaKey7 = (posKey7 - posKey6) / (angKey7 - angKey6);
+
+    /*
+    const float inflectionHeight = inflectionAngle * stableFlightCurveDelta;
+    //const float maxHeight = inflectionHeight - (angleMax * maxFlightCurveDelta );
+    //const float maxHeight = (angleMax * maxFlightCurveDelta) - inflectionHeight;
+    const float maxHeight = inflectionHeight + ((angleMax - inflectionAngle) * maxFlightCurveDelta);
+    const float currentCurvePos = inputAngle / stallZeroAngle;
+    */
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+    
+    if (inputAngle < angKey1)
+    {
+        cl = inputAngle * deltaKey1;
+    }
+    else if (inputAngle < angKey2)
+    {
+        const float inputAngMod = inputAngle - angKey1;
+        cl = posKey1 - (inputAngMod * deltaKey1);
+    }
+    else if (inputAngle < angKey3)
+    {
+        const float inputAngMod = inputAngle - angKey2;
+        cl = posKey2 - (inputAngMod * deltaKey2);
+    }
+    else if (inputAngle < angKey4)
+    {
+        const float inputAngMod = inputAngle - angKey3;
+        cl = posKey3 - (inputAngMod * deltaKey3);
+    }
+    else if (inputAngle < angKey5)
+    {
+        const float inputAngMod = inputAngle - angKey4;
+        cl = posKey4 - (inputAngMod * deltaKey4);
+    }
+    else if (inputAngle < angKey6)
+    {
+        const float inputAngMod = inputAngle - angKey5;
+        cl = posKey5 - (inputAngMod * deltaKey5);
+    }
+    else if (inputAngle < angKey7)
+    {
+        const float inputAngMod = inputAngle - angKey6;
+        cl = posKey6 - (inputAngMod * deltaKey6);
+    }
+    else
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
+    }
+
+    if (isAoAReversed == true)
+    {
+        cl *= -1.0f;
+    }
+
+    if (aAngleOfAttack >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    m_aeroDebugVal1 = cos(m_testTimer);
+    m_aeroDebugVal2 += aTimeDelta * m_aeroDebugDelta2;
+    //m_aeroDebugVal2 = Utility::WrapAngleOnePi(m_aeroDebugVal2);
+    m_aeroDebugVal2 = Utility::WrapAngle(m_aeroDebugVal2);
+
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("inputAngleRaw  = ", inputAngleRaw, "");
+    
+
+    m_debugData->DebugPushUILineDecimalNumber("aAngleOfAttack = ", Utility::ToDegrees(aAngleOfAttack), "");
+    m_debugData->DebugPushUILineDecimalNumber("cl       = ", cl, "");
+    m_debugData->DebugPushUILineDecimalNumber("clTarget = ", clTarget, "");
+
+    m_debugData->DebugPushUILineDecimalNumber("inputAngle     = ", inputAngle, "");
+    m_debugData->DebugPushUILineDecimalNumber("aAngleOfAttack = ", Utility::ToDegrees(aAngleOfAttack), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_testTimer = ", m_testTimer, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal1 Rads = ", m_aeroDebugVal1, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal1 Degs = ", Utility::ToDegrees(m_aeroDebugVal1), "");
+    //m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal2 = ", m_aeroDebugVal2, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal2 Rads = ", m_aeroDebugVal2, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_aeroDebugVal2 Degs = ", Utility::ToDegrees(m_aeroDebugVal2), "");
+
+    m_debugData->ToggleDebugOff();
+
+    //return 0.0f;
+    return clTarget;
+}
+
+float FireControl::TestCalcLifCoefficientFullSpectrumOld(const float aAngleOfAttack, const float aTimeDelta)
+{
+    //m_debugData->ToggleDebugOnOverRide();
+
+    if (aAngleOfAttack > Utility::ToRadians(180.0f) || aAngleOfAttack > Utility::ToRadians(-180.0f))
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+    }
+
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
+    float inputAngleMod = inputAngleRaw;
+    if (inputAngleRaw > 180.0f)
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+    }
+    bool isAoAReversed = false;
+    if (inputAngleRaw > 90.0f)
+    {
+        float testVal = inputAngleRaw - 90.0f;
+        float testVal2 = 90.0f - testVal;
+        inputAngleMod = testVal2;
+        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        isAoAReversed = true;
+    }
+    const float inputAngle = inputAngleMod;
+
+
+    const float angleMin = 0.0f;
+    const float angleMax = 15.0f;
+    const float stallZeroAngle = 16.0f;
+    const float inflectionAngle = 10.0f;
+    const float stableFlightCurveDelta = 0.1f;
+    const float maxFlightCurveDelta = -0.1f;
+    const float stallFlightCurveDelta = -0.5f;
+
+    const float posKey0 = 0.0f;
+    const float angKey0 = 0.0f;
+    const float deltaKey0 = 0.0f;
+
     const float posKey1 = 1.2f;
     const float angKey1 = 10.0f;
     const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
@@ -8253,7 +8440,7 @@ float FireControl::TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack
     float cl;
     float curveDeltaRate;
     float clTarget;
-    
+
     if (inputAngle < angKey1)
     {
         cl = inputAngle * deltaKey1;
@@ -8312,7 +8499,7 @@ float FireControl::TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack
 
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("inputAngleRaw  = ", inputAngleRaw, "");
-    
+
 
     m_debugData->DebugPushUILineDecimalNumber("aAngleOfAttack = ", Utility::ToDegrees(aAngleOfAttack), "");
     m_debugData->DebugPushUILineDecimalNumber("cl       = ", cl, "");
@@ -8365,4 +8552,157 @@ Utility::ForceAccum FireControl::TestAeroAccum(MissileData& aMissile, const floa
     m_debugData->ToggleDebugOff();
 
     return accum;
+}
+
+
+float FireControl::TestCalcLifCoefficientFullSpectrumTest(const float aAngleOfAttack, const float aTimeDelta)
+{
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
+    float inputAngleMod = inputAngleRaw;
+    bool isAoAReversed = false;
+    if (inputAngleRaw > 90.0f)
+    {
+        float testVal = inputAngleRaw - 90.0f;
+        float testVal2 = 90.0f - testVal;
+        inputAngleMod = testVal2;
+        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        isAoAReversed = true;
+    }
+    const float inputAngle = inputAngleMod;
+
+    const float posKey0 = 0.0f;
+    const float angKey0 = 0.0f;
+    const float deltaKey0 = 0.0f;
+
+    const float posKey1 = 0.15f;
+    const float angKey1 = 5.0f;
+    const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
+
+    const float posKey2 = 1.0f;
+    const float angKey2 = 10.0f;
+    const float deltaKey2 = -((posKey2 - posKey1) / (angKey2 - angKey1));
+
+    const float posKey3 = 1.2f;
+    const float angKey3 = 14.0f;
+    const float deltaKey3 = -((posKey3 - posKey2) / (angKey3 - angKey2));
+
+    const float posKey4 = 1.0f;
+    const float angKey4 = 18.0f;
+    const float deltaKey4 = -((posKey4 - posKey3) / (angKey4 - angKey3));
+
+    const float posKey5 = 0.6f;
+    const float angKey5 = 24.0f;
+    const float deltaKey5 = -((posKey5 - posKey4) / (angKey5 - angKey4));
+
+    const float posKey6 = 0.5f;
+    const float angKey6 = 45.0f;
+    const float deltaKey6 = -((posKey6 - posKey5) / (angKey6 - angKey5));
+
+    const float posKey7 = 0.0f;
+    const float angKey7 = 90.0f;
+    const float deltaKey7 = -((posKey7 - posKey6) / (angKey7 - angKey6));
+
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+
+    if (inputAngle < angKey1)
+    {
+        cl = inputAngle * deltaKey1;
+    }
+    else if (inputAngle < angKey2)
+    {
+        const float inputAngMod = inputAngle - angKey1;
+        cl = posKey1 - (inputAngMod * deltaKey2);
+    }
+    else if (inputAngle < angKey3)
+    {
+        const float inputAngMod = inputAngle - angKey2;
+        cl = posKey2 - (inputAngMod * deltaKey3);
+    }
+    else if (inputAngle < angKey4)
+    {
+        const float inputAngMod = inputAngle - angKey3;
+        cl = posKey3 - (inputAngMod * deltaKey4);
+    }
+    else if (inputAngle < angKey5)
+    {
+        const float inputAngMod = inputAngle - angKey4;
+        cl = posKey4 - (inputAngMod * deltaKey5);
+    }
+    else if (inputAngle < angKey6)
+    {
+        const float inputAngMod = inputAngle - angKey5;
+        cl = posKey5 - (inputAngMod * deltaKey6);
+    }
+    else if (inputAngle < angKey7)
+    {
+        const float inputAngMod = inputAngle - angKey6;
+        cl = posKey6 - (inputAngMod * deltaKey7);
+    }
+    else
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
+    }
+
+    if (isAoAReversed == true)
+    {
+        cl *= -1.0f;
+    }
+
+    if (aAngleOfAttack >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    return clTarget;
+}
+
+void FireControl::TestFuncGraph(MissileData& aMissile, const float aTimeDelta)
+{
+    //const float test = TestCalcLifCoefficientFullSpectrumTest(Utility::ToRadians(3.0f), aTimeDelta);
+
+    std::vector<std::pair<float, float>> graph;
+
+    std::vector<float> gAng;
+    gAng.clear();
+    std::vector<float> gCl;
+    gCl.clear();
+    const float gap = Utility::ToRadians(0.5f);
+    const float start = Utility::ToRadians(-20.0f);
+    const float end = Utility::ToRadians(20.0f);
+
+    float runfloat = (end - start) / gap;
+    //const int max = static_cast<int>(runfloat);
+    const int max = 80;
+    float currentAng = start;
+    for (int i = 0; i < max; ++i)
+    {
+        const float cl = TestCalcLifCoefficientFullSpectrumTest(currentAng, aTimeDelta);
+        std::pair<float, float> dataPoint;
+        dataPoint.first = Utility::ToDegrees(currentAng);
+        dataPoint.second = cl;
+        graph.push_back(dataPoint);
+
+        //gAng.push_back(static_cast<int>((Utility::ToDegrees(currentAng))));
+        gAng.push_back(Utility::ToDegrees(currentAng));
+        gCl.push_back(cl);
+
+        currentAng += gap;
+        const int angInt = static_cast<int>(currentAng);
+        //currentAng = static_cast<float>(angInt);
+    }
+  
+    int testBreak = 0;
+    testBreak++;
+
+    //const float cl = TestCalcLifCoefficientFullSpectrum(angleOfAttack, aTimeDelta);
 }
