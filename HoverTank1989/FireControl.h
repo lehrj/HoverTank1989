@@ -134,6 +134,55 @@ enum class AeroType
     AERO_STABILITYMAX,
 };
 
+enum class FinType
+{
+    CANARD_PITCH,
+    CANARD_YAW,
+    MAIN_PITCH,
+    MAIN_YAW,
+    TAIL_PITCH,
+    TAIL_YAW,
+};
+
+
+
+struct FinDataDynamic
+{
+    float finAngle = Utility::ToRadians(0.0f);
+    DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 dragForce = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 resultantForce = DirectX::SimpleMath::Vector3::Zero;
+
+};
+
+struct FinDataStatic
+{
+    FinType finType;
+
+    DirectX::SimpleMath::Vector3 axis;
+    DirectX::SimpleMath::Vector3 dimensions;
+    DirectX::SimpleMath::Vector3 finNormal;
+    DirectX::SimpleMath::Vector3 posLocal;
+
+    float dragCoeffBase;
+    float dragCoeefMod;
+
+    bool isFinAngFixed;
+};
+
+struct FinLibrary
+{
+    FinDataStatic canardPitch;
+    FinDataStatic canardYaw;
+    FinDataStatic tailPitch;
+    FinDataStatic tailYaw;
+
+    FinDataStatic mainPitch;
+    FinDataStatic mainYaw;
+
+};
+
+
 struct GuidanceSystem
 {
     //Seeker seeker;
@@ -483,7 +532,9 @@ struct MissileConsts
     const float hardBurnRadPerSec = Utility::ToRadians(25.0f);
 
     const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
-
+    const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
 };
 
@@ -701,6 +752,7 @@ private:
     void InitializeAmmoMissile(MissileStruct& aAmmo);
 
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
+    void InitializeFinLibrary(FinLibrary& aFinLib);
     void InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
@@ -780,6 +832,9 @@ private:
     float TestCalcLifCoefficientFullSpectrumOld(const float aAngleOfAttack, const float aTimeDelta);
     float TestCalcLifCoefficientFullSpectrumTest(const float aAngleOfAttack, const float aTimeDelta);
     Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
+
+
+    void PrintFinData(FinDataStatic& aFin, MissileData& aMissile);
 
 
     Environment const* m_environment;
@@ -907,6 +962,8 @@ private:
     float m_aeroDebugVal2 = 0.0f;
     const float m_aeroDebugDelta1 = 0.1f;
     const float m_aeroDebugDelta2 = 0.4f;
+
+    FinLibrary m_finLib;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
