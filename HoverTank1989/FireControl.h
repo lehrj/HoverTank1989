@@ -152,7 +152,18 @@ struct FinDataDynamic
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 dragForce = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 resultantForce = DirectX::SimpleMath::Vector3::Zero;
+};
 
+struct DynamicFinPackage
+{
+    FinDataDynamic canardPitch;
+    FinDataDynamic canardYaw;
+
+    FinDataDynamic mainPitch;
+    FinDataDynamic mainYaw;
+
+    FinDataDynamic tailPitch;
+    FinDataDynamic tailYaw;
 };
 
 struct FinDataStatic
@@ -160,9 +171,12 @@ struct FinDataStatic
     FinType finType;
 
     DirectX::SimpleMath::Vector3 axis;
-    DirectX::SimpleMath::Vector3 dimensions;
     DirectX::SimpleMath::Vector3 finNormal;
     DirectX::SimpleMath::Vector3 posLocal;
+
+    float chord;
+    float span;
+    float thickness;
 
     float dragCoeffBase;
     float dragCoeefMod;
@@ -174,12 +188,12 @@ struct FinLibrary
 {
     FinDataStatic canardPitch;
     FinDataStatic canardYaw;
-    FinDataStatic tailPitch;
-    FinDataStatic tailYaw;
 
     FinDataStatic mainPitch;
     FinDataStatic mainYaw;
 
+    FinDataStatic tailPitch;
+    FinDataStatic tailYaw;
 };
 
 
@@ -309,6 +323,8 @@ struct GuidanceSystem
     bool isHardBurnModeTrue = false;
     DirectX::SimpleMath::Vector3 hardBurnVec = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion hardBurnQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    DynamicFinPackage finPak;
 };
 
 struct AmmoStruct
@@ -536,6 +552,20 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
+
+    const float mDim = 1.1f;
+    const float canardChord = ((mDim * 0.3f) * 0.2f);
+    const float canardSpan = mDim * 0.3f;
+    const float canardThickness = ((mDim * 0.3f) * 0.2f) * 0.3f;
+
+    const float mainChord = 0.06f;
+    const float mainSpan = 0.3f;
+    const float mainThickness = 0.015f;
+
+    const float tailChord = ((mDim * 0.3f) * 0.2f);
+    const float tailSpan = mDim * 0.3f;
+    const float tailThickness = ((mDim * 0.3f) * 0.2f) * 0.3f;
+
 };
 
 enum class ExplosionType
@@ -783,6 +813,9 @@ private:
 
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
+
+
+
     void UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta);
 
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
@@ -830,11 +863,19 @@ private:
     float TestCalcLifCoefficientClassic(const float aAngleOfAttack);
     float TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack, const float aTimeDelta);
     float TestCalcLifCoefficientFullSpectrumOld(const float aAngleOfAttack, const float aTimeDelta);
-    float TestCalcLifCoefficientFullSpectrumTest(const float aAngleOfAttack, const float aTimeDelta);
+    float TestCalcLifCoefficientFullSpectrumTest(const float aAngleOfAttack);
     Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
 
+    //Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
 
-    void PrintFinData(FinDataStatic& aFin, MissileData& aMissile);
+    void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
+
+    void UpdateFinData(MissileData& aMissile);
+    void UpdateFinAngles(MissileData& aMissile);
+    void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat);
+
+    Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
+    Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
 
 
     Environment const* m_environment;
