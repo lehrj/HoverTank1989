@@ -8950,7 +8950,7 @@ Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
 {
     Utility::ForceAccum accum;
     Utility::ForceAccum::ZeroValues(accum);
-
+    /*
     accum += FinForceAccum(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, aMissile);
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("accum.linear = ", accum.linear.Length(), "");
@@ -8961,16 +8961,63 @@ Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
     m_debugData->DebugPushUILineDecimalNumber("accum.linear = ", accum.linear.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("accum.torque = ", accum.torque.Length(), "");
     m_debugData->ToggleDebugOff();
+    */
     accum += FinForceAccum(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, aMissile);
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("accum.linear = ", accum.linear.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("accum.torque = ", accum.torque.Length(), "");
     m_debugData->ToggleDebugOff();
-    //accum += FinForceAccum(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, aMissile);
+    accum += FinForceAccum(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, aMissile);
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("accum.linear = ", accum.linear.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("Last accum.torque = ", accum.torque.Length(), "");
     m_debugData->ToggleDebugOff();
 
     return accum;
+}
+
+
+void FireControl::ManualControlInput(FinType aFinType, const float aInput)
+{
+    if (aFinType == FinType::CANARD_PITCH)
+    {
+        m_manualCanardPitch = ManualInputUpdate(m_manualCanardPitch, aInput);
+    }
+    else if (aFinType == FinType::CANARD_YAW)
+    {
+        m_manualCanardYaw = ManualInputUpdate(m_manualCanardYaw, aInput);
+    }
+    else if (aFinType == FinType::TAIL_PITCH)
+    {
+        m_manualTailPitch = ManualInputUpdate(m_manualTailPitch, aInput);
+    }
+    else if (aFinType == FinType::TAIL_YAW)
+    {
+        m_manualTailYaw = ManualInputUpdate(m_manualTailYaw, aInput);
+    }
+    else 
+    {
+        // error
+    }
+
+}
+
+float FireControl::ManualInputUpdate(const float aCurrentVal, const float aInput)
+{
+    const float updateRaw = (aInput * m_manualDeltaRate) + aCurrentVal;
+    float updateVal = 0.0f;
+    if (updateRaw > m_manualMax)
+    {
+        updateVal = m_manualMax;
+    }
+    else if (updateRaw < m_manualMin)
+    {
+        updateVal = m_manualMin;
+    }
+
+    else
+    {
+        updateVal = updateRaw;
+    }
+    return updateVal;
 }

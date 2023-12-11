@@ -221,10 +221,7 @@ struct GuidanceSystem
     bool isTargetingLaserOn = false;
     float postExplosionDrawCountDown = 2.0f;
 
-    DirectX::SimpleMath::Vector3 thrustPosWorldAligned = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
 
-    float forwardThrust = 0.0f;
-    
     float finDeployPercent = 0.0f;
     float finAngle1 = 0.0f;
     float finAngle2 = 0.0f;
@@ -236,7 +233,15 @@ struct GuidanceSystem
     float tfinAngle3 = 0.0f;
     float tfinAngle4 = 0.0f;
 
+    float canardPitchAng = 0.0f;
+    float canardYawAng = 0.0f;
+    float tailPitchAng = 0.0f;
+    float tailYawAng = 0.0f;
+
     float throttlePercentage = 0.0f;
+    float forwardThrust = 0.0f;
+
+    DirectX::SimpleMath::Vector3 thrustPosWorldAligned = DirectX::SimpleMath::Vector3(-1.0f, 0.0, 0.0f);
 
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     float liftForceFloat = 0.0f;
@@ -282,7 +287,7 @@ struct GuidanceSystem
     bool isVelocityForward = true;
 
     DirectX::SimpleMath::Quaternion angularStepQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Vector3 he = DirectX::SimpleMath::Vector3::UnitX;
+    //DirectX::SimpleMath::Vector3 he = DirectX::SimpleMath::Vector3::UnitX;
     // end seeker data
 
     float climbOutTimer = 0.0f;
@@ -795,6 +800,8 @@ private:
 
     void IRSeekerTest(MissileData& aMissile, const float aTimeDelta);
 
+    void ManualMissileControl(MissileData& aMissile, const float aTimeDelta);
+
     void PrintFlightStateData(MissileData& aMissile);
     void ProNavTest(MissileData& aMissile, const float aTimeDelta);
     void ProNav(MissileData& aMissile, const float aTimeDelta);
@@ -996,6 +1003,14 @@ private:
     const float m_debugValMin = Utility::ToRadians(-180.0f);
     const float m_debugValDeltaRate = Utility::ToRadians(30.0f);
 
+    float m_manualCanardPitch = Utility::ToRadians(0.0f);
+    float m_manualCanardYaw = Utility::ToRadians(0.0f);
+    float m_manualTailPitch = Utility::ToRadians(0.0f);
+    float m_manualTailYaw = Utility::ToRadians(0.0f);
+    const float m_manualMax = Utility::ToRadians(180.0f);
+    const float m_manualMin = Utility::ToRadians(-180.0f);
+    const float m_manualDeltaRate = Utility::ToRadians(30.0f);
+
     float m_debugThrustAngMax = 0.0f;
     float m_debugThrustAngMin = 0.0f;
 
@@ -1005,6 +1020,7 @@ private:
     const float m_aeroDebugDelta2 = 0.4f;
 
     FinLibrary m_finLib;
+    float ManualInputUpdate(const float aCurrentVal, const float aInput);
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
@@ -1019,5 +1035,7 @@ public:
     void DebugIntputValUpdate(const float aInput);
     void DebugIntputValUpdateStatic(const bool aIsTrue);
     void DebugInputZero();
+
+    void ManualControlInput(FinType aFinType, const float aInput);
 };
 
