@@ -134,6 +134,13 @@ enum class AeroType
     AERO_STABILITYMAX,
 };
 
+enum class ControlInputType
+{
+    INPUT_CANARD,
+    INPUT_TAILFIN,
+    INPUT_THRUSTVEC,
+};
+
 enum class FinType
 {
     CANARD_PITCH,
@@ -1003,6 +1010,8 @@ private:
     const float m_debugValMin = Utility::ToRadians(-180.0f);
     const float m_debugValDeltaRate = Utility::ToRadians(30.0f);
 
+    ControlInputType m_currentControlType = ControlInputType::INPUT_CANARD;
+
     float m_manualCanardPitch = Utility::ToRadians(0.0f);
     float m_manualCanardYaw = Utility::ToRadians(0.0f);
     float m_manualTailPitch = Utility::ToRadians(0.0f);
@@ -1036,6 +1045,13 @@ public:
     void DebugIntputValUpdateStatic(const bool aIsTrue);
     void DebugInputZero();
 
+
+    void CycleControlInputType();
+
+    void ManualControlInputPitch(const float aInput);
+    void ManualControlInputYaw(const float aInput);
+
     void ManualControlInput(FinType aFinType, const float aInput);
+    void ManualInputReset(FinType aFinType, const bool aIsResetAllTrue);
 };
 

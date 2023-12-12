@@ -1660,86 +1660,57 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
         }
     }
-    if (m_kbStateTracker.pressed.Up)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_MAINMENU)
-        {
-            --m_menuSelect;
-        }
-        if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
-        {
-            --m_menuSelect;
-        }
-        if (m_currentGameState == GameState::GAMESTATE_ENVIRONTMENTSELECT)
-        {
-            --m_menuSelect;
-        }
-    }
-    if (m_kbStateTracker.pressed.Down)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_MAINMENU)
-        {
-            ++m_menuSelect;
-        }
-        if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
-        {
-            ++m_menuSelect;
-        }
-        if (m_currentGameState == GameState::GAMESTATE_ENVIRONTMENTSELECT)
-        {
-            ++m_menuSelect;
-        }
-    }
-    if (m_kbStateTracker.pressed.Left)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
-        {
-            --m_menuSelect;
-        }
-        if (m_currentGameState == GameState::GAMESTATE_ENVIRONTMENTSELECT)
-        {
-            --m_menuSelect;
-        }
-    }
-    if (m_kbStateTracker.pressed.Right)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_CHARACTERSELECT)
-        {
-            ++m_menuSelect;
-        }
-        if (m_currentGameState == GameState::GAMESTATE_ENVIRONTMENTSELECT)
-        {
-            ++m_menuSelect;
-        }
-    }
     if (kb.Up)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            //m_fireControl->ManualControlInput(FinType::CANARD_PITCH, static_cast<float>(-aTimer.GetElapsedSeconds()));
+            //m_fireControl->ManualControlInput(FinType::TAIL_PITCH, static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_fireControl->ManualControlInputPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Down)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            //m_fireControl->ManualControlInput(FinType::CANARD_PITCH, static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_fireControl->ManualControlInput(FinType::TAIL_PITCH, static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_fireControl->ManualControlInputPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Left)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            //m_fireControl->ManualControlInput(FinType::CANARD_YAW, static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_fireControl->ManualControlInput(FinType::TAIL_YAW, static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_fireControl->ManualControlInputYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.Right)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-
+            //m_fireControl->ManualControlInput(FinType::CANARD_YAW, static_cast<float>(-aTimer.GetElapsedSeconds()));
+            //m_fireControl->ManualControlInput(FinType::TAIL_YAW, static_cast<float>(-aTimer.GetElapsedSeconds()));
+            m_fireControl->ManualControlInputYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
+    if (m_kbStateTracker.pressed.OemQuestion)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_fireControl->ManualInputReset(FinType::CANARD_PITCH, true);
+        }
+    }
+    if (m_kbStateTracker.pressed.OemQuotes)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            m_fireControl->CycleControlInputType();
+        }
+    }
+
     if (kb.D)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY && m_camera->GetCameraState() == CameraState::CAMERASTATE_FOLLOWVEHICLE || m_currentGameState == GameState::GAMESTATE_GAMEPLAYSTART)
@@ -1808,20 +1779,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.Y)
     {
-        /*
-        if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SPRINGCAMERA)
-        {
-            m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWVEHICLE);
-        }
-        else if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FOLLOWVEHICLE)
-        {
-            m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
-        }
-        else
-        {
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERA);
-        }
-        */
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SNAPCAM)
         {
             m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
@@ -1909,38 +1866,18 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
-    if (m_kbStateTracker.pressed.Decimal)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_vehicle->CycleFireControlAmmo();
-            SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
-        }
-    }
+
     if (m_kbStateTracker.pressed.R)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_fireControl->DetonateAllMissiles();
-            //m_vehicle->ResetVehicle();
         }
     }
     if (m_kbStateTracker.pressed.U)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            /*
-            DirectX::SimpleMath::Vector3 endPos(11.0, 2.0f, 0.0f);
-            DirectX::SimpleMath::Vector3 targetEndPos = m_vehicle->GetPos();
-            DirectX::SimpleMath::Vector3 centerPointPos = m_vehicle->GetPos();
-            float rotation = Utility::ToRadians(90.0);
-            m_camera->SetCameraStartPos(m_camera->GetPos());
-            m_camera->SetCameraEndPos(endPos);
-            m_camera->SetTargetStartPos(m_camera->GetTargetPos());
-            m_camera->SetTargetEndPos(targetEndPos);
-            m_camera->TurnEndPosAroundPoint(rotation, centerPointPos);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-            */
             m_camera->ActivateMissleTrackCamera();
         }
     }
@@ -1958,28 +1895,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->CycleMissileTrackState();
         }
     }
-    if (kb.L)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
 
-            //m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
-        }
-    }
-    if (kb.OemPeriod)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-
-        }
-    }
-    if (kb.OemComma)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-
-        }
-    }
     if (kb.X)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -1998,15 +1914,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_camera->PrepareTrailerStart();
             m_fireControl->TriggerMirvDeploy();
-        }
-    }
-    if (m_kbStateTracker.pressed.M)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            //m_camera->StartTrailerCamera();
         }
     }
     if (m_kbStateTracker.pressed.L)
@@ -2031,28 +1939,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->Jump();
         }
     }
-    if (m_kbStateTracker.pressed.OemOpenBrackets)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_camera->CycleNpcFocus(false);
-        }
-    }
-    if (m_kbStateTracker.pressed.OemCloseBrackets)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            m_camera->CycleNpcFocus(true);
-        }
-    }
     if (m_kbStateTracker.pressed.B)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_FOLLOWNPC);
-            //m_isSlowMoOn = true;
-            //m_camera->TransitionToNpcSpringCamera();
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_SPRINGCAMERANPC);
             m_npcController->ToggleDebugBool();
         }
     }
@@ -2060,18 +1950,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            if (m_isSlowMoOn == true)
-            {
-                //m_isSlowMoOn = false;
-            }
-            else if (m_isSlowMoOn == false)
-            {
-                //m_isSlowMoOn = true;
-            }
-
             m_npcController->ResetNpcDebugPauseToggle();
-            //m_isSlowMoOn = false;
-            //m_camera->ReturnToOverwatchPosition();
         }
     }
     if (m_kbStateTracker.pressed.Q)
@@ -2079,8 +1958,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->DebugToggle();
-            //m_endScreenTimer = 0.0f;
-            //m_isDisplayEndScreenTrue = true;
         }
     }
     if (m_kbStateTracker.pressed.Z)
@@ -2088,13 +1965,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_vehicle->DebugToggle2();
-        }
-    }
-    if (m_kbStateTracker.pressed.C)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            //m_vehicle->DebugToggle3();
         }
     }
     if (m_kbStateTracker.pressed.P)
@@ -2108,18 +1978,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            /*
-            const unsigned int columnCount = 5;
-            const unsigned int rowCount = 2;
-            const float columSpaceing = 20.0f;
-            const float rowSpacing = 25.0f;
-            const DirectX::SimpleMath::Vector3 dropPosition = DirectX::SimpleMath::Vector3(-90.0f, 10.0f, -40.0f);
-            const DirectX::SimpleMath::Vector3 orientation = DirectX::SimpleMath::Vector3::UnitX;
-            m_npcController->LoadToQueueAxisAligned(dropPosition, orientation,  columnCount, rowCount, columSpaceing, rowSpacing);
-            */
-
-            //m_vehicle->DebugToggle();
-
             m_fireControl->ToggleDebug1();
         }
     }
@@ -2127,27 +1985,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->DebugToggle2();
-
-            /*
-            const unsigned int columnCount = 1;
-            const unsigned int rowCount = 1;
-            const float columSpaceing = 15.0f;
-            const float rowSpacing = 20.0f;
-
-            const DirectX::SimpleMath::Vector2 spacing = DirectX::SimpleMath::Vector2(columSpaceing, rowSpacing);
-            DirectX::SimpleMath::Vector3 dropDirection = m_vehicle->GetForward();
-            const float dropDistance = 200.0f;
-            dropDirection *= dropDistance;
-            DirectX::SimpleMath::Vector3 dropPosition = m_vehicle->GetPos();
-            dropPosition.y += 55.0f;
-            dropPosition += dropDirection;
-
-            const DirectX::SimpleMath::Vector3 orientation = -m_vehicle->GetForward();
-            const DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicle->GetAlignment());
-
-            m_npcController->LoadToQueue(dropPosition, orientation, columnCount, rowCount, spacing, alignQuat);
-            */
             m_fireControl->ToggleDebug2();
         }
     }
@@ -2155,7 +1992,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->DebugToggle3();
             m_fireControl->ToggleDebug3();
         }
     }
@@ -2205,11 +2041,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_vehicle->DebugToggle0();
-            //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
-            //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
-            //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_UNSTOPPABLE_DRIVER);
-            //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
             m_fireControl->ZeroMissileVelocities();
         }
     }

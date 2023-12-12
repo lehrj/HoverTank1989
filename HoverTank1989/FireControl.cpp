@@ -2224,7 +2224,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle1);
+        //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle1);
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finPak.tailYaw.finAngle);
         updateMat *= m_ammoMissile.modelData.tailFinTransMat;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
@@ -2234,7 +2235,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle2);
+        //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle2);
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finPak.tailYaw.finAngle);
         updateMat *= m_ammoMissile.modelData.tailFinTransMat;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
@@ -2245,7 +2247,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle3);
+        //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle3);
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finPak.tailPitch.finAngle);
         updateMat *= m_ammoMissile.modelData.tailFinTransMat;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
@@ -2256,7 +2259,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localTailFinMat;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle4);
+        //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finAngle4);
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finPak.tailPitch.finAngle);
         updateMat *= m_ammoMissile.modelData.tailFinTransMat;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(270.0f));
         updateMat *= alignRotMat;
@@ -2270,7 +2274,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             updateMat = DirectX::SimpleMath::Matrix::Identity;
             updateMat *= m_ammoMissile.modelData.localCanardFinMat;
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle1);
+            //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle1);
+            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finPak.canardYaw.finAngle);
             updateMat *= m_ammoMissile.modelData.canardFinTransMat;
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
@@ -2280,7 +2285,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             updateMat = DirectX::SimpleMath::Matrix::Identity;
             updateMat *= m_ammoMissile.modelData.localCanardFinMat;
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle2);
+            //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle2);
+            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finPak.canardYaw.finAngle);
             updateMat *= m_ammoMissile.modelData.canardFinTransMat;
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
             updateMat *= alignRotMat;
@@ -2291,7 +2297,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             updateMat = DirectX::SimpleMath::Matrix::Identity;
             updateMat *= m_ammoMissile.modelData.localCanardFinMat;
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle3);
+            //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle3);
+            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.finPak.canardPitch.finAngle);
             updateMat *= m_ammoMissile.modelData.canardFinTransMat;
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
             updateMat *= alignRotMat;
@@ -2302,7 +2309,8 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
             updateMat = DirectX::SimpleMath::Matrix::Identity;
             updateMat *= m_ammoMissile.modelData.localCanardFinMat;
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
-            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle4);
+            //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finAngle4);
+            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finPak.canardPitch.finAngle);
             updateMat *= m_ammoMissile.modelData.canardFinTransMat;
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(270.0f));
             updateMat *= alignRotMat;
@@ -5570,6 +5578,17 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     {
         m_debugData->DebugPushUILineWholeNumber("m_isUseProNavOn = ", m_isUseProNavOn, " False");
     }
+    m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->DebugPushUILineDecimalNumber("m_manualCanardPitch = ", m_manualCanardPitch, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_manualCanardYaw = ", m_manualCanardYaw, "");
+
+    m_debugData->DebugPushUILineDecimalNumber("m_manualCanardPitch Ds = ", Utility::ToDegrees(m_manualCanardPitch), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_manualCanardYaw Ds = ", Utility::ToDegrees(m_manualCanardYaw), "");
+    
+    m_debugData->DebugPushUILineDecimalNumber("m_manualTailPitch = ", m_manualTailPitch, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_manualTailYaw = ", m_manualTailYaw, "");
+
     m_debugData->ToggleDebugOff();
 }
 
@@ -8814,11 +8833,19 @@ void FireControl::PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn,
 
 void FireControl::UpdateFinAngles(MissileData& aMissile)
 {
+    aMissile.guidance.finPak.canardPitch.finAngle = m_manualCanardPitch;
+    aMissile.guidance.finPak.canardYaw.finAngle = m_manualCanardYaw;
+
+    aMissile.guidance.finPak.tailPitch.finAngle = m_manualTailPitch;
+    aMissile.guidance.finPak.tailYaw.finAngle = m_manualTailYaw;
+
+    /*
     aMissile.guidance.finPak.canardPitch.finAngle = aMissile.guidance.finAngle1;
     aMissile.guidance.finPak.canardYaw.finAngle = aMissile.guidance.finAngle3;
 
     aMissile.guidance.finPak.tailPitch.finAngle = aMissile.guidance.finAngle1;
     aMissile.guidance.finPak.tailYaw.finAngle = aMissile.guidance.finAngle3;
+    */
 }
 
 void FireControl::UpdateFinData(MissileData& aMissile)
@@ -8999,7 +9026,46 @@ void FireControl::ManualControlInput(FinType aFinType, const float aInput)
     {
         // error
     }
+}
 
+void FireControl::ManualControlInputPitch(const float aInput)
+{
+    if (m_currentControlType == ControlInputType::INPUT_CANARD)
+    {
+        m_manualCanardPitch = ManualInputUpdate(m_manualCanardPitch, aInput);
+    }
+    else if (m_currentControlType == ControlInputType::INPUT_TAILFIN)
+    {
+        m_manualTailPitch = ManualInputUpdate(m_manualTailPitch, aInput);
+    }
+    else if (m_currentControlType == ControlInputType::INPUT_THRUSTVEC)
+    {
+        // todo
+    }
+    else
+    {
+        // error
+    }
+}
+
+void FireControl::ManualControlInputYaw(const float aInput)
+{
+    if (m_currentControlType == ControlInputType::INPUT_CANARD)
+    {
+        m_manualCanardYaw = ManualInputUpdate(m_manualCanardYaw, aInput);
+    }
+    else if (m_currentControlType == ControlInputType::INPUT_TAILFIN)
+    {
+        m_manualTailYaw = ManualInputUpdate(m_manualTailYaw, aInput);
+    }
+    else if (m_currentControlType == ControlInputType::INPUT_THRUSTVEC)
+    {
+        // todo
+    }
+    else
+    {
+        // error
+    }
 }
 
 float FireControl::ManualInputUpdate(const float aCurrentVal, const float aInput)
@@ -9020,4 +9086,56 @@ float FireControl::ManualInputUpdate(const float aCurrentVal, const float aInput
         updateVal = updateRaw;
     }
     return updateVal;
+}
+
+
+void FireControl::ManualInputReset(FinType aFinType, const bool aIsResetAllTrue)
+{
+    if (aIsResetAllTrue == true)
+    {
+        m_manualCanardPitch = 0.0f;
+        m_manualCanardYaw = 0.0f;
+        m_manualTailPitch = 0.0f;
+        m_manualTailYaw = 0.0f;
+    }
+    else
+    {
+        if (aFinType == FinType::CANARD_PITCH)
+        {
+            m_manualCanardPitch = 0.0f;
+        }
+        else if (aFinType == FinType::CANARD_YAW)
+        {
+            m_manualCanardYaw = 0.0f;
+        }
+        else if (aFinType == FinType::TAIL_PITCH)
+        {
+            m_manualTailPitch = 0.0f;
+        }
+        else if (aFinType == FinType::TAIL_YAW)
+        {
+            m_manualTailYaw = 0.0f;
+        }
+        else
+        {
+            // error
+        }
+    }
+}
+
+
+void FireControl::CycleControlInputType()
+{
+    if (m_currentControlType == ControlInputType::INPUT_CANARD)
+    {
+        m_currentControlType = ControlInputType::INPUT_TAILFIN;
+    }
+    else if (m_currentControlType == ControlInputType::INPUT_TAILFIN)
+    {
+        m_currentControlType = ControlInputType::INPUT_THRUSTVEC;
+    }
+    else
+    {
+        m_currentControlType = ControlInputType::INPUT_CANARD;
+    }
 }
