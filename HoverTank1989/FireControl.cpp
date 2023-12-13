@@ -8860,8 +8860,8 @@ void FireControl::UpdateFinData(MissileData& aMissile)
     //localVel = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion alignQuat = aMissile.projectileData.alignmentQuat;
 
-    //UpdateFinForces(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, localVel, alignQuat, aMissile);
-    //UpdateFinForces(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, localVel, alignQuat, aMissile);
+    UpdateFinForces(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, localVel, alignQuat, aMissile);
+    UpdateFinForces(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, localVel, alignQuat, aMissile);
 
     UpdateFinForces(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, localVel, alignQuat, aMissile);
     UpdateFinForces(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, localVel, alignQuat, aMissile);
@@ -8928,7 +8928,7 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
 
     /////////////////////////
 
-    finNorm = DirectX::SimpleMath::Vector3::Transform(finNorm, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
+    //finNorm = DirectX::SimpleMath::Vector3::Transform(finNorm, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
 
     ///////////////////////////////////////
     auto finNormWorld = finNorm;
@@ -9008,12 +9008,17 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
     m_debugData->PushDebugLine(finPos, dragWorld, 3.0f, 0.0f, DirectX::Colors::DeepSkyBlue);
     m_debugData->PushDebugLine(finPos, resultantWorld, 3.0f, 0.0f, DirectX::Colors::Red);
     //m_debugData->PushDebugLine(finPos, liftNormWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(finPos, finLiftWorld, 3.0f, 0.0f, DirectX::Colors::Lime);
     m_debugData->DebugPushUILineDecimalNumber("finLiftVec = ", finLiftVec.Length(), "");
     m_debugData->PushDebugLine(finPos, testNormWorld, 3.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLine(finPos, finVecWorld2, 3.0f, 0.0f, DirectX::Colors::Blue);
     m_debugData->DebugPushUILineDecimalNumber("testDot = ", testDot, "");
+    m_debugData->ToggleDebugOff();
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(finPos, finLiftWorld, 3.0f, 0.0f, DirectX::Colors::Lime);
+    //m_debugData->PushDebugLine(finPos, finVecWorld2, 3.0f, 0.0f, DirectX::Colors::Blue);
     m_debugData->ToggleDebugOff();
     ///////////////////////////////////////
 }
@@ -9087,6 +9092,10 @@ Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
     m_debugData->DebugPushUILineDecimalNumber("accum.torque = ", accum.torque.Length(), "");
     m_debugData->ToggleDebugOff();
     */
+
+    accum += FinForceAccum(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, aMissile);
+    accum += FinForceAccum(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, aMissile);
+
     accum += FinForceAccum(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, aMissile);
     accum += FinForceAccum(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, aMissile);
     
