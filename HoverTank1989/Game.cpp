@@ -1664,8 +1664,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_fireControl->ManualControlInput(FinType::CANARD_PITCH, static_cast<float>(-aTimer.GetElapsedSeconds()));
-            //m_fireControl->ManualControlInput(FinType::TAIL_PITCH, static_cast<float>(-aTimer.GetElapsedSeconds()));
             m_fireControl->ManualControlInputPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }
@@ -1673,8 +1671,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_fireControl->ManualControlInput(FinType::CANARD_PITCH, static_cast<float>(aTimer.GetElapsedSeconds()));
-            //m_fireControl->ManualControlInput(FinType::TAIL_PITCH, static_cast<float>(aTimer.GetElapsedSeconds()));
             m_fireControl->ManualControlInputPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
@@ -1682,8 +1678,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_fireControl->ManualControlInput(FinType::CANARD_YAW, static_cast<float>(aTimer.GetElapsedSeconds()));
-            //m_fireControl->ManualControlInput(FinType::TAIL_YAW, static_cast<float>(aTimer.GetElapsedSeconds()));
             m_fireControl->ManualControlInputYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
@@ -1691,8 +1685,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_fireControl->ManualControlInput(FinType::CANARD_YAW, static_cast<float>(-aTimer.GetElapsedSeconds()));
-            //m_fireControl->ManualControlInput(FinType::TAIL_YAW, static_cast<float>(-aTimer.GetElapsedSeconds()));
             m_fireControl->ManualControlInputYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
         }
     }

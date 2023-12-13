@@ -730,7 +730,6 @@ public:
     
     void GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod);
 
-
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
@@ -754,21 +753,20 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragAngularSumLocalTest(MissileData& aMissile, const float aTimeDelta);
     void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
-
-    //DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulator(MissileData& aMissile);
+    DirectX::SimpleMath::Vector3 CalculateDragLinearSum(MissileData& aMissile, const float aTimeDelta);
+    float CalculateFinLiftCoef(const float aAngleOfAttack);
 
-    DirectX::SimpleMath::Vector3 CalculeteDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
 
-  //  void CameraUpdateMissileTracking();
-
     void CastRayLaser();
+    void ControllerUpdate(MissileData& aMissile, const float aTimeDelta);
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void CheckCollisionsMissile();
+    void DebugGraphCurveData(MissileData& aMissile, const float aTimeDelta);
     void DeleteMissileFromVec(const unsigned int aIndex);
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
@@ -807,8 +805,9 @@ private:
 
     void IRSeekerTest(MissileData& aMissile, const float aTimeDelta);
 
+    float ManualInputUpdate(const float aCurrentVal, const float aInput);
     void ManualMissileControl(MissileData& aMissile, const float aTimeDelta);
-
+    void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
     void PrintFlightStateData(MissileData& aMissile);
     void ProNavTest(MissileData& aMissile, const float aTimeDelta);
     void ProNav(MissileData& aMissile, const float aTimeDelta);
@@ -828,8 +827,6 @@ private:
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
 
-
-
     void UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta);
 
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
@@ -841,7 +838,6 @@ private:
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
-
     void CruiseGuidance(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
@@ -854,6 +850,12 @@ private:
     Utility::ForceAccum BoosterAccumVectored(MissileData& aMissile);
     Utility::ForceAccum DragAccum(MissileData& aMissile, const float aTimeDelta);
     void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
+    // fin funcs
+    void UpdateFinData(MissileData& aMissile);
+    void UpdateFinAngles(MissileData& aMissile);
+    void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
+    Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
+    Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
 
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
 
@@ -866,31 +868,6 @@ private:
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld2(MissileData& aMissile, const float aTimeDelta);
-
-    void ControllerUpdate(MissileData& aMissile, const float aTimeDelta);
-
-    void TestFuncGraph(MissileData& aMissile, const float aTimeDelta);
-
-    DirectX::SimpleMath::Vector3 TestAirFoil(MissileData& aMissile, const float aTimeDelta);
-    DirectX::SimpleMath::Vector3 TestAirFoilPitch(MissileData& aMissile, const float aTimeDelta);
-    float TestCalcLifCoefficient(const float aAngleOfAttack);
-    float TestCalcLifCoefficientClassic(const float aAngleOfAttack);
-    float TestCalcLifCoefficientFullSpectrum(const float aAngleOfAttack, const float aTimeDelta);
-    float TestCalcLifCoefficientFullSpectrumOld(const float aAngleOfAttack, const float aTimeDelta);
-    float TestCalcLifCoefficientFullSpectrumTest(const float aAngleOfAttack);
-    Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
-
-    //Utility::ForceAccum TestAeroAccum(MissileData& aMissile, const float aTimeDelta);
-
-    void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
-
-    void UpdateFinData(MissileData& aMissile);
-    void UpdateFinAngles(MissileData& aMissile);
-    void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
-
-    Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
-    Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
-
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
@@ -906,6 +883,8 @@ private:
     AmmoStruct m_ammoShotgun;
 
     ExplosionStruct m_explosionStruct;
+
+    FinLibrary      m_finLib;
 
     MissileStruct m_ammoMissile;
     MissileConsts m_missileConsts;
@@ -975,8 +954,6 @@ private:
     DirectX::SimpleMath::Vector3 m_debugVec1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_debugVec2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_debugVec3 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_debugHeadingVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-    //DirectX::SimpleMath::Quaternion m_debugHeadingQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 m_debugHeadingVec1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_debugHeadingVec2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_debugHeadingVec3 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -1028,9 +1005,6 @@ private:
     const float m_aeroDebugDelta1 = 0.1f;
     const float m_aeroDebugDelta2 = 0.4f;
 
-    FinLibrary m_finLib;
-    float ManualInputUpdate(const float aCurrentVal, const float aInput);
-
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
@@ -1038,13 +1012,11 @@ public:
     float GetMaxExplosionImpactRadius() const { return m_explosionStruct.maxExplosionImpactRadius; };
 
     void CamMissileSelectNext();
-    //void CamMissileSelectPrev();
 
     const float m_testDebugAng = Utility::ToRadians(15.0f);
     void DebugIntputValUpdate(const float aInput);
     void DebugIntputValUpdateStatic(const bool aIsTrue);
     void DebugInputZero();
-
 
     void CycleControlInputType();
 
