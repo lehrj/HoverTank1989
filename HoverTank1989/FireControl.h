@@ -562,7 +562,7 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
 
     const float mDim = 1.1f;
@@ -886,7 +886,7 @@ private:
 
     void UpdateFinData(MissileData& aMissile);
     void UpdateFinAngles(MissileData& aMissile);
-    void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat);
+    void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
 
     Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
     Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
@@ -1010,7 +1010,7 @@ private:
     const float m_debugValMin = Utility::ToRadians(-180.0f);
     const float m_debugValDeltaRate = Utility::ToRadians(30.0f);
 
-    ControlInputType m_currentControlType = ControlInputType::INPUT_CANARD;
+    ControlInputType m_currentControlType = ControlInputType::INPUT_TAILFIN;
 
     float m_manualCanardPitch = Utility::ToRadians(0.0f);
     float m_manualCanardYaw = Utility::ToRadians(0.0f);
