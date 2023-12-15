@@ -857,6 +857,7 @@ private:
     Utility::ForceAccum BoosterAccum(MissileData& aMissile);
     Utility::ForceAccum BoosterAccumStatic(MissileData& aMissile);
     Utility::ForceAccum BoosterAccumVectored(MissileData& aMissile);
+    void BoosterSteeringUpdate(MissileData& aMissile);
     Utility::ForceAccum DragAccum(MissileData& aMissile, const float aTimeDelta);
     void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
     // fin funcs
@@ -986,14 +987,6 @@ private:
     //MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
     MissileType m_currantMissileType = MissileType::TYPE_TAILCONTRTROL;
 
-    /*
-    float m_dragSumMax1 = 0.0f;
-    float m_dragSumMax2 = 0.0f;
-    float m_dragSumMax3 = 0.0f;
-    float m_dragSumMax4 = 0.0f;
-    float m_dragSumMax5 = 0.0f;
-    */
-
     float m_debugVal1 = Utility::ToRadians(0.0f);
     const float m_debugValMax = Utility::ToRadians(180.0f);
     const float m_debugValMin = Utility::ToRadians(-180.0f);
@@ -1003,6 +996,8 @@ private:
 
     float m_manualCanardPitch = Utility::ToRadians(0.0f);
     float m_manualCanardYaw = Utility::ToRadians(0.0f);
+    float m_manualThrustVecPitch = Utility::ToRadians(0.0f);
+    float m_manualThrustVecYaw = Utility::ToRadians(0.0f);
     float m_manualTailPitch = Utility::ToRadians(0.0f);
     float m_manualTailYaw = Utility::ToRadians(0.0f);
     const float m_manualMax = Utility::ToRadians(180.0f);

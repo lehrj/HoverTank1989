@@ -104,7 +104,7 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
     else
     {
         DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitX;
-        //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.steeringQuat);
+        testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.guidance.steeringQuat);
         forceDir = testLine * (m_missileConsts.rocketBoostForceMax * aMissile.guidance.throttlePercentage);
     }
 
@@ -116,6 +116,21 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
     accum.torque = torqueAccum;
 
     return accum;
+}
+
+void FireControl::BoosterSteeringUpdate(MissileData& aMissile)
+{
+    auto steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
+    steeringQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_manualThrustVecYaw, 0.0f, m_manualThrustVecPitch);
+    auto steeringVec = DirectX::SimpleMath::Vector3::UnitX;
+    steeringVec = DirectX::SimpleMath::Vector3::Transform(steeringVec, steeringQuat);
+    steeringVec.Normalize();
+
+    auto boosterQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, steeringVec);
+    boosterQuat.Normalize();
+    boosterQuat.Inverse(boosterQuat);
+
+    aMissile.guidance.steeringQuat = boosterQuat;
 }
 
 void FireControl::CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta)
@@ -1485,13 +1500,13 @@ void FireControl::CruiseGuidance(MissileData& aMissile, const float aTimeDelta)
 
 void FireControl::CycleControlInputType()
 {
-    if (m_currentControlType == ControlInputType::INPUT_CANARD)
+    if (m_currentControlType == ControlInputType::INPUT_THRUSTVEC)
     {
         m_currentControlType = ControlInputType::INPUT_TAILFIN;
     }
     else if (m_currentControlType == ControlInputType::INPUT_TAILFIN)
     {
-        m_currentControlType = ControlInputType::INPUT_CANARD;
+        m_currentControlType = ControlInputType::INPUT_THRUSTVEC;
     }
     else
     {
@@ -4464,7 +4479,7 @@ void FireControl::ManualControlInputPitch(const float aInput)
     }
     else if (m_currentControlType == ControlInputType::INPUT_THRUSTVEC)
     {
-        // todo
+        m_manualThrustVecPitch = ManualInputUpdate(m_manualThrustVecPitch, -aInput);
     }
     else
     {
@@ -4484,7 +4499,7 @@ void FireControl::ManualControlInputYaw(const float aInput)
     }
     else if (m_currentControlType == ControlInputType::INPUT_THRUSTVEC)
     {
-        // todo
+        m_manualThrustVecYaw = ManualInputUpdate(m_manualThrustVecYaw, -aInput);
     }
     else
     {
@@ -4498,6 +4513,10 @@ void FireControl::ManualInputReset(FinType aFinType, const bool aIsResetAllTrue)
     {
         m_manualCanardPitch = 0.0f;
         m_manualCanardYaw = 0.0f;
+
+        m_manualThrustVecPitch = 0.0f;
+        m_manualThrustVecYaw = 0.0f;
+
         m_manualTailPitch = 0.0f;
         m_manualTailYaw = 0.0f;
     }
@@ -6887,6 +6906,11 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("m_manualTailPitch Ds = ", Utility::ToDegrees(m_manualTailPitch), "");
     m_debugData->DebugPushUILineDecimalNumber("m_manualTailYaw Ds = ", Utility::ToDegrees(m_manualTailYaw), "");
 
+    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecPitch = ", m_manualThrustVecPitch, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecYaw = ", m_manualThrustVecYaw, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecPitch Ds = ", Utility::ToDegrees(m_manualThrustVecPitch), "");
+    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecYaw Ds = ", Utility::ToDegrees(m_manualThrustVecYaw), "");
+
     m_debugData->ToggleDebugOff();
 }
 
@@ -7971,6 +7995,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateFinData(m_missileVec[i]);
+        BoosterSteeringUpdate(m_missileVec[i]);
         //UpdateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
         AccumulateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
 
