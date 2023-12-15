@@ -986,11 +986,13 @@ private:
     //MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
     MissileType m_currantMissileType = MissileType::TYPE_TAILCONTRTROL;
 
+    /*
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;
     float m_dragSumMax3 = 0.0f;
     float m_dragSumMax4 = 0.0f;
     float m_dragSumMax5 = 0.0f;
+    */
 
     float m_debugVal1 = Utility::ToRadians(0.0f);
     const float m_debugValMax = Utility::ToRadians(180.0f);
