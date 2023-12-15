@@ -915,6 +915,46 @@ float FireControl::CalculateFinLiftCoef(const float aAngleOfAttack)
     return clTarget;
 }
 
+float FireControl::CalculateFinLiftCoefDebug(const float aAngleOfAttack)
+{
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
+    float inputAngleMod = inputAngleRaw;
+    bool isAoAReversed = false;
+    if (inputAngleRaw > 90.0f)
+    {
+        float testVal = inputAngleRaw - 90.0f;
+        float testVal2 = 90.0f - testVal;
+        inputAngleMod = testVal2;
+        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        isAoAReversed = true;
+    }
+    const float inputAngle = inputAngleMod;
+
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+    const float inAngMax = 90.0f;
+
+    cl = inputAngle / inAngMax;
+
+    if (isAoAReversed == true)
+    {
+        cl *= -1.0f;
+    }
+
+    if (aAngleOfAttack >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    return clTarget;
+}
+
 DirectX::SimpleMath::Vector3 FireControl::CalculateWindVaningTorqueForce(const MissileData& aMissile)
 {
     DirectX::SimpleMath::Vector3 localizedAirVelocity = -aMissile.projectileData.q.velocity;
@@ -2853,8 +2893,8 @@ Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
     Utility::ForceAccum accum;
     Utility::ForceAccum::ZeroValues(accum);
 
-    accum += FinForceAccum(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, aMissile);
-    accum += FinForceAccum(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, aMissile);
+    //accum += FinForceAccum(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, aMissile);
+    //accum += FinForceAccum(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, aMissile);
 
     accum += FinForceAccum(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, aMissile);
     accum += FinForceAccum(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, aMissile);
@@ -3697,8 +3737,12 @@ void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
     //aAmmo.ammoData.radius = 0.33f;
     //aAmmo.ammoData.length = 1.1f;
     //aAmmo.ammoData.radius = 0.127f * 0.5f;
-    aAmmo.ammoData.length = m_missileDimensions.x;
-    aAmmo.ammoData.radius = m_missileDimensions.z * 0.5f;
+    //aAmmo.ammoData.length = m_missileDimensions.x;
+    //aAmmo.ammoData.radius = m_missileDimensions.z * 0.5f;
+
+    aAmmo.ammoData.length = m_missileConsts.dimensions.x;
+    aAmmo.ammoData.radius = m_missileConsts.dimensions.z * 0.5f;
+
     aAmmo.ammoData.mass = m_missileConsts.mass;
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
@@ -4134,7 +4178,6 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.finAxelShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), finAxelLength, finAxelDiameter);
     const float tailFinAxelOffset = tailOffset;
     aAmmo.modelData.finAxelTranslation = DirectX::SimpleMath::Vector3(tailFinAxelOffset, 0.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 testTrans = DirectX::SimpleMath::Vector3(tailFinLength * 0.5f, 0.0f, 0.0f);
 
     // canards
     const float canardFinLength = aAmmo.ammoData.length * 0.3f;
@@ -6592,6 +6635,8 @@ void FireControl::UpdateFinAngles(MissileData& aMissile)
     aMissile.guidance.finPak.tailPitch.finAngle = aMissile.guidance.finAngle1;
     aMissile.guidance.finPak.tailYaw.finAngle = aMissile.guidance.finAngle3;
     */
+
+
 }
 
 void FireControl::UpdateFinData(MissileData& aMissile)
@@ -6600,11 +6645,17 @@ void FireControl::UpdateFinData(MissileData& aMissile)
 
     DirectX::SimpleMath::Vector3 localVel = aMissile.projectileData.q.velocity;
     localVel = DirectX::SimpleMath::Vector3::Transform(localVel, aMissile.projectileData.inverseAlignmentQuat);
-    //localVel = DirectX::SimpleMath::Vector3::UnitX;
+
+    if (m_missileConsts.isDebugLocalAirVelForceNormTrue == true)
+    {
+        localVel = DirectX::SimpleMath::Vector3::UnitX;
+        localVel *= aMissile.projectileData.q.velocity.Length();
+    }
+
     DirectX::SimpleMath::Quaternion alignQuat = aMissile.projectileData.alignmentQuat;
 
-    UpdateFinForces(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, localVel, alignQuat, aMissile);
-    UpdateFinForces(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, localVel, alignQuat, aMissile);
+    //UpdateFinForces(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, localVel, alignQuat, aMissile);
+    //UpdateFinForces(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, localVel, alignQuat, aMissile);
 
     UpdateFinForces(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, localVel, alignQuat, aMissile);
     UpdateFinForces(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, localVel, alignQuat, aMissile);
@@ -6626,8 +6677,23 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
     auto finVec = -DirectX::SimpleMath::Vector3::UnitX;
     finVec = DirectX::SimpleMath::Vector3::Transform(finVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
     float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
-    const float cl = CalculateFinLiftCoef(angleOfAttack);
-    //const float cl = 0.1f;
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack = ", angleOfAttack, "");
+
+    m_debugData->ToggleDebugOff();
+
+    float clIn = m_missileConsts.finClConst;
+    if (m_missileConsts.isUseConstFinClTrue == false)
+    {
+        clIn = CalculateFinLiftCoef(angleOfAttack);
+    }
+    else
+    {
+        clIn = CalculateFinLiftCoefDebug(angleOfAttack);
+    }
+
+    const float cl = clIn;
     const float surface = aStaticDat.span * aStaticDat.chord;
     const float rho = m_environment->GetAirDensity();
 

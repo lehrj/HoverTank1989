@@ -383,7 +383,8 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 axelColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     const DirectX::SimpleMath::Vector4 voidBlackColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
+    //const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
+    const float tailFinDeployAngleMax = Utility::ToRadians(90.0f);
     const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
@@ -546,6 +547,9 @@ struct MissileConsts
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
     const bool isUseDebugRG4True = false;
+    const bool isUseConstFinClTrue = true;
+    const bool isDebugLocalAirVelForceNormTrue = false;
+    const float finClConst = 0.2f;
 
     //const float climbOutDuration = 2.0f;
     const float climbOutDuration = 0.5f;
@@ -559,9 +563,12 @@ struct MissileConsts
 
     const float hardBurnRadPerSec = Utility::ToRadians(25.0f);
 
+    const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
+
     const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
 
@@ -577,6 +584,7 @@ struct MissileConsts
     const float tailChord = ((mDim * 0.3f) * 0.2f);
     const float tailSpan = mDim * 0.3f;
     const float tailThickness = ((mDim * 0.3f) * 0.2f) * 0.3f;
+
 
 };
 
@@ -757,6 +765,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulator(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     float CalculateFinLiftCoef(const float aAngleOfAttack);
+    float CalculateFinLiftCoefDebug(const float aAngleOfAttack);
 
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
@@ -922,7 +931,7 @@ private:
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     //const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
-    const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
+    const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);  // clean up needed and merge to MissileConst data struct
 
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
     float m_testAng = 0.0f;
@@ -974,7 +983,8 @@ private:
     bool m_isUseProNavOn = false;
 
     //MissileType m_currantMissileType = MissileType::TYPE_THRUSTVECCONTROL;
-    MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
+    //MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
+    MissileType m_currantMissileType = MissileType::TYPE_TAILCONTRTROL;
 
     float m_dragSumMax1 = 0.0f;
     float m_dragSumMax2 = 0.0f;
