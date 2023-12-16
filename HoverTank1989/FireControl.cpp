@@ -4507,6 +4507,35 @@ void FireControl::ManualControlInputYaw(const float aInput)
     }
 }
 
+float FireControl::ManualInputDecay(const float aCurrentVal, const float aTimeStep)
+{
+    const float decayRate = (m_manualDeltaRate * 0.5f) * aTimeStep;
+    float updateVal = 0.0f;
+    if (aCurrentVal == 0.0f)
+    {
+        return 0.0f;
+    }
+    else if (aCurrentVal > 0.0f)
+    {
+        updateVal = aCurrentVal - decayRate;
+    }
+    else
+    {
+        updateVal = aCurrentVal + decayRate;
+    }
+
+    if (aCurrentVal > 0.0f && updateVal < 0.0f)
+    {
+        updateVal = 0.0f;
+    }
+    else if (aCurrentVal < 0.0f && updateVal > 0.0f)
+    {
+        updateVal = 0.0f;
+    }
+
+    return updateVal;
+}
+
 void FireControl::ManualInputReset(FinType aFinType, const bool aIsResetAllTrue)
 {
     if (aIsResetAllTrue == true)
@@ -6883,24 +6912,19 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     UpdateMissileVec(aTimeDelta);
     UpdateExplosionVec(aTimeDelta);
 
-    //m_debugData->ToggleDebugOnOverRide();
-    if (m_isUseProNavOn == true)
+    if (m_isManualInputDecayTrue == true)
     {
-        m_debugData->DebugPushUILineWholeNumber("m_isUseProNavOn = ", m_isUseProNavOn, " True");
-    }
-    else
-    {
-        m_debugData->DebugPushUILineWholeNumber("m_isUseProNavOn = ", m_isUseProNavOn, " False");
+        m_manualThrustVecPitch = ManualInputDecay(m_manualThrustVecPitch, static_cast<float>(aTimeDelta));
+        m_manualThrustVecYaw = ManualInputDecay(m_manualThrustVecYaw, static_cast<float>(aTimeDelta));
+
+        m_manualTailPitch = ManualInputDecay(m_manualTailPitch, static_cast<float>(aTimeDelta));
+        m_manualTailYaw = ManualInputDecay(m_manualTailYaw, static_cast<float>(aTimeDelta));
+
+        m_manualCanardPitch = ManualInputDecay(m_manualCanardPitch, static_cast<float>(aTimeDelta));
+        m_manualCanardYaw = ManualInputDecay(m_manualCanardYaw, static_cast<float>(aTimeDelta));
     }
 
     m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->ToggleDebugOff();
-    //m_debugData->DebugPushUILineDecimalNumber("m_manualCanardPitch = ", m_manualCanardPitch, "");
-    //m_debugData->DebugPushUILineDecimalNumber("m_manualCanardYaw = ", m_manualCanardYaw, "");
-
-    //m_debugData->DebugPushUILineDecimalNumber("m_manualCanardPitch Ds = ", Utility::ToDegrees(m_manualCanardPitch), "");
-    //m_debugData->DebugPushUILineDecimalNumber("m_manualCanardYaw Ds = ", Utility::ToDegrees(m_manualCanardYaw), "");
-
     m_debugData->DebugPushUILineDecimalNumber("m_manualTailPitch = ", m_manualTailPitch, "");
     m_debugData->DebugPushUILineDecimalNumber("m_manualTailYaw = ", m_manualTailYaw, "");
     m_debugData->DebugPushUILineDecimalNumber("m_manualTailPitch Ds = ", Utility::ToDegrees(m_manualTailPitch), "");
@@ -6910,7 +6934,6 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecYaw = ", m_manualThrustVecYaw, "");
     m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecPitch Ds = ", Utility::ToDegrees(m_manualThrustVecPitch), "");
     m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecYaw Ds = ", Utility::ToDegrees(m_manualThrustVecYaw), "");
-
     m_debugData->ToggleDebugOff();
 }
 

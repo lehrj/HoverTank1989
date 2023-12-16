@@ -815,6 +815,8 @@ private:
     void IRSeekerTest(MissileData& aMissile, const float aTimeDelta);
 
     float ManualInputUpdate(const float aCurrentVal, const float aInput);
+    float ManualInputDecay(const float aCurrentVal, const float aTimeStep);
+
     void ManualMissileControl(MissileData& aMissile, const float aTimeDelta);
     void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
     void PrintFlightStateData(MissileData& aMissile);
@@ -1003,6 +1005,7 @@ private:
     const float m_manualMax = Utility::ToRadians(180.0f);
     const float m_manualMin = Utility::ToRadians(-180.0f);
     const float m_manualDeltaRate = Utility::ToRadians(30.0f);
+    const bool m_isManualInputDecayTrue = true;
 
     float m_debugThrustAngMax = 0.0f;
     float m_debugThrustAngMin = 0.0f;
