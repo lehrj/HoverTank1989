@@ -151,8 +151,6 @@ enum class FinType
     TAIL_YAW,
 };
 
-
-
 struct FinDataDynamic
 {
     float finAngle = Utility::ToRadians(0.0f);
@@ -203,6 +201,22 @@ struct FinLibrary
     FinDataStatic tailYaw;
 };
 
+struct NavData
+{
+    DirectX::SimpleMath::Vector3 vecToTargLocal = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion quatToTarg = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 targPosLocalized = DirectX::SimpleMath::Vector3::UnitX;
+};
+
+struct ControlData
+{
+    float finPitch = Utility::ToRadians(0.0f);
+    float finYaw = Utility::ToRadians(0.0f);
+    DirectX::SimpleMath::Vector3 thrustVecNorm = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion thrustVecQuat = DirectX::SimpleMath::Quaternion::Identity;
+    float thrustPitch = Utility::ToRadians(0.0f);
+    float thrustYaw = Utility::ToRadians(0.0f);
+};
 
 struct GuidanceSystem
 {
@@ -211,6 +225,9 @@ struct GuidanceSystem
     FlightState flightStateCurrent = FlightState::FLIGHTSTATE_LAUNCH;
     MissileType type = MissileType::TYPE_BASE;
     AeroType testFinType = AeroType::AERO_CLASSIC;
+    NavData nav;
+    ControlData conDat;
+
     float timeStepDelta = 0.0f;
     unsigned int uniqueId = 0;
     int targetID = 0;
@@ -547,7 +564,7 @@ struct MissileConsts
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
     const bool isUseDebugRG4True = false;
-    const bool isUseConstFinClTrue = true;
+    const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
     const float finClConst = 0.2f;
 
@@ -835,6 +852,8 @@ private:
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 
+    void UpdateControlData(MissileData& aMissile, const float aTimeDelta);
+
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
 
@@ -874,6 +893,7 @@ private:
     void UpdateMissileModelData(MissileData& aMissile);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
+    void UpdateNavData(MissileData& aMissile, const float aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
 
@@ -1002,9 +1022,9 @@ private:
     float m_manualThrustVecYaw = Utility::ToRadians(0.0f);
     float m_manualTailPitch = Utility::ToRadians(0.0f);
     float m_manualTailYaw = Utility::ToRadians(0.0f);
-    const float m_manualMax = Utility::ToRadians(180.0f);
-    const float m_manualMin = Utility::ToRadians(-180.0f);
-    const float m_manualDeltaRate = Utility::ToRadians(30.0f);
+    const float m_manualMax = Utility::ToRadians(25.0f);
+    const float m_manualMin = Utility::ToRadians(-25.0f);
+    const float m_manualDeltaRate = Utility::ToRadians(50.0f);
     const bool m_isManualInputDecayTrue = true;
 
     float m_debugThrustAngMax = 0.0f;
