@@ -401,7 +401,7 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 voidBlackColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
     //const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
-    const float tailFinDeployAngleMax = Utility::ToRadians(90.0f);
+    const float tailFinDeployAngleMax = Utility::ToRadians(100.0f);
     const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
@@ -549,6 +549,9 @@ struct MissileConsts
     //const float steeringAngPerSecDeltaMax = Utility::ToRadians(280.0f);
     //const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(480.0f);
+
+    const float thrustVecAngMax = Utility::ToRadians(15.0f);
+    const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
 
     //const float rocketBoostForceMax = 40.0f;
     const float rocketBoostForceMax = 40.0f;

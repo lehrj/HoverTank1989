@@ -2592,7 +2592,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= m_ammoMissile.modelData.thrustVectorTrans1;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, DirectX::Colors::Lime);
+        m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         // thrust vector 2
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localThrustVectorMainMatrix;
@@ -2601,7 +2601,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= m_ammoMissile.modelData.thrustVectorTrans2;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, DirectX::Colors::Blue);
+        m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         // thrust vector 3
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localThrustVectorMainMatrix;
@@ -2610,7 +2610,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
         updateMat *= m_ammoMissile.modelData.thrustVectorTrans3;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, DirectX::Colors::Yellow);
+        m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         // thrust vector 4
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localThrustVectorMainMatrix;
@@ -5756,7 +5756,7 @@ void FireControl::ProNavTest(MissileData& aMissile, const float aTimeDelta)
     perpLosWorld = DirectX::SimpleMath::Vector3::Transform(perpLosWorld, aMissile.projectileData.alignmentQuat);
 
     //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->ToggleDebugOff();
+    m_debugData->ToggleDebugOff();
     m_debugData->DebugPushUILineDecimalNumber("trueProNav ", trueProNav, "");
     m_debugData->DebugPushUILineDecimalNumber("closingSpeed ", closingSpeed, "");
 
@@ -6411,8 +6411,11 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     
     const float pitchInput = m_manualThrustVecPitch;
     const float yawInput = m_manualThrustVecYaw;
-    const float minInputForThrustV = Utility::ToRadians(10.0f);
-    const float maxInput = m_manualMax;
+    //const float minInputForThrustV = Utility::ToRadians(10.0f);
+    //const float maxInput = m_manualMax;
+    const float minInputForThrustV = m_missileConsts.thrustVecDeadZoneAng;
+    const float maxInput = m_missileConsts.thrustVecAngMax;
+
     float pitchMod = 0.0f;
     if (abs(pitchInput) > minInputForThrustV)
     {
@@ -6449,15 +6452,10 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     boosterQuat.Normalize();
     boosterQuat.Inverse(boosterQuat);
 
-    //auto thrustQuat = aMissile.guidance.nav.quatToTarg;
-    thrustQuat = boosterQuat;
-    //thrustQuat.Inverse(thrustQuat);
-
     vec = DirectX::SimpleMath::Vector3::UnitX;
-    vec = DirectX::SimpleMath::Vector3::Transform(vec, thrustQuat);
-    //aMissile.guidance.conDat.thrustVecNorm = aMissile.guidance.nav.vecToTargLocal;
+    vec = DirectX::SimpleMath::Vector3::Transform(vec, boosterQuat);
     aMissile.guidance.conDat.thrustVecNorm = vec;
-    aMissile.guidance.conDat.thrustVecQuat = thrustQuat;
+    aMissile.guidance.conDat.thrustVecQuat = boosterQuat;
 
     aMissile.guidance.conDat.thrustPitch = pitchMod;
     aMissile.guidance.conDat.thrustYaw = yawMod;
@@ -6830,11 +6828,6 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
     finVec = DirectX::SimpleMath::Vector3::Transform(finVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
     float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
 
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack = ", angleOfAttack, "");
-
-    m_debugData->ToggleDebugOff();
-
     float clIn = m_missileConsts.finClConst;
     if (m_missileConsts.isUseConstFinClTrue == false)
     {
@@ -7021,18 +7014,6 @@ void FireControl::UpdateFireControl(double aTimeDelta)
         m_manualCanardPitch = ManualInputDecay(m_manualCanardPitch, static_cast<float>(aTimeDelta));
         m_manualCanardYaw = ManualInputDecay(m_manualCanardYaw, static_cast<float>(aTimeDelta));
     }
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("m_manualTailPitch = ", m_manualTailPitch, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_manualTailYaw = ", m_manualTailYaw, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_manualTailPitch Ds = ", Utility::ToDegrees(m_manualTailPitch), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_manualTailYaw Ds = ", Utility::ToDegrees(m_manualTailYaw), "");
-
-    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecPitch = ", m_manualThrustVecPitch, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecYaw = ", m_manualThrustVecYaw, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecPitch Ds = ", Utility::ToDegrees(m_manualThrustVecPitch), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_manualThrustVecYaw Ds = ", Utility::ToDegrees(m_manualThrustVecYaw), "");
-    m_debugData->ToggleDebugOff();
 }
 
 void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta)
@@ -8244,7 +8225,6 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
 
 void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
 {
-    
     auto steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
     steeringQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_manualThrustVecYaw, 0.0f, m_manualThrustVecPitch);
     auto steeringVec = DirectX::SimpleMath::Vector3::UnitX;
