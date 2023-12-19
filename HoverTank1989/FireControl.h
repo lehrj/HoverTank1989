@@ -1008,8 +1008,6 @@ private:
     const bool m_isHardBurnModeTestOn = true;
     bool m_isUseProNavOn = false;
 
-    //MissileType m_currantMissileType = MissileType::TYPE_THRUSTVECCONTROL;
-    //MissileType m_currantMissileType = MissileType::TYPE_CANARDCONTROL;
     MissileType m_currantMissileType = MissileType::TYPE_TAILCONTRTROL;
 
     float m_debugVal1 = Utility::ToRadians(0.0f);
@@ -1025,9 +1023,7 @@ private:
     float m_manualThrustVecYaw = Utility::ToRadians(0.0f);
     float m_manualTailPitch = Utility::ToRadians(0.0f);
     float m_manualTailYaw = Utility::ToRadians(0.0f);
-    const float m_manualMax = Utility::ToRadians(25.0f);
-    const float m_manualMin = Utility::ToRadians(-25.0f);
-    const float m_manualDeltaRate = Utility::ToRadians(50.0f);
+    const float m_manualDecayRateMod = 0.5f;
     const bool m_isManualInputDecayTrue = true;
 
     float m_debugThrustAngMax = 0.0f;

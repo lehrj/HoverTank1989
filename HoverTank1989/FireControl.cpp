@@ -4531,7 +4531,8 @@ void FireControl::ManualControlInputYaw(const float aInput)
 
 float FireControl::ManualInputDecay(const float aCurrentVal, const float aTimeStep)
 {
-    const float decayRate = (m_manualDeltaRate * 0.5f) * aTimeStep;
+    const float decayRate = m_missileConsts.steeringAngPerSecDeltaMax * m_manualDecayRateMod * aTimeStep;
+
     float updateVal = 0.0f;
     if (aCurrentVal == 0.0f)
     {
@@ -4598,15 +4599,16 @@ void FireControl::ManualInputReset(FinType aFinType, const bool aIsResetAllTrue)
 
 float FireControl::ManualInputUpdate(const float aCurrentVal, const float aInput)
 {
-    const float updateRaw = (aInput * m_manualDeltaRate) + aCurrentVal;
+    const float updateRaw = (aInput * m_missileConsts.steeringAngPerSecDeltaMax) + aCurrentVal;
+
     float updateVal = 0.0f;
-    if (updateRaw > m_manualMax)
+    if (updateRaw > m_missileConsts.steerAngMax)
     {
-        updateVal = m_manualMax;
+        updateVal = m_missileConsts.steerAngMax;
     }
-    else if (updateRaw < m_manualMin)
+    else if (updateRaw < -m_missileConsts.steerAngMax)
     {
-        updateVal = m_manualMin;
+        updateVal = -m_missileConsts.steerAngMax;
     }
 
     else
@@ -6392,15 +6394,24 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     auto vec = aMissile.guidance.nav.vecToTargLocal;
     vec.z = 0.0f;
     float pitchAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
+    if (vec.y > 0.0f)
+    {
+        pitchAng *= -1.0f;
+    }
+
     vec = aMissile.guidance.nav.vecToTargLocal;
     vec.y = 0.0f;
     float yawAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
+
+    if (vec.z < 0.0f)
+    {
+        yawAng *= -1.0f;
+    }
 
     aMissile.guidance.conDat.finPitch = pitchAng;
     aMissile.guidance.conDat.finYaw = yawAng;
 
     auto thrustQuat = aMissile.guidance.nav.quatToTarg;
-    //thrustQuat.Inverse(thrustQuat);
 
     vec = DirectX::SimpleMath::Vector3::UnitX;
     vec = DirectX::SimpleMath::Vector3::Transform(vec, thrustQuat);
@@ -6411,6 +6422,10 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     
     const float pitchInput = m_manualThrustVecPitch;
     const float yawInput = m_manualThrustVecYaw;
+
+    //const float pitchInput = aMissile.guidance.conDat.finPitch;
+    //const float yawInput = aMissile.guidance.conDat.finYaw;
+
     //const float minInputForThrustV = Utility::ToRadians(10.0f);
     //const float maxInput = m_manualMax;
     const float minInputForThrustV = m_missileConsts.thrustVecDeadZoneAng;
@@ -6779,11 +6794,12 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
 void FireControl::UpdateFinAngles(MissileData& aMissile)
 {
-    aMissile.guidance.finPak.canardPitch.finAngle = m_manualCanardPitch;
-    aMissile.guidance.finPak.canardYaw.finAngle = m_manualCanardYaw;
 
-    aMissile.guidance.finPak.tailPitch.finAngle = m_manualTailPitch;
-    aMissile.guidance.finPak.tailYaw.finAngle = m_manualTailYaw;
+    aMissile.guidance.finPak.canardPitch.finAngle = 0.0f;
+    aMissile.guidance.finPak.canardYaw.finAngle = 0.0f;
+
+    aMissile.guidance.finPak.tailPitch.finAngle = aMissile.guidance.conDat.finPitch;
+    aMissile.guidance.finPak.tailYaw.finAngle = aMissile.guidance.conDat.finYaw;
 
     aMissile.guidance.finPak.mainPitch.finAngle = 0.0f;
     aMissile.guidance.finPak.mainYaw.finAngle = 0.0f;
@@ -8103,9 +8119,8 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         UpdateFinData(m_missileVec[i]);
         BoosterSteeringUpdate(m_missileVec[i]);
-        //UpdateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
-        AccumulateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
 
+        AccumulateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
         RungeKutta4Missile(&m_missileVec[i], aTimeDelta);
 
         ////// debug set missle to player cords & align
@@ -8246,6 +8261,10 @@ void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
     aMissile.guidance.nav.vecToTargLocal = steeringVec;
     aMissile.guidance.nav.quatToTarg = boosterQuat;
     aMissile.guidance.nav.targPosLocalized = steeringVec;
+
+    //aMissile.guidance.nav.vecToTargLocal = DirectX::SimpleMath::Vector3::UnitX;
+    //aMissile.guidance.nav.quatToTarg = DirectX::SimpleMath::Quaternion::Identity;
+    //aMissile.guidance.nav.targPosLocalized = DirectX::SimpleMath::Vector3::UnitX;
 }
 
 void FireControl::UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta)
