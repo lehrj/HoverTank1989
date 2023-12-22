@@ -536,14 +536,16 @@ struct MissileConsts
     const float plumeRotationRate = 0.432f;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(45.0f);
+    const float steerAngMax = Utility::ToRadians(20.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
 
-    const float rocketBoostForceMax = 100.0f;
+    const float rocketBoostForceMax = 50.0f;
     const float mass = 22.0f;
+    //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
+    const float velMaxEst = 10.0f;
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -841,7 +843,12 @@ private:
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 
+    DirectX::SimpleMath::Vector3 Seek(const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Vector3 aTargPosLocal);
+    DirectX::SimpleMath::Vector3 Pursuit(MissileData& aMissile, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Vector3 aTargLocalPos, const DirectX::SimpleMath::Vector3 aTargLocalVel);
+
     void TestGuidance(MissileData& aMissile, const float aTimeDelta);
+
+    void UpdateAngularStability(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateControlData(MissileData& aMissile, const float aTimeDelta);
 
@@ -891,6 +898,8 @@ private:
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld2(MissileData& aMissile, const float aTimeDelta);
+
+    void VelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
