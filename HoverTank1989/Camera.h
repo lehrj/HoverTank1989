@@ -374,8 +374,10 @@ private:
     const DirectX::SimpleMath::Vector3 m_missileSnapTarg = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-6.0f, 1.5f, 0.0f);
-    
+    //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-6.0f, 1.5f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-3.0f, 0.3f, 0.0f);
+
+
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(5.0f, 1.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 1.0f, -4.0f);
     const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 0.5f, -4.0f);

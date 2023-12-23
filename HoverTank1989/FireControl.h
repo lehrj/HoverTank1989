@@ -406,7 +406,7 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 voidBlackColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
     //const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
-    const float tailFinDeployAngleMax = Utility::ToRadians(100.0f);
+    const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
     const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive>    mainBodyShape;
@@ -536,13 +536,13 @@ struct MissileConsts
     const float plumeRotationRate = 0.432f;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(20.0f);
+    const float steerAngMax = Utility::ToRadians(45.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(10.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
 
-    const float rocketBoostForceMax = 500.0f;
+    const float rocketBoostForceMax = 100.0f;
     const float mass = 22.0f;
     //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
     const float velMaxEst = 10.0f;
@@ -555,7 +555,7 @@ struct MissileConsts
 
     const float finClConst = 0.2f;
 
-    const float climbOutDuration = 1.5f;
+    const float climbOutDuration = 0.5f;
 
     const float launchVelocity = 0.0f;
 
@@ -851,6 +851,7 @@ private:
     void UpdateAngularStability(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateControlData(MissileData& aMissile, const float aTimeDelta);
+    void UpdateControlData2(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);

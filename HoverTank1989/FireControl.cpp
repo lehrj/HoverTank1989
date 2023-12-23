@@ -6337,10 +6337,71 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
 {
     if (aMissile.guidance.flightStateCurrent != FlightState::FLIGHTSTATE_LAUNCH  && aMissile.guidance.flightStateCurrent != FlightState::FLIGHTSTATE_CLIMBOUT)
     {
+        auto targVecWorld = aMissile.guidance.nav.vecToTargLocal;
+        targVecWorld = DirectX::SimpleMath::Vector3::Transform(targVecWorld, aMissile.projectileData.alignmentQuat);
+        auto targPosWorld = aMissile.guidance.nav.targPosLocalized;
+        targPosWorld = DirectX::SimpleMath::Vector3::Transform(targPosWorld, aMissile.projectileData.alignmentQuat);
+        targPosWorld += aMissile.projectileData.q.position;
+
+        //auto targQuatWorld = aMissile.guidance.nav.quatToTarg;
+        //targQuatWorld.Normalize();
+        //targQuatWorld *= aMissile.projectileData.alignmentQuat;
+        auto targQuatVecW = DirectX::SimpleMath::Vector3::UnitX;
+        targQuatVecW = DirectX::SimpleMath::Vector3::Transform(targQuatVecW, aMissile.guidance.nav.quatToTarg);
+        targQuatVecW = DirectX::SimpleMath::Vector3::Transform(targQuatVecW, aMissile.projectileData.alignmentQuat);
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, targVecWorld, 4.0f, 0.0f, DirectX::Colors::Orange);
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, targQuatVecW, 4.0f, 0.0f, DirectX::Colors::Purple);
+        //m_debugData->PushDebugLinePositionIndicator(targPosWorld, 4.0f, 0.0f, DirectX::Colors::Wheat);
+
+        m_debugData->ToggleDebugOff();
+
+        //////////////////////////////////////////////////////////////////////
+
         const float prevPitchAng = aMissile.guidance.conDat.finPitch;
         const float prevYawAng = aMissile.guidance.conDat.finYaw;
         const float maxSteeringDelta = m_missileConsts.steeringAngPerSecDeltaMax * aTimeDelta;
+
+        /////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+        /*
+        //  aMissile.guidance.nav.vecToTargLocal;
+        //auto thrustQuat = aMissile.guidance.nav.quatToTarg;
+
+        DirectX::SimpleMath::Vector3 destLocal = aMissile.guidance.nav.vecToTargLocal;
+        DirectX::SimpleMath::Quaternion destQuat = aMissile.guidance.nav.quatToTarg;
+
+        DirectX::SimpleMath::Vector3 steeringLine = -DirectX::SimpleMath::Vector3::UnitX;
+        steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, destQuat);
+
+        const float maxAng = m_missileConsts.steerAngMax;
+        DirectX::SimpleMath::Quaternion steeringConeLimitQuat = DirectX::SimpleMath::Quaternion::Identity;
+        DirectX::SimpleMath::Quaternion steeringConeQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, steeringLine);
+        steeringConeLimitQuat.RotateTowards(steeringConeQuat, maxAng);
+
+        const float maxAngPerTime = aTimeDelta * m_missileConsts.steeringAngPerSecDeltaMax;
+        //DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.steeringDirNormLocal;
+        //DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.nav.vecToTargLocal;
+        DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.nav.vecToTargLocal;
+        //DirectX::SimpleMath::Quaternion preQuat = aMissile.guidance.steeringQuat;
+        DirectX::SimpleMath::Quaternion preQuat = aMissile.guidance.nav.quatToTarg;
+        DirectX::SimpleMath::Quaternion updateQuat = preQuat;
+        updateQuat.RotateTowards(steeringConeLimitQuat, maxAngPerTime);
+
+        //DirectX::SimpleMath::Vector3 steeringUpdateVec = -DirectX::SimpleMath::Vector3::UnitX;
+        DirectX::SimpleMath::Vector3 steeringUpdateVec = DirectX::SimpleMath::Vector3::UnitX;
+        steeringUpdateVec = DirectX::SimpleMath::Vector3::Transform(steeringUpdateVec, updateQuat);
+
+        //aMissile.guidance.steeringDirNormLocal = steeringUpdateVec;
+        //aMissile.guidance.steeringQuat = updateQuat;
+        */
+
+        /////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+
         auto vec = aMissile.guidance.nav.vecToTargLocal;
+        //auto vec = steeringUpdateVec;
         vec.z = 0.0f;
         vec.Normalize();
         float pitchAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
@@ -6380,17 +6441,54 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
             pitchAng = -m_missileConsts.steerAngMax;
         }
 
-
+        m_debugData->ToggleDebugOnOverRide();
         vec = aMissile.guidance.nav.vecToTargLocal;
+        //vec = steeringUpdateVec;
+        
         vec.y = 0.0f;
         vec.Normalize();
         float yawAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
-
         if (vec.z < 0.0f)
         {
             yawAng *= -1.0f;
         }
+       
+        // limit fin angle change rate
+        if (yawAng > prevYawAng)
+        {
+            if (yawAng - prevYawAng > maxSteeringDelta)
+            {
+                yawAng = prevYawAng + maxSteeringDelta;
+                m_debugData->DebugPushUILineDecimalNumber("a = ", 0.0f, "");
+            }
+            m_debugData->DebugPushUILineDecimalNumber("b = ", 1.0f, "");
+        }
+        else if (yawAng < prevYawAng)
+        {
+            if (yawAng + prevYawAng > maxSteeringDelta)
+            {
+                yawAng = prevYawAng - maxSteeringDelta;
+                m_debugData->DebugPushUILineDecimalNumber("c = ", 3.0f, "");
+            }
+            else if (yawAng < 0.0f && prevYawAng > 0.0f)
+            {
+                yawAng = prevYawAng - maxSteeringDelta;
+                m_debugData->DebugPushUILineDecimalNumber("d = ", 4.0f, "");
+            }
+            else if (yawAng < 0.0f && prevYawAng > 0.0f)
+            {
+                int testBreak = 0; 
+                testBreak++;
+                yawAng = prevYawAng - maxSteeringDelta;
+            }
+            else
+            {
+                yawAng = prevYawAng - maxSteeringDelta;
+            }
 
+            m_debugData->DebugPushUILineDecimalNumber("e = ", 5.0f, "");
+        }
+        
         if (yawAng > m_missileConsts.steerAngMax)
         {
             yawAng = m_missileConsts.steerAngMax;
@@ -6398,25 +6496,7 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
         if (yawAng < -m_missileConsts.steerAngMax)
         {
             yawAng = -m_missileConsts.steerAngMax;
-        }
-
-        // limit fin angle change rate
-        if (yawAng > prevYawAng)
-        {
-            if (yawAng - prevYawAng > maxSteeringDelta)
-            {
-                yawAng = prevYawAng + maxSteeringDelta;
-            }
-        }
-        else if (yawAng < prevYawAng)
-        {
-            if (yawAng + prevYawAng > maxSteeringDelta)
-            {
-                yawAng = prevYawAng - maxSteeringDelta;
-            }
-        }
-
-
+        }      
 
         aMissile.guidance.conDat.finPitch = pitchAng;
         aMissile.guidance.conDat.finYaw = yawAng;
@@ -6426,13 +6506,14 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
             int testBreak = 0;
             testBreak++;
         }
-
-        m_debugData->ToggleDebugOnOverRide();
+ 
         m_debugData->DebugPushUILineDecimalNumber("maxSteeringDelta rads = ", maxSteeringDelta, "");
         m_debugData->DebugPushUILineDecimalNumber("maxSteeringDelta degs = ", Utility::ToDegrees(maxSteeringDelta), "");
+        m_debugData->DebugPushUILineDecimalNumber("yawAng degs = ", Utility::ToDegrees(yawAng), "");
         m_debugData->ToggleDebugOff();
 
         auto thrustQuat = aMissile.guidance.nav.quatToTarg;
+        //auto thrustQuat = updateQuat;
 
         vec = DirectX::SimpleMath::Vector3::UnitX;
         vec = DirectX::SimpleMath::Vector3::Transform(vec, thrustQuat);
@@ -6495,6 +6576,249 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
 
         aMissile.guidance.conDat.thrustPitch = pitchMod;
         aMissile.guidance.conDat.thrustYaw = yawMod;
+        /////////////////////////////////////////////////////////////////////
+
+        auto thrustVecWorld = aMissile.guidance.conDat.thrustVecNorm;
+        thrustVecWorld = DirectX::SimpleMath::Vector3::Transform(thrustVecWorld, aMissile.projectileData.alignmentQuat);
+
+        auto finVecWorld = DirectX::SimpleMath::Vector3::UnitX;
+        finVecWorld = DirectX::SimpleMath::Vector3::Transform(finVecWorld, DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(aMissile.guidance.conDat.finYaw, 0.0f, aMissile.guidance.conDat.finPitch));
+        finVecWorld = DirectX::SimpleMath::Vector3::Transform(finVecWorld, aMissile.projectileData.alignmentQuat);
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, finVecWorld, 5.0f, 0.0f, DirectX::Colors::Yellow);
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, thrustVecWorld, 5.0f, 0.0f, DirectX::Colors::Red);
+        m_debugData->ToggleDebugOff();
+    }
+}
+
+void FireControl::UpdateControlData2(MissileData& aMissile, const float aTimeDelta)
+{
+    if (aMissile.guidance.flightStateCurrent != FlightState::FLIGHTSTATE_LAUNCH && aMissile.guidance.flightStateCurrent != FlightState::FLIGHTSTATE_CLIMBOUT)
+    {
+        const float prevPitchAng = aMissile.guidance.conDat.finPitch;
+        const float prevYawAng = aMissile.guidance.conDat.finYaw;
+        const float maxSteeringDelta = m_missileConsts.steeringAngPerSecDeltaMax * aTimeDelta;
+
+        /////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+
+        //  aMissile.guidance.nav.vecToTargLocal;
+        //auto thrustQuat = aMissile.guidance.nav.quatToTarg;
+
+        DirectX::SimpleMath::Vector3 destLocal = aMissile.guidance.nav.vecToTargLocal;
+        DirectX::SimpleMath::Quaternion destQuat = aMissile.guidance.nav.quatToTarg;
+
+        DirectX::SimpleMath::Vector3 steeringLine = -DirectX::SimpleMath::Vector3::UnitX;
+        steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, destQuat);
+
+        const float maxAng = m_missileConsts.steerAngMax;
+        DirectX::SimpleMath::Quaternion steeringConeLimitQuat = DirectX::SimpleMath::Quaternion::Identity;
+        DirectX::SimpleMath::Quaternion steeringConeQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, steeringLine);
+        steeringConeLimitQuat.RotateTowards(steeringConeQuat, maxAng);
+
+        const float maxAngPerTime = aTimeDelta * m_missileConsts.steeringAngPerSecDeltaMax;
+        //DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.steeringDirNormLocal;
+        //DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.nav.vecToTargLocal;
+        DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.nav.vecToTargLocal;
+        //DirectX::SimpleMath::Quaternion preQuat = aMissile.guidance.steeringQuat;
+        DirectX::SimpleMath::Quaternion preQuat = aMissile.guidance.nav.quatToTarg;
+        DirectX::SimpleMath::Quaternion updateQuat = preQuat;
+        updateQuat.RotateTowards(steeringConeLimitQuat, maxAngPerTime);
+
+        //DirectX::SimpleMath::Vector3 steeringUpdateVec = -DirectX::SimpleMath::Vector3::UnitX;
+        DirectX::SimpleMath::Vector3 steeringUpdateVec = DirectX::SimpleMath::Vector3::UnitX;
+        steeringUpdateVec = DirectX::SimpleMath::Vector3::Transform(steeringUpdateVec, updateQuat);
+
+        //aMissile.guidance.steeringDirNormLocal = steeringUpdateVec;
+        //aMissile.guidance.steeringQuat = updateQuat;
+
+        /////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////
+
+        auto vec = aMissile.guidance.nav.vecToTargLocal;
+        //auto vec = steeringUpdateVec;
+        vec.z = 0.0f;
+        vec.Normalize();
+        float pitchAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
+
+        if (vec.y > 0.0f)
+        {
+            pitchAng *= -1.0f;
+        }
+
+        // limit fin angle change rate
+        if (pitchAng - abs(prevPitchAng) > maxSteeringDelta)
+        {
+
+        }
+        // limit fin angle change rate
+        if (pitchAng > prevPitchAng)
+        {
+            if (pitchAng - prevPitchAng > maxSteeringDelta)
+            {
+                pitchAng = prevPitchAng + maxSteeringDelta;
+            }
+        }
+        else if (pitchAng < prevPitchAng)
+        {
+            if (pitchAng + prevPitchAng > maxSteeringDelta)
+            {
+                pitchAng = prevPitchAng - maxSteeringDelta;
+            }
+        }
+
+        if (pitchAng > m_missileConsts.steerAngMax)
+        {
+            pitchAng = m_missileConsts.steerAngMax;
+        }
+        if (pitchAng < -m_missileConsts.steerAngMax)
+        {
+            pitchAng = -m_missileConsts.steerAngMax;
+        }
+
+        m_debugData->ToggleDebugOnOverRide();
+        vec = aMissile.guidance.nav.vecToTargLocal;
+        //vec = steeringUpdateVec;
+
+        vec.y = 0.0f;
+        vec.Normalize();
+        float yawAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
+        if (vec.z < 0.0f)
+        {
+            yawAng *= -1.0f;
+        }
+
+
+        // limit fin angle change rate
+        if (yawAng > prevYawAng)
+        {
+            if (yawAng - prevYawAng > maxSteeringDelta)
+            {
+                yawAng = prevYawAng + maxSteeringDelta;
+                m_debugData->DebugPushUILineDecimalNumber("a = ", 0.0f, "");
+            }
+            m_debugData->DebugPushUILineDecimalNumber("b = ", 1.0f, "");
+        }
+        else if (yawAng < prevYawAng)
+        {
+            if (yawAng + prevYawAng > maxSteeringDelta)
+            {
+                yawAng = prevYawAng - maxSteeringDelta;
+                m_debugData->DebugPushUILineDecimalNumber("c = ", 3.0f, "");
+            }
+            else if (yawAng < 0.0f && prevYawAng > 0.0f)
+            {
+                yawAng = prevYawAng - maxSteeringDelta;
+                m_debugData->DebugPushUILineDecimalNumber("d = ", 4.0f, "");
+            }
+            else if (yawAng < 0.0f && prevYawAng > 0.0f)
+            {
+                int testBreak = 0;
+                testBreak++;
+                yawAng = prevYawAng - maxSteeringDelta;
+            }
+            else
+            {
+                yawAng = prevYawAng - maxSteeringDelta;
+            }
+
+            m_debugData->DebugPushUILineDecimalNumber("e = ", 5.0f, "");
+        }
+
+        if (yawAng > m_missileConsts.steerAngMax)
+        {
+            yawAng = m_missileConsts.steerAngMax;
+        }
+        if (yawAng < -m_missileConsts.steerAngMax)
+        {
+            yawAng = -m_missileConsts.steerAngMax;
+        }
+
+
+
+        aMissile.guidance.conDat.finPitch = pitchAng;
+        aMissile.guidance.conDat.finYaw = yawAng;
+
+        if (abs(yawAng) - abs(prevYawAng) > maxSteeringDelta)
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
+
+
+        m_debugData->DebugPushUILineDecimalNumber("maxSteeringDelta rads = ", maxSteeringDelta, "");
+        m_debugData->DebugPushUILineDecimalNumber("maxSteeringDelta degs = ", Utility::ToDegrees(maxSteeringDelta), "");
+        m_debugData->DebugPushUILineDecimalNumber("yawAng degs = ", Utility::ToDegrees(yawAng), "");
+        m_debugData->ToggleDebugOff();
+
+        auto thrustQuat = aMissile.guidance.nav.quatToTarg;
+        //auto thrustQuat = updateQuat;
+
+        vec = DirectX::SimpleMath::Vector3::UnitX;
+        vec = DirectX::SimpleMath::Vector3::Transform(vec, thrustQuat);
+        aMissile.guidance.conDat.thrustVecNorm = aMissile.guidance.nav.vecToTargLocal;
+        aMissile.guidance.conDat.thrustVecNorm = vec;
+        ///////
+        // test trust vec offset for angle fin max
+
+        //const float pitchInput = m_manualThrustVecPitch;
+        //const float yawInput = m_manualThrustVecYaw;
+
+        const float pitchInput = -aMissile.guidance.conDat.finPitch;
+        const float yawInput = -aMissile.guidance.conDat.finYaw;
+
+        //const float minInputForThrustV = Utility::ToRadians(10.0f);
+        //const float maxInput = m_manualMax;
+        const float minInputForThrustV = m_missileConsts.thrustVecDeadZoneAng;
+        const float maxInput = m_missileConsts.thrustVecAngMax;
+
+        float pitchMod = 0.0f;
+        if (abs(pitchInput) > minInputForThrustV)
+        {
+            if (pitchInput > 0.0f)
+            {
+                pitchMod = pitchInput - minInputForThrustV;
+            }
+            else
+            {
+                pitchMod = pitchInput + minInputForThrustV;
+            }
+        }
+
+        float yawMod = 0.0f;
+        if (abs(yawInput) > minInputForThrustV)
+        {
+            if (yawInput > 0.0f)
+            {
+                yawMod = yawInput - minInputForThrustV;
+            }
+            else
+            {
+                yawMod = yawInput + minInputForThrustV;
+            }
+        }
+
+        auto steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
+        steeringQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yawMod, 0.0f, pitchMod);
+        auto steeringVec = DirectX::SimpleMath::Vector3::UnitX;
+        steeringVec = DirectX::SimpleMath::Vector3::Transform(steeringVec, steeringQuat);
+        steeringVec.Normalize();
+
+        auto boosterQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, steeringVec);
+        boosterQuat.Normalize();
+        boosterQuat.Inverse(boosterQuat);
+
+        vec = DirectX::SimpleMath::Vector3::UnitX;
+        vec = DirectX::SimpleMath::Vector3::Transform(vec, boosterQuat);
+        aMissile.guidance.conDat.thrustVecNorm = vec;
+        aMissile.guidance.conDat.thrustVecQuat = boosterQuat;
+
+        aMissile.guidance.conDat.thrustPitch = pitchMod;
+        aMissile.guidance.conDat.thrustYaw = yawMod;
+
+        /////////////////////////////////////////////////////////////////////
+
     }
 }
 
@@ -8125,7 +8449,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateNavData(m_missileVec[i], static_cast<float>(aTimeDelta));
-        UpdateAngularStability(m_missileVec[i], static_cast<float>(aTimeDelta));
+        //UpdateAngularStability(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateControlData(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateFinData(m_missileVec[i]);
@@ -8672,8 +8996,8 @@ void FireControl::VelocitySteeringTest(MissileData& aMissile, const float aTimeD
     aMissile.guidance.nav.targPosLocalized = velToTargVec;
 
     /////////////////////
-    //vec = Seek(selfVelL, targPosL);
-    vec = Pursuit(aMissile, selfVelL, targPosL, targVelL);
+    vec = Seek(selfVelL, targPosL);
+    //vec = Pursuit(aMissile, selfVelL, targPosL, targVelL);
     toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, vec);
     toTargQuat.Normalize();
     toTargQuat.Inverse(toTargQuat);
