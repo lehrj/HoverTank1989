@@ -6362,6 +6362,7 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
         const float prevPitchAng = aMissile.guidance.conDat.finPitch;
         const float prevYawAng = aMissile.guidance.conDat.finYaw;
         const float maxSteeringDelta = m_missileConsts.steeringAngPerSecDeltaMax * aTimeDelta;
+        const float maxThrustVecgDelta = m_missileConsts.thrustVecAngPerSecDeltaMax * aTimeDelta;
 
         /////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////
