@@ -536,7 +536,7 @@ struct MissileConsts
     const float plumeRotationRate = 0.432f;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(45.0f);
+    const float steerAngMax = Utility::ToRadians(25.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(10.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);

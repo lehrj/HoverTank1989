@@ -6403,7 +6403,7 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
         auto vec = aMissile.guidance.nav.vecToTargLocal;
         //auto vec = steeringUpdateVec;
         vec.z = 0.0f;
-        vec.Normalize();
+        //vec.Normalize();
         float pitchAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
         
         if (vec.y > 0.0f)
@@ -6446,7 +6446,7 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
         //vec = steeringUpdateVec;
         
         vec.y = 0.0f;
-        vec.Normalize();
+        //vec.Normalize();
         float yawAng = Utility::GetAngleBetweenVectors(vec, DirectX::SimpleMath::Vector3::UnitX);
         if (vec.z < 0.0f)
         {
@@ -6513,23 +6513,12 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
         m_debugData->ToggleDebugOff();
 
         auto thrustQuat = aMissile.guidance.nav.quatToTarg;
-        //auto thrustQuat = updateQuat;
 
-        vec = DirectX::SimpleMath::Vector3::UnitX;
-        vec = DirectX::SimpleMath::Vector3::Transform(vec, thrustQuat);
-        aMissile.guidance.conDat.thrustVecNorm = aMissile.guidance.nav.vecToTargLocal;
-        aMissile.guidance.conDat.thrustVecNorm = vec;
         ///////
         // test trust vec offset for angle fin max
-
-        //const float pitchInput = m_manualThrustVecPitch;
-        //const float yawInput = m_manualThrustVecYaw;
-
         const float pitchInput = -aMissile.guidance.conDat.finPitch;
         const float yawInput = -aMissile.guidance.conDat.finYaw;
 
-        //const float minInputForThrustV = Utility::ToRadians(10.0f);
-        //const float maxInput = m_manualMax;
         const float minInputForThrustV = m_missileConsts.thrustVecDeadZoneAng;
         const float maxInput = m_missileConsts.thrustVecAngMax;
 
