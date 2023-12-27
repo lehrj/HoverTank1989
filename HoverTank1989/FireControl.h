@@ -210,8 +210,11 @@ struct NavData
 
 struct ControlData
 {
+    DirectX::SimpleMath::Vector3 tailFinVec = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion tailFinQuat = DirectX::SimpleMath::Quaternion::Identity;
     float finPitch = Utility::ToRadians(0.0f);
     float finYaw = Utility::ToRadians(0.0f);
+
     DirectX::SimpleMath::Vector3 thrustVecNorm = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion thrustVecQuat = DirectX::SimpleMath::Quaternion::Identity;
     float thrustPitch = Utility::ToRadians(0.0f);
@@ -539,8 +542,11 @@ struct MissileConsts
     const float steerAngMax = Utility::ToRadians(25.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(10.0f);
 
+    const float tailFinAngMax = Utility::ToRadians(25.0f);
+    const float tailFinAngPerSecDeltaMax = Utility::ToRadians(10.0f);
+
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
-    const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
+    const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(10.0f);
 
     const float rocketBoostForceMax = 100.0f;
@@ -852,7 +858,7 @@ private:
     void UpdateAngularStability(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateControlData(MissileData& aMissile, const float aTimeDelta);
-    void UpdateControlData2(MissileData& aMissile, const float aTimeDelta);
+    void UpdateControlDataConical(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
