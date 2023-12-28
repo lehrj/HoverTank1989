@@ -8626,8 +8626,8 @@ void FireControl::UpdateControlDataConical(MissileData& aMissile, const float aT
     auto thrustVec = aMissile.guidance.conDat.thrustVecNorm;
     auto thrustQuat = aMissile.guidance.conDat.thrustVecQuat;
 
-    //const float maxFinAng = m_missileConsts.steerAngMax;
-    
+    ///////////////////////////////////////////////////////
+    // Tail fin control
     DirectX::SimpleMath::Vector3 steeringLine = -DirectX::SimpleMath::Vector3::UnitX;
     steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, navQuat);
     float steeringL = steeringLine.Length();
@@ -8656,9 +8656,26 @@ void FireControl::UpdateControlDataConical(MissileData& aMissile, const float aT
     aMissile.guidance.conDat.finYaw = finEulers.y;
 
     //////////////////////////////////////////////////////
-    
+    // Thrust Vector Control
     auto thrustSteering = DirectX::SimpleMath::Vector3::UnitX;
     thrustSteering = DirectX::SimpleMath::Vector3::Transform(thrustSteering, navQuat);
+
+    const float thrustSteeringAngle = Utility::GetAngleBetweenVectors(thrustSteering, DirectX::SimpleMath::Vector3::UnitX);
+
+    if (thrustSteeringAngle <= m_missileConsts.thrustVecDeadZoneAng)
+    {
+        thrustSteering = DirectX::SimpleMath::Vector3::UnitX;
+    }
+    else
+    {
+        //DirectX::SimpleMath::Quaternion::
+        DirectX::SimpleMath::Quaternion deadZoneLimitQuat = DirectX::SimpleMath::Quaternion::Identity;
+        DirectX::SimpleMath::Quaternion deadZoneConeQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, thrustSteering);
+        deadZoneLimitQuat.RotateTowards(deadZoneConeQuat, thrustSteeringAngle - m_missileConsts.thrustVecDeadZoneAng);
+
+        thrustSteering = DirectX::SimpleMath::Vector3::UnitX;
+        thrustSteering = DirectX::SimpleMath::Vector3::Transform(thrustSteering, deadZoneLimitQuat);
+    }
 
     const float maxThrustAng = m_missileConsts.thrustVecAngMax;
     DirectX::SimpleMath::Quaternion thrustConeLimitQuat = DirectX::SimpleMath::Quaternion::Identity;
@@ -8681,8 +8698,9 @@ void FireControl::UpdateControlDataConical(MissileData& aMissile, const float aT
     DirectX::SimpleMath::Vector3 eulers = updateThrustQuat.ToEuler();
     aMissile.guidance.conDat.thrustPitch = eulers.z;
     aMissile.guidance.conDat.thrustYaw = eulers.y;
-    //////////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////////
+    // Debug and world cord data
     auto thrustVecWorld = steeringUpdateVec;
     thrustVecWorld = DirectX::SimpleMath::Vector3::Transform(thrustVecWorld, aMissile.projectileData.alignmentQuat);
 
@@ -8699,7 +8717,6 @@ void FireControl::UpdateControlDataConical(MissileData& aMissile, const float aT
     navQuatWorldVec = DirectX::SimpleMath::Vector3::Transform(navQuatWorldVec, navQuat);
     navQuatWorldVec = DirectX::SimpleMath::Vector3::Transform(navQuatWorldVec, aMissile.projectileData.alignmentQuat);
 
-
     m_debugData->ToggleDebugOnOverRide();
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, thrustVecWorld, 5.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, thrustVecWorld2, 4.0f, 0.1f, DirectX::Colors::Blue);
@@ -8707,20 +8724,15 @@ void FireControl::UpdateControlDataConical(MissileData& aMissile, const float aT
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, navVecWorld, 5.0f, 0.0f, DirectX::Colors::Violet);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, navQuatWorldVec, 4.0f, 0.1f, DirectX::Colors::Orange);
 
-    m_debugData->DebugPushUILineDecimalNumber("eulers.x = ", eulers.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("eulers.y = ", eulers.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("eulers.z = ", eulers.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("thrustSteeringAngle ", Utility::ToDegrees(thrustSteeringAngle), "");
 
-    m_debugData->DebugPushUILineDecimalNumber("eulers.x = ", Utility::ToDegrees(eulers.x), "");
-    m_debugData->DebugPushUILineDecimalNumber("eulers.y = ", Utility::ToDegrees(eulers.y), "");
-    m_debugData->DebugPushUILineDecimalNumber("eulers.z = ", Utility::ToDegrees(eulers.z), "");
-
-    m_debugData->DebugPushUILineDecimalNumber("finEulers.x = ", Utility::ToDegrees(finEulers.x), "");
-    m_debugData->DebugPushUILineDecimalNumber("finEulers.y = ", Utility::ToDegrees(finEulers.y), "");
-    m_debugData->DebugPushUILineDecimalNumber("finEulers.z = ", Utility::ToDegrees(finEulers.z), "");
-
+    m_debugData->DebugPushUILineDecimalNumber("updateThrustQuat.x  ", updateThrustQuat.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("updateThrustQuat.y  ", updateThrustQuat.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("updateThrustQuat.z  ", updateThrustQuat.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("updateThrustQuat.w  ", updateThrustQuat.w, "");
+    m_debugData->DebugPushUILineDecimalNumber("updateThrustQuat.wd ", Utility::ToDegrees(updateThrustQuat.w), "");
+    
     m_debugData->ToggleDebugOff();
-
 }
 
 

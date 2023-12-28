@@ -546,7 +546,7 @@ struct MissileConsts
     const float tailFinAngPerSecDeltaMax = Utility::ToRadians(10.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
-    const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
+    const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(10.0f);
 
     const float rocketBoostForceMax = 100.0f;
