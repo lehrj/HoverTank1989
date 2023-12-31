@@ -3178,7 +3178,7 @@ void NPCVehicle::RungeKutta4(struct VehicleData* aVehicle, double aTimeDelta)
     DirectX::SimpleMath::Vector3 angularMomentumUpdate = (dq1.angularMomentum + 2.0 * dq2.angularMomentum + 2.0 * dq3.angularMomentum + dq4.angularMomentum) / numEqns;
     DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
 
-    //q.velocity += velocityUpdate;
+    q.velocity += velocityUpdate;
     q.position += posUpdate;
 
     q.angularMomentum += angularMomentumUpdate;
