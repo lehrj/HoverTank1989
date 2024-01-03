@@ -600,7 +600,7 @@ struct MissileConsts
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
-    const bool isManualControlTrue = true;
+    const bool isManualControlTrue = false;
 };
 
 enum class ExplosionType
@@ -806,6 +806,10 @@ private:
 
     unsigned int GetUniqueMissileID();
 
+    void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
+
     void HardBurnModeActivator(MissileData& aMissile, const float aTimeDelta);
     void HardBurnModeTest(MissileData& aMissile, const float aTimeDelta);
 
@@ -854,12 +858,9 @@ private:
     DirectX::SimpleMath::Vector3 Seek(const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Vector3 aTargPosLocal);
     DirectX::SimpleMath::Vector3 Pursuit(MissileData& aMissile, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Vector3 aTargLocalPos, const DirectX::SimpleMath::Vector3 aTargLocalVel);
 
-    void TestGuidance(MissileData& aMissile, const float aTimeDelta);
-
     void UpdateAngularStability(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateControlData(MissileData& aMissile, const float aTimeDelta);
-    void UpdateControlDataConical(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
     void UpdateExplosionVec(double aTimeDelta);
@@ -907,8 +908,6 @@ private:
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld2(MissileData& aMissile, const float aTimeDelta);
-
-    void VelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
