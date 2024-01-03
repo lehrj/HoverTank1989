@@ -540,10 +540,10 @@ struct MissileConsts
 
     const float headingRadiansPerSecondMax = 1.12f;
     const float steerAngMax = Utility::ToRadians(25.0f);
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(10.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
 
     const float tailFinAngMax = Utility::ToRadians(25.0f);
-    const float tailFinAngPerSecDeltaMax = Utility::ToRadians(10.0f);
+    const float tailFinAngPerSecDeltaMax = Utility::ToRadians(110.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(9.0f);
@@ -791,6 +791,7 @@ private:
     void CheckCollisions();
     void CheckCollisionsMissile();
     void DebugGraphCurveData(MissileData& aMissile, const float aTimeDelta);
+    void DebugSetMissileToPlayerPos(MissileData& aMissile);
     void DeleteMissileFromVec(const unsigned int aIndex);
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);

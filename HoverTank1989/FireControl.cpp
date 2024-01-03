@@ -1627,6 +1627,18 @@ void FireControl::DebugInputZero()
     m_debugVal1 = 0.0f;
 }
 
+
+void FireControl::DebugSetMissileToPlayerPos(MissileData& aMissile)
+{
+    if (m_isDebugToggleTrue1 == true)
+    {
+        aMissile.projectileData.q.position = m_playerVehicle->GetPos();
+        aMissile.projectileData.q.velocity = m_playerVehicle->GetVelocity();
+        aMissile.projectileData.q.angularVelocity = m_playerVehicle->GetAngularVelocity();
+        aMissile.projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
+    }
+}
+
 void FireControl::DeleteMissileFromVec(const unsigned int aIndex)
 {
     if (aIndex > m_missileVec.size())
@@ -7958,8 +7970,8 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
 
-        ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
-        UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
+        //ControllerUpdate(m_missileVec[i], static_cast<float>(aTimeDelta));
+        //UpdateSteeringDirNorm(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateNavData(m_missileVec[i], static_cast<float>(aTimeDelta));
         //UpdateAngularStability(m_missileVec[i], static_cast<float>(aTimeDelta));
@@ -7970,26 +7982,22 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         BoosterSteeringUpdate(m_missileVec[i]);
 
         AccumulateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
+
+        auto vec = m_missileVec[i].guidance.linearForceSum;
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, vec, 10.0f, 0.0f, DirectX::Colors::Orange);
+        m_debugData->ToggleDebugOff();
+        
+       
         RungeKutta4Missile(&m_missileVec[i], aTimeDelta);
 
-        ////// debug set missle to player cords & align
-        if (m_isDebugToggleTrue1 == true)
-        {
-            m_missileVec[i].projectileData.q.position = m_playerVehicle->GetPos();
-            m_missileVec[i].projectileData.q.velocity = m_playerVehicle->GetVelocity();
-            m_missileVec[i].projectileData.q.angularVelocity = m_playerVehicle->GetAngularVelocity();
-            m_missileVec[i].projectileData.alignmentQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_playerVehicle->GetAlignment());
-        }
-        ////// end : debug set missle to player cords & align
+        DebugSetMissileToPlayerPos(m_missileVec[i]);
 
         UpdateMissileAlignment(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateMissileModelData(m_missileVec[i]);
 
         PrintFlightStateData(m_missileVec[i]);
     
-        //PrintFinData(m_finLib.canardPitch, m_missileVec[i].guidance.finPak.canardPitch, m_missileVec[i]);
-        //PrintFinData(m_finLib.tailPitch, m_missileVec[i].guidance.finPak.tailPitch, m_missileVec[i]);
-
         ResetMissileForceAccumulators(m_missileVec[i]);
     }
 
@@ -8598,14 +8606,11 @@ void FireControl::UpdateAngularStability(MissileData& aMissile, const float aTim
     updateVec = DirectX::SimpleMath::Vector3::Transform(updateVec, updateQuat);
     updateVec.Normalize();
 
-    aMissile.guidance.nav.vecToTargLocal = updateVec;
-    aMissile.guidance.nav.targPosLocalized = updateVec;
-    aMissile.guidance.nav.quatToTarg = updateQuat;
-
     if (m_isDebugAngularStabilityOn == true)
     {
-        //aMissile.guidance.headingLocalVecTest = updateVec;
-        //aMissile.guidance.headingLocalQuatTest = updateQuat;
+        aMissile.guidance.nav.vecToTargLocal = updateVec;
+        aMissile.guidance.nav.targPosLocalized = updateVec;
+        aMissile.guidance.nav.quatToTarg = updateQuat;
     }
 }
 
