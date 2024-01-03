@@ -8632,7 +8632,7 @@ void FireControl::UpdateControlDataConical(MissileData& aMissile, const float aT
 
     ///////////////////////////////////////////////////////
     // Tail fin control
-    DirectX::SimpleMath::Vector3 steeringLine = -DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 steeringLine = DirectX::SimpleMath::Vector3::UnitX;
     steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, navQuat);
     float steeringL = steeringLine.Length();
     const float maxAng = m_missileConsts.tailFinAngMax;
@@ -8642,7 +8642,8 @@ void FireControl::UpdateControlDataConical(MissileData& aMissile, const float aT
 
     const float maxAngPerTime = aTimeDelta * m_missileConsts.tailFinAngPerSecDeltaMax;
 
-    DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.nav.vecToTargLocal;
+    //DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.nav.vecToTargLocal;
+    DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.conDat.tailFinVec;
     //DirectX::SimpleMath::Vector3 preVec = aMissile.guidance.conDat.thrustVecNorm;
     //DirectX::SimpleMath::Quaternion preQuat = aMissile.guidance.nav.quatToTarg;
     //DirectX::SimpleMath::Quaternion preQuat = aMissile.guidance.conDat.thrustVecQuat;
