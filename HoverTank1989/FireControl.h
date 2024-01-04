@@ -600,7 +600,7 @@ struct MissileConsts
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
-    const bool isManualControlTrue = false;
+    const bool isManualControlTrue = true;
 };
 
 enum class ExplosionType
@@ -778,6 +778,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulator(MissileData& aMissile);
+    DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulatorOld(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     float CalculateFinLiftCoef(const float aAngleOfAttack);
     float CalculateFinLiftCoefDebug(const float aAngleOfAttack);
@@ -806,6 +807,7 @@ private:
 
     unsigned int GetUniqueMissileID();
 
+    void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
     void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
     void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
@@ -832,6 +834,9 @@ private:
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
+    void InputNavData(MissileData& aMissile, DirectX::SimpleMath::Quaternion aQuatToTarg, const DirectX::SimpleMath::Vector3 aTargPosLocalized, const DirectX::SimpleMath::Vector3 aVecToTargLocal);
+
+
     void IRSeekerTest(MissileData& aMissile, const float aTimeDelta);
 
     float ManualInputUpdate(const float aCurrentVal, const float aInput);
@@ -840,6 +845,7 @@ private:
     void ManualMissileControl(MissileData& aMissile, const float aTimeDelta);
     void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
     void PrintFlightStateData(MissileData& aMissile);
+    void PrintMissileData(MissileData& aMissile, const float aTimeDelta);
     void ProNavTest(MissileData& aMissile, const float aTimeDelta);
     void ProNav(MissileData& aMissile, const float aTimeDelta);
     void ProNav2(MissileData& aMissile, const float aTimeDelta);
@@ -1038,6 +1044,8 @@ private:
     float m_aeroDebugVal2 = 0.0f;
     const float m_aeroDebugDelta1 = 0.1f;
     const float m_aeroDebugDelta2 = 0.4f;
+
+    DirectX::SimpleMath::Vector3 m_debugDrag = DirectX::SimpleMath::Vector3::Zero;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
