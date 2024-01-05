@@ -775,8 +775,11 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragAngularSumLocal(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragAngularSumLocalTest(MissileData& aMissile, const float aTimeDelta);
     void CalculateAirDragTorque(MissileData& aMissile, const float aTimeDelta);
+
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
-    DirectX::SimpleMath::Vector3 CalculateDragLinearForRungeTest(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+
+    DirectX::SimpleMath::Vector3 CalcDragLinearCurrent(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulator(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulatorOld(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragLinearSum(MissileData& aMissile, const float aTimeDelta);
@@ -791,8 +794,11 @@ private:
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
     void CheckCollisionsMissile();
+    
+    void DebugMissileFunc(MissileData* aMissile);
     void DebugGraphCurveData(MissileData& aMissile, const float aTimeDelta);
     void DebugSetMissileToPlayerPos(MissileData& aMissile);
+
     void DeleteMissileFromVec(const unsigned int aIndex);
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
