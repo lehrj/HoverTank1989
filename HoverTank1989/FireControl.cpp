@@ -501,12 +501,9 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForRunge(MissileDat
 DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
 {
     DirectX::SimpleMath::Vector3 velocityNorm = aVelocity;
-    //DirectX::SimpleMath::Vector3 velocityNorm = aMissile.projectileData.q.velocity;
     velocityNorm.Normalize();
     DirectX::SimpleMath::Vector3 localVelocityNorm = velocityNorm;
-    localVelocityNorm.Normalize();
     localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile->projectileData.inverseAlignmentQuat);
-    //localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile.projectileData.inverseAlignmentQuat);
 
     float frontSurfaceArea = m_missileDimensions.y * m_missileDimensions.z;
     float sideSurfaceArea = m_missileDimensions.x * m_missileDimensions.y;
@@ -522,101 +519,70 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
 
     //float airSurfaceArea = (frontSurfaceArea * frontDot) + (sideSurfaceArea * sideDot) + (topSurfaceArea * topDot);
     float airSurfaceArea = frontSurface + sideSurface + topSurface;
-    const float airSurfaceArea2 = frontSurface + sideSurface + topSurface;
+    //const float airSurfaceArea2 = frontSurface + sideSurface + topSurface;
 
+    const float surfaceSum = airSurfaceArea;
+    const float surfacePercentage = surfaceSum / (frontSurfaceArea + sideSurfaceArea + topSurfaceArea);
     //m_debugData->ToggleDebugOnOverRide();
 
-    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea2 = ", airSurfaceArea2, "");
+    //m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea2 = ", airSurfaceArea2, "");
     m_debugData->DebugPushUILineDecimalNumber("frontDot = ", frontDot, "");
     m_debugData->DebugPushUILineDecimalNumber("sideDot = ", sideDot, "");
     m_debugData->DebugPushUILineDecimalNumber("topDot = ", topDot, "");
     m_debugData->DebugPushUILineDecimalNumber("frontSurface = ", frontSurface, "");
     m_debugData->DebugPushUILineDecimalNumber("sideSurface = ", sideSurface, "");
     m_debugData->DebugPushUILineDecimalNumber("topSurface = ", topSurface, "");
+    m_debugData->DebugPushUILineDecimalNumber("surfaceSum = ", surfaceSum, "");
+    m_debugData->DebugPushUILineDecimalNumber("surfacePercentage = ", surfacePercentage, "");
+    m_debugData->ToggleDebugOff();
 
-    //m_debugData->ToggleDebugOff();
-
-    airSurfaceArea = 0.785f;
+    //airSurfaceArea = 0.785f;
 
     ////////////////////////////////////////////////////////////////////////////////////
-
-    DirectX::SimpleMath::Vector3 airVelocityLocalized = aMissile->projectileData.q.velocity;
+    // 
+    //DirectX::SimpleMath::Vector3 airVelocityLocalized = aMissile->projectileData.q.velocity;
+    DirectX::SimpleMath::Vector3 airVelocityLocalized = aVelocity;
     airVelocityLocalized = DirectX::SimpleMath::Vector3::Transform(airVelocityLocalized, aMissile->projectileData.inverseAlignmentQuat);
-    // airVelocityLocalized = -DirectX::SimpleMath::Vector3::UnitX;
-    //const float angleOfAttack = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airVelocityLocalized);
-    const float angleOfAttackWrapped = Utility::WrapAngleOnePi(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airVelocityLocalized));
+
+    //const float angleOfAttackWrapped = Utility::WrapAngleOnePi(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airVelocityLocalized));
     const float angleOfAttackWrapped2 = Utility::WrapAngle(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airVelocityLocalized));
-    //m_debugData->DebugPushUILineDecimalNumber("angleOfAttack        deg = ", Utility::ToDegrees(angleOfAttack), "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttackWrapped deg  = ", Utility::ToDegrees(angleOfAttackWrapped), "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttackWrapped2 deg = ", Utility::ToDegrees(angleOfAttackWrapped2), "");
-    //float sideSlipRatio = angleOfAttack / DirectX::XM_PIDIV2;
-    //float sideSlipRatio = angleOfAttackWrapped / DirectX::XM_PIDIV2;
-    float sideSlipRatio = abs(angleOfAttackWrapped / DirectX::XM_PIDIV2);
-    //float sideSlipRatio = abs(angleOfAttackWrapped2 / DirectX::XM_PI);
+
+    //float sideSlipRatio = abs(angleOfAttackWrapped / DirectX::XM_PIDIV2);
     float sideSlipRatio2 = abs(angleOfAttackWrapped2 / DirectX::XM_PI);
-    //float sideSlipRatio =  DirectX::XM_PIDIV2;
-    if (sideSlipRatio > 1.0f || sideSlipRatio < 0.0f)
+    if (sideSlipRatio2 > 1.0f || sideSlipRatio2 < 0.0f)
     {
         //sideSlipRatio = 1.0f;
         int testBreak = 0;
         testBreak++;
     }
 
-    //m_debugData->ToggleDebugOnOverRide();
-
-    m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio = ", sideSlipRatio, "");
-    float sideSlipDeg = sideSlipRatio * 90.0f;
-    //m_debugData->DebugPushUILineDecimalNumber("sideSlipDeg  = ", sideSlipDeg, "");
-
-    float combinedDot = abs(topDot) * abs(sideDot);
-    m_debugData->DebugPushUILineDecimalNumber("combinedDot = ", combinedDot, "");
-
-    m_debugData->ToggleDebugOff();
-
-    float airSurfaceAreaToAdd = (m_missileDimensions.x * m_missileDimensions.y) * sideSlipRatio2;
-    float radius = 0.0635f;
+    const float airSurfaceAreaToAdd = (m_missileDimensions.x * m_missileDimensions.y) * sideSlipRatio2;
+    const float radius = m_missileDimensions.y * 0.5f;
     airSurfaceArea = Utility::GetPi() * radius * radius;
-    airSurfaceArea = 1.0f;
+    //airSurfaceArea = 1.0f;
     airSurfaceArea += airSurfaceAreaToAdd;
 
     float dragCoefficientBase = 0.17f;
     float dragCoefficientToAdd = 1.6f * sideSlipRatio2;
-    //float dragCoefficient = dragCoefficientBase + dragCoefficientToAdd;
     float dragCoefficient = dragCoefficientBase + dragCoefficientToAdd;
-
-    ////////////////////////////////////////////////////////////////////////////////////
-
-    //airSurfaceArea += airSurfaceAreaToAdd;
-    //dragCoefficient += dragCoefficientToAdd;
 
     //  Compute the total drag force.
     float airDensity = m_environment->GetAirDensity();
-    //const float dragCoefficient = 0.17f;
     float velocity = aMissile->projectileData.q.velocity.Length();
     float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
-    //DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
     DirectX::SimpleMath::Vector3 airResistance = localVelocityNorm * (-dragResistance);
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
-    //drag = DirectX::SimpleMath::Vector3::Transform(drag, aMissile.projectileData.inverseAlignmentQuat);
 
-    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->ToggleDebugOnOverRide();
 
-    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea  = ", airSurfaceArea, "");
-    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea2 = ", airSurfaceArea2, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("airResistance.Length() = ", airResistance.Length(), "");
-
-    m_debugData->DebugPushUILineDecimalNumber("dragResistance = ", dragResistance, "");
+    m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio2 = ", sideSlipRatio2, "");
     m_debugData->DebugPushUILineDecimalNumber("dragCoefficient = ", dragCoefficient, "");
-    m_debugData->DebugPushUILineDecimalNumber("drag.Length() = ", drag.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_debugDrag.L = ", m_debugDrag.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea = ", airSurfaceArea, "");
     m_debugData->ToggleDebugOff();
 
     return drag;
 }
-
-
 
 
 DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForAccumulator(MissileData& aMissile)
@@ -6625,14 +6591,16 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
+    DirectX::SimpleMath::Vector3 dragNew = CalcDragLinearCurrent(aProjectile, newQ.velocity);
 
     ////////////////////////////////////////
 
     // linear
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
     velocityUpdate += newQ.velocity;
-    velocityUpdate += aProjectile->guidance.linearDragSum;
+    //velocityUpdate += aProjectile->guidance.linearDragSum;
     //velocityUpdate += drag;
+    velocityUpdate += dragNew;
     velocityUpdate += aProjectile->guidance.linearForceSum;
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_missileConsts.mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
