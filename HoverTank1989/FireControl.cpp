@@ -558,19 +558,27 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
 
     const float airSurfaceAreaToAdd = (m_missileDimensions.x * m_missileDimensions.y) * sideSlipRatio2;
     const float radius = m_missileDimensions.y * 0.5f;
+    const float frontSurfaceArea2 = Utility::GetPi() * radius * radius;
     airSurfaceArea = Utility::GetPi() * radius * radius;
     //airSurfaceArea = 1.0f;
+    airSurfaceArea += airSurfaceAreaToAdd;
+
+    airSurfaceArea = m_missileConsts.dragAreaDebug;
     airSurfaceArea += airSurfaceAreaToAdd;
 
     float dragCoefficientBase = 0.17f;
     float dragCoefficientToAdd = 1.6f * sideSlipRatio2;
     float dragCoefficient = dragCoefficientBase + dragCoefficientToAdd;
 
+    dragCoefficient = m_missileConsts.dragCoefficientDebug;
+    dragCoefficient += dragCoefficientToAdd;
+
     //  Compute the total drag force.
     float airDensity = m_environment->GetAirDensity();
     float velocity = aMissile->projectileData.q.velocity.Length();
     float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
-    DirectX::SimpleMath::Vector3 airResistance = localVelocityNorm * (-dragResistance);
+    //DirectX::SimpleMath::Vector3 airResistance = localVelocityNorm * (-dragResistance);
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
 
@@ -579,11 +587,12 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
     //m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio2 = ", sideSlipRatio2, "");
     //m_debugData->DebugPushUILineDecimalNumber("dragCoefficient = ", dragCoefficient, "");
     //m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea = ", airSurfaceArea, "");
-    
+    //m_debugData->DebugPushUILineDecimalNumber("airSurfaceAreaToAdd = ", airSurfaceAreaToAdd, "");
+    //m_debugData->DebugPushUILineDecimalNumber("frontSurfaceArea2 = ", frontSurfaceArea2, "");
+    //m_debugData->DebugPushUILineDecimalNumber("frontSurfaceArea  = ", frontSurfaceArea, "");
+    //m_debugData->DebugPushUILineDecimalNumber("drag = ", drag.Length(), "");
 
-    m_debugData->DebugPushUILineDecimalNumber("drag = ", drag.Length(), "");
-    m_debugData->PushDebugLine(aMissile->projectileData.q.position, drag, 5.0f, 0.0f, DirectX::Colors::Red);
-
+    //m_debugData->PushDebugLine(aMissile->projectileData.q.position, drag, 5.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
 
     return drag;
@@ -703,7 +712,7 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearForAccumulator(Miss
     m_debugData->DebugPushUILineDecimalNumber("dragResistance = ", dragResistance, "");
     m_debugData->DebugPushUILineDecimalNumber("dragCoefficient = ", dragCoefficient, "");
     m_debugData->DebugPushUILineDecimalNumber("drag.Length() = ", drag.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("m_debugDrag.L = ", m_debugDrag.Length(), "");
+ 
     m_debugData->ToggleDebugOff();
 
     return drag;
@@ -3579,7 +3588,8 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
             {
                 if (m_selectMissileFire == 0)
                 {
-                    FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
+                    //FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
+                    FireMissile(m_playerVehicle->GetWeaponPos(), m_playerVehicle->GetWeaponDirection(), DirectX::SimpleMath::Vector3::Zero, m_playerVehicle->GetVehicleUp(), 0.0f);
                 }
                 else if (m_selectMissileFire == 1)
                 {
@@ -6585,9 +6595,11 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
 
     ////////////////////////////////////////
-    float airSurfaceArea = 1.0f;
+    //float airSurfaceArea = 1.0f;
+    float airSurfaceArea = m_missileConsts.dragAreaDebug;
     float airDensity = m_environment->GetAirDensity();
-    float dragCoefficient = m_missileConsts.dragCoefficient;
+    //float dragCoefficient = m_missileConsts.dragCoefficient;
+    float dragCoefficient = m_missileConsts.dragCoefficientDebug;
     float velocity = newQ.velocity.Length();
     auto velocityNorm = newQ.velocity;
     velocityNorm.Normalize();
@@ -6625,11 +6637,12 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
 
 
-    m_debugDrag = drag;
-    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("drag           = ", drag .Length(), "");
-    //m_debugData->DebugPushUILineDecimalNumber("dragTorqueTest = ", dragTorqueTest.Length(), "");
-    m_debugData->PushDebugLine(aProjectile->projectileData.q.position, drag, 7.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->DebugPushUILineDecimalNumber("dragNew       = ", dragNew.Length(), "");
+
+    m_debugData->PushDebugLine(aProjectile->projectileData.q.position, dragNew, 7.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(aProjectile->projectileData.q.position, drag, 6.0f, 0.2f, DirectX::Colors::Teal);
     m_debugData->ToggleDebugOff();
 }
 
@@ -8483,7 +8496,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         m_debugData->ToggleDebugOnOverRide();
         m_debugData->DebugPushUILineDecimalNumber("deltaVelocity = ", deltaVelocity.Length(), "");
-        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, deltaVelocity, 4.0f, 0.0f, DirectX::Colors::YellowGreen);
+        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, 4.0f, 0.0f, DirectX::Colors::LimeGreen);
 
         m_debugData->ToggleDebugOff();
     }

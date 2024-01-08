@@ -520,6 +520,10 @@ struct MissileConsts
     const float rocketFireFullTime = 0.5f;
     const float wingArea = 0.3f;
     const float testFinArea = 0.3f;
+
+    const float dragCoefficientDebug = 0.3f;
+    const float dragAreaDebug        = 0.03f;
+
     const float dragCoefficient = 0.3f;
     const float dragCoefficientAng = 0.3f;
     const float postExplosionMass = 10.0f;
@@ -549,7 +553,7 @@ struct MissileConsts
     const float thrustVecDeadZoneAng = Utility::ToRadians(9.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
 
-    const float rocketBoostForceMax = 1.0f;
+    const float rocketBoostForceMax = 40.0f;
     const float mass = 22.0f;
     //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
     const float velMaxEst = 10.0f;
@@ -1050,8 +1054,6 @@ private:
     float m_aeroDebugVal2 = 0.0f;
     const float m_aeroDebugDelta1 = 0.1f;
     const float m_aeroDebugDelta2 = 0.4f;
-
-    DirectX::SimpleMath::Vector3 m_debugDrag = DirectX::SimpleMath::Vector3::Zero;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
