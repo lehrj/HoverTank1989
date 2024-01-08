@@ -576,9 +576,14 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
 
     m_debugData->ToggleDebugOnOverRide();
 
-    m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio2 = ", sideSlipRatio2, "");
-    m_debugData->DebugPushUILineDecimalNumber("dragCoefficient = ", dragCoefficient, "");
-    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea = ", airSurfaceArea, "");
+    //m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio2 = ", sideSlipRatio2, "");
+    //m_debugData->DebugPushUILineDecimalNumber("dragCoefficient = ", dragCoefficient, "");
+    //m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea = ", airSurfaceArea, "");
+    
+
+    m_debugData->DebugPushUILineDecimalNumber("drag = ", drag.Length(), "");
+    m_debugData->PushDebugLine(aMissile->projectileData.q.position, drag, 5.0f, 0.0f, DirectX::Colors::Red);
+
     m_debugData->ToggleDebugOff();
 
     return drag;
@@ -6624,7 +6629,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("drag           = ", drag .Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("dragTorqueTest = ", dragTorqueTest.Length(), "");
-    m_debugData->PushDebugLine(aProjectile->projectileData.q.position, aProjectile->guidance.linearDragSum, 7.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(aProjectile->projectileData.q.position, drag, 7.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->ToggleDebugOff();
 }
 
@@ -8438,6 +8443,8 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
+        auto prevVelocity = m_missileVec[i].projectileData.q.velocity;
+
         UpdateFlightStateData(m_missileVec[i], aTimeDelta);
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
         //UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
@@ -8457,7 +8464,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         AccumulateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
        
-        DebugMissileFunc(&m_missileVec[i]);
+        //DebugMissileFunc(&m_missileVec[i]);
 
         RungeKutta4Missile(&m_missileVec[i], aTimeDelta);
 
@@ -8469,6 +8476,16 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         PrintFlightStateData(m_missileVec[i]);
         PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ResetMissileForceAccumulators(m_missileVec[i]);
+
+        auto postVelocity = m_missileVec[i].projectileData.q.velocity;
+
+        auto deltaVelocity = (postVelocity - prevVelocity) / aTimeDelta;
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineDecimalNumber("deltaVelocity = ", deltaVelocity.Length(), "");
+        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, deltaVelocity, 4.0f, 0.0f, DirectX::Colors::YellowGreen);
+
+        m_debugData->ToggleDebugOff();
     }
 
     //CheckCollisionsMissile();
