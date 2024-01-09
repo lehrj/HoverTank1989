@@ -3860,6 +3860,30 @@ void FireControl::GuidanceManual(MissileData& aMissile, const float aTimeDelta)
     aMissile.guidance.nav.targPosLocalized = steeringVec;
 }
 
+void FireControl::GuidanceManualVector(MissileData& aMissile, const float aTimeDelta)
+{
+    const float maxInputAng = m_missileConsts.steerAngMax;
+    auto inputScaled = DirectX::SimpleMath::Vector2::Zero;
+    inputScaled.x = m_manualControlInput.x * maxInputAng;
+    inputScaled.y = m_manualControlInput.y * maxInputAng;
+
+    auto steeringQuat = DirectX::SimpleMath::Quaternion::Identity;
+    //steeringQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(m_manualThrustVecYaw, 0.0f, m_manualThrustVecPitch);
+    steeringQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(inputScaled.x, 0.0f, inputScaled.y);
+
+    auto steeringVec = DirectX::SimpleMath::Vector3::UnitX;
+    steeringVec = DirectX::SimpleMath::Vector3::Transform(steeringVec, steeringQuat);
+    steeringVec.Normalize();
+
+    auto boosterQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, steeringVec);
+    boosterQuat.Normalize();
+    boosterQuat.Inverse(boosterQuat);
+
+    aMissile.guidance.nav.vecToTargLocal = steeringVec;
+    aMissile.guidance.nav.quatToTarg = boosterQuat;
+    aMissile.guidance.nav.targPosLocalized = steeringVec;
+}
+
 void FireControl::GuidanceBasic(MissileData& aMissile, const float aTimeDelta)
 {
     const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
@@ -4952,6 +4976,24 @@ void FireControl::ManualControlInput(FinType aFinType, const float aInput)
 
 void FireControl::ManualControlInputPitch(const float aInput)
 {
+    m_isManualUpdatePitchTrue = true;
+
+    const float inputMod = aInput * m_manualInputRate;
+
+    if (inputMod + m_manualControlInput.y > 1.0f)
+    {
+        m_manualControlInput.y = 1.0f;
+    }
+    else if (inputMod + m_manualControlInput.y < -1.0f)
+    {
+        m_manualControlInput.y = -1.0f;
+    }
+    else
+    {
+        m_manualControlInput.y += inputMod;
+    }
+
+
     if (m_currentControlType == ControlInputType::INPUT_CANARD)
     {
         m_manualCanardPitch = ManualInputUpdate(m_manualCanardPitch, aInput);
@@ -4973,6 +5015,23 @@ void FireControl::ManualControlInputPitch(const float aInput)
 
 void FireControl::ManualControlInputYaw(const float aInput)
 {
+    m_isManualUpdateYawTrue = true;
+
+    const float inputMod = aInput * m_manualInputRate;
+
+    if (inputMod + m_manualControlInput.x > 1.0f)
+    {
+        m_manualControlInput.x = 1.0f;
+    }
+    else if (inputMod + m_manualControlInput.x < -1.0f)
+    {
+        m_manualControlInput.x = -1.0f;
+    }
+    else
+    {
+        m_manualControlInput.x += inputMod;
+    }
+
     if (m_currentControlType == ControlInputType::INPUT_CANARD)
     {
         m_manualCanardYaw = ManualInputUpdate(m_manualCanardYaw, aInput);
@@ -5020,6 +5079,53 @@ float FireControl::ManualInputDecay(const float aCurrentVal, const float aTimeSt
     }
 
     return updateVal;
+}
+
+void FireControl::ManualInputDecayVector(const float aTimeStep)
+{
+    const float decay = m_manualDecayRate * aTimeStep;
+    if (m_manualControlInput.x != 0.0f && m_isManualUpdateYawTrue == false)
+    {
+        if (m_manualControlInput.x > 0.0f)
+        {
+            m_manualControlInput.x -= decay;
+            if (m_manualControlInput.x < 0.0f)
+            {
+                m_manualControlInput.x = 0.0f;
+            }
+        }
+        else if (m_manualControlInput.x < 0.0f)
+        {
+            m_manualControlInput.x += decay;
+            if (m_manualControlInput.x > 0.0f)
+            {
+                m_manualControlInput.x = 0.0f;
+            }
+        }
+    }
+
+    if (m_manualControlInput.y != 0.0f && m_isManualUpdatePitchTrue == false)
+    {
+        if (m_manualControlInput.y > 0.0f)
+        {
+            m_manualControlInput.y -= decay;
+            if (m_manualControlInput.y < 0.0f)
+            {
+                m_manualControlInput.y = 0.0f;
+            }
+        }
+        else if (m_manualControlInput.y < 0.0f)
+        {
+            m_manualControlInput.y += decay;
+            if (m_manualControlInput.y > 0.0f)
+            {
+                m_manualControlInput.y = 0.0f;
+            }
+        }
+    }
+
+    m_isManualUpdatePitchTrue = false;
+    m_isManualUpdateYawTrue = false;
 }
 
 void FireControl::ManualInputReset(FinType aFinType, const bool aIsResetAllTrue)
@@ -7392,6 +7498,8 @@ void FireControl::UpdateFireControl(double aTimeDelta)
 
         m_manualCanardPitch = ManualInputDecay(m_manualCanardPitch, static_cast<float>(aTimeDelta));
         m_manualCanardYaw = ManualInputDecay(m_manualCanardYaw, static_cast<float>(aTimeDelta));
+
+        ManualInputDecayVector(static_cast<float>(aTimeDelta));
     }
 }
 
@@ -8498,6 +8606,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->DebugPushUILineDecimalNumber("deltaVelocity = ", deltaVelocity.Length(), "");
         m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, 4.0f, 0.0f, DirectX::Colors::LimeGreen);
 
+        m_debugData->DebugPushUILineDecimalNumber("m_manualControlInput.x ", m_manualControlInput.x, "");
+        m_debugData->DebugPushUILineDecimalNumber("m_manualControlInput.y ", m_manualControlInput.y, "");
+
         m_debugData->ToggleDebugOff();
     }
 
@@ -8598,7 +8709,7 @@ void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
 {
     if (m_missileConsts.isManualControlTrue == true)
     {
-        GuidanceManual(aMissile, aTimeDelta);
+        GuidanceManualVector(aMissile, aTimeDelta);
     }
     else
     {

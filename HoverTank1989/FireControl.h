@@ -819,6 +819,7 @@ private:
 
     void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
     void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
     void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
 
@@ -851,6 +852,7 @@ private:
 
     float ManualInputUpdate(const float aCurrentVal, const float aInput);
     float ManualInputDecay(const float aCurrentVal, const float aTimeStep);
+    void ManualInputDecayVector(const float aTimeStep);
 
     void ManualMissileControl(MissileData& aMissile, const float aTimeDelta);
     void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
@@ -1046,6 +1048,12 @@ private:
     float m_manualTailYaw = Utility::ToRadians(0.0f);
     const float m_manualDecayRateMod = 0.5f;
     const bool m_isManualInputDecayTrue = true;
+
+    DirectX::SimpleMath::Vector2 m_manualControlInput = DirectX::SimpleMath::Vector2::Zero;
+    const float m_manualInputRate = 1.1f;
+    const float m_manualDecayRate = 0.9f;
+    bool m_isManualUpdatePitchTrue = false;
+    bool m_isManualUpdateYawTrue = false;
 
     float m_debugThrustAngMax = 0.0f;
     float m_debugThrustAngMin = 0.0f;
