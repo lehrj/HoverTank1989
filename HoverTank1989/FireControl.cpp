@@ -11,26 +11,24 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     Utility::ForceAccum::ZeroValues(sumDrag);
     sumDrag += DragAccum(aMissile, aTimeDelta);
 
-    Utility::ForceAccum aeroAcuum;
-    Utility::ForceAccum::ZeroValues(aeroAcuum);
-    aeroAcuum += FinAccumSum(aMissile);
+    Utility::ForceAccum aeroAcc;
+    Utility::ForceAccum::ZeroValues(aeroAcc);
+    aeroAcc+= FinAccumSumTest(aMissile);
 
-    sumForce += aeroAcuum;
+    //aeroAcc += GetAeroForceAccum(aMissile, aTimeDelta, aMissile.guidance.finPak.tailPitch, m_finLib.tailPitch);
+    //aeroAcc += GetAeroForceAccum(aMissile, aTimeDelta, aMissile.guidance.finPak.tailYaw, m_finLib.tailYaw);
+    sumForce += aeroAcc;
 
-    
-    Utility::ForceAccum aeroAcuumAligned;
-    Utility::ForceAccum::ZeroValues(aeroAcuumAligned);
-    aeroAcuumAligned = aeroAcuum;
-    Utility::ForceAccum::AlignLinearAndTorque(aeroAcuumAligned, aMissile.projectileData.alignmentQuat);
+    Utility::ForceAccum aeroAccAligned;
+    Utility::ForceAccum::ZeroValues(aeroAccAligned);
+    aeroAccAligned = aeroAcc;
+    Utility::ForceAccum::AlignLinearAndTorque(aeroAccAligned, aMissile.projectileData.alignmentQuat);
     
     //m_debugData->ToggleDebugOnOverRide();
-
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAcuumAligned.linear, 5.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAcuumAligned.torque, 5.0f, 0.0f, DirectX::Colors::Teal);
-
-    m_debugData->DebugPushUILineDecimalNumber("aeroAcuumAligned.linear ", aeroAcuumAligned.linear.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("aeroAcuumAligned.torque ", aeroAcuumAligned.torque.Length(), "");
-
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAccAligned.linear, 5.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAccAligned.torque, 5.0f, 0.0f, DirectX::Colors::Teal);
+    m_debugData->DebugPushUILineDecimalNumber("aeroAcuumAligned.linear ", aeroAccAligned.linear.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("aeroAcuumAligned.torque ", aeroAccAligned.torque.Length(), "");
     m_debugData->ToggleDebugOff();
 
     Utility::ForceAccum::AlignLinear(sumForce, aMissile.projectileData.alignmentQuat);
@@ -3234,6 +3232,54 @@ void FireControl::DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const
     }
 }
 
+Utility::ForceAccum FireControl::FinAccumSumTest(const MissileData& aMissile)
+{
+
+    Utility::ForceAccum mainPitchAccum;
+    Utility::ForceAccum mainYawAccum;
+    mainPitchAccum = FinForceAccum(m_finLib.mainPitch, aMissile.guidance.finPak.mainPitch, aMissile);
+    mainYawAccum = FinForceAccum(m_finLib.mainYaw, aMissile.guidance.finPak.mainYaw, aMissile);
+    Utility::ForceAccum mainSum;
+    Utility::ForceAccum::ZeroValues(mainSum);
+    mainSum += mainPitchAccum;
+    mainSum += mainYawAccum;
+
+    Utility::ForceAccum tailPitchAccum;
+    Utility::ForceAccum tailYawAccum;
+
+    tailPitchAccum = FinForceAccum(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, aMissile);
+    tailYawAccum = FinForceAccum(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, aMissile);
+
+    Utility::ForceAccum tailSum;
+    Utility::ForceAccum::ZeroValues(tailSum);
+    tailSum += tailPitchAccum;
+    tailSum += tailYawAccum;
+   
+    Utility::ForceAccum accum;
+    Utility::ForceAccum::ZeroValues(accum);
+    accum += mainSum;
+    accum += tailSum;
+
+    Utility::ForceAccum sum;
+    Utility::ForceAccum::ZeroValues(sum);
+    sum += accum;
+
+    Utility::ForceAccum::AlignLinearAndTorque(sum, aMissile.projectileData.alignmentQuat);
+    Utility::ForceAccum::AlignLinearAndTorque(mainSum, aMissile.projectileData.alignmentQuat);
+    Utility::ForceAccum::AlignLinearAndTorque(tailSum, aMissile.projectileData.alignmentQuat);
+
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("sum.torque = ", sum.torque.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("mainSum.torque = ", mainSum.torque.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("tailSum.torque = ", tailSum.torque.Length(), "");
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, accum.torque, 1.5f, 0.0f, DirectX::Colors::Teal);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, mainSum.torque, 1.3f, 0.05f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, tailSum.torque, 1.0f, 0.1f, DirectX::Colors::Blue);
+    m_debugData->ToggleDebugOff();
+
+    return accum;
+}
+
 Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
 {
     Utility::ForceAccum accum;
@@ -3252,7 +3298,7 @@ Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
 
     accum += mainPitchAccum;
     accum += mainYawAccum;
-    
+
     Utility::ForceAccum tailPitchAccum;
     Utility::ForceAccum::ZeroValues(tailPitchAccum);
     Utility::ForceAccum tailYawAccum;
@@ -3265,10 +3311,12 @@ Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
     Utility::ForceAccum::ZeroValues(tailSum);
     tailSum += tailPitchAccum;
     tailSum += tailYawAccum;
-   
+
     accum += tailPitchAccum;
     accum += tailYawAccum;
 
+    Utility::ForceAccum::ZeroValues(accum);
+    accum += tailYawAccum;
     //Utility::ForceAccum::AlignLinearAndTorque(mainPitchAccum, aMissile.projectileData.alignmentQuat);
     //Utility::ForceAccum::AlignLinearAndTorque(mainYawAccum, aMissile.projectileData.alignmentQuat);
 
@@ -3303,10 +3351,10 @@ Utility::ForceAccum FireControl::FinAccumSum(const MissileData& aMissile)
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, accum.torque, 1.5f, 0.0f, DirectX::Colors::Teal);
 
 
-  //  m_debugData->PushDebugLine(aMissile.projectileData.q.position, mainSum.linear, 1.3f, 0.05f, DirectX::Colors::White);
+    //  m_debugData->PushDebugLine(aMissile.projectileData.q.position, mainSum.linear, 1.3f, 0.05f, DirectX::Colors::White);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, mainSum.torque, 1.3f, 0.05f, DirectX::Colors::Red);
 
-  //  m_debugData->PushDebugLine(aMissile.projectileData.q.position, tailSum.linear, 1.0f, 0.1f, DirectX::Colors::Yellow);
+    //  m_debugData->PushDebugLine(aMissile.projectileData.q.position, tailSum.linear, 1.0f, 0.1f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, tailSum.torque, 1.0f, 0.1f, DirectX::Colors::Blue);
 
     m_debugData->ToggleDebugOff();
@@ -3357,7 +3405,7 @@ Utility::ForceAccum FireControl::FinForceAccum(const FinDataStatic& aFinLib, con
     auto dirWorld = forceDir;
     dirWorld = DirectX::SimpleMath::Vector3::Transform(dirWorld, aMissile.projectileData.alignmentQuat);
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, linearWorld, 4.0f, 0.0f, DirectX::Colors::Lime);
     //m_debugData->PushDebugLine(aMissile.projectileData.q.position, torquWorld, 3.0f, 0.1f, DirectX::Colors::Tomato);
     m_debugData->DebugPushUILineDecimalNumber("accum.linear = ", accum.linear.Length(), "");
@@ -3368,6 +3416,13 @@ Utility::ForceAccum FireControl::FinForceAccum(const FinDataStatic& aFinLib, con
 
     m_debugData->ToggleDebugOff();
 
+    
+    //aFinLib.posLocal;
+    //DirectX::SimpleMath::Vector3 forceDir = aFinDyn.resultantForce;
+    //DebugPushDrawData(forcePos, forceDir);
+    //DebugPushDrawData(aFinLib.posLocal, aFinLib.finNormal);
+    DebugPushDrawData(aFinLib.posLocal, aFinDyn.liftForce);
+    //DebugPushDrawData(aFinLib.posLocal, aFinDyn.resultantForce);
     return accum;
 }
 
@@ -4578,7 +4633,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
    
     finDat.finType = FinType::CANARD_YAW;
     finDat.axis = DirectX::SimpleMath::Vector3::UnitY;
-    finDat.finNormal = -DirectX::SimpleMath::Vector3::UnitZ;
+    finDat.finNormal = DirectX::SimpleMath::Vector3::UnitZ;
     aFinLib.canardYaw = finDat;
 
     finDat.finType = FinType::TAIL_YAW;
@@ -4609,6 +4664,55 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.axis = DirectX::SimpleMath::Vector3::UnitY;
     finDat.finNormal = DirectX::SimpleMath::Vector3::UnitZ;
     aFinLib.mainYaw = finDat;
+
+
+    auto pitchQuat = DirectX::SimpleMath::Quaternion::Identity;
+    auto yawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(90.0f));
+
+    InitializeFinAeroTensor(aFinLib.tailPitch, pitchQuat, m_missileConsts.tailFinAngMax);
+    InitializeFinAeroTensor(aFinLib.tailYaw, yawQuat, m_missileConsts.tailFinAngMax);
+
+}
+
+void FireControl::InitializeFinAeroTensor(FinDataStatic& aFinData, const DirectX::SimpleMath::Quaternion aAlignment, const float aAngleMinMax)
+{
+   
+    // cuboid
+    const float xExtent = aFinData.chord;
+    const float yExtent = aFinData.thickness;
+    const float zExtent = aFinData.span;
+    const float mass = 1.0f;
+
+    auto baseTensor = DirectX::SimpleMath::Matrix::Identity;
+
+    baseTensor._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    baseTensor._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    baseTensor._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+
+    /*
+    rudder(cyclone::Matrix3(0, 0, 0, 0, 0, 0, 0, 0, 0),
+        cyclone::Matrix3(0, 0, 0, 0, 0, 0, 0.01f, 0, 0),
+        cyclone::Matrix3(0, 0, 0, 0, 0, 0, -0.01f, 0, 0),
+        cyclone::Vector3(2.0f, 0.5f, 0), &windspeed),
+
+
+        tail(cyclone::Matrix3(0,0,0, -1,-0.5f,0, 0,0,-0.1f),
+    */
+    baseTensor = DirectX::SimpleMath::Matrix::Identity;
+    baseTensor = DirectX::SimpleMath::Matrix::Transform(baseTensor, aAlignment);
+    
+    auto maxTensor = baseTensor;
+    maxTensor._13 = -0.1f;
+    auto minTensor = baseTensor;
+    minTensor._13 = 0.1f;
+
+    auto baseTensorInverse = baseTensor;
+    baseTensorInverse = baseTensorInverse.Invert();
+
+    aFinData.baseTensor = baseTensor;
+    aFinData.maxTensor = maxTensor;
+    aFinData.minTensor = minTensor;
+
 }
 
 void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
@@ -4719,6 +4823,8 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     InitializeLauncherData(m_launcherData, aLaunchPos, aLaunchDirection);
 
     InitializeFinLibrary(m_finLib);
+    
+    m_debugDrawVec.clear();
 }
 
 void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection)
@@ -7446,6 +7552,12 @@ void FireControl::UpdateFinAngles(MissileData& aMissile)
     aMissile.guidance.finPak.tailPitch.finAngle = aMissile.guidance.conDat.finPitch;
     aMissile.guidance.finPak.tailYaw.finAngle = aMissile.guidance.conDat.finYaw;
 
+    aMissile.guidance.finPak.tailPitch.controlInput = GetAeroTensorControlInput(aMissile.guidance.finPak.tailPitch.finAngle, -m_missileConsts.steerAngMax, m_missileConsts.steerAngMax);
+    aMissile.guidance.finPak.tailYaw.controlInput = GetAeroTensorControlInput(aMissile.guidance.finPak.tailYaw.finAngle, -m_missileConsts.steerAngMax, m_missileConsts.steerAngMax);
+
+    aMissile.guidance.finPak.tailPitch.aeroTensor = GetAeroTensor(aMissile.guidance.finPak.tailPitch, m_finLib.tailPitch);
+    aMissile.guidance.finPak.tailYaw.aeroTensor = GetAeroTensor(aMissile.guidance.finPak.tailYaw, m_finLib.tailYaw);
+
     aMissile.guidance.finPak.mainPitch.finAngle = 0.0f;
     aMissile.guidance.finPak.mainYaw.finAngle = 0.0f;
 }
@@ -7471,8 +7583,8 @@ void FireControl::UpdateFinData(MissileData& aMissile)
     UpdateFinForces(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, localVel, alignQuat, aMissile);
     UpdateFinForces(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, localVel, alignQuat, aMissile);
 
-    //UpdateFinForces(m_finLib.mainPitch, aMissile.guidance.finPak.mainPitch, localVel, alignQuat, aMissile);
-    //UpdateFinForces(m_finLib.mainYaw, aMissile.guidance.finPak.mainYaw, localVel, alignQuat, aMissile);
+    UpdateFinForces(m_finLib.mainPitch, aMissile.guidance.finPak.mainPitch, localVel, alignQuat, aMissile);
+    UpdateFinForces(m_finLib.mainYaw, aMissile.guidance.finPak.mainYaw, localVel, alignQuat, aMissile);
 }
 
 void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile)
@@ -7490,7 +7602,7 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
     float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
     const float angleOfAttackWrapped = Utility::WrapAngleOnePi(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airSpeedLocalNorm));
     angleOfAttack = angleOfAttackWrapped;
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("angleOfAttack           = ", Utility::ToDegrees(angleOfAttack), "");
     m_debugData->DebugPushUILineDecimalNumber("angleOfAttackWrapped = ", Utility::ToDegrees(angleOfAttackWrapped), "");
     m_debugData->ToggleDebugOff();
@@ -8792,7 +8904,17 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->DebugPushUILineDecimalNumber("m_manualControlInput.x ", m_manualControlInput.x, "");
         m_debugData->DebugPushUILineDecimalNumber("m_manualControlInput.y ", m_manualControlInput.y, "");
 
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineDecimalNumber("tailPitch =  ", m_missileVec[i].guidance.finPak.tailPitch.controlInput, "");
+        m_debugData->DebugPushUILineDecimalNumber("tailYaw   =  ", m_missileVec[i].guidance.finPak.tailYaw.controlInput, "");
+
+
         m_debugData->ToggleDebugOff();
+
+        DebugDrawUpdate(m_missileVec[i]);
+
+        m_debugDrawVec.clear();
     }
 
     //CheckCollisionsMissile();
@@ -9267,6 +9389,16 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     aMissile.guidance.conDat.thrustPitch = eulers.z;
     aMissile.guidance.conDat.thrustYaw = eulers.y;
 
+
+    //////////////    
+    if (m_missileConsts.isThrustVecOn == false)
+    {
+        aMissile.guidance.conDat.thrustVecNorm = DirectX::SimpleMath::Vector3::UnitX;
+        aMissile.guidance.conDat.thrustVecQuat = DirectX::SimpleMath::Quaternion::Identity;
+        aMissile.guidance.conDat.thrustPitch = 0.0f;
+        aMissile.guidance.conDat.thrustYaw = 0.0f;
+    }
+
     //////////////////////////////////////////////////////
     // Debug and world cord data
     auto thrustVecWorld = steeringUpdateVec;
@@ -9300,4 +9432,136 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     m_debugData->DebugPushUILineDecimalNumber("updateThrustQuat.wd ", Utility::ToDegrees(updateThrustQuat.w), "");
     
     m_debugData->ToggleDebugOff();
+}
+
+
+void FireControl::DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal)
+{
+    std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3> updatePair;
+    updatePair.first = aPosLocal;
+    updatePair.second = aVecLocal;
+    m_debugDrawVec.push_back(updatePair);
+}
+
+void FireControl::DebugDrawUpdate(MissileData& aMissile)
+{
+    auto posWorld = aMissile.projectileData.q.position;
+    auto quatWorld = aMissile.projectileData.alignmentQuat;
+    m_debugData->ToggleDebugOnOverRide();
+    for(int i = 0; i < m_debugDrawVec.size(); ++i)
+    {
+        auto pos = m_debugDrawVec[i].first;
+
+        //pos.Transform(pos, quatWorld);
+        pos = DirectX::SimpleMath::Vector3::Transform(pos, quatWorld);
+        pos += posWorld;
+
+        auto vec = m_debugDrawVec[i].second;
+        //vec = DirectX::SimpleMath::Vector3::UnitX;
+        //vec.Transform(vec, quatWorld);
+        vec = DirectX::SimpleMath::Vector3::Transform(vec, quatWorld);
+
+        m_debugData->PushDebugLine(pos, vec, 5.0f, 0.0f, DirectX::Colors::Orange);
+
+    }
+    m_debugData->ToggleDebugOff();
+}
+
+
+
+float FireControl::GetAeroTensorControlInput(const float aAng, const float aMinAng, const float aMaxAng)
+{
+    float control = 0.0f;
+
+    if (aAng <= aMinAng)
+    {
+        return -1.0f;
+    }
+    else if (aAng >= aMaxAng)
+    {
+        return 1.0f;
+    }
+    else if (aAng < 0.0f)
+    {
+        return aAng / aMinAng;
+    }
+    else if (aAng > 0.0f)
+    {
+        return aAng / aMaxAng;
+    }
+    else
+    {
+        return 0.0f;
+    }
+}
+
+DirectX::SimpleMath::Matrix FireControl::GetAeroTensor(FinDataDynamic& aFin, FinDataStatic& aLib)
+{
+    auto tensor = aLib.baseTensor;
+    return tensor;
+    if (aFin.controlInput <= -1.0f)
+    {
+        return aLib.minTensor;
+    }
+    else if (aFin.controlInput >= 1.0f)
+    {
+        return aLib.maxTensor;
+    }
+    else if (aFin.controlInput < 0)
+    {
+        auto mat = DirectX::SimpleMath::Matrix::Identity;
+        mat = DirectX::SimpleMath::Matrix::Lerp(aLib.minTensor, tensor, aFin.controlInput + 1.0f);
+        return mat;
+
+    }
+    else if (aFin.controlInput > 0)
+    {
+        auto mat = DirectX::SimpleMath::Matrix::Identity;
+        mat = DirectX::SimpleMath::Matrix::Lerp(aLib.maxTensor, tensor, aFin.controlInput);
+        return mat;
+    }
+    else
+    {
+        return tensor;
+    }
+}
+
+Utility::ForceAccum FireControl::GetAeroForceAccum(const MissileData& aMissile, const float aTimeDelta, FinDataDynamic& aFin, FinDataStatic& aLib)
+{
+    auto velocity = aMissile.projectileData.q.velocity;
+    auto bodyVel = velocity;
+    bodyVel = DirectX::SimpleMath::Vector3::Transform(bodyVel, aMissile.projectileData.inverseAlignmentQuat);
+    auto tensor = aFin.aeroTensor;
+    auto bodyForce = bodyVel;
+    bodyForce = DirectX::SimpleMath::Vector3::Transform(bodyForce, aFin.aeroTensor);
+
+    auto force = bodyForce;
+
+
+    Utility::ForceAccum sumForce;
+    Utility::ForceAccum::ZeroValues(sumForce);
+    //sumForce = Utility::AddForceAtPoint(force, aLib.posLocal, DirectX::SimpleMath::Vector3::Zero, 
+    
+    
+    DirectX::SimpleMath::Vector3 forcePos = aLib.posLocal;
+    //DirectX::SimpleMath::Vector3 forceDir = aFinDyn.resultantForce;
+    DirectX::SimpleMath::Vector3 forceDir = force;
+    DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
+
+    DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::AddForceAtPoint(forceDir, forcePos, centerOfMass, forceAccum, torqueAccum);
+
+    sumForce.linear = forceAccum;
+    sumForce.torque = torqueAccum;
+
+    Utility::ForceAccum worldForce = sumForce;
+    worldForce.AlignLinearAndTorque(worldForce, aMissile.projectileData.alignmentQuat);
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, worldForce.linear, 5.0f, 0.0f, DirectX::Colors::LightBlue);
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, worldForce.torque, 5.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->ToggleDebugOff();
+    return sumForce;
 }

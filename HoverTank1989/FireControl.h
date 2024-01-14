@@ -157,6 +157,9 @@ struct FinDataDynamic
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 dragForce = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 resultantForce = DirectX::SimpleMath::Vector3::Zero;
+
+    float controlInput = 0.0f;
+    DirectX::SimpleMath::Matrix aeroTensor = DirectX::SimpleMath::Matrix::Identity;
 };
 
 struct DynamicFinPackage
@@ -187,6 +190,10 @@ struct FinDataStatic
     float dragCoeefMod;
 
     bool isFinAngFixed;
+
+    DirectX::SimpleMath::Matrix baseTensor;
+    DirectX::SimpleMath::Matrix maxTensor;
+    DirectX::SimpleMath::Matrix minTensor;
 };
 
 struct FinLibrary
@@ -553,7 +560,7 @@ struct MissileConsts
     const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
 
-    const float rocketBoostForceMax = 40.0f;
+    const float rocketBoostForceMax = 20.0f;
     const float mass = 22.0f;
     //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
     const float velMaxEst = 10.0f;
@@ -582,10 +589,13 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.15f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
 
-    const float mDim = 1.1f;
+    //const float mDim = 1.1f;
+    const float mDim = 0.6f;
+
     const float canardChord = ((mDim * 0.3f) * 0.2f);
     const float canardSpan = mDim * 0.3f;
     const float canardThickness = ((mDim * 0.3f) * 0.2f) * 0.3f;
@@ -594,9 +604,17 @@ struct MissileConsts
     const float mainSpan = 0.3f;
     const float mainThickness = 0.015f;
 
+    
     const float tailChord = ((mDim * 0.3f) * 0.2f);
     const float tailSpan = mDim * 0.3f;
     const float tailThickness = ((mDim * 0.3f) * 0.2f) * 0.3f;
+    
+
+    /*
+    const float tailChord = 0.254f;
+    const float tailSpan = 0.127;
+    const float tailThickness = 0.03302;
+    */
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
@@ -605,6 +623,7 @@ struct MissileConsts
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
     const bool isManualControlTrue = true;
+    const bool isThrustVecOn = true;
 };
 
 enum class ExplosionType
@@ -816,8 +835,13 @@ private:
     void DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
 
-    unsigned int GetUniqueMissileID();
+    float GetAeroTensorControlInput(const float aAng, const float aMinAng, const float aMaxAng);
+    DirectX::SimpleMath::Matrix GetAeroTensor(FinDataDynamic& aFin, FinDataStatic& aLib);
+    Utility::ForceAccum GetAeroForceAccum(const MissileData& aMissile, const float aTimeDelta, FinDataDynamic& aFin, FinDataStatic& aLib);
 
+
+    unsigned int GetUniqueMissileID();
+    
     void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
@@ -836,6 +860,12 @@ private:
 
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeFinLibrary(FinLibrary& aFinLib);
+
+
+
+    void InitializeFinAeroTensor(FinDataStatic& aFinData, const DirectX::SimpleMath::Quaternion aAlignment, const float aAngleMinMax);
+
+
     void InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash);
     void InitializeProjectileModelCannon(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
     void InitializeProjectileModelExplosive(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, AmmoStruct& aAmmo);
@@ -914,6 +944,7 @@ private:
     void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
     Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
     Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
+    Utility::ForceAccum FinAccumSumTest(const MissileData& aMissile);
 
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
 
@@ -1063,6 +1094,10 @@ private:
     float m_aeroDebugVal2 = 0.0f;
     const float m_aeroDebugDelta1 = 0.1f;
     const float m_aeroDebugDelta2 = 0.4f;
+
+    std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>> m_debugDrawVec;
+    void DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal);
+    void DebugDrawUpdate(MissileData& aMissile);
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
