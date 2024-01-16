@@ -623,7 +623,7 @@ struct MissileConsts
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
     const bool isManualControlTrue = true;
-    const bool isThrustVecOn = true;
+    const bool isThrustVecOn = false;
 };
 
 enum class ExplosionType
@@ -942,6 +942,7 @@ private:
     void UpdateFinData(MissileData& aMissile);
     void UpdateFinAngles(MissileData& aMissile);
     void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
+    void UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
     Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
     Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
     Utility::ForceAccum FinAccumSumTest(const MissileData& aMissile);
