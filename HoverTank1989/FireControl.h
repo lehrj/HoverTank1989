@@ -516,7 +516,7 @@ struct MissileStruct
 
 struct MissileConsts
 {
-    const float angularDragMod = 0.3f;
+    const float angularDragMod = 0.8f;
 
     const float detonationRange = 10.0f;
 
@@ -545,12 +545,14 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
 
-    const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
+    //const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(-0.1f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(25.0f);
+    //const float steerAngMax = Utility::ToRadians(25.0f);
+    const float steerAngMax = Utility::ToRadians(20.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
 
     const float tailFinAngMax = Utility::ToRadians(25.0f);
@@ -560,7 +562,7 @@ struct MissileConsts
     const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
 
-    const float rocketBoostForceMax = 20.0f;
+    const float rocketBoostForceMax = 90.0f;
     const float mass = 22.0f;
     //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
     const float velMaxEst = 10.0f;
@@ -590,7 +592,7 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.15f, 0.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(-0.2f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
 
     //const float mDim = 1.1f;
@@ -623,7 +625,7 @@ struct MissileConsts
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
     const bool isManualControlTrue = true;
-    const bool isThrustVecOn = false;
+    const bool isThrustVecOn = true;
 };
 
 enum class ExplosionType
