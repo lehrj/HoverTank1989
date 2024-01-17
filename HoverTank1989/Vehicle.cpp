@@ -2548,8 +2548,8 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocalNew(DirectX::SimpleMa
 
     DirectX::SimpleMath::Vector3 windVanVec = m_heli.windVaningTorueForce;
     DirectX::SimpleMath::Vector3 torqueVec = driveVec + tailVec;
-    torqueVec = tailVec + driveVec + weaponVec + terrainVec;
-    //torqueVec = tailVec + weaponVec + terrainVec;
+    //torqueVec = tailVec + driveVec + weaponVec + terrainVec;
+    torqueVec = tailVec + weaponVec + terrainVec;
     //torqueVec = tailVec + driveVec + weaponVec + gravVec;
     //torqueVec = tailVec + weaponVec + gravVec;
 
