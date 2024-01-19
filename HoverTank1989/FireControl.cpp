@@ -34,6 +34,13 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     Utility::ForceAccum::AlignLinear(sumForce, aMissile.projectileData.alignmentQuat);
     Utility::ForceAccum::AlignLinear(sumDrag, aMissile.projectileData.alignmentQuat);
 
+
+    m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->DebugPushUILineDecimalNumber("sumForce.linear ", sumForce.linear.Length(), "");
+    m_debugData->PushDebugLine(aMissile.projectileData.q.position, sumForce.linear, 15.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->ToggleDebugOff();
+
     aMissile.guidance.linearForceSum = sumForce.linear;
     aMissile.guidance.linearDragSum = sumDrag.linear;
     aMissile.projectileData.angularForceSum = sumForce.torque;
@@ -106,7 +113,7 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
 
     //const float boreThrustPercent = 0.5f;
     //const float turnThrustPercent = 1.0f - boreThrustPercent;
-    if (aMissile.guidance.isRocketFired == false)
+    if (aMissile.guidance.isRocketFired == false || m_isDebugToggleTrue3 == true)
     {
         forceDir = DirectX::SimpleMath::Vector3::Zero;
     }
@@ -575,6 +582,12 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
     float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
     //DirectX::SimpleMath::Vector3 airResistance = localVelocityNorm * (-dragResistance);
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
+
+    if (m_isDebugToggleTrue2 == true)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
 
@@ -5560,7 +5573,8 @@ void FireControl::PrintMissileData(MissileData& aMissile, const float aTimeDelta
     float speed = aMissile.projectileData.q.velocity.Length();
     float mph = speed * 2.237f;
 
-    m_debugData->DebugPushUILineDecimalNumber("mph   = ", mph, "");
+    //m_debugData->DebugPushUILineDecimalNumber("mph   = ", mph, "");
+    m_debugData->DebugPushUILineWholeNumber("mph = ", static_cast<int>(mph), "");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     auto heading = aMissile.projectileData.forward;
@@ -5593,9 +5607,10 @@ void FireControl::PrintMissileData(MissileData& aMissile, const float aTimeDelta
     float velAngle = Utility::GetAngleBetweenVectors(velocity, DirectX::SimpleMath::Vector3::UnitX);
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    m_debugData->DebugPushUILineDecimalNumber("headingCompass deg = ", Utility::ToDegrees(headingCompass), "");
-    m_debugData->DebugPushUILineDecimalNumber("velCompass deg = ", Utility::ToDegrees(velCompass), "");
-
+    //m_debugData->DebugPushUILineDecimalNumber("headingCompass deg = ", Utility::ToDegrees(headingCompass), "");
+    //m_debugData->DebugPushUILineDecimalNumber("velCompass deg = ", Utility::ToDegrees(velCompass), "");
+    m_debugData->DebugPushUILineWholeNumber("ForwardCompass = ", static_cast<int>(Utility::ToDegrees(headingCompass)), "");
+    m_debugData->DebugPushUILineWholeNumber("VelocityCompas = ", static_cast<int>(Utility::ToDegrees(velCompass)), "");
     m_debugData->ToggleDebugOff();
 }
 
@@ -7016,12 +7031,12 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
     DirectX::SimpleMath::Vector3 dragNew = CalcDragLinearCurrent(aProjectile, newQ.velocity);
-
+    //dragNew *= 2.0f;
     ////////////////////////////////////////
 
     // linear
     DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    velocityUpdate += newQ.velocity;
+    //velocityUpdate += newQ.velocity;
     //velocityUpdate += aProjectile->guidance.linearDragSum;
     //velocityUpdate += drag;
     velocityUpdate += dragNew;
@@ -7043,12 +7058,19 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
     aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
 
-    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("drag           = ", drag .Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("dragNew       = ", dragNew.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("dragNew        = ", dragNew.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("linearForceSum = ", aProjectile->guidance.linearForceSum.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("newQ.velocity  = ", newQ.velocity.Length(), "");
     m_debugData->PushDebugLine(aProjectile->projectileData.q.position, dragNew, 7.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLine(aProjectile->projectileData.q.position, drag, 6.0f, 0.2f, DirectX::Colors::Teal);
+    m_debugData->PushDebugLine(aProjectile->projectileData.q.position, aProjectile->projectileData.q.velocity, 4.0f, 0.1f, DirectX::Colors::LimeGreen);
+
     m_debugData->ToggleDebugOff();
+
+    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, drag);
+    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, dragNew);
 }
 
 void FireControl::RightHandSideMissileDebugTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
@@ -7680,7 +7702,7 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
         clIn = CalculateFinLiftCoefDebug(angleOfAttack);
     }
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("clIn = ", clIn, "");
     m_debugData->ToggleDebugOff();
 
@@ -7817,7 +7839,7 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
     liftNormWorld = DirectX::SimpleMath::Vector3::Transform(liftNormWorld, aAlignQuat);
     
     //DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal);
-    DebugPushDrawData(aStaticDat.posLocal, aFinDyn.liftForce);
+    //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.liftForce);
     //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.resultantForce);
     //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.dragForce);
     //DebugPushDrawData(aStaticDat.posLocal, aStaticDat.finNormal);
@@ -9153,16 +9175,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         auto deltaVelocity = (postVelocity - prevVelocity) / aTimeDelta;
 
-        //m_debugData->ToggleDebugOnOverRide();
-        m_debugData->DebugPushUILineDecimalNumber("deltaVelocity = ", deltaVelocity.Length(), "");
+        m_debugData->ToggleDebugOnOverRide();
+
         m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, 4.0f, 0.0f, DirectX::Colors::LimeGreen);
-
-        m_debugData->DebugPushUILineDecimalNumber("m_manualControlInput.x ", m_manualControlInput.x, "");
-        m_debugData->DebugPushUILineDecimalNumber("m_manualControlInput.y ", m_manualControlInput.y, "");
-
-        //m_debugData->ToggleDebugOnOverRide();
-        m_debugData->DebugPushUILineDecimalNumber("tailPitch =  ", m_missileVec[i].guidance.finPak.tailPitch.controlInput, "");
-        m_debugData->DebugPushUILineDecimalNumber("tailYaw   =  ", m_missileVec[i].guidance.finPak.tailYaw.controlInput, "");
 
         m_debugData->ToggleDebugOff();
 
