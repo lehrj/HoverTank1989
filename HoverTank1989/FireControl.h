@@ -562,8 +562,9 @@ struct MissileConsts
     const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
 
-    const float rocketBoostForceMax = 90.0f;
-    const float mass = 22.0f;
+    const float rocketBoostForceMax = 125.0f;
+    //const float mass = 22.0f;
+    const float mass = 11.0f;
     //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
     const float velMaxEst = 10.0f;
 
@@ -1101,6 +1102,8 @@ private:
     std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>> m_debugDrawVec;
     void DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal);
     void DebugDrawUpdate(MissileData& aMissile);
+
+    bool m_isInRunge = false;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
