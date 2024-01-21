@@ -626,7 +626,7 @@ struct MissileConsts
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
     const bool isManualControlTrue = true;
-    const bool isThrustVecOn = true;
+    const bool isThrustVecOn = false;
 };
 
 enum class ExplosionType
@@ -805,6 +805,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinearForRunge(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
 
     DirectX::SimpleMath::Vector3 CalcDragLinearCurrent(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    DirectX::SimpleMath::Vector3 CalcDragLinearCurrentOld(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
 
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulator(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulatorOld(MissileData& aMissile);
@@ -1016,7 +1017,8 @@ private:
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     //const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
-    const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);  // clean up needed and merge to MissileConst data struct
+    //const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);  // clean up needed and merge to MissileConst data struct
+    const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(1.1f, 0.13f, 0.13f);  // clean up needed and merge to MissileConst data struct
 
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
     float m_testAng = 0.0f;
