@@ -4866,12 +4866,42 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     m_newProjectilePushVec.clear();
     m_missileVec.clear();
     m_environment = aEnvironment;
-    //m_currentAmmoType = AmmoType::AMMOTYPE_CANNON;
-    m_currentAmmoType = AmmoType::AMMOTYPE_MIRV;
     m_currentAmmoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
 
-    ////////////
-    // inertia tensors
+    InitializeAmmoCannon(m_ammoCannon);
+    InitializeAmmoExplosive(m_ammoExplosive);
+    InitializeAmmoMachineGun(m_ammoMachineGun);
+    InitializeAmmoMirv(m_ammoMirv);
+    InitializeAmmoShotgun(m_ammoShotgun);
+
+    InitializeAmmoMissile(m_ammoMissile);
+    InitializeProjectileModelMissile(aContext, m_ammoMissile);
+
+    InitializeExplosionData(aContext, m_explosionStruct.explosionRefData);
+    InitializeMuzzleFlashModel(aContext, m_muzzleFlash);
+    InitializeProjectileModelCannon(aContext, m_ammoCannon);
+    InitializeProjectileModelExplosive(aContext, m_ammoExplosive);
+    InitializeProjectileModelMachineGun(aContext, m_ammoMachineGun);
+    InitializeProjectileModelMirv(aContext, m_ammoMirv);
+    InitializeProjectileModelShotgun(aContext, m_ammoShotgun);
+    InitializeLaserModel(aContext, m_playerLaser);
+    InitializeLauncherData(m_launcherData, aLaunchPos, aLaunchDirection);
+
+    InitializeFinLibrary(m_finLib);
+    InitializeMissileInertiaTensor();
+    m_debugDrawVec.clear();
+}
+
+void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection)
+{
+    aLauncher.launchDirectionNorm = aDirection;
+    aLauncher.launcherPosition = aPosition;
+    aLauncher.reloadCoolDown = 3.0f;
+    aLauncher.coolDownTimer = 0.0f;
+}
+
+void FireControl::InitializeMissileInertiaTensor()
+{
     m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
 
     //const float xExtent = m_missileDimensions.x;
@@ -4887,35 +4917,33 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
 
     // cylinder
     //const float m_missileMass = 10.0f;
-    
-    //const float mass = m_missileConsts.mass;
-    //const float radius = m_missileDimensions.z;
-    //const float height = m_missileDimensions.x;
 
-    //const float mass = 10.0f;
-    //const DirectX::SimpleMath::Vector3 m_missileDimensions = DirectX::SimpleMath::Vector3(4.0f, 1.0f, 1.0f);
-    const float radius = 1.0f;
-    const float height = 4.0f;
-    /*
-    m_missileInertiaTensorLocal._11 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
+    const float mass = m_missileConsts.mass;
+    const float radius = m_missileDimensions.z;
+    const float height = m_missileDimensions.x;
+
+    //m_missileInertiaTensorLocal._11 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
+    //m_missileInertiaTensorLocal._22 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
+    //m_missileInertiaTensorLocal._33 = (1.0f / 2.0f) * (mass) * (radius * radius);
+
+    m_missileInertiaTensorLocal._33 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
     m_missileInertiaTensorLocal._22 = ((1.0f / 12.0f) * (mass) * (height * height)) + ((1.0f / 4.0f) * (mass) * (radius * radius));
-    m_missileInertiaTensorLocal._33 = (1.0f / 2.0f) * (mass) * (radius * radius);
-    */
+    m_missileInertiaTensorLocal._11 = (1.0f / 2.0f) * (mass) * (radius * radius);
+
+    //m_missileInertiaTensorLocal *= DirectX::SimpleMath::Matrix::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(90.0f));
 
     // cuboid
-    //const float xExtent = 1.0f;
-    //const float yExtent = 1.0f;
-    //const float zExtent = 1.0f;
-    // cuboid
+    /*
     const float xExtent = m_missileDimensions.x;
     const float yExtent = m_missileDimensions.y;
     const float zExtent = m_missileDimensions.z;
-    const float mass = m_missileConsts.mass;
-    
+    //const float mass = m_missileConsts.mass;
+
     m_missileInertiaTensorLocal._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
     m_missileInertiaTensorLocal._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_missileInertiaTensorLocal._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
-    
+    */
+
     /*
     m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     m_missileInertiaTensorLocal._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
@@ -4942,38 +4970,6 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
         m_missileInverseInertiaTensorLocal = m_missileInertiaTensorLocal;
         m_missileInverseInertiaTensorLocal = m_missileInverseInertiaTensorLocal.Invert();
     }
-    ////////////
-
-    InitializeAmmoCannon(m_ammoCannon);
-    InitializeAmmoExplosive(m_ammoExplosive);
-    InitializeAmmoMachineGun(m_ammoMachineGun);
-    InitializeAmmoMirv(m_ammoMirv);
-    InitializeAmmoShotgun(m_ammoShotgun);
-
-    InitializeAmmoMissile(m_ammoMissile);
-    InitializeProjectileModelMissile(aContext, m_ammoMissile);
-
-    InitializeExplosionData(aContext, m_explosionStruct.explosionRefData);
-    InitializeMuzzleFlashModel(aContext, m_muzzleFlash);
-    InitializeProjectileModelCannon(aContext, m_ammoCannon);
-    InitializeProjectileModelExplosive(aContext, m_ammoExplosive);
-    InitializeProjectileModelMachineGun(aContext, m_ammoMachineGun);
-    InitializeProjectileModelMirv(aContext, m_ammoMirv);
-    InitializeProjectileModelShotgun(aContext, m_ammoShotgun);
-    InitializeLaserModel(aContext, m_playerLaser);
-    InitializeLauncherData(m_launcherData, aLaunchPos, aLaunchDirection);
-
-    InitializeFinLibrary(m_finLib);
-    
-    m_debugDrawVec.clear();
-}
-
-void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection)
-{
-    aLauncher.launchDirectionNorm = aDirection;
-    aLauncher.launcherPosition = aPosition;
-    aLauncher.reloadCoolDown = 3.0f;
-    aLauncher.coolDownTimer = 0.0f;
 }
 
 void FireControl::InitializeMuzzleFlashModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MuzzleFlash& aMuzzleFlash)
