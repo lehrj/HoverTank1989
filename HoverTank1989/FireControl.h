@@ -186,6 +186,9 @@ struct FinDataStatic
     float span;
     float thickness;
 
+    float wingArea;
+    float frontArea;
+
     float dragCoeffBase;
     float dragCoeefMod;
 
@@ -811,8 +814,10 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulatorOld(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragLinearSum(MissileData& aMissile, const float aTimeDelta);
     float CalculateFinLiftCoef(const float aAngleOfAttack);
-    float CalculateFinLiftCoefTest(const float aAngleOfAttack);
     float CalculateFinLiftCoefDebug(const float aAngleOfAttack);
+    float CalculateFinLiftCoefFlat(const float aAngleOfAttack);
+    float CalculateFinLiftCoefTest(const float aAngleOfAttack);
+
 
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
