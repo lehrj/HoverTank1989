@@ -5239,20 +5239,18 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.plumeTranslationTest = DirectX::SimpleMath::Matrix::CreateTranslation(testTransVec);
 
     // tail fins
-    const float tailFinLength = aAmmo.ammoData.length * 0.3f;
-    const float tailFinWidth = tailFinLength * 0.2f;
-    const DirectX::SimpleMath::Vector3 tailFinDimensions = DirectX::SimpleMath::Vector3(tailFinLength, tailFinWidth, tailFinWidth * 0.3f);
+    const float tailFinLength = m_missileConsts.tailSpan;
+    const float tailFinWidth = m_missileConsts.tailChord;
+    const DirectX::SimpleMath::Vector3 tailFinDimensions = DirectX::SimpleMath::Vector3(m_missileConsts.tailSpan, m_missileConsts.tailChord, m_missileConsts.tailThickness);
+
     aAmmo.modelData.tailFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), tailFinDimensions);
     DirectX::SimpleMath::Vector3 tailFinTranslation1 = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
     
     const float tailOffset = -ammoLength * 0.45f;
     // tail fin generic
-    const float tailFinLength2 = m_ammoMissile.ammoData.length * 0.3f;
-    const float tailFinWidth2 = tailFinLength * 0.2f;
+    const float tailFinLength2 = m_missileConsts.tailSpan;
     aAmmo.modelData.localTailFinMat = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.localTailFinMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailFinLength2 * 0.5f, 0.0f, 0.0f));
-    aAmmo.modelData.tailFinTransMat = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.modelData.tailFinTransMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailOffset * 0.5f, aAmmo.ammoData.radius * 0.9f, 0.0f));
     aAmmo.modelData.tailFinTransMat = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.tailFinTransMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailOffset * 1.0f, aAmmo.ammoData.radius * 0.9f, 0.0f));
 
@@ -5363,6 +5361,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     wingFinLength = 0.7f;
     aAmmo.modelData.wingFinShape = DirectX::GeometricPrimitive::CreateTetrahedron(aContext.Get(), aAmmo.ammoData.length * 0.3f);
 
+    float testFloat = aAmmo.ammoData.length * 0.3f;
     DirectX::SimpleMath::Matrix wingScale = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(10.0f, 1.0f, 1.0f));
     DirectX::SimpleMath::Matrix wingScale2 = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.3f, 0.05f, 1.0f));
 
@@ -5377,10 +5376,12 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     DirectX::SimpleMath::Vector3 wingTrans = DirectX::SimpleMath::Vector3(mainWingLongPos, aAmmo.ammoData.radius + posOffset, 0.0f);
 
     //////////////////////////////////////////////
-    float modelSizeVal = 1.0f;
-    float x = 0.06f;
-    float y = 0.015f;
-    float z = 0.3f;
+    const float modelSizeVal = 1.0f;
+
+    float x = m_missileConsts.mainChord;
+    float y = m_missileConsts.mainThickness;
+    float z = m_missileConsts.mainSpan;
+
     float xMod = modelSizeVal * x;
     float yMod = modelSizeVal * y;
     float zMod = modelSizeVal * z;

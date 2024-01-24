@@ -418,7 +418,6 @@ struct MissileModel
     const DirectX::SimpleMath::Vector4 axelColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     const DirectX::SimpleMath::Vector4 voidBlackColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    //const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
     const float tailFinDeployAngleMax = Utility::ToRadians(120.0f);
     const float wingFinDeployAngleMax = Utility::ToRadians(90.0f);
 
@@ -548,8 +547,7 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
 
-    //const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
-    const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(-0.1f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;
 
@@ -595,32 +593,20 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
-    //const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-0.15f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(-0.2f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
 
-    //const float mDim = 1.1f;
-    const float mDim = 0.6f;
-
-    const float canardChord = ((mDim * 0.3f) * 0.2f);
-    const float canardSpan = mDim * 0.3f;
-    const float canardThickness = ((mDim * 0.3f) * 0.2f) * 0.3f;
+    const float canardChord = ((dimensions.x * 0.3f) * 0.2f);
+    const float canardSpan = dimensions.x * 0.3f;
+    const float canardThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
 
     const float mainChord = 0.06f;
     const float mainSpan = 0.3f;
     const float mainThickness = 0.015f;
 
-    
-    const float tailChord = ((mDim * 0.3f) * 0.2f);
-    const float tailSpan = mDim * 0.3f;
-    const float tailThickness = ((mDim * 0.3f) * 0.2f) * 0.3f;
-    
-
-    /*
-    const float tailChord = 0.254f;
-    const float tailSpan = 0.127;
-    const float tailThickness = 0.03302;
-    */
+    const float tailChord = ((dimensions.x * 0.3f) * 0.2f);
+    const float tailSpan = dimensions.x * 0.3f;
+    const float tailThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
