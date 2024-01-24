@@ -529,6 +529,93 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
     DirectX::SimpleMath::Vector3 localVelocityNorm = velocityNorm;
     localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile->projectileData.inverseAlignmentQuat);
      
+    float mainAreaPitch = CalculateFinDragArea(localVelocityNorm, aMissile->guidance.finPak.mainPitch.finDir, m_finLib.mainPitch);
+    //m_debugData->DebugPushUILineDecimalNumber("mainPitch area = ", mainAreaPitch, "");
+    float mainAreaYaw = CalculateFinDragArea(localVelocityNorm, aMissile->guidance.finPak.mainYaw.finDir, m_finLib.mainYaw);
+    //m_debugData->DebugPushUILineDecimalNumber("mainYaw = ", mainAreaYaw, "");
+    float tailAreaPitch = CalculateFinDragArea(localVelocityNorm, aMissile->guidance.finPak.tailPitch.finDir, m_finLib.tailPitch);
+    //m_debugData->DebugPushUILineDecimalNumber("tailPitch area = ", tailAreaPitch, "");
+    float tailAreaYaw = CalculateFinDragArea(localVelocityNorm, aMissile->guidance.finPak.tailYaw.finDir, m_finLib.tailYaw);
+    //m_debugData->DebugPushUILineDecimalNumber("tailYaw = ", tailAreaYaw, "");
+
+    const float finSurfaceSum = mainAreaPitch + mainAreaYaw + tailAreaPitch + tailAreaYaw;
+
+    float frontSurfaceArea = m_missileDimensions.y * m_missileDimensions.z;
+    float sideSurfaceArea = m_missileDimensions.x * m_missileDimensions.y;
+    float topSurfaceArea = m_missileDimensions.x * m_missileDimensions.z;
+
+    float frontDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX);
+    float sideDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
+    float topDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
+
+    float frontSurface = frontSurfaceArea *  abs(frontDot);
+    float sideSurface = sideSurfaceArea * abs(sideDot);
+    float topSurface = topSurfaceArea * abs(topDot);
+
+    const float airSurfaceAreaSum = frontSurface + sideSurface + topSurface + finSurfaceSum;
+
+    float sideSlipRatio = 1.0f - abs(localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX));
+
+    float dragCoefficientBase = 0.17f;
+    float dragCoefficientToAdd = 1.6f * sideSlipRatio;
+    float dragCoefficient = dragCoefficientBase + dragCoefficientToAdd;
+    dragCoefficient = m_missileConsts.dragCoefficientDebug;
+    dragCoefficient += dragCoefficientToAdd;
+
+    //////////////////////////////////////////////
+
+    const float frontDragCoeff = 0.1f;
+    const float sideDragCoeff = 1.2f;
+    const float topDragCoeff = sideDragCoeff;
+
+    float frontDrag = frontDragCoeff * abs(frontDot);
+    float sideDrag = sideDragCoeff * abs(sideDot);
+    float topDrag = topDragCoeff * abs(topDot);
+
+    const float dragCoeffSum = frontDrag + sideDrag + topDrag;
+    //////////////////////////////////////////////
+
+    //  Compute the total drag force.
+    float airDensity = m_environment->GetAirDensity();
+    float velocity = aMissile->projectileData.q.velocity.Length();
+    //float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
+    float dragResistance = 0.5f * airDensity * airSurfaceAreaSum * dragCoeffSum * velocity * velocity;
+    //DirectX::SimpleMath::Vector3 airResistance = localVelocityNorm * (-dragResistance);
+    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
+
+    DirectX::SimpleMath::Vector3 drag = airResistance;
+    m_debugData->ToggleDebugOff();
+    DebugPushDrawData(m_missileConsts.tailPosLocal, aMissile->guidance.finPak.tailPitch.finDir);
+    DebugPushDrawData(m_missileConsts.tailPosLocal, aMissile->guidance.finPak.tailYaw.finDir);
+    return drag;
+}
+
+DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrentOld(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
+{
+    if (m_isInRunge == false)
+    {
+        m_debugData->ToggleDebugOnOverRide();
+    }
+
+    DirectX::SimpleMath::Vector3 velocityNorm = aVelocity;
+    velocityNorm.Normalize();
+    DirectX::SimpleMath::Vector3 localVelocityNorm = velocityNorm;
+    localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile->projectileData.inverseAlignmentQuat);
+
+    auto tailPitchDot = aMissile->guidance.finPak.tailPitch.finDir.Dot(localVelocityNorm);
+    auto tailYawDot = aMissile->guidance.finPak.tailYaw.finDir.Dot(localVelocityNorm);
+
+    /*
+    float finArea = CalculateFinDragArea(localVelocityNorm, aMissile);
+    float finAreaPitch = CalculateFinDragArea2(localVelocityNorm, aMissile->guidance.finPak.tailPitch.finDir, m_finLib.tailPitch);
+    m_debugData->DebugPushUILineDecimalNumber("tailPitch area = ", finAreaPitch, "");
+    float finAreaYaw = CalculateFinDragArea2(localVelocityNorm, aMissile->guidance.finPak.tailYaw.finDir, m_finLib.tailYaw);
+    m_debugData->DebugPushUILineDecimalNumber("tailYaw = ", finAreaYaw, "");
+    */
+
+    //m_debugData->DebugPushUILineDecimalNumber("tailPitchDot = ", tailPitchDot, "");
+    //m_debugData->DebugPushUILineDecimalNumber("tailYawDot   = ", tailYawDot, "");
+
     const float frontFinSurfaceSum = 2.0f * (m_finLib.tailPitch.frontArea + m_finLib.tailYaw.frontArea + m_finLib.mainPitch.frontArea + m_finLib.mainYaw.frontArea);
     const float sideFinSurfaceSum = 2.0f * (m_finLib.tailYaw.wingArea + m_finLib.mainYaw.wingArea);
     const float topFinSurfaceSum = 2.0f * (m_finLib.tailPitch.wingArea + m_finLib.mainPitch.wingArea);
@@ -539,7 +626,15 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
     //float frontSurfaceArea = m_missileDimensions.y * m_missileDimensions.z + frontFaceMod;
     //float sideSurfaceArea = m_missileDimensions.x * m_missileDimensions.y + finMod;
     //float topSurfaceArea = m_missileDimensions.x * m_missileDimensions.z + finMod;
-    
+
+    float frontSurfaceArea2 = m_missileDimensions.y * m_missileDimensions.z;
+    float sideSurfaceArea2 = m_missileDimensions.x * m_missileDimensions.y;
+    float topSurfaceArea2 = m_missileDimensions.x * m_missileDimensions.z;
+
+    float frontSurfaceArea3 = frontFinSurfaceSum;
+    float sideSurfaceArea3 = sideFinSurfaceSum;
+    float topSurfaceArea3 = topFinSurfaceSum;
+
     float frontSurfaceArea = m_missileDimensions.y * m_missileDimensions.z + frontFinSurfaceSum;
     float sideSurfaceArea = m_missileDimensions.x * m_missileDimensions.y + sideFinSurfaceSum;
     float topSurfaceArea = m_missileDimensions.x * m_missileDimensions.z + topFinSurfaceSum;
@@ -548,7 +643,7 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
     float sideDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
     float topDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
 
-    float frontSurface = frontSurfaceArea *  abs(frontDot);
+    float frontSurface = frontSurfaceArea * abs(frontDot);
     float sideSurface = sideSurfaceArea * abs(sideDot);
     float topSurface = topSurfaceArea * abs(topDot);
 
@@ -619,110 +714,8 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrent(MissileData* aMi
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
     m_debugData->ToggleDebugOff();
-    return drag;
-}
-
-
-DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrentOld(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
-{
-    if (m_isInRunge == false)
-    {
-        m_debugData->ToggleDebugOnOverRide();
-    }
-
-    DirectX::SimpleMath::Vector3 velocityNorm = aVelocity;
-    velocityNorm.Normalize();
-    DirectX::SimpleMath::Vector3 localVelocityNorm = velocityNorm;
-    localVelocityNorm = DirectX::SimpleMath::Vector3::Transform(localVelocityNorm, aMissile->projectileData.inverseAlignmentQuat);
-
-    float frontSurfaceArea = m_missileDimensions.y * m_missileDimensions.z;
-    float sideSurfaceArea = m_missileDimensions.x * m_missileDimensions.y;
-    float topSurfaceArea = m_missileDimensions.x * m_missileDimensions.z;
-
-    float frontDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX);
-    float sideDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitZ);
-    float topDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitY);
-
-    float frontSurface = abs(frontSurfaceArea * frontDot);
-    float sideSurface = abs(sideSurfaceArea * sideDot);
-    float topSurface = abs(topSurfaceArea * topDot);
-
-    //float airSurfaceArea = (frontSurfaceArea * frontDot) + (sideSurfaceArea * sideDot) + (topSurfaceArea * topDot);
-    float airSurfaceArea = frontSurface + sideSurface + topSurface;
-    //const float airSurfaceArea2 = frontSurface + sideSurface + topSurface;
-
-    const float surfaceSum = airSurfaceArea;
-    const float surfacePercentage = surfaceSum / (frontSurfaceArea + sideSurfaceArea + topSurfaceArea);
-
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // 
-    //DirectX::SimpleMath::Vector3 airVelocityLocalized = aMissile->projectileData.q.velocity;
-    DirectX::SimpleMath::Vector3 airVelocityLocalized = aVelocity;
-    airVelocityLocalized = DirectX::SimpleMath::Vector3::Transform(airVelocityLocalized, aMissile->projectileData.inverseAlignmentQuat);
-
-    //const float angleOfAttackWrapped = Utility::WrapAngleOnePi(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airVelocityLocalized));
-    const float angleOfAttackWrapped2 = Utility::WrapAngle(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airVelocityLocalized));
-
-    //float sideSlipRatio = abs(angleOfAttackWrapped / DirectX::XM_PIDIV2);
-    //float sideSlipRatio2 = abs(angleOfAttackWrapped2 / DirectX::XM_PI);
-    float sideSlipRatio2 = abs(angleOfAttackWrapped2 / DirectX::XM_PIDIV2);
-    //float sideSlipRatio2 = abs(angleOfAttackWrapped2) / DirectX::XM_PIDIV2;
-    if (sideSlipRatio2 > 1.0f || sideSlipRatio2 < 0.0f)
-    {
-        sideSlipRatio2 = 1.0f;
-        int testBreak = 0;
-        testBreak++;
-    }
-
-    auto sideSlipDot = localVelocityNorm.Dot(DirectX::SimpleMath::Vector3::UnitX);
-    auto invsRatio = 1.0f - abs(sideSlipDot);
-    sideSlipRatio2 = invsRatio;
-
-    const float airSurfaceAreaToAdd = (m_missileDimensions.x * m_missileDimensions.y) * sideSlipRatio2;
-    const float radius = m_missileDimensions.y * 0.5f;
-    const float frontSurfaceArea2 = Utility::GetPi() * radius * radius;
-    airSurfaceArea = Utility::GetPi() * radius * radius;
-    //airSurfaceArea = 1.0f;
-    airSurfaceArea += airSurfaceAreaToAdd;
-
-    m_debugData->DebugPushUILineDecimalNumber("invsRatio = ", invsRatio, "");
-    m_debugData->DebugPushUILineDecimalNumber("sideSlipDot = ", sideSlipDot, "");
-    m_debugData->DebugPushUILineDecimalNumber("airSurfaceAreaToAdd = ", airSurfaceAreaToAdd, "");
-    m_debugData->DebugPushUILineDecimalNumber("airSurfaceArea = ", airSurfaceArea, "");
-    m_debugData->DebugPushUILineDecimalNumber("sideSlipRatio2 = ", sideSlipRatio2, "");
-
-    airSurfaceArea = m_missileConsts.dragAreaDebug;
-    airSurfaceArea = Utility::GetPi() * radius * radius;
-    airSurfaceArea += airSurfaceAreaToAdd;
-
-    float dragCoefficientBase = 0.17f;
-    float dragCoefficientToAdd = 1.6f * sideSlipRatio2;
-    float dragCoefficient = dragCoefficientBase + dragCoefficientToAdd;
-
-    m_debugData->DebugPushUILineDecimalNumber("dragCoefficientBase = ", dragCoefficientBase, "");
-    m_debugData->DebugPushUILineDecimalNumber("dragCoefficientToAdd = ", dragCoefficientToAdd, "");
-    m_debugData->DebugPushUILineDecimalNumber("dragCoefficient = ", dragCoefficient, "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttackWrapped2 = ", angleOfAttackWrapped2, "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttackWrapped2 = ", Utility::ToDegrees(angleOfAttackWrapped2), "");
-    dragCoefficient = m_missileConsts.dragCoefficientDebug;
-    dragCoefficient += dragCoefficientToAdd;
-
-    //  Compute the total drag force.
-    float airDensity = m_environment->GetAirDensity();
-    float velocity = aMissile->projectileData.q.velocity.Length();
-    float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
-    //DirectX::SimpleMath::Vector3 airResistance = localVelocityNorm * (-dragResistance);
-    DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
-
-    if (m_isDebugToggleTrue2 == true)
-    {
-        int testBreak = 0;
-        testBreak++;
-    }
-
-    DirectX::SimpleMath::Vector3 drag = airResistance;
-    m_debugData->ToggleDebugOff();
+    DebugPushDrawData(m_missileConsts.tailPosLocal, aMissile->guidance.finPak.tailPitch.finDir);
+    DebugPushDrawData(m_missileConsts.tailPosLocal, aMissile->guidance.finPak.tailYaw.finDir);
     return drag;
 }
 
@@ -1115,6 +1108,17 @@ DirectX::SimpleMath::Vector3 FireControl::CalculateDragLinearSum(MissileData& aM
     */
 
     return drag2;
+}
+
+float FireControl::CalculateFinDragArea(const DirectX::SimpleMath::Vector3 aVelocityNormLocal, const DirectX::SimpleMath::Vector3 aFinDir, FinDataStatic& aFinDat)
+{
+    auto finDirDotVel = abs(aFinDir.Dot(aVelocityNormLocal));
+    auto invsDot = 1.0f - finDirDotVel;
+
+    float areaFront = aFinDat.frontArea * invsDot;
+    float areaWing = aFinDat.wingArea * finDirDotVel;
+
+    return areaFront + areaWing;
 }
 
 float FireControl::CalculateFinLiftCoefTest(const float aAngleOfAttack)
@@ -4897,7 +4901,8 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.dragCoeefMod = dragModMax;
     finDat.isFinAngFixed = false;
     finDat.chord = m_missileConsts.canardChord;
-    finDat.span = m_missileConsts.canardSpan * 2.0f;
+    //finDat.span = m_missileConsts.canardSpan * 2.0f;
+    finDat.span = m_missileConsts.canardSpan;
     finDat.thickness = m_missileConsts.canardThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
@@ -4915,7 +4920,8 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.dragCoeefMod = dragModMax;
     finDat.posLocal = m_missileConsts.tailPosLocal;
     finDat.chord = m_missileConsts.tailChord;
-    finDat.span = m_missileConsts.tailSpan * 2.0f;
+    //finDat.span = m_missileConsts.tailSpan * 2.0f;
+    finDat.span = m_missileConsts.tailSpan;
     finDat.thickness = m_missileConsts.tailThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
@@ -4932,7 +4938,8 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.dragCoeefMod = dragModMax;
     finDat.posLocal = m_missileConsts.mainWingPosLocal;
     finDat.chord = m_missileConsts.mainChord;
-    finDat.span = m_missileConsts.mainSpan * 2.0f;
+    //finDat.span = m_missileConsts.mainSpan * 2.0f;
+    finDat.span = m_missileConsts.mainSpan;
     finDat.thickness = m_missileConsts.mainThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
@@ -5177,8 +5184,9 @@ void FireControl::InitializeProjectileModelMirv(Microsoft::WRL::ComPtr<ID3D11Dev
 void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, MissileStruct& aAmmo)
 {
     const float zOffset = 0.001f;
-    const float ammoDiameter = aAmmo.ammoData.radius * 2.0f;
-    const float ammoLength = aAmmo.ammoData.length;
+    const float ammoDiameter = m_missileConsts.dimensions.z;
+    const float ammoLength = m_missileConsts.dimensions.x;
+
     aAmmo.modelData.mainBodyShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), ammoLength, ammoDiameter);
     aAmmo.modelData.worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
@@ -5239,18 +5247,19 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.plumeTranslationTest = DirectX::SimpleMath::Matrix::CreateTranslation(testTransVec);
 
     // tail fins
-    const float tailFinLength = m_missileConsts.tailSpan;
-    const float tailFinWidth = m_missileConsts.tailChord;
-    const DirectX::SimpleMath::Vector3 tailFinDimensions = DirectX::SimpleMath::Vector3(m_missileConsts.tailSpan, m_missileConsts.tailChord, m_missileConsts.tailThickness);
+    const float tailFinLength = m_missileConsts.tailSpan * 0.5f;
+    const float tailFinWidth = m_missileConsts.tailChord * 0.5f;
+    //const DirectX::SimpleMath::Vector3 tailFinDimensions = DirectX::SimpleMath::Vector3(m_missileConsts.tailSpan, m_missileConsts.tailChord, m_missileConsts.tailThickness);
+    const DirectX::SimpleMath::Vector3 tailFinDimensions = DirectX::SimpleMath::Vector3(tailFinLength, tailFinWidth, m_missileConsts.tailThickness);
 
     aAmmo.modelData.tailFinShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), tailFinDimensions);
     DirectX::SimpleMath::Vector3 tailFinTranslation1 = DirectX::SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
     
-    const float tailOffset = -ammoLength * 0.45f;
+    //const float tailOffset = -ammoLength * 0.45f;
+    const float tailOffset = m_missileConsts.tailPosLocal.x;
     // tail fin generic
-    const float tailFinLength2 = m_missileConsts.tailSpan;
     aAmmo.modelData.localTailFinMat = DirectX::SimpleMath::Matrix::Identity;
-    aAmmo.modelData.localTailFinMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailFinLength2 * 0.5f, 0.0f, 0.0f));
+    aAmmo.modelData.localTailFinMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailFinLength * 0.5f, 0.0f, 0.0f));
     aAmmo.modelData.tailFinTransMat = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.tailFinTransMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(tailOffset * 1.0f, aAmmo.ammoData.radius * 0.9f, 0.0f));
 
@@ -7830,12 +7839,19 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
 
 void FireControl::UpdateFinAngles(MissileData& aMissile)
 {
-
     aMissile.guidance.finPak.canardPitch.finAngle = 0.0f;
     aMissile.guidance.finPak.canardYaw.finAngle = 0.0f;
 
     aMissile.guidance.finPak.tailPitch.finAngle = aMissile.guidance.conDat.finPitch;
     aMissile.guidance.finPak.tailYaw.finAngle = aMissile.guidance.conDat.finYaw;
+
+    aMissile.guidance.finPak.tailPitch.finDir = DirectX::SimpleMath::Vector3::UnitY;
+    aMissile.guidance.finPak.tailPitch.finDir = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.finPak.tailPitch.finDir,
+        DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_finLib.tailPitch.axis, aMissile.guidance.finPak.tailPitch.finAngle));
+
+    aMissile.guidance.finPak.tailYaw.finDir = DirectX::SimpleMath::Vector3::UnitZ;
+    aMissile.guidance.finPak.tailYaw.finDir = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.finPak.tailYaw.finDir,
+        DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(m_finLib.tailYaw.axis, aMissile.guidance.finPak.tailYaw.finAngle));
 
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber(".finPak.tailPitch.finAngle = ", Utility::ToDegrees(aMissile.guidance.finPak.tailPitch.finAngle), "");
@@ -7849,6 +7865,9 @@ void FireControl::UpdateFinAngles(MissileData& aMissile)
 
     aMissile.guidance.finPak.mainPitch.finAngle = 0.0f;
     aMissile.guidance.finPak.mainYaw.finAngle = 0.0f;
+
+    aMissile.guidance.finPak.mainPitch.finDir = DirectX::SimpleMath::Vector3::UnitY;
+    aMissile.guidance.finPak.mainYaw.finDir = DirectX::SimpleMath::Vector3::UnitZ;
 }
 
 void FireControl::UpdateFinData(MissileData& aMissile)
@@ -9428,7 +9447,11 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, velocityNorm, 4.0f, 0.0f, DirectX::Colors::Coral);
         //m_debugData->DebugPushUILineDecimalNumber("deltaVelocity = ", deltaVelocity.Length(), "");
         m_debugData->ToggleDebugOff();
-        
+
+        DebugPushDrawData(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f), DirectX::SimpleMath::Vector3::UnitY);
+        DebugPushDrawData(DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f), DirectX::SimpleMath::Vector3::UnitY);
+        DebugPushDrawData(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f), DirectX::SimpleMath::Vector3::UnitY);
+
         DebugDrawUpdate(m_missileVec[i]);
 
         m_debugDrawVec.clear();
