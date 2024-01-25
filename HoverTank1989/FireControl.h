@@ -159,6 +159,7 @@ struct FinDataDynamic
     DirectX::SimpleMath::Vector3 dragForce = DirectX::SimpleMath::Vector3::Zero;
     float finAngle = Utility::ToRadians(0.0f);
     DirectX::SimpleMath::Vector3 finDir = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 chordLine = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 resultantForce = DirectX::SimpleMath::Vector3::Zero;
 };
 
@@ -800,7 +801,7 @@ private:
     DirectX::SimpleMath::Vector3 CalculateDragLinearForAccumulatorOld(MissileData& aMissile);
     DirectX::SimpleMath::Vector3 CalculateDragLinearSum(MissileData& aMissile, const float aTimeDelta);
 
-    float CalculateFinDragArea(const DirectX::SimpleMath::Vector3 aVelocityNormLocal, const DirectX::SimpleMath::Vector3 aFinDir, FinDataStatic& aFinDat);
+    float CalculateFinDragArea(const DirectX::SimpleMath::Vector3 aVelocityNormLocal, const DirectX::SimpleMath::Vector3 aFinDir, const FinDataStatic& aFinDat);
 
     float CalculateFinLiftCoef(const float aAngleOfAttack);
     float CalculateFinLiftCoefDebug(const float aAngleOfAttack);
@@ -941,6 +942,7 @@ private:
     void UpdateFinData(MissileData& aMissile);
     void UpdateFinAngles(MissileData& aMissile);
     void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
+    void UpdateFinForcesTemp(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
     void UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
     Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
     Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
