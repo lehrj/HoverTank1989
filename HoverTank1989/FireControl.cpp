@@ -8,8 +8,6 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     Utility::ForceAccum::ZeroValues(sumForce);
     sumForce += BoosterAccum(aMissile);
 
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, sumForce.linear);
-
     Utility::ForceAccum sumDrag;
     Utility::ForceAccum::ZeroValues(sumDrag);
     sumDrag += DragAccum(aMissile, aTimeDelta);
@@ -18,8 +16,6 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     Utility::ForceAccum::ZeroValues(aeroAcc);
     aeroAcc+= FinAccumSumTest(aMissile);
 
-    //aeroAcc += GetAeroForceAccum(aMissile, aTimeDelta, aMissile.guidance.finPak.tailPitch, m_finLib.tailPitch);
-    //aeroAcc += GetAeroForceAccum(aMissile, aTimeDelta, aMissile.guidance.finPak.tailYaw, m_finLib.tailYaw);
     sumForce += aeroAcc;
 
     Utility::ForceAccum aeroAccAligned;
@@ -27,22 +23,8 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     aeroAccAligned = aeroAcc;
     Utility::ForceAccum::AlignLinearAndTorque(aeroAccAligned, aMissile.projectileData.alignmentQuat);
     
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAccAligned.linear, 5.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, aeroAccAligned.torque, 5.0f, 0.0f, DirectX::Colors::Teal);
-    m_debugData->DebugPushUILineDecimalNumber("aeroAcuumAligned.linear ", aeroAccAligned.linear.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("aeroAcuumAligned.torque ", aeroAccAligned.torque.Length(), "");
-    m_debugData->ToggleDebugOff();
-
     Utility::ForceAccum::AlignLinear(sumForce, aMissile.projectileData.alignmentQuat);
     Utility::ForceAccum::AlignLinear(sumDrag, aMissile.projectileData.alignmentQuat);
-
-
-    //m_debugData->ToggleDebugOnOverRide();
-
-    m_debugData->DebugPushUILineDecimalNumber("sumForce.linear ", sumForce.linear.Length(), "");
-    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, sumForce.linear, 15.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->ToggleDebugOff();
 
     aMissile.guidance.linearForceSum = sumForce.linear;
     aMissile.guidance.linearDragSum = sumDrag.linear;
@@ -7969,10 +7951,26 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
         chordLineAirVec.y = 0.0f;
         chordLineAirVec.Normalize();
         aoaToUse = Utility::GetAngleBetweenVectors(chordLineAirVec, -aFinDyn.chordLine);
+
+        auto crossVec = aFinDyn.chordLine.Cross(chordLineAirVec);
+
         //if (chordLineAirVec.z > 0.0f)
         if (chordLineAirVec.Dot(airSpeedLocalNorm))
         {
+            //aoaToUse *= -1.0f;
+        }
+
+        if (aStaticDat.finType == FinType::TAIL_YAW)
+        {
+            DebugPushDrawData(aStaticDat.posLocal, crossVec);
+        }
+
+        if (crossVec.y < 0.0f)
+        {
             aoaToUse *= -1.0f;
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("aoaToUse Flipped     = ", Utility::ToDegrees(aoaToUse), "");
+            m_debugData->ToggleDebugOff();
         }
     }
     else
@@ -7980,27 +7978,40 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
         chordLineAirVec.z = 0.0f;
         chordLineAirVec.Normalize();
         aoaToUse = Utility::GetAngleBetweenVectors(chordLineAirVec, -aFinDyn.chordLine);
+        auto crossVec = aFinDyn.chordLine.Cross(chordLineAirVec);
+
+        if (aStaticDat.finType == FinType::TAIL_PITCH)
+        {
+            //DebugPushDrawData(aStaticDat.posLocal, crossVec);
+        }
+
         //if (chordLineAirVec.y > 0.0f)
-        if (chordLineAirVec.Dot(airSpeedLocalNorm))
+        //if (chordLineAirVec.Dot(airSpeedLocalNorm) < 0.0f)
+        if (crossVec.z < 0.0f)
         {
             aoaToUse *= -1.0f;
+            //m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("aoaToUse Flipped     = ", Utility::ToDegrees(aoaToUse), "");
+            m_debugData->ToggleDebugOff();
         }
     }
 
-    if (angleOfAttack < 0.0f)
+    //DebugPushDrawData(aStaticDat.posLocal, chordLineAirVec);
+    //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.chordLine);
+
+    //if (aStaticDat.finType == FinType::TAIL_PITCH)
+    if (aStaticDat.finType == FinType::TAIL_YAW)
     {
-        aoaToUse = abs(aoaToUse) * -1.0f;
-    }
-    else
-    {
-        aoaToUse = abs(aoaToUse);
+        //DebugPushDrawData(aStaticDat.posLocal, chordLineAirVec);
+        //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.chordLine);
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineDecimalNumber("aoaToUse      = ", Utility::ToDegrees(aoaToUse), "");
+        m_debugData->DebugPushUILineDecimalNumber("angleOfAttack = ", Utility::ToDegrees(angleOfAttack), "");
+        m_debugData->ToggleDebugOff();
     }
 
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("aoaToUse      = ", Utility::ToDegrees(aoaToUse), "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack = ", Utility::ToDegrees(angleOfAttack), "");
-    m_debugData->ToggleDebugOff();
-
+    angleOfAttack = aoaToUse;
     float clIn = m_missileConsts.finClConst;
     if (m_missileConsts.isUseConstFinClTrue == false)
     {
@@ -8116,10 +8127,15 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
 
     if (aStaticDat.finType == FinType::TAIL_PITCH)
     {
+        //DebugPushDrawData(aStaticDat.posLocal, chordLineAirVec);
+        //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.chordLine);
+        
+        /*
         DebugPushDrawData(aStaticDat.posLocal, aFinDyn.liftForce);
         DebugPushDrawData(aStaticDat.posLocal, aFinDyn.dragForce);
         DebugPushDrawData(aStaticDat.posLocal, aFinDyn.resultantForce);
         DebugPushDrawData(DirectX::SimpleMath::Vector3(0.5f, 0.0f, 0.0f), -airSpeedLocalNorm);
+        */
     }
 }
 
