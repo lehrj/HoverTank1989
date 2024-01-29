@@ -74,9 +74,12 @@ struct ControlInput
 
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
-    const float weaponPitchInputRate = 0.2f;
-    const float weaponPitchMax = Utility::ToRadians(25.0f);
-    const float weaponPitchMin = Utility::ToRadians(-10.0f);
+    //const float weaponPitchInputRate = 0.2f;
+    //const float weaponPitchMax = Utility::ToRadians(25.0f);
+    //const float weaponPitchMin = Utility::ToRadians(-10.0f);
+    const float weaponPitchInputRate = 0.8f;
+    const float weaponPitchMax = Utility::ToRadians(110.0f);
+    const float weaponPitchMin = Utility::ToRadians(-100.0f);
 
     float turretYaw;
     //const float turretYawInputRate = 0.7f;
@@ -564,6 +567,6 @@ private:
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-400.0f, 9.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(400.0f, 9.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-400.0f, 8.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(100.0f, 8.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
 };
 
