@@ -696,8 +696,7 @@ DirectX::SimpleMath::Vector3 FireControl::CalcDragLinearCurrentOld(MissileData* 
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
     m_debugData->ToggleDebugOff();
-    DebugPushDrawData(m_missileConsts.tailPosLocal, aMissile->guidance.finPak.tailPitch.finDir);
-    DebugPushDrawData(m_missileConsts.tailPosLocal, aMissile->guidance.finPak.tailYaw.finDir);
+
     return drag;
 }
 
@@ -3516,11 +3515,11 @@ Utility::ForceAccum FireControl::FinAccumSumTest(const MissileData& aMissile)
     tailSum += tailYawAccum;
    
     
-    DebugPushDrawData2(m_finLib.tailPitch.posLocal, tailYawAccum.linear, DirectX::Colors::Lime, true, true);
-    DebugPushDrawData2(m_finLib.tailPitch.posLocal, tailYawAccum.torque, DirectX::Colors::Tomato, true, true);
+    DebugPushDrawData(m_finLib.tailPitch.posLocal, tailYawAccum.linear, DirectX::Colors::Lime, true, true);
+    DebugPushDrawData(m_finLib.tailPitch.posLocal, tailYawAccum.torque, DirectX::Colors::Tomato, true, true);
 
-    DebugPushDrawData2(m_finLib.mainPitch.posLocal, mainYawAccum.linear, DirectX::Colors::Lime, true, true);
-    DebugPushDrawData2(m_finLib.mainPitch.posLocal, mainYawAccum.torque, DirectX::Colors::Tomato, true, true);
+    DebugPushDrawData(m_finLib.mainPitch.posLocal, mainYawAccum.linear, DirectX::Colors::Lime, true, true);
+    DebugPushDrawData(m_finLib.mainPitch.posLocal, mainYawAccum.torque, DirectX::Colors::Tomato, true, true);
     
 
     Utility::ForceAccum accum;
@@ -3649,10 +3648,10 @@ Utility::ForceAccum FireControl::FinForceAccum(const FinDataStatic& aFinLib, con
     
     if (aFinLib.finType == FinType::TAIL_YAW)
     {
-        //DebugPushDrawData2(forcePos, forceDir, DirectX::Colors::Red, false, true);
-        DebugPushDrawData2(forcePos, aFinDyn.resultantForce, DirectX::Colors::Red, false, true);
-        DebugPushDrawData2(forcePos, aFinDyn.liftForce, DirectX::Colors::LightBlue, false, true);
-        DebugPushDrawData2(forcePos, aFinDyn.dragForce, DirectX::Colors::DeepPink, false, true);
+        //DebugPushDrawData(forcePos, forceDir, DirectX::Colors::Red, false, true);
+        DebugPushDrawData(forcePos, aFinDyn.resultantForce, DirectX::Colors::Red, false, true);
+        DebugPushDrawData(forcePos, aFinDyn.liftForce, DirectX::Colors::LightBlue, false, true);
+        DebugPushDrawData(forcePos, aFinDyn.dragForce, DirectX::Colors::DeepPink, false, true);
     }
 
     return accum;
@@ -4960,7 +4959,6 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     Environment const* aEnvironment, std::shared_ptr<Vehicle> aVehicle)
 {
     m_debugDrawVec.clear();
-    m_debugDrawVec2.clear();
 
     m_playerVehicle = aVehicle;
     m_explosionStruct.explosionToPushVec.clear();
@@ -9535,10 +9533,8 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->ToggleDebugOff();
 
         DebugDrawUpdate(m_missileVec[i]);
-        DebugDrawUpdate2(m_missileVec[i]);
 
         m_debugDrawVec.clear();
-        m_debugDrawVec2.clear();
     }
 
     //CheckCollisionsMissile();
@@ -10054,59 +10050,14 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     m_debugData->ToggleDebugOff();
 }
 
-
-void FireControl::DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal)
-{
-    std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3> updatePair;
-    updatePair.first = aPosLocal;
-    updatePair.second = aVecLocal;
-    m_debugDrawVec.push_back(updatePair);
-}
-
-void FireControl::DebugPushDrawData2(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal, const DirectX::XMVECTORF32 aColor, const bool aIsDrawScaledTrue, const bool aIsRealignTrue)
+void FireControl::DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal, const DirectX::XMVECTORF32 aColor, const bool aIsDrawScaledTrue, const bool aIsRealignTrue)
 {
     std::tuple<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3, DirectX::XMVECTORF32, bool, bool> updateTuple;
     updateTuple = std::make_tuple(aPosLocal, aVecLocal, aColor, aIsDrawScaledTrue, aIsRealignTrue);
-    m_debugDrawVec2.push_back(updateTuple);
+    m_debugDrawVec.push_back(updateTuple);
 }
 
 void FireControl::DebugDrawUpdate(MissileData& aMissile)
-{
-    auto posWorld = aMissile.projectileData.q.position;
-    auto quatWorld = aMissile.projectileData.alignmentQuat;
-    auto color = DirectX::Colors::Lime;
-
-    m_debugData->ToggleDebugOnOverRide();
-    for(int i = 0; i < m_debugDrawVec.size(); ++i)
-    {
-        auto pos = m_debugDrawVec[i].first;
-
-        //pos.Transform(pos, quatWorld);
-        pos = DirectX::SimpleMath::Vector3::Transform(pos, quatWorld);
-        pos += posWorld;
-
-        auto vec = m_debugDrawVec[i].second;
-        vec = DirectX::SimpleMath::Vector3::Transform(vec, quatWorld);
-
-        if (i == 1)
-        {
-            color = DirectX::Colors::Orange;
-        }
-        if (i == 2)
-        {
-            color = DirectX::Colors::Violet;
-        }
-        if (i == 3)
-        {
-            color = DirectX::Colors::White;
-        }
-        m_debugData->PushDebugLine(pos, vec, 5.0f, 0.0f, color);
-
-    }
-    m_debugData->ToggleDebugOff();
-}
-
-void FireControl::DebugDrawUpdate2(MissileData& aMissile)
 {
     auto posWorld = aMissile.projectileData.q.position;
     auto quatWorld = aMissile.projectileData.alignmentQuat;
@@ -10116,26 +10067,26 @@ void FireControl::DebugDrawUpdate2(MissileData& aMissile)
     const float scaleLengthMod = 1.0f;
 
     m_debugData->ToggleDebugOnOverRide();
-    for (int i = 0; i < m_debugDrawVec2.size(); ++i)
+    for (int i = 0; i < m_debugDrawVec.size(); ++i)
     {
-        auto pos = std::get<0>(m_debugDrawVec2[i]);
+        auto pos = std::get<0>(m_debugDrawVec[i]);
 
         pos = DirectX::SimpleMath::Vector3::Transform(pos, quatWorld);
         pos += posWorld;
 
-        auto vec = std::get<1>(m_debugDrawVec2[i]);
-        if (std::get<4>(m_debugDrawVec2[i]) == true)
+        auto vec = std::get<1>(m_debugDrawVec[i]);
+        if (std::get<4>(m_debugDrawVec[i]) == true)
         {
             vec = DirectX::SimpleMath::Vector3::Transform(vec, quatWorld);
         }
-        if (std::get<3>(m_debugDrawVec2[i]) == false)
+        if (std::get<3>(m_debugDrawVec[i]) == false)
         {
-            m_debugData->PushDebugLine(pos, vec, lineLength, offset, std::get<2>(m_debugDrawVec2[i]));
+            m_debugData->PushDebugLine(pos, vec, lineLength, offset, std::get<2>(m_debugDrawVec[i]));
 
         }
         else
         {
-            m_debugData->PushDebugLineScaled(pos, vec, scaleLengthMin, scaleLengthMod, offset, std::get<2>(m_debugDrawVec2[i]));
+            m_debugData->PushDebugLineScaled(pos, vec, scaleLengthMin, scaleLengthMod, offset, std::get<2>(m_debugDrawVec[i]));
         }
 
     }
