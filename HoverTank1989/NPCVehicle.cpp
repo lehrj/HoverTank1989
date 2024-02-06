@@ -412,8 +412,6 @@ void NPCVehicle::CalculateImpactForceFromProjectile(const Utility::ImpactForce a
     m_vehicleStruct00.vehicleData.impactTorque.axis += impactTorque.axis * impactTorque.magnitude;
     m_vehicleStruct00.vehicleData.impactTorque.magnitude += impactTorque.magnitude;
 
-    m_debugData->DebugPushTestLine(m_vehicleStruct00.vehicleData.q.position, impactForce, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
     impactForceToVec.impactVelocity *= aImpactForce.impactModifier;
     PushImpactForce(impactForceToVec);
 

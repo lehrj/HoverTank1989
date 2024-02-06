@@ -3212,7 +3212,6 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
 
     aTorque = torqueUpdate;
 
-    m_debugData->DebugPushTestLine(m_heli.q.position, torqueUpdate.axis, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     m_debugData->DebugPushUILineDecimalNumber("torqueUpdate.magnitude =", torqueUpdate.magnitude, "");
 
     // acceleration due to pendulum motion
@@ -3230,7 +3229,6 @@ void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath
     {
         accelerationDirection *= accelerationMag * aTimeStep;
         accelerationDirection *= accelerationMag;
-        m_debugData->DebugPushTestLine(m_heli.q.position, accelerationDirection, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
         m_debugData->DebugPushUILineDecimalNumber("Pendulum on =", 0.0f, "");
         m_debugData->DebugPushUILineDecimalNumber("accelerationDirection.Length() = ", accelerationDirection.Length(), "");
         m_debugData->DebugPushUILineDecimalNumber("accelerationMag = ", accelerationMag, "");
@@ -3332,7 +3330,6 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdatePendulumMotion2(Utility::Torque& aTo
     {
         accelerationDirection *= accelerationMag * aTimeStep;
         accelerationDirection *= accelerationMag;
-        m_debugData->DebugPushTestLine(m_heli.q.position, accelerationDirection, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
         m_debugData->DebugPushUILineDecimalNumber("Pendulum on =", 0.0f, "");
         m_debugData->DebugPushUILineDecimalNumber("accelerationDirection.Length() = ", accelerationDirection.Length(), "");
         m_debugData->DebugPushUILineDecimalNumber("accelerationMag = ", accelerationMag, "");

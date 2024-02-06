@@ -2318,7 +2318,6 @@ void Camera::UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta)
 	//m_springTarget.position = vehiclePos + (m_vehicleFocus->GetWeaponDirection() * 10.0f);
 	//m_springTarget.position.y += m_vehicleFocus->GetWeaponPitch() * 10.0f;
 
-
 	DirectX::SimpleMath::Vector3 weaponRight = m_vehicleFocus->GetWeaponDirection().Cross(m_vehicleFocus->GetVehicleUp());
 	const float pitchDampening = 0.5f;
 	DirectX::SimpleMath::Matrix pitchRotMat = DirectX::SimpleMath::Matrix::CreateFromAxisAngle(weaponRight, m_vehicleFocus->GetWeaponPitch() * pitchDampening);
@@ -2334,15 +2333,11 @@ void Camera::UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta)
 	m_springTarget.forward = testHeading;
 	DirectX::SimpleMath::Vector3 testForword1 = testHeading;
 	DirectX::SimpleMath::Vector3 testForword2 = m_vehicleFocus->GetWeaponDirection();
-	m_debugData->DebugPushTestLine(m_vehicleFocus->GetPos(), testForword1, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	m_debugData->DebugPushTestLine(m_vehicleFocus->GetPos(), testForword2, 10.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	DirectX::SimpleMath::Vector3 testTarget = m_springTarget.position - m_actualPosition;
 	testTarget = DirectX::SimpleMath::Vector3::Transform(testTarget, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw() * 0.1f));
 	testTarget += m_actualPosition;
 	//m_springTarget.position = testTarget;
-
-
 
 	DirectX::SimpleMath::Vector3 idealPosition = m_springTarget.position - m_springTarget.forward * m_hDistance + m_springTarget.up * m_vDistance;
 	DirectX::SimpleMath::Vector3 displacement = m_actualPosition - idealPosition;
@@ -2350,13 +2345,6 @@ void Camera::UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta)
 	m_velocity += springAccel * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 	m_actualPosition += m_velocity * static_cast<float>(aTimeDelta.GetElapsedSeconds());
 
-
-
-
-
-	m_debugData->DebugPushTestLinePositionIndicator(m_springTarget.position, 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	//m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetPos(), 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	//m_debugData->DebugPushTestLinePositionIndicator(m_vehicleFocus->GetWeaponPos(), 5.0f, 0.0f, DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 	m_debugData->DebugPushUILineDecimalNumber("Yaw = ", m_vehicleFocus->GetTurretYaw(), "");
 	DirectX::SimpleMath::Vector3 testActual = m_actualPosition - m_springTarget.position;
 	testActual = DirectX::SimpleMath::Vector3::Transform(testActual, DirectX::SimpleMath::Matrix::CreateRotationY(m_vehicleFocus->GetTurretYaw()));
