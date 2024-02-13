@@ -266,11 +266,6 @@ struct GuidanceSystem
     float finAngle3 = 0.0f;
     float finAngle4 = 0.0f;
 
-    float tfinAngle1 = 0.0f;
-    float tfinAngle2 = 0.0f;
-    float tfinAngle3 = 0.0f;
-    float tfinAngle4 = 0.0f;
-
     float canardPitchAng = 0.0f;
     float canardYawAng = 0.0f;
     float tailPitchAng = 0.0f;
