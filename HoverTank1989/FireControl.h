@@ -320,8 +320,6 @@ struct GuidanceSystem
     bool isVelocityForward = true;
 
     DirectX::SimpleMath::Quaternion angularStepQuat = DirectX::SimpleMath::Quaternion::Identity;
-    //DirectX::SimpleMath::Vector3 he = DirectX::SimpleMath::Vector3::UnitX;
-    // end seeker data
 
     float climbOutTimer = 0.0f;
 
@@ -330,7 +328,7 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Matrix afterBurnPlumeSphereMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix afterBurnPlumeConeMat = DirectX::SimpleMath::Matrix::Identity;
-    bool testBool = false;
+    bool flickerBool = false;
 
     float thrustAngle = 0.0f;
 

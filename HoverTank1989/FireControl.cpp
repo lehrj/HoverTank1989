@@ -9375,13 +9375,13 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
 void FireControl::UpdateMissileModelData(MissileData& aMissile)
 {
-    if (aMissile.guidance.testBool == true)
+    if (aMissile.guidance.flickerBool == true)
     {
-        aMissile.guidance.testBool = false;
+        aMissile.guidance.flickerBool = false;
     }
     else
     {
-        aMissile.guidance.testBool = true;
+        aMissile.guidance.flickerBool = true;
     }
 
     if (aMissile.guidance.isRocketPlumeFlickerTrue == true)
@@ -9403,7 +9403,7 @@ void FireControl::UpdateMissileModelData(MissileData& aMissile)
     float plumeBaseScale = 0.0f;
     float scale = 1.0f;
     float plumeConeScale = 0.0f;
-    if (aMissile.guidance.testBool == true)
+    if (aMissile.guidance.flickerBool == true && 1 == 0)
     {
         const float plumeflickerScaleLength = 0.5f;
         const float plumeflickerScaleWidth = 0.8f;
