@@ -924,13 +924,15 @@ private:
 
     
     // Missile accumulators
+    void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
     Utility::ForceAccum AeroAccum(MissileData& aMissile);
     Utility::ForceAccum BoosterAccum(MissileData& aMissile);
     Utility::ForceAccum BoosterAccumStatic(MissileData& aMissile);
     Utility::ForceAccum BoosterAccumVectored(MissileData& aMissile);
     void BoosterSteeringUpdate(MissileData& aMissile);
     Utility::ForceAccum DragAccum(MissileData& aMissile, const float aTimeDelta);
-    void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
+    Utility::ForceAccum BodyAeroAccum(MissileData& aMissile);
+
     // fin funcs
     void UpdateFinData(MissileData& aMissile);
     void UpdateFinAngles(MissileData& aMissile);

@@ -18,6 +18,10 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
 
     sumForce += aeroAcc;
 
+    Utility::ForceAccum bodyAeroAcc;
+    Utility::ForceAccum::ZeroValues(bodyAeroAcc);
+    bodyAeroAcc += BodyAeroAccum(aMissile);
+
     Utility::ForceAccum aeroAccAligned;
     Utility::ForceAccum::ZeroValues(aeroAccAligned);
     aeroAccAligned = aeroAcc;
@@ -85,6 +89,40 @@ void FireControl::AltitudeController(MissileData& aMissile, const float aTimeDel
         aMissile.guidance.targetDestination.y += altBuffer;
         aMissile.guidance.targetPosition.y += altBuffer;
     }
+}
+
+
+Utility::ForceAccum FireControl::BodyAeroAccum(MissileData& aMissile)
+{
+    auto localAirVel = aMissile.guidance.localVel;
+    auto localAirVelNorm = localAirVel;
+    localAirVelNorm.Normalize();
+    //DirectX::SimpleMath::Vector3 forcePos = m_missileConsts.centerOfPressureBasePosLocal;
+    DirectX::SimpleMath::Vector3 forcePos = aMissile.guidance.centerOfPressureLocalPos;
+    
+    DirectX::SimpleMath::Vector3 forceDir = CalculateDragLinearForAccumulator(aMissile);
+    //auto forceVal = forceDir.Length();
+    //forceDir = localAirVelNorm * forceVal;
+    DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
+    DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::AddForceAtPoint(forceDir, forcePos, centerOfMass, forceAccum, torqueAccum);
+
+    Utility::ForceAccum accum;
+    Utility::ForceAccum::ZeroValues(accum);
+    accum.linear = forceAccum;
+    accum.torque = torqueAccum;
+
+    DebugPushDrawData(forcePos, accum.linear, DirectX::Colors::Lavender, false, true);
+    DebugPushDrawData(forcePos, accum.torque, DirectX::Colors::Tomato, false, true);
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("forceAccum  = ", forceAccum.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("torqueAccum = ", torqueAccum.Length(), "");
+    m_debugData->ToggleDebugOff();
+
+    return accum;
 }
 
 Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
@@ -3514,13 +3552,13 @@ Utility::ForceAccum FireControl::FinAccumSumTest(const MissileData& aMissile)
     tailSum += tailPitchAccum;
     tailSum += tailYawAccum;
    
-    
+    /*
     DebugPushDrawData(m_finLib.tailPitch.posLocal, tailYawAccum.linear, DirectX::Colors::Lime, true, true);
     DebugPushDrawData(m_finLib.tailPitch.posLocal, tailYawAccum.torque, DirectX::Colors::Tomato, true, true);
 
     DebugPushDrawData(m_finLib.mainPitch.posLocal, mainYawAccum.linear, DirectX::Colors::Lime, true, true);
     DebugPushDrawData(m_finLib.mainPitch.posLocal, mainYawAccum.torque, DirectX::Colors::Tomato, true, true);
-    
+    */
 
     Utility::ForceAccum accum;
     Utility::ForceAccum::ZeroValues(accum);
@@ -3646,7 +3684,7 @@ Utility::ForceAccum FireControl::FinForceAccum(const FinDataStatic& aFinLib, con
     accum.torque = torqueAccum;
 
     
-    if (aFinLib.finType == FinType::TAIL_YAW)
+    if (aFinLib.finType == FinType::TAIL_YAW && 1 == 0)
     {
         //DebugPushDrawData(forcePos, forceDir, DirectX::Colors::Red, false, true);
         DebugPushDrawData(forcePos, aFinDyn.resultantForce, DirectX::Colors::Red, false, true);
