@@ -609,7 +609,8 @@ struct MissileConsts
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
     const bool isManualControlTrue = true;
-    const bool isThrustVecOn = true;
+    const bool isThrustVecOn = false;
+    const bool isBodyAeroOn = true;
 };
 
 enum class ExplosionType

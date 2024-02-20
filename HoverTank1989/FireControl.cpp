@@ -15,12 +15,15 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     Utility::ForceAccum aeroAcc;
     Utility::ForceAccum::ZeroValues(aeroAcc);
     aeroAcc+= FinAccumSumTest(aMissile);
-
     sumForce += aeroAcc;
 
     Utility::ForceAccum bodyAeroAcc;
     Utility::ForceAccum::ZeroValues(bodyAeroAcc);
     bodyAeroAcc += BodyAeroAccum(aMissile);
+    if (m_missileConsts.isBodyAeroOn == true)
+    {
+        sumForce += bodyAeroAcc;
+    }
 
     Utility::ForceAccum aeroAccAligned;
     Utility::ForceAccum::ZeroValues(aeroAccAligned);
@@ -3552,10 +3555,9 @@ Utility::ForceAccum FireControl::FinAccumSumTest(const MissileData& aMissile)
     tailSum += tailPitchAccum;
     tailSum += tailYawAccum;
    
-    /*
     DebugPushDrawData(m_finLib.tailPitch.posLocal, tailYawAccum.linear, DirectX::Colors::Lime, true, true);
     DebugPushDrawData(m_finLib.tailPitch.posLocal, tailYawAccum.torque, DirectX::Colors::Tomato, true, true);
-
+    /*
     DebugPushDrawData(m_finLib.mainPitch.posLocal, mainYawAccum.linear, DirectX::Colors::Lime, true, true);
     DebugPushDrawData(m_finLib.mainPitch.posLocal, mainYawAccum.torque, DirectX::Colors::Tomato, true, true);
     */
