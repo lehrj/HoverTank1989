@@ -609,7 +609,9 @@ struct MissileConsts
     const bool isUseConstFinClTrue = false;
     const bool isDebugLocalAirVelForceNormTrue = false;
     const bool isManualControlTrue = true;
-    const bool isThrustVecOn = false;
+    const bool isThrustVecOn = true;
+    const bool isDynamicFinOn = false;
+    const bool isFinForceOn = true;
     const bool isBodyAeroOn = true;
 };
 
