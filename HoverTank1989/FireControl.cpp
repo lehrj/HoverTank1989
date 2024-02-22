@@ -2450,27 +2450,6 @@ Utility::ForceAccum FireControl::DragAccum(MissileData& aMissile, const float aT
     accum.linear = forceAccum;
     accum.torque = torqueAccum;
 
-    //m_debugData->ToggleDebugOnOverRide();
-    DirectX::SimpleMath::Vector3 testLine = forceAccum;
-    testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.projectileData.alignmentQuat);
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testLine, 12.0f, 0.0f, DirectX::Colors::Red);
-
-    testLine = torqueAccum;
-    testLine = DirectX::SimpleMath::Vector3::Transform(testLine, aMissile.projectileData.alignmentQuat);
-    m_debugData->PushDebugLine(aMissile.projectileData.q.position, testLine, 10.0f, 0.0f, DirectX::Colors::Teal);
-
-    m_debugData->DebugPushUILineDecimalNumber("forceAccum  = ", forceAccum.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("torqueAccum = ", torqueAccum.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("forceDir.x = ", forceDir.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("forceDir.y = ", forceDir.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("forceDir.z = ", forceDir.z, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("forcePos.x = ", forcePos.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("forcePos.y = ", forcePos.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("forcePos.z = ", forcePos.z, "");
-
-    m_debugData->ToggleDebugOff();
-
     return accum;
 }
 
