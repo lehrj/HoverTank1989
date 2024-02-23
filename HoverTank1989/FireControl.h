@@ -546,7 +546,6 @@ struct MissileConsts
     const float plumeRotationRate = 0.432f;
 
     const float headingRadiansPerSecondMax = 1.12f;
-    //const float steerAngMax = Utility::ToRadians(25.0f);
     const float steerAngMax = Utility::ToRadians(15.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
 
@@ -558,7 +557,6 @@ struct MissileConsts
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
 
     const float rocketBoostForceMax = 125.0f;
-    //const float mass = 22.0f;
     const float mass = 11.0f;
     //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
     const float velMaxEst = 10.0f;
@@ -568,8 +566,6 @@ struct MissileConsts
     const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
     const float terminalRange = 100.0f;
-
-    const float finClConst = 0.2f;
 
     const float climbOutDuration = 0.5f;
 
@@ -607,12 +603,12 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isDebugLocalAirVelForceNormTrue = false;
     const bool isManualControlTrue = true;
     const bool isThrustVecOn = true;
     const bool isDynamicFinOn = false;
-    const bool isFinForceOn = true;
+    const bool isFinForceOn = false;
     const bool isBodyAeroOn = true;
+    const bool isDebugSetPosToPlayerTrue = false;
 };
 
 enum class ExplosionType
@@ -939,9 +935,10 @@ private:
     // fin funcs
     void UpdateFinData(MissileData& aMissile);
     void UpdateFinAngles(MissileData& aMissile);
-    void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
-    void UpdateFinForcesTemp(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
-    void UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
+    void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const MissileData& aMissile);
+    //void UpdateFinForcesTemp(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
+    //void UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
+    
     Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
     Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
     Utility::ForceAccum FinAccumSumTest(const MissileData& aMissile);
@@ -1036,6 +1033,8 @@ private:
     bool m_isDebugToggleTrue1 = false;
     bool m_isDebugToggleTrue2 = false;
     bool m_isDebugToggleTrue3 = false;
+
+    bool m_isRocketOnDebug = true;
 
     const bool m_isDebugToggleTrueTestConst = false;
     const bool m_isDebugToggleTrueTestConst1 = false;

@@ -39,13 +39,19 @@ void FireControl::AccumulateMissileForces(MissileData& aMissile, const float aTi
     m_debugData->DebugPushUILineDecimalNumber("aeroAcc.torque = ", aeroAcc.torque.Length(), "");
     m_debugData->ToggleDebugOff();
     
-    DebugPushDrawData(m_missileConsts.thrustPosLocal, boosterForce.linear, DirectX::Colors::Blue, false, true);
-    DebugPushDrawData(m_missileConsts.thrustPosLocal, boosterForce.torque, DirectX::Colors::Brown, false, true);
+    
+    //DebugPushDrawData(m_missileConsts.thrustPosLocal, boosterForce.linear, DirectX::Colors::Blue, false, true);
+    //DebugPushDrawData(m_missileConsts.thrustPosLocal, boosterForce.torque, DirectX::Colors::Brown, false, true);
 
+    /*
     DebugPushDrawData(m_missileConsts.centerOfPressureBasePosLocal, aeroAcc.linear, DirectX::Colors::Aqua, false, true);
     DebugPushDrawData(m_missileConsts.centerOfPressureBasePosLocal, aeroAcc.torque, DirectX::Colors::AntiqueWhite, false, true);
 
+    DebugPushDrawData(m_missileConsts.centerOfPressureBasePosLocal, bodyAeroAcc.linear, DirectX::Colors::Red, false, true);
+    DebugPushDrawData(m_missileConsts.centerOfPressureBasePosLocal, bodyAeroAcc.torque, DirectX::Colors::Blue, false, true);
+
     DebugPushDrawData(DirectX::SimpleMath::Vector3(0.5f, 0.0f, 0.0f), aMissile.guidance.localVel, DirectX::Colors::Yellow, false, true);
+    */
 
     Utility::ForceAccum::AlignLinear(sumForce, aMissile.projectileData.alignmentQuat);
     Utility::ForceAccum::AlignLinear(sumDrag, aMissile.projectileData.alignmentQuat);
@@ -147,6 +153,8 @@ Utility::ForceAccum FireControl::BodyAeroAccum(MissileData& aMissile)
 
 Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
 {
+    //DebugPushDrawData(aMissile.guidance.centerOfThrustLocalPos, DirectX::SimpleMath::Vector3::UnitY, DirectX::Colors::Red, false, true);
+
     DirectX::SimpleMath::Vector3 forcePos = aMissile.guidance.centerOfThrustLocalPos;
     DirectX::SimpleMath::Vector3 forceDir = CalculateBoostForceVec(aMissile);
     DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
@@ -175,19 +183,9 @@ Utility::ForceAccum FireControl::BoosterAccum(MissileData& aMissile)
     accum.linear = forceAccum;
     accum.torque = torqueAccum;
 
-    //return accum;
-
-    auto forcePosWorld = forcePos;
-    forcePosWorld = DirectX::SimpleMath::Vector3::Transform(forcePosWorld, aMissile.projectileData.alignmentQuat);
-    forcePosWorld += aMissile.projectileData.q.position;
-
-    auto forceDirWorld = forceDir;
-    forceDirWorld = DirectX::SimpleMath::Vector3::Transform(forceDirWorld, aMissile.projectileData.alignmentQuat);
-
     m_debugData->ToggleDebugOnOverRide();
     //m_debugData->PushDebugLine(forcePosWorld, forceDirWorld, 5.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
-
 
     return accum;
 }
@@ -2244,7 +2242,7 @@ void FireControl::DebugMissileFunc(MissileData* aMissile)
 
 void FireControl::DebugSetMissileToPlayerPos(MissileData& aMissile)
 {
-    if (m_isDebugToggleTrue1 == true)
+    if (m_missileConsts.isDebugSetPosToPlayerTrue == true)
     {
         aMissile.projectileData.q.position = m_playerVehicle->GetPos();
         aMissile.projectileData.q.velocity = m_playerVehicle->GetVelocity();
@@ -3637,6 +3635,7 @@ Utility::ForceAccum FireControl::FinForceAccum(const FinDataStatic& aFinLib, con
 
     DirectX::SimpleMath::Vector3 forcePos = aFinLib.posLocal;
     DirectX::SimpleMath::Vector3 forceDir = aFinDyn.resultantForce;
+    //DirectX::SimpleMath::Vector3 forceDir = dragForce;
     DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
 
     DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
@@ -4661,10 +4660,6 @@ void FireControl::HardBurnModeTest(MissileData& aMissile, const float aTimeDelta
     destQuat.Normalize();
     destQuat.Inverse(destQuat);
 
-    if (m_isDebugToggleTrue2 == true)
-    {
-
-    }
     aMissile.guidance.headingLocalVecTest = destLocal;
     aMissile.guidance.headingLocalQuatTest = destQuat;
 
@@ -7262,10 +7257,8 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     //velocityUpdate += aProjectile->guidance.linearDragSum;
     //velocityUpdate += drag;
     velocityUpdate += dragNew;
-    if (m_isDebugToggleTrue3 == false)
-    {
-        velocityUpdate += aProjectile->guidance.linearForceSum;
-    }
+
+    velocityUpdate += aProjectile->guidance.linearForceSum;
 
     aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_missileConsts.mass);
     aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
@@ -7384,7 +7377,7 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
     DirectX::SimpleMath::Vector3 angularMomentumUpdate = (dq1.angularMomentum + 2.0 * dq2.angularMomentum + 2.0 * dq3.angularMomentum + dq4.angularMomentum) / numEqns;
     DirectX::SimpleMath::Vector3 angularVelocityUpdate = (dq1.angularVelocity + 2.0 * dq2.angularVelocity + 2.0 * dq3.angularVelocity + dq4.angularVelocity) / numEqns;
 
-    auto dragTest = CalcDragLinearCurrent(aProjectile, aProjectile->projectileData.q.velocity);
+    //auto dragTest = CalcDragLinearCurrent(aProjectile, aProjectile->projectileData.q.velocity);
 
     if (m_missileConsts.isMissileFreezeTrue == false)
     {
@@ -7846,30 +7839,19 @@ void FireControl::UpdateFinData(MissileData& aMissile)
 {
     UpdateFinAngles(aMissile);
 
-    DirectX::SimpleMath::Vector3 localVel = aMissile.projectileData.q.velocity;
-    localVel = DirectX::SimpleMath::Vector3::Transform(localVel, aMissile.projectileData.inverseAlignmentQuat);
+    //UpdateFinForces(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, aMissile);
+    //UpdateFinForces(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, aMissile);
 
-    if (m_missileConsts.isDebugLocalAirVelForceNormTrue == true)
-    {
-        localVel = DirectX::SimpleMath::Vector3::UnitX;
-        localVel *= aMissile.projectileData.q.velocity.Length();
-    }
+    //UpdateFinForces(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, aMissile);
+    //UpdateFinForces(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, aMissile);
 
-    DirectX::SimpleMath::Quaternion alignQuat = aMissile.projectileData.alignmentQuat;
-
-    //UpdateFinForces(m_finLib.canardPitch, aMissile.guidance.finPak.canardPitch, localVel, alignQuat, aMissile);
-    //UpdateFinForces(m_finLib.canardYaw, aMissile.guidance.finPak.canardYaw, localVel, alignQuat, aMissile);
-
-    UpdateFinForces(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, localVel, alignQuat, aMissile);
-    UpdateFinForces(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, localVel, alignQuat, aMissile);
-
-    UpdateFinForces(m_finLib.mainPitch, aMissile.guidance.finPak.mainPitch, localVel, alignQuat, aMissile);
-    UpdateFinForces(m_finLib.mainYaw, aMissile.guidance.finPak.mainYaw, localVel, alignQuat, aMissile);
+    //UpdateFinForces(m_finLib.mainPitch, aMissile.guidance.finPak.mainPitch, aMissile);
+    UpdateFinForces(m_finLib.mainYaw, aMissile.guidance.finPak.mainYaw, aMissile);
 }
 
-void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile)
+void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const MissileData& aMissile)
 {
-    auto airSpeedLocal = aVelLocal * -1.0f;
+    auto airSpeedLocal = aMissile.guidance.localVel * -1.0f;
     auto airSpeedLocalNorm = airSpeedLocal;
     airSpeedLocalNorm.Normalize();
 
@@ -7909,11 +7891,12 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
 
     m_debugData->ToggleDebugOff();
 
-    //const float cl = CalculateFinLiftCoef(angleOfAttack);
     const float cl = CalculateFinLiftCoefFlat(angleOfAttack);
+    //const float cl = CalculateFinLiftCoefTest(angleOfAttack);
+    //const float cl = CalculateFinLiftCoef(angleOfAttack);
     //const float cl = CalculateFinLiftCoefDebug(angleOfAttack);
     //const float cl = m_missileConsts.finClConst;
-    //const float cl = clIn;
+    
     const float surface = aStaticDat.span * aStaticDat.chord;
     const float rho = m_environment->GetAirDensity();
 
@@ -7963,436 +7946,16 @@ void FireControl::UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynami
     auto resultantForce = finLiftVec + testFinDrag;
     aFinDyn.resultantForce = aFinDyn.liftForce + aFinDyn.dragForce;
 
-    if (aStaticDat.finType == FinType::TAIL_YAW)
-    {
-        //m_debugData->ToggleDebugOnOverRide();
-        //DebugPushDrawData(aStaticDat.posLocal, chordLineAirVec);
-        //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.chordLine);
-        //m_debugData->DebugPushUILineDecimalNumber("airImpactDot  = ", airImpactDot, "");
-        //m_debugData->DebugPushUILineDecimalNumber("airImpactDot2 = ", airImpactDot2, "");
-
-        //m_debugData->DebugPushUILineDecimalNumber("testDot  = ", testDot, "");
-        //m_debugData->DebugPushUILineDecimalNumber("testDot2 = ", testDot2, "");
-        m_debugData->DebugPushUILineDecimalNumber("angleOfAttack = ", Utility::ToDegrees(angleOfAttack), "");
-      
-        //DebugPushDrawData(aStaticDat.posLocal, finVec2);
-        //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.finDir);
-
-        m_debugData->DebugPushUILineDecimalNumber("chordLineAirVec   = ", aFinDyn.finDir.Dot(chordLineAirVec), "");
-        m_debugData->DebugPushUILineDecimalNumber("airSpeedLocalNorm = ", aFinDyn.finDir.Dot(airSpeedLocalNorm), "");
-        
-        /*
-        DebugPushDrawData(aStaticDat.posLocal, aFinDyn.liftForce);
-        DebugPushDrawData(aStaticDat.posLocal, aFinDyn.dragForce);
-        DebugPushDrawData(aStaticDat.posLocal, aFinDyn.resultantForce);
-        DebugPushDrawData(DirectX::SimpleMath::Vector3(0.5f, 0.0f, 0.0f), -airSpeedLocalNorm);
-        */
-    }
-}
-
-void FireControl::UpdateFinForcesTemp(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile)
-{
-    auto airSpeedLocal = aVelLocal * -1.0f;
-    auto airSpeedLocalNorm = airSpeedLocal;
-    airSpeedLocalNorm.Normalize();
-
-    auto finAxis = aStaticDat.axis;
-    auto finAngle = aFinDyn.finAngle;
-    //finAngle -= Utility::ToRadians(180.0f);
-
-    auto finVec = -DirectX::SimpleMath::Vector3::UnitX;
-    finVec = DirectX::SimpleMath::Vector3::Transform(finVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
-    float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
-    const float angleOfAttackWrapped = Utility::WrapAngleOnePi(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airSpeedLocalNorm));
-    const float angleOfAttackWrapped2 = Utility::WrapAngleOnePi(Utility::GetAngleBetweenVectors(airSpeedLocalNorm, DirectX::SimpleMath::Vector3::UnitX));
-
-    auto finVecTest = aStaticDat.finNormal;
-    //auto finVecTest = DirectX::SimpleMath::Vector3::UnitX;
-    finVecTest = DirectX::SimpleMath::Vector3::Transform(finVecTest, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
-    float angleOfAttackTest = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVecTest);
-    angleOfAttackTest -= Utility::ToRadians(90.0f);
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("finAngledeg   = ", Utility::ToDegrees(finAngle), "");
-    m_debugData->DebugPushUILineDecimalNumber("finAnglerad   = ", finAngle, "");
-
+  
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("liftForce      = ", aFinDyn.liftForce.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("dragForce      = ", aFinDyn.dragForce.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("resultantForce = ", aFinDyn.resultantForce.Length(), "");
     m_debugData->ToggleDebugOff();
 
-    //DebugPushDrawData(aStaticDat.posLocal, finVecTest);
-
-    //float airSpeedDot = airSpeedLocalNorm.Dot(-DirectX::SimpleMath::Vector3::UnitX);
-    if (airSpeedLocalNorm.Dot(-DirectX::SimpleMath::Vector3::UnitX) < 0.0f)
-    {
-        if (angleOfAttackTest > 0.0f)
-        {
-            float overAng = Utility::ToRadians(90.0f) - angleOfAttackTest;
-            angleOfAttackTest = Utility::ToRadians(90.0f) + overAng;
-        }
-        else if (angleOfAttackTest < 0.0f)
-        {
-            float overAng = Utility::ToRadians(90.0f) + angleOfAttackTest;
-            angleOfAttackTest = Utility::ToRadians(-90.0f) - overAng;
-        }
-        else
-        {
-            int testBreak = 0;
-            testBreak++;
-        }
-    }
-
-    angleOfAttackTest *= -1.0f;
-    angleOfAttack = angleOfAttackTest;
-    //angleOfAttack = angleOfAttackWrapped;
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->DebugPushUILineDecimalNumber("angleOfAttack           = ", Utility::ToDegrees(angleOfAttack), "");
-    //m_debugData->DebugPushUILineDecimalNumber("angleOfAttackWrapped    = ", Utility::ToDegrees(angleOfAttackWrapped), "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttackTest   = ", Utility::ToDegrees(angleOfAttackTest), "");
-    m_debugData->DebugPushUILineWholeNumber("angleOfAttackTest   = ", static_cast<int>(Utility::ToDegrees(angleOfAttackTest)), "");
-    m_debugData->DebugPushUILineDecimalNumber("finAngle = ", finAngle, "");
-
-    m_debugData->ToggleDebugOff();
-
-    float clIn = m_missileConsts.finClConst;
-    if (m_missileConsts.isUseConstFinClTrue == false)
-    {
-        //clIn = CalculateFinLiftCoef(angleOfAttack);
-        clIn = CalculateFinLiftCoefFlat(angleOfAttack);
-    }
-    else
-    {
-        clIn = CalculateFinLiftCoefDebug(angleOfAttack);
-    }
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("clIn = ", clIn, "");
-    m_debugData->ToggleDebugOff();
-
-    const float cl = clIn;
-    const float surface = aStaticDat.span * aStaticDat.chord;
-    const float rho = m_environment->GetAirDensity();
-
-    // lift = coefficient * density * (vel^2 / two) * wing area
-    auto lift = cl * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * surface;
-
-    float liftLength = lift.Length();
-    //auto liftTest = cl * rho * ((airSpeedLocal.Length() * airSpeedLocal.Length()) / 2.0f) * surface;
-
-    auto finNorm = -aStaticDat.finNormal;
-    //if (aFinDyn.finAngle > 0.0f)
-    if (angleOfAttack > 0.0f)
-    {
-        finNorm = aStaticDat.finNormal;
-    }
-    //else if (aFinDyn.finAngle < 0.0f)
-    else if (angleOfAttack < 0.0f)
-    {
-        finNorm = -aStaticDat.finNormal;
-    }
-
-    /////////////////////////
-    //auto finVec2 = -DirectX::SimpleMath::Vector3::UnitX;
-    auto finVec2 = aStaticDat.finNormal;
-    finVec2 = DirectX::SimpleMath::Vector3::Transform(finVec2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
-    //auto testDot = finAxis.Dot(airSpeedLocalNorm);
-    auto testDot = finVec2.Dot(airSpeedLocalNorm);
-    auto testNorm = finVec.Cross(airSpeedLocalNorm);
-    auto testNormWorld = testNorm;
-    testNormWorld = DirectX::SimpleMath::Vector3::Transform(testNormWorld, aAlignQuat);
-
-    auto axisTest = aStaticDat.axis;
-    if (testDot > 0.0f)
-    {
-        finNorm = aStaticDat.finNormal;
-        axisTest = aStaticDat.axis;
-    }
-    //else if (aFinDyn.finAngle < 0.0f)
-    else if (testDot < 0.0f)
-    {
-        finNorm = -aStaticDat.finNormal;
-        axisTest = -aStaticDat.axis;
-    }
-
-    /////////////////////////
-
-    //finNorm = DirectX::SimpleMath::Vector3::Transform(finNorm, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
-
-
-    ///////////////////////////////////////
-    /*
-    auto finNormWorld = finNorm;
-    finNormWorld = DirectX::SimpleMath::Vector3::Transform(finNormWorld, aAlignQuat);
-    auto finPos = aStaticDat.posLocal;
-    finPos = DirectX::SimpleMath::Vector3::Transform(finPos, aAlignQuat);
-    finPos += aMissile.projectileData.q.position;
-
-    auto finVecWorld = finVec;
-    finVecWorld = DirectX::SimpleMath::Vector3::Transform(finVecWorld, aAlignQuat);
-    auto finVecWorld2 = finVec2;
-    finVecWorld2 = DirectX::SimpleMath::Vector3::Transform(finVecWorld2, aAlignQuat);
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, finNormWorld, 3.0f, 0.0f, DirectX::Colors::Blue);
-    //m_debugData->PushDebugLine(finPos, finNormWorld, 3.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(finPos, finVecWorld, 3.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack r = ", angleOfAttack, "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack d = ", Utility::ToDegrees(angleOfAttack), "");
-    m_debugData->ToggleDebugOff();
-    */
-    ///////////////////////////////////////
-
-    //auto liftNorm = DirectX::SimpleMath::Vector3::UnitZ.Cross(airSpeedLocal);
-    auto liftNorm = finAxis.Cross(airSpeedLocal);
-    if (aFinDyn.finAngle > 0.0f)
-    {
-        liftNorm = finAxis.Cross(airSpeedLocal);
-    }
-    else if (aFinDyn.finAngle < 0.0f)
-    {
-        liftNorm = -finAxis.Cross(airSpeedLocal);
-    }
-
-    liftNorm.Normalize();
-
-    //auto liftNormTest = airSpeedLocalNorm.Cross(aStaticDat.axis);
-    auto liftNormTest = airSpeedLocalNorm.Cross(axisTest);
-    //DebugPushDrawData(aStaticDat.posLocal, liftNormTest);
-    liftNormTest.Normalize();
-    //auto finLiftVec = finNorm * lift.Length();
-    auto finLiftVec = liftNormTest * lift.Length();
-    //auto finLiftVec = liftNorm * lift.Length();
-    aFinDyn.liftForce = finLiftVec;
-
-    auto airImpactDot = finNorm.Dot(airSpeedLocalNorm);
-
-    const float dragSurfaceBase = (surface * 0.5f) * 0.7f; // avg'ing data pulled from wiki
-    const float dragSufaceAddMax = surface - dragSurfaceBase;
-
-    const float dragSurface = dragSurfaceBase + (dragSufaceAddMax * abs(airImpactDot));
-
-    const float dragCoefBase = aStaticDat.dragCoeffBase;
-    const float dragModMax = aStaticDat.dragCoeefMod;
-    const float cd = dragCoefBase + (dragModMax * abs(airImpactDot));
-    auto finDrag = cd * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * dragSurface;
-
-    auto finDragVec = finDrag;
-
-    auto testFinDrag = airSpeedLocalNorm * finDrag.Length();
-    aFinDyn.dragForce = testFinDrag;
-
-    auto resultantForce = finLiftVec + testFinDrag;
-    aFinDyn.resultantForce = aFinDyn.liftForce + aFinDyn.dragForce;
-
-    ///////////////////////////////////////
-
-    //auto finLiftWorld = finLiftVec;
-    auto finLiftWorld = aStaticDat.finNormal;
-    finLiftWorld = DirectX::SimpleMath::Vector3::Transform(finLiftWorld, aAlignQuat);
-
-    //auto dragWorld = testFinDrag;
-    auto dragWorld = aFinDyn.dragForce;
-    dragWorld = DirectX::SimpleMath::Vector3::Transform(dragWorld, aAlignQuat);
-
-    //auto resultantWorld = resultantForce;
-    auto resultantWorld = aFinDyn.resultantForce;
-    resultantWorld = DirectX::SimpleMath::Vector3::Transform(resultantWorld, aAlignQuat);
-
-    //auto liftNormWorld = liftNorm;
-    auto liftNormWorld = aFinDyn.liftForce;
-    liftNormWorld = DirectX::SimpleMath::Vector3::Transform(liftNormWorld, aAlignQuat);
-
-    //DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal);
-    //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.liftForce);
-    //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.resultantForce);
-    //DebugPushDrawData(aStaticDat.posLocal, aFinDyn.dragForce);
-    //DebugPushDrawData(aStaticDat.posLocal, aStaticDat.finNormal);
-    //DebugPushDrawData(aStaticDat.posLocal, airSpeedLocalNorm * -1.0f);
-}
-
-void FireControl::UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile)
-{
-    auto airSpeedLocal = aVelLocal * -1.0f;
-    auto airSpeedLocalNorm = airSpeedLocal;
-    airSpeedLocalNorm.Normalize();
-
-    auto finAxis = aStaticDat.axis;
-    auto finAngle = aFinDyn.finAngle;
-    //finAngle -= Utility::ToRadians(180.0f);
-
-    auto finVec = -DirectX::SimpleMath::Vector3::UnitX;
-    finVec = DirectX::SimpleMath::Vector3::Transform(finVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
-    float angleOfAttack = Utility::GetAngleBetweenVectors(airSpeedLocalNorm, finVec);
-    const float angleOfAttackWrapped = Utility::WrapAngleOnePi(Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, airSpeedLocalNorm));
-    //angleOfAttack = angleOfAttackWrapped;
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack           = ", Utility::ToDegrees(angleOfAttack), "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttackWrapped = ", Utility::ToDegrees(angleOfAttackWrapped), "");
-    m_debugData->DebugPushUILineDecimalNumber("finAngle = ", finAngle, "");
-
-    /*
-    m_debugData->DebugPushUILineDecimalNumber("finAxis.x = ", finAxis.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("finAxis.y = ", finAxis.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("finAxis.z = ", finAxis.z, "");
-    */
-    m_debugData->DebugPushUILineDecimalNumber("finVec.x = ", finVec.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("finVec.y = ", finVec.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("finVec.z = ", finVec.z, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("airSpeedLocalNorm.x = ", airSpeedLocalNorm.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("airSpeedLocalNorm.y = ", airSpeedLocalNorm.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("airSpeedLocalNorm.z = ", airSpeedLocalNorm.z, "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack = ", angleOfAttack, "");
-
-    m_debugData->ToggleDebugOff();
-
-    float clIn = m_missileConsts.finClConst;
-    if (m_missileConsts.isUseConstFinClTrue == false)
-    {
-        clIn = CalculateFinLiftCoef(angleOfAttack);
-    }
-    else
-    {
-        clIn = CalculateFinLiftCoefDebug(angleOfAttack);
-    }
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("clIn = ", clIn, "");
-    m_debugData->ToggleDebugOff();
-
-    const float cl = clIn;
-    const float surface = aStaticDat.span * aStaticDat.chord;
-    const float rho = m_environment->GetAirDensity();
-
-    // lift = coefficient * density * (vel^2 / two) * wing area
-    auto lift = cl * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * surface;
-
-    float liftLength = lift.Length();
-    //auto liftTest = cl * rho * ((airSpeedLocal.Length() * airSpeedLocal.Length()) / 2.0f) * surface;
-
-    auto finNorm = -aStaticDat.finNormal;
-    //if (aFinDyn.finAngle > 0.0f)
-    if (angleOfAttack > 0.0f)
-    {
-        finNorm = aStaticDat.finNormal;
-    }
-    //else if (aFinDyn.finAngle < 0.0f)
-    else if (angleOfAttack < 0.0f)
-    {
-        finNorm = -aStaticDat.finNormal;
-    }
-
-    /////////////////////////
-    //auto finVec2 = -DirectX::SimpleMath::Vector3::UnitX;
-    auto finVec2 = aStaticDat.finNormal;
-    finVec2 = DirectX::SimpleMath::Vector3::Transform(finVec2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
-    //auto testDot = finAxis.Dot(airSpeedLocalNorm);
-    auto testDot = finVec2.Dot(airSpeedLocalNorm);
-    auto testNorm = finVec.Cross(airSpeedLocalNorm);
-    auto testNormWorld = testNorm;
-    testNormWorld = DirectX::SimpleMath::Vector3::Transform(testNormWorld, aAlignQuat);
-
-    if (testDot > 0.0f)
-    {
-        finNorm = aStaticDat.finNormal;
-    }
-    //else if (aFinDyn.finAngle < 0.0f)
-    else if (testDot < 0.0f)
-    {
-        finNorm = -aStaticDat.finNormal;
-    }
-
-    /////////////////////////
-
-    //finNorm = DirectX::SimpleMath::Vector3::Transform(finNorm, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(finAxis, finAngle));
-
-    ///////////////////////////////////////
-    auto finNormWorld = finNorm;
-    finNormWorld = DirectX::SimpleMath::Vector3::Transform(finNormWorld, aAlignQuat);
-    auto finPos = aStaticDat.posLocal;
-    finPos = DirectX::SimpleMath::Vector3::Transform(finPos, aAlignQuat);
-    finPos += aMissile.projectileData.q.position;
-
-    auto finVecWorld = finVec;
-    finVecWorld = DirectX::SimpleMath::Vector3::Transform(finVecWorld, aAlignQuat);
-    auto finVecWorld2 = finVec2;
-    finVecWorld2 = DirectX::SimpleMath::Vector3::Transform(finVecWorld2, aAlignQuat);
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, finNormWorld, 3.0f, 0.0f, DirectX::Colors::Blue);
-    //m_debugData->PushDebugLine(finPos, finNormWorld, 3.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->PushDebugLine(finPos, finVecWorld, 3.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack r = ", angleOfAttack, "");
-    m_debugData->DebugPushUILineDecimalNumber("angleOfAttack d = ", Utility::ToDegrees(angleOfAttack), "");
-    m_debugData->ToggleDebugOff();
-    ///////////////////////////////////////
-
-    //auto liftNorm = DirectX::SimpleMath::Vector3::UnitZ.Cross(airSpeedLocal);
-    auto liftNorm = finAxis.Cross(airSpeedLocal);
-    if (aFinDyn.finAngle > 0.0f)
-    {
-        liftNorm = finAxis.Cross(airSpeedLocal);
-    }
-    else if (aFinDyn.finAngle < 0.0f)
-    {
-        liftNorm = -finAxis.Cross(airSpeedLocal);
-    }
-
-    liftNorm.Normalize();
-    auto finLiftVec = finNorm * lift.Length();
-    //auto finLiftVec = liftNorm * lift.Length();
-    aFinDyn.liftForce = finLiftVec;
-
-    auto airImpactDot = finNorm.Dot(airSpeedLocalNorm);
-
-    const float dragSurfaceBase = (surface * 0.5f) * 0.7f; // avg'ing data pulled from wiki
-    const float dragSufaceAddMax = surface - dragSurfaceBase;
-
-    const float dragSurface = dragSurfaceBase + (dragSufaceAddMax * abs(airImpactDot));
-
-    const float dragCoefBase = aStaticDat.dragCoeffBase;
-    const float dragModMax = aStaticDat.dragCoeefMod;
-    const float cd = dragCoefBase + (dragModMax * abs(airImpactDot));
-    auto finDrag = cd * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * dragSurface;
-
-    auto finDragVec = finDrag;
-
-    auto testFinDrag = airSpeedLocalNorm * finDrag.Length();
-    aFinDyn.dragForce = testFinDrag;
-
-    auto resultantForce = finLiftVec + testFinDrag;
-    aFinDyn.resultantForce = aFinDyn.liftForce + aFinDyn.dragForce;
-
-
-    ///////////////////////////////////////
-    auto finLiftWorld = finLiftVec;
-    finLiftWorld = DirectX::SimpleMath::Vector3::Transform(finLiftWorld, aAlignQuat);
-
-    auto dragWorld = testFinDrag;
-    dragWorld = DirectX::SimpleMath::Vector3::Transform(dragWorld, aAlignQuat);
-
-    auto resultantWorld = resultantForce;
-    resultantWorld = DirectX::SimpleMath::Vector3::Transform(resultantWorld, aAlignQuat);
-
-    auto liftNormWorld = liftNorm;
-    liftNormWorld = DirectX::SimpleMath::Vector3::Transform(liftNormWorld, aAlignQuat);
-
-
-    //m_debugData->PushDebugLine(aMissile.projectileData.q.position, finNormWorld, 3.0f, 0.0f, DirectX::Colors::Blue);
-    //m_debugData->PushDebugLine(finPos, finNormWorld, 3.0f, 0.0f, DirectX::Colors::NavajoWhite);
-    m_debugData->PushDebugLine(finPos, finLiftWorld, 3.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->PushDebugLine(finPos, dragWorld, 3.0f, 0.0f, DirectX::Colors::DeepSkyBlue);
-    m_debugData->PushDebugLine(finPos, resultantWorld, 3.0f, 0.0f, DirectX::Colors::Red);
-    //m_debugData->PushDebugLine(finPos, liftNormWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLine(finPos, finLiftWorld, 3.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->DebugPushUILineDecimalNumber("finLiftVec = ", finLiftVec.Length(), "");
-    m_debugData->PushDebugLine(finPos, testNormWorld, 3.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLine(finPos, finVecWorld2, 3.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->DebugPushUILineDecimalNumber("testDot = ", testDot, "");
-    m_debugData->ToggleDebugOff();
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLine(finPos, finLiftWorld, 3.0f, 0.0f, DirectX::Colors::Lime);
-    //m_debugData->PushDebugLine(finPos, finVecWorld2, 3.0f, 0.0f, DirectX::Colors::Blue);
-    m_debugData->ToggleDebugOff();
-    ///////////////////////////////////////
+    DebugPushDrawData(aStaticDat.posLocal, aFinDyn.liftForce, DirectX::Colors::Lime, false, true);
+    DebugPushDrawData(aStaticDat.posLocal, aFinDyn.dragForce, DirectX::Colors::DeepPink, false, true);
+    DebugPushDrawData(aStaticDat.posLocal, aFinDyn.resultantForce, DirectX::Colors::RoyalBlue, false, true);
 }
 
 void FireControl::UpdateFireControl(double aTimeDelta)
