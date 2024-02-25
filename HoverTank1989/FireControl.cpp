@@ -7234,6 +7234,8 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
     newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
 
+    Utility::ForceAccum aeroAccum = RHSAeroForceAccumulator(aProjectile, newQ.velocity);
+
     ////////////////////////////////////////
     //float airSurfaceArea = 1.0f;
     float airSurfaceArea = m_missileConsts.dragAreaDebug;
@@ -7292,34 +7294,6 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
 
     //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, drag);
     //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, dragNew);
-}
-
-void FireControl::RightHandSideMissileDebugTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ)
-{
-    //  Compute the intermediate values of the dependent variables.
-
-    ProjectileMotion newQ;
-    newQ.velocity = aQ->velocity + static_cast<float>(aQScale) * aDeltaQ->velocity;
-    newQ.position = aQ->position + static_cast<float>(aQScale) * aDeltaQ->position;
-    //newQ.angularVelocity = aQ->angularVelocity + static_cast<float>(aQScale) * aDeltaQ->angularVelocity;
-    //newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
-
-    // linear
-    DirectX::SimpleMath::Vector3 velocityUpdate = DirectX::SimpleMath::Vector3::Zero;
-    velocityUpdate += newQ.velocity;
-    velocityUpdate += aProjectile->guidance.linearDragSum;
-    velocityUpdate += aProjectile->guidance.linearForceSum;
-    aDQ->velocity = static_cast<float>(aTimeDelta) * (velocityUpdate / m_missileConsts.mass);
-    aDQ->position = static_cast<float>(aTimeDelta) * newQ.velocity;
-
-    // angular
-    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
-    torqueAccum = newQ.angularVelocity;
-    torqueAccum += aProjectile->projectileData.angularForceSum;
-    torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, m_missileInverseInertiaTensorLocal);
-    torqueAccum += aProjectile->projectileData.angularDragSum;
-    aDQ->angularVelocity = static_cast<float>(aTimeDelta) * torqueAccum;
-    aDQ->angularMomentum = static_cast<float>(aTimeDelta) * DirectX::SimpleMath::Vector3::Zero;
 }
 
 void FireControl::RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta)
@@ -9921,4 +9895,192 @@ Utility::ForceAccum FireControl::GetAeroForceAccum(const MissileData& aMissile, 
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, worldForce.torque, 5.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->ToggleDebugOff();
     return sumForce;
+}
+
+Utility::ForceAccum FireControl::RHSAeroForceAccumulator(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
+{
+    /*
+    Utility::ForceAccum::AlignLinear(sumForce, aMissile.projectileData.alignmentQuat);
+    Utility::ForceAccum::AlignLinear(sumDrag, aMissile.projectileData.alignmentQuat);
+
+    aMissile.guidance.linearForceSum = sumForce.linear;
+    aMissile.guidance.linearDragSum = sumDrag.linear;
+    aMissile.projectileData.angularForceSum = sumForce.torque;
+    aMissile.projectileData.angularDragSum = sumDrag.torque;
+    */
+
+    Utility::ForceAccum sumDrag;
+    Utility::ForceAccum::ZeroValues(sumDrag);
+    //sumDrag += DragAccum(aMissile, aTimeDelta);
+
+    Utility::ForceAccum aeroAcc;
+    Utility::ForceAccum::ZeroValues(aeroAcc);
+    //aeroAcc += FinAccumSumTest(aMissile);
+    aeroAcc += RHSFinAccumSum(aMissile, aVelocity);
+
+    Utility::ForceAccum bodyAeroAcc;
+    Utility::ForceAccum::ZeroValues(bodyAeroAcc);
+    //bodyAeroAcc += BodyAeroAccum(aMissile);
+
+    Utility::ForceAccum sumForce;
+    Utility::ForceAccum::ZeroValues(sumForce);
+    return sumForce;
+}
+
+
+Utility::ForceAccum FireControl::RHSFinAccumSum(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
+{
+    Utility::ForceAccum mainPitchAccum;
+    Utility::ForceAccum mainYawAccum;
+    //mainPitchAccum = FinForceAccum(m_finLib.mainPitch, aMissile.guidance.finPak.mainPitch, aMissile);
+    mainPitchAccum = RHSFinCalc(m_finLib.mainPitch, aMissile->guidance.finPak.mainPitch, aMissile, aVelocity);
+
+    //(m_finLib.mainPitch, aMissile.guidance.finPak.mainPitch, aMissile, aVelocity);
+    //mainYawAccum = FinForceAccum(m_finLib.mainYaw, aMissile.guidance.finPak.mainYaw, aMissile);
+    //mainYawAccum = RHSFinForce(m_finLib.mainYaw, aMissile.guidance.finPak.mainYaw, aMissile, aVelocity);
+    mainPitchAccum = RHSFinCalc(m_finLib.mainYaw, aMissile->guidance.finPak.mainYaw, aMissile, aVelocity);
+
+    Utility::ForceAccum mainSum;
+    Utility::ForceAccum::ZeroValues(mainSum);
+    mainSum += mainPitchAccum;
+    mainSum += mainYawAccum;
+
+    Utility::ForceAccum tailPitchAccum;
+    Utility::ForceAccum tailYawAccum;
+
+    //tailPitchAccum = FinForceAccum(m_finLib.tailPitch, aMissile.guidance.finPak.tailPitch, aMissile);
+    //tailYawAccum = FinForceAccum(m_finLib.tailYaw, aMissile.guidance.finPak.tailYaw, aMissile);
+
+    Utility::ForceAccum tailSum;
+    Utility::ForceAccum::ZeroValues(tailSum);
+    tailSum += tailPitchAccum;
+    tailSum += tailYawAccum;
+
+    Utility::ForceAccum accum;
+    Utility::ForceAccum::ZeroValues(accum);
+    accum += mainSum;
+    accum += tailSum;
+
+    //return accum;
+
+
+    Utility::ForceAccum sumForce;
+    return sumForce;
+}
+
+
+DirectX::SimpleMath::Vector3 FireControl::RHSFinForce(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
+{
+    //auto airSpeedLocal = aMissile.guidance.localVel * -1.0f;
+    auto airSpeedLocal = aVelocity * -1.0f;
+    auto airSpeedLocalNorm = airSpeedLocal;
+    airSpeedLocalNorm.Normalize();
+
+    auto finAxis = aStaticDat.axis;
+    auto finAngle = aFinDyn.finAngle;
+
+    auto testPos = aStaticDat.posLocal;
+    float aoaToUse = Utility::ToRadians(0.0f);
+    auto chordLineAirVec = airSpeedLocalNorm;
+    if (aStaticDat.finType == FinType::MAIN_YAW || aStaticDat.finType == FinType::TAIL_YAW || aStaticDat.finType == FinType::CANARD_YAW)
+    {
+        chordLineAirVec.y = 0.0f;
+        chordLineAirVec.Normalize();
+        aoaToUse = Utility::GetAngleBetweenVectors(chordLineAirVec, -aFinDyn.chordLine);
+        auto crossVec = aFinDyn.chordLine.Cross(chordLineAirVec);
+        if (crossVec.y < 0.0f)
+        {
+            aoaToUse *= -1.0f;
+        }
+    }
+    else
+    {
+        chordLineAirVec.z = 0.0f;
+        chordLineAirVec.Normalize();
+        aoaToUse = Utility::GetAngleBetweenVectors(chordLineAirVec, -aFinDyn.chordLine);
+        auto crossVec = aFinDyn.chordLine.Cross(chordLineAirVec);
+        if (crossVec.z < 0.0f)
+        {
+            aoaToUse *= -1.0f;
+        }
+    }
+
+    float angleOfAttack = aoaToUse;
+
+    const float cl = CalculateFinLiftCoefFlat(angleOfAttack);
+    //const float cl = CalculateFinLiftCoefTest(angleOfAttack);
+    //const float cl = CalculateFinLiftCoef(angleOfAttack);
+    //const float cl = CalculateFinLiftCoefDebug(angleOfAttack);
+    //const float cl = m_missileConsts.finClConst;
+
+    const float surface = aStaticDat.span * aStaticDat.chord;
+    const float rho = m_environment->GetAirDensity();
+
+    // lift = coefficient * density * (vel^2 / two) * wing area
+    auto lift = cl * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * surface;
+
+    float liftLength = lift.Length();
+    //auto liftTest = cl * rho * ((airSpeedLocal.Length() * airSpeedLocal.Length()) / 2.0f) * surface;
+
+    auto axisTest = aStaticDat.axis;
+    if (aFinDyn.finDir.Dot(airSpeedLocalNorm) > 0.0f)
+    {
+        axisTest = aStaticDat.axis;
+    }
+    else
+    {
+        axisTest = -aStaticDat.axis;
+    }
+
+    auto liftNormTest = airSpeedLocalNorm.Cross(axisTest);
+    liftNormTest.Normalize();
+
+    //////////////////////// aFinDyn.liftForce = liftNormTest * lift.Length();
+
+    auto airImpactDot = abs(aFinDyn.finDir.Dot(airSpeedLocalNorm));
+
+    const float dragSurfaceBase = (surface * 0.5f) * 0.7f; // avg'ing data pulled from wiki
+    const float dragSufaceAddMax = surface - dragSurfaceBase;
+
+    //const float dragSurface = dragSurfaceBase + (dragSufaceAddMax * abs(airImpactDot));
+    const float dragSurface = CalculateFinDragArea(airSpeedLocalNorm, aFinDyn.finDir, aStaticDat);;
+
+    const float dragCoefBase = aStaticDat.dragCoeffBase;
+    const float dragModMax = aStaticDat.dragCoeefMod;
+    const float cd = dragCoefBase + (dragModMax * airImpactDot);
+    auto finDrag = cd * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * dragSurface;
+    //auto lift2   = cl * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * surface;
+    ////////////     aFinDyn.dragForce = airSpeedLocalNorm * finDrag.Length();
+
+    ////////////     aFinDyn.resultantForce = aFinDyn.liftForce + aFinDyn.dragForce;
+
+    return (liftNormTest * lift.Length()) + (airSpeedLocalNorm * finDrag.Length());
+    //return DirectX::SimpleMath::Vector3::Zero;
+}
+
+
+
+Utility::ForceAccum FireControl::RHSFinCalc(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
+{
+    auto liftForce = aFinDyn.liftForce;
+    auto dragForce = aFinDyn.dragForce;
+
+    DirectX::SimpleMath::Vector3 forcePos = aStaticDat.posLocal;
+    DirectX::SimpleMath::Vector3 forceDir = aFinDyn.resultantForce;
+    //DirectX::SimpleMath::Vector3 forceDir = dragForce;
+    forceDir = RHSFinForce(aStaticDat, aFinDyn, aMissile, aVelocity);
+
+    DirectX::SimpleMath::Vector3 centerOfMass = m_missileConsts.centerOfMassLocal;
+
+    DirectX::SimpleMath::Vector3 forceAccum = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 torqueAccum = DirectX::SimpleMath::Vector3::Zero;
+
+    Utility::AddForceAtPoint(forceDir, forcePos, centerOfMass, forceAccum, torqueAccum);
+
+    Utility::ForceAccum accum;
+    Utility::ForceAccum::ZeroValues(accum);
+    accum.linear = forceAccum;
+    accum.torque = torqueAccum;
+
+    return accum;
 }

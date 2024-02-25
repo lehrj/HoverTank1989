@@ -808,7 +808,6 @@ private:
     float CalculateFinLiftCoefFlat(const float aAngleOfAttack);
     float CalculateFinLiftCoefTest(const float aAngleOfAttack);
 
-
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
 
@@ -838,7 +837,6 @@ private:
     DirectX::SimpleMath::Matrix GetAeroTensor(FinDataDynamic& aFin, FinDataStatic& aLib);
     Utility::ForceAccum GetAeroForceAccum(const MissileData& aMissile, const float aTimeDelta, FinDataDynamic& aFin, FinDataStatic& aLib);
 
-
     unsigned int GetUniqueMissileID();
     
     void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
@@ -860,8 +858,6 @@ private:
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeFinLibrary(FinLibrary& aFinLib);
 
-
-
     void InitializeFinAeroTensor(FinDataStatic& aFinData, const DirectX::SimpleMath::Quaternion aAlignment, const float aAngleMinMax);
 
     void InitializeMissileInertiaTensor();
@@ -877,7 +873,6 @@ private:
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
     void InputNavData(MissileData& aMissile, DirectX::SimpleMath::Quaternion aQuatToTarg, const DirectX::SimpleMath::Vector3 aTargPosLocalized, const DirectX::SimpleMath::Vector3 aVecToTargLocal);
-
 
     void IRSeekerTest(MissileData& aMissile, const float aTimeDelta);
 
@@ -898,9 +893,13 @@ private:
     void ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta);
     void ResetMissileForceAccumulators(MissileData& aMissile);
 
+    Utility::ForceAccum RHSFinAccumSum(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    Utility::ForceAccum RHSFinCalc(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    Utility::ForceAccum RHSAeroForceAccumulator(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    DirectX::SimpleMath::Vector3 RHSFinForce(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
-    void RightHandSideMissileDebugTest(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RungeKutta4(struct ProjectileData* aProjectile, double aTimeDelta);
     void RungeKutta4Missile(struct MissileData* aProjectile, double aTimeDelta);
 
@@ -928,8 +927,7 @@ private:
     void CruiseGuidance(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
-
-    
+   
     // Missile accumulators
     void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
     Utility::ForceAccum AeroAccum(MissileData& aMissile);
