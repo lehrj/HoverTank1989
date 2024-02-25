@@ -178,12 +178,13 @@ struct DynamicFinPackage
 struct FinDataStatic
 {
     FinType finType;
-
+    std::string name = "name";
     DirectX::SimpleMath::Vector3 axis;
     DirectX::SimpleMath::Vector3 finNormal;
     DirectX::SimpleMath::Vector3 posLocal;
 
     float chord;
+    float semiSpan; // half span value for fin span
     float span;
     float thickness;
 
@@ -583,20 +584,28 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(-0.2f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     const AeroType testFinType = AeroType::AERO_CLASSIC;
 
     const float canardChord = ((dimensions.x * 0.3f) * 0.2f);
     const float canardSpan = dimensions.x * 0.3f;
     const float canardThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
-
+    
     const float mainChord = 0.06f;
     const float mainSpan = 0.3f;
     const float mainThickness = 0.015f;
 
     const float tailChord = ((dimensions.x * 0.3f) * 0.2f) * 2.0f;
+    //const float tailSpan = dimensions.x * 0.3f * 2.0f;
     const float tailSpan = dimensions.x * 0.3f * 2.0f;
-    const float tailThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
+    //const float tailThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
+    const float tailThickness = tailChord * 0.11f;
+
+    /*
+    const float mainChord = tailChord;
+    const float mainSpan = tailSpan;
+    const float mainThickness = tailThickness;
+    */
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
@@ -605,10 +614,9 @@ struct MissileConsts
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = true;
     const bool isThrustVecOn = true;
-    const bool isDynamicFinOn = false;
-    const bool isFinForceOn = false;
-    const bool isBodyAeroOn = true;
-    const bool isDebugSetPosToPlayerTrue = false;
+    const bool isDynamicFinOn = true;
+    const bool isFinForceOn = true;
+    const bool isBodyAeroOn = false;
 };
 
 enum class ExplosionType
@@ -936,9 +944,8 @@ private:
     void UpdateFinData(MissileData& aMissile);
     void UpdateFinAngles(MissileData& aMissile);
     void UpdateFinForces(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const MissileData& aMissile);
-    //void UpdateFinForcesTemp(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
-    //void UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Quaternion aAlignQuat, const MissileData& aMissile);
-    
+    void UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, const MissileData& aMissile);
+
     Utility::ForceAccum FinForceAccum(const FinDataStatic& aFinLib, const FinDataDynamic& aFinDyn, const MissileData& aMissile);
     Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
     Utility::ForceAccum FinAccumSumTest(const MissileData& aMissile);
@@ -1035,6 +1042,7 @@ private:
     bool m_isDebugToggleTrue3 = false;
 
     bool m_isRocketOnDebug = true;
+    bool m_isDebugMissilePosToTankTrue = false;
 
     const bool m_isDebugToggleTrueTestConst = false;
     const bool m_isDebugToggleTrueTestConst1 = false;
