@@ -613,9 +613,9 @@ struct MissileConsts
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = true;
-    const bool isThrustVecOn = true;
+    const bool isThrustVecOn = false;
     const bool isDynamicFinOn = true;
-    const bool isFinForceOn = true;
+    const bool isFinForceOn = false;
     const bool isBodyAeroOn = false;
 };
 
@@ -893,6 +893,7 @@ private:
     void ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta);
     void ResetMissileForceAccumulators(MissileData& aMissile);
 
+    Utility::ForceAccum RHSBodyAero(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     Utility::ForceAccum RHSFinAccumSum(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     Utility::ForceAccum RHSFinCalc(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     Utility::ForceAccum RHSAeroForceAccumulator(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
