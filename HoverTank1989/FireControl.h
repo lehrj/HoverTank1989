@@ -158,8 +158,14 @@ struct FinDataDynamic
     DirectX::SimpleMath::Vector3 liftForce = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 dragForce = DirectX::SimpleMath::Vector3::Zero;
     float finAngle = Utility::ToRadians(0.0f);
+    float prevFinAngle = Utility::ToRadians(0.0f);
     DirectX::SimpleMath::Vector3 finDir = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 chordLine = DirectX::SimpleMath::Vector3::UnitX;
+
+    DirectX::SimpleMath::Vector3 prevFinDir = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 prevChordLine = DirectX::SimpleMath::Vector3::UnitX;
+
+
     DirectX::SimpleMath::Vector3 resultantForce = DirectX::SimpleMath::Vector3::Zero;
 };
 
@@ -397,6 +403,8 @@ struct ProjectileData
 
     DirectX::SimpleMath::Vector3 angularForceSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularDragSum = DirectX::SimpleMath::Vector3::Zero;
+
+    int rhsCounter = 0;
 };
 
 struct MissileModel
@@ -807,6 +815,7 @@ private:
     float CalculateFinLiftCoefDebug(const float aAngleOfAttack);
     float CalculateFinLiftCoefFlat(const float aAngleOfAttack);
     float CalculateFinLiftCoefTest(const float aAngleOfAttack);
+    float CalculateFinLiftWholeBody(const float aAngleOfAttack);
 
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
@@ -898,6 +907,8 @@ private:
     Utility::ForceAccum RHSFinCalc(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     Utility::ForceAccum RHSAeroForceAccumulator(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     DirectX::SimpleMath::Vector3 RHSFinForce(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    
+    Utility::ForceAccum RHSLiftForce(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
