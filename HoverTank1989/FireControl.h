@@ -533,7 +533,7 @@ struct MissileConsts
     const float wingArea = 0.3f;
     const float testFinArea = 0.3f;
 
-    const float dragCoefficientDebug = 0.3f;
+    const float dragCoefficientDebug = 0.5f;
     const float dragAreaDebug        = 0.03f;
 
     const float dragCoefficient = 0.3f;
@@ -565,8 +565,10 @@ struct MissileConsts
     const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
 
-    const float rocketBoostForceMax = 125.0f;
+    
     const float mass = 11.0f;
+    const float rocketBoostForceMax = mass * 10.0f; // Use desired thrust to weight ratio for boost value
+
     //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
     const float velMaxEst = 10.0f;
 
@@ -816,6 +818,7 @@ private:
     float CalculateFinLiftCoefFlat(const float aAngleOfAttack);
     float CalculateFinLiftCoefTest(const float aAngleOfAttack);
     float CalculateFinLiftWholeBody(const float aAngleOfAttack);
+    float CalculateFinLiftWholeBodySymmetric(const float aAngleOfAttack);
 
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
@@ -1075,7 +1078,7 @@ private:
     float m_debugDistanceToTarget2 = 0.0f;
     float m_debugDistanceToTarget3 = 0.0f;
 
-    const int m_selectMissileFire = 0;
+    const int m_selectMissileFire = 2;
 
     const bool m_isDebugAngularStabilityOn = true;
     const bool m_isHardBurnModeTestOn = true;
