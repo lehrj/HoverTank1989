@@ -912,6 +912,7 @@ private:
     DirectX::SimpleMath::Vector3 RHSFinForce(const FinDataStatic& aStaticDat, FinDataDynamic& aFinDyn, MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     
     Utility::ForceAccum RHSLiftForce(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    Utility::ForceAccum RHSLiftForceRebuild(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
@@ -1121,6 +1122,8 @@ private:
     void DebugDrawUpdate(MissileData& aMissile);
 
     bool m_isInRunge = false;
+
+    DirectX::SimpleMath::Vector3 m_testLiftVec = DirectX::SimpleMath::Vector3::Zero;
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
