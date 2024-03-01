@@ -2391,9 +2391,13 @@ void FireControl::DebugGraphCurveData(MissileData& aMissile, const float aTimeDe
     //const float start = Utility::ToRadians(0.0f);
     //const float end = Utility::ToRadians(180.0f);
 
-    const float gap = Utility::ToRadians(1.0f);
-    const float start = Utility::ToRadians(-90.0f);
-    const float end = Utility::ToRadians(90.0f);
+    //const float gap = Utility::ToRadians(1.0f);
+    //const float start = Utility::ToRadians(-90.0f);
+    //const float end = Utility::ToRadians(90.0f);
+
+    const float gap = Utility::ToRadians(4.0f);
+    const float start = Utility::ToRadians(-360.0f);
+    const float end = Utility::ToRadians(360.0f);
 
     float runfloat = (end - start) / gap;
     //const int max = static_cast<int>(runfloat);
@@ -2401,10 +2405,23 @@ void FireControl::DebugGraphCurveData(MissileData& aMissile, const float aTimeDe
     float currentAng = start;
     for (int i = 0; i < max; ++i)
     {
-        //const float cl = CalculateFinLiftCoef(currentAng);
+
+        float testAng = currentAng;
+        testAng = Utility::WrapAngle(testAng);
+        //testAng = Utility::WrapAngleOnePi(testAng);
+
+
+        //const float cl = CalculateFinLiftCoef(testAng);
         //const float cl = CalculateFinLiftCoefFlat(currentAng);
+        //const float cl = CalculateFinLiftCoefFlatOld(currentAng);
+        //const float cl = CalculateFinLiftCoefFlatOld2(testAng);
         //const float cl = CalculateFinLiftWholeBody(currentAng);
-        const float cl = CalculateFinLiftWholeBodySymmetric(currentAng);
+        //const float cl = CalculateFinLiftWholeBodySymmetric(currentAng);
+        //const float cl = CalculateFinLiftCoefDebug(currentAng);
+        
+        //const float cl = CalculateFinLiftCoef(testAng);
+        const float cl = CalculateFinLiftCoefUpdate(currentAng);
+        //const float cl = CalculateFinLiftCoefFlatOld2(testAng);
 
         std::pair<float, float> dataPoint;
         dataPoint.first = Utility::ToDegrees(currentAng);
@@ -2413,6 +2430,7 @@ void FireControl::DebugGraphCurveData(MissileData& aMissile, const float aTimeDe
 
         //gAng.push_back(static_cast<int>((Utility::ToDegrees(currentAng))));
         gAng.push_back(Utility::ToDegrees(currentAng));
+        //gAng.push_back(Utility::ToDegrees(testAng));
         gCl.push_back(cl);
 
         currentAng += gap;
@@ -10160,8 +10178,8 @@ Utility::ForceAccum FireControl::RHSAeroForceAccumulator(MissileData* aMissile, 
     
     Utility::ForceAccum liftAcc;
     Utility::ForceAccum::ZeroValues(liftAcc);
-    liftAcc += RHSLiftForce(aMissile, localVelocity);
-    //liftAcc += RHSLiftForceRebuild(aMissile, localVelocity);
+    //liftAcc += RHSLiftForce(aMissile, localVelocity);
+    liftAcc += RHSLiftForceRebuild(aMissile, localVelocity);
 
     Utility::ForceAccum gravityAcc;
     Utility::ForceAccum::ZeroValues(gravityAcc);
@@ -10449,6 +10467,7 @@ Utility::ForceAccum FireControl::RHSBodyAero(MissileData* aMissile, const Direct
 
     return accum;
 }
+
 
 Utility::ForceAccum FireControl::RHSLiftForce(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity)
 {
@@ -10760,7 +10779,7 @@ Utility::ForceAccum FireControl::RHSLiftForceRebuild(MissileData* aMissile, cons
     auto wVelNorm = aMissile->projectileData.q.velocity;
     wVelNorm.Normalize();
     auto wForward = aMissile->projectileData.forward;
-    DebugPushDrawData(m_missileConsts.centerOfMassLocal, wForward, DirectX::Colors::Red, false, false);
+    //DebugPushDrawData(m_missileConsts.centerOfMassLocal, wForward, DirectX::Colors::Red, false, false);
 
     auto aeroQuat3 = DirectX::SimpleMath::Quaternion::LookRotation(wVelNorm, DirectX::SimpleMath::Vector3::UnitY);
     aeroQuat3.Normalize();
@@ -10775,7 +10794,7 @@ Utility::ForceAccum FireControl::RHSLiftForceRebuild(MissileData* aMissile, cons
     testLine.Normalize();
     //DebugPushDrawData(m_missileConsts.centerOfMassLocal, testLine, DirectX::Colors::Red, false, true);
     //DebugPushDrawData(m_missileConsts.centerOfMassLocal, testLine, DirectX::Colors::Blue, false, false);
-    DebugPushDrawData(m_missileConsts.centerOfMassLocal, m_testLiftVec, DirectX::Colors::Blue, false, true);
+    //DebugPushDrawData(m_missileConsts.centerOfMassLocal, m_testLiftVec, DirectX::Colors::Blue, false, true);
 
     //DebugPushDrawData(m_missileConsts.centerOfMassLocal, windRight, DirectX::Colors::Red, false, true);
     //DebugPushDrawData(m_missileConsts.centerOfMassLocal, upLocal, DirectX::Colors::Blue, false, true);
@@ -10970,8 +10989,8 @@ Utility::ForceAccum FireControl::RHSLiftForceRebuild(MissileData* aMissile, cons
     
     Utility::ForceAccum::AlignLinearAndTorque(liftAccum, invsAeroQuat3 );
     
-    DebugPushDrawData(m_missileConsts.centerOfMassLocal, liftAccum.linear, DirectX::Colors::White, false, true);
-    DebugPushDrawData(m_missileConsts.centerOfMassLocal, liftAccum.torque, DirectX::Colors::Teal, false, true);
+    //DebugPushDrawData(m_missileConsts.centerOfMassLocal, liftAccum.linear, DirectX::Colors::White, false, true);
+    //DebugPushDrawData(m_missileConsts.centerOfMassLocal, liftAccum.torque, DirectX::Colors::Teal, false, true);
     //DebugPushDrawData(m_missileConsts.centerOfMassLocal, debugVec, DirectX::Colors::Red, false, true);
     //DebugPushDrawData(m_missileConsts.centerOfMassLocal, debugVec, DirectX::Colors::White, false, false);
 
@@ -10982,4 +11001,402 @@ Utility::ForceAccum FireControl::RHSLiftForceRebuild(MissileData* aMissile, cons
     m_debugData->ToggleDebugOff();
 
     return liftAccum;
+}
+
+
+
+float FireControl::CalculateFinLiftCoefFlatOld(const float aAngleOfAttack)
+{
+
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    //const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
+    const float inputAngleRaw = (Utility::ToDegrees(aAngleOfAttack));
+    float inputAngleMod = inputAngleRaw;
+    bool isAoAReversed = false;
+    if (inputAngleRaw > 90.0f)
+    {
+        float testVal = inputAngleRaw - 90.0f;
+        float testVal2 = 90.0f - testVal;
+        inputAngleMod = testVal2;
+        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        isAoAReversed = true;
+    }
+    const float inputAngle = inputAngleMod;
+
+    const float posKey0 = 0.0f;
+    const float angKey0 = 0.0f;
+    const float deltaKey0 = 0.0f;
+
+    const float posKey1 = 0.15f;
+    const float angKey1 = 5.0f;
+    const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
+
+    const float posKey2 = 1.0f;
+    const float angKey2 = 10.0f;
+    //const float deltaKey2 = -((posKey2 - posKey1) / (angKey2 - angKey1));
+    const float deltaKey2 = -((posKey2 - posKey0) / (angKey2 - angKey0));
+
+    const float posKey3 = 1.2f;
+    const float angKey3 = 14.0f;
+    const float deltaKey3 = -((posKey3 - posKey2) / (angKey3 - angKey2));
+
+    const float posKey4 = 1.0f;
+    const float angKey4 = 18.0f;
+    const float deltaKey4 = -((posKey4 - posKey3) / (angKey4 - angKey3));
+
+    const float posKey5 = 0.6f;
+    const float angKey5 = 24.0f;
+    const float deltaKey5 = -((posKey5 - posKey4) / (angKey5 - angKey4));
+
+    const float posKey6 = 0.5f;
+    const float angKey6 = 45.0f;
+    const float deltaKey6 = -((posKey6 - posKey5) / (angKey6 - angKey5));
+
+    const float posKey7 = 0.0f;
+    const float angKey7 = 90.0f;
+    const float deltaKey7 = -((posKey7 - posKey6) / (angKey7 - angKey6));
+
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+
+    /*
+    if (inputAngle < angKey1)
+    {
+        cl = inputAngle * deltaKey1;
+    }
+    */
+    if (inputAngle < angKey2)
+    {
+        //const float inputAngMod = inputAngle - angKey1;
+        //cl = posKey1 - (inputAngMod * deltaKey2);
+
+        //const float inputAngMod = inputAngle - angKey1;
+        //cl = posKey1 - (inputAngMod * deltaKey2);
+        cl = inputAngle * -deltaKey2;
+    }
+    else if (inputAngle < angKey3)
+    {
+        const float inputAngMod = inputAngle - angKey2;
+        cl = posKey2 - (inputAngMod * deltaKey3);
+    }
+    else if (inputAngle < angKey4)
+    {
+        const float inputAngMod = inputAngle - angKey3;
+        cl = posKey3 - (inputAngMod * deltaKey4);
+    }
+    else if (inputAngle < angKey5)
+    {
+        const float inputAngMod = inputAngle - angKey4;
+        cl = posKey4 - (inputAngMod * deltaKey5);
+    }
+    else if (inputAngle < angKey6)
+    {
+        const float inputAngMod = inputAngle - angKey5;
+        cl = posKey5 - (inputAngMod * deltaKey6);
+    }
+    else if (inputAngle < angKey7)
+    {
+        const float inputAngMod = inputAngle - angKey6;
+        cl = posKey6 - (inputAngMod * deltaKey7);
+    }
+    else
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
+    }
+
+    if (isAoAReversed == true)
+    {
+        cl *= -1.0f;
+    }
+
+    if (aAngleOfAttack >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    return clTarget;
+}
+
+
+float FireControl::CalculateFinLiftCoefFlatOld2(const float aAngleOfAttack)
+{
+
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    //const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
+    const float inputAngleRaw = (Utility::ToDegrees(aAngleOfAttack));
+    float inputAngleMod = inputAngleRaw;
+    bool isAoAReversed = false;
+    if (inputAngleRaw > 90.0f)
+    {
+        float testVal = inputAngleRaw - 90.0f;
+        float testVal2 = 90.0f - testVal;
+        inputAngleMod = testVal2;
+        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        isAoAReversed = true;
+    }
+    const float inputAngle = inputAngleMod;
+    //const float inputAngle = (Utility::ToDegrees(aAngleOfAttack));
+    
+    const float posKey0 = 0.0f;
+    const float angKey0 = 0.0f;
+    const float deltaKey0 = 0.0f;
+
+    const float posKey1 = 0.15f;
+    const float angKey1 = 5.0f;
+    const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
+
+    const float posKey2 = 1.0f;
+    const float angKey2 = 10.0f;
+    //const float deltaKey2 = -((posKey2 - posKey1) / (angKey2 - angKey1));
+    const float deltaKey2 = -((posKey2 - posKey0) / (angKey2 - angKey0));
+
+    const float posKey3 = 1.2f;
+    const float angKey3 = 14.0f;
+    const float deltaKey3 = -((posKey3 - posKey2) / (angKey3 - angKey2));
+
+    const float posKey4 = 1.0f;
+    const float angKey4 = 18.0f;
+    const float deltaKey4 = -((posKey4 - posKey3) / (angKey4 - angKey3));
+
+    const float posKey5 = 0.6f;
+    const float angKey5 = 24.0f;
+    const float deltaKey5 = -((posKey5 - posKey4) / (angKey5 - angKey4));
+
+    const float posKey6 = 0.5f;
+    const float angKey6 = 45.0f;
+    const float deltaKey6 = -((posKey6 - posKey5) / (angKey6 - angKey5));
+
+    const float posKey7 = 0.0f;
+    const float angKey7 = 90.0f;
+    const float deltaKey7 = -((posKey7 - posKey6) / (angKey7 - angKey6));
+
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+    /*
+    //////////////////
+    if (inputAngle < -angKey7)
+    {
+        const float inputAngMod = inputAngle - angKey6;
+        cl = posKey6 - (inputAngMod * deltaKey7);
+    }
+    else if (inputAngle < -angKey6)
+    {
+        const float inputAngMod = inputAngle - angKey5;
+        cl = posKey5 - (inputAngMod * deltaKey6);
+    }
+    else if (inputAngle < -angKey5)
+    {
+        const float inputAngMod = inputAngle - angKey4;
+        cl = posKey4 - (inputAngMod * deltaKey5);
+    }
+    else if (inputAngle < -angKey4)
+    {
+        const float inputAngMod = inputAngle - angKey3;
+        cl = posKey3 - (inputAngMod * deltaKey4);
+    }
+    else if (inputAngle < -angKey3)
+    {
+        const float inputAngMod = inputAngle - angKey2;
+        cl = posKey2 - (inputAngMod * deltaKey3);
+    }
+    else if (inputAngle < -angKey2)
+    {
+        //const float inputAngMod = inputAngle - angKey1;
+        //cl = posKey1 - (inputAngMod * deltaKey2);
+
+        //const float inputAngMod = inputAngle - angKey1;
+        //cl = posKey1 - (inputAngMod * deltaKey2);
+        cl = inputAngle * -deltaKey2;
+    }
+    */
+    //////////////////
+   
+    /*
+    if (inputAngle < angKey1)
+    {
+        cl = inputAngle * deltaKey1;
+    }
+    */
+    if (inputAngle < angKey2)
+    {
+        //const float inputAngMod = inputAngle - angKey1;
+        //cl = posKey1 - (inputAngMod * deltaKey2);
+
+        //const float inputAngMod = inputAngle - angKey1;
+        //cl = posKey1 - (inputAngMod * deltaKey2);
+        cl = inputAngle * -deltaKey2;
+    }
+    else if (inputAngle < angKey3)
+    {
+        const float inputAngMod = inputAngle - angKey2;
+        cl = posKey2 - (inputAngMod * deltaKey3);
+    }
+    else if (inputAngle < angKey4)
+    {
+        const float inputAngMod = inputAngle - angKey3;
+        cl = posKey3 - (inputAngMod * deltaKey4);
+    }
+    else if (inputAngle < angKey5)
+    {
+        const float inputAngMod = inputAngle - angKey4;
+        cl = posKey4 - (inputAngMod * deltaKey5);
+    }
+    else if (inputAngle < angKey6)
+    {
+        const float inputAngMod = inputAngle - angKey5;
+        cl = posKey5 - (inputAngMod * deltaKey6);
+    }
+    else if (inputAngle < angKey7)
+    {
+        const float inputAngMod = inputAngle - angKey6;
+        cl = posKey6 - (inputAngMod * deltaKey7);
+    }
+    else
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
+    }
+
+    if (isAoAReversed == true)
+    {
+        cl *= -1.0f;
+    }
+
+    if (aAngleOfAttack >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    return clTarget;
+}
+
+
+float FireControl::CalculateFinLiftCoefUpdate(const float aAngleOfAttack)
+{
+    float wrapAng = aAngleOfAttack;
+    wrapAng = Utility::WrapAngle(wrapAng);
+    // converting to degrees since all available NACA airfoil maps seem to obstain from radians
+    //const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
+    const float inputAngleRaw = abs(Utility::ToDegrees(wrapAng));
+    float inputAngleMod = inputAngleRaw;
+    bool isAoAReversed = false;
+    if (inputAngleRaw > 90.0f)
+    {
+        float testVal = inputAngleRaw - 90.0f;
+        float testVal2 = 90.0f - testVal;
+        inputAngleMod = testVal2;
+        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        isAoAReversed = true;
+    }
+    const float inputAngle = inputAngleMod;
+
+    const float posKey0 = 0.0f;
+    const float angKey0 = 0.0f;
+    const float deltaKey0 = 0.0f;
+
+    const float posKey1 = 0.15f;
+    const float angKey1 = 5.0f;
+    const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
+
+    const float posKey2 = 1.0f;
+    const float angKey2 = 10.0f;
+    const float deltaKey2 = -((posKey2 - posKey1) / (angKey2 - angKey1));
+
+    const float posKey3 = 1.2f;
+    const float angKey3 = 14.0f;
+    const float deltaKey3 = -((posKey3 - posKey2) / (angKey3 - angKey2));
+
+    const float posKey4 = 1.0f;
+    const float angKey4 = 18.0f;
+    const float deltaKey4 = -((posKey4 - posKey3) / (angKey4 - angKey3));
+
+    const float posKey5 = 0.6f;
+    const float angKey5 = 24.0f;
+    const float deltaKey5 = -((posKey5 - posKey4) / (angKey5 - angKey4));
+
+    const float posKey6 = 0.5f;
+    const float angKey6 = 45.0f;
+    const float deltaKey6 = -((posKey6 - posKey5) / (angKey6 - angKey5));
+
+    const float posKey7 = 0.0f;
+    const float angKey7 = 90.0f;
+    const float deltaKey7 = -((posKey7 - posKey6) / (angKey7 - angKey6));
+
+    float cl;
+    float curveDeltaRate;
+    float clTarget;
+
+    if (inputAngle < angKey1)
+    {
+        cl = inputAngle * deltaKey1;
+    }
+    else if (inputAngle < angKey2)
+    {
+        const float inputAngMod = inputAngle - angKey1;
+        cl = posKey1 - (inputAngMod * deltaKey2);
+    }
+    else if (inputAngle < angKey3)
+    {
+        const float inputAngMod = inputAngle - angKey2;
+        cl = posKey2 - (inputAngMod * deltaKey3);
+    }
+    else if (inputAngle < angKey4)
+    {
+        const float inputAngMod = inputAngle - angKey3;
+        cl = posKey3 - (inputAngMod * deltaKey4);
+    }
+    else if (inputAngle < angKey5)
+    {
+        const float inputAngMod = inputAngle - angKey4;
+        cl = posKey4 - (inputAngMod * deltaKey5);
+    }
+    else if (inputAngle < angKey6)
+    {
+        const float inputAngMod = inputAngle - angKey5;
+        cl = posKey5 - (inputAngMod * deltaKey6);
+    }
+    else if (inputAngle < angKey7)
+    {
+        const float inputAngMod = inputAngle - angKey6;
+        cl = posKey6 - (inputAngMod * deltaKey7);
+    }
+    else
+    {
+        // throw error
+        int testBreak = 0;
+        testBreak++;
+        cl = 0.0f;
+    }
+
+    if (isAoAReversed == true)
+    {
+        cl *= -1.0f;
+    }
+
+    //if (aAngleOfAttack >= 0.0f)
+    if (wrapAng >= 0.0f)
+    {
+        clTarget = cl;
+    }
+    else
+    {
+        clTarget = -cl;
+    }
+
+    return clTarget;
 }

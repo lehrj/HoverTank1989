@@ -814,11 +814,14 @@ private:
     float CalculateFinDragArea(const DirectX::SimpleMath::Vector3 aVelocityNormLocal, const DirectX::SimpleMath::Vector3 aFinDir, const FinDataStatic& aFinDat);
 
     float CalculateFinLiftCoef(const float aAngleOfAttack);
+    float CalculateFinLiftCoefUpdate(const float aAngleOfAttack);
     float CalculateFinLiftCoefDebug(const float aAngleOfAttack);
     float CalculateFinLiftCoefFlat(const float aAngleOfAttack);
     float CalculateFinLiftCoefTest(const float aAngleOfAttack);
     float CalculateFinLiftWholeBody(const float aAngleOfAttack);
     float CalculateFinLiftWholeBodySymmetric(const float aAngleOfAttack);
+    float CalculateFinLiftCoefFlatOld(const float aAngleOfAttack);
+    float CalculateFinLiftCoefFlatOld2(const float aAngleOfAttack);
 
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
@@ -1124,7 +1127,7 @@ private:
     bool m_isInRunge = false;
 
     DirectX::SimpleMath::Vector3 m_testLiftVec = DirectX::SimpleMath::Vector3::Zero;
-
+ 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
