@@ -916,6 +916,7 @@ private:
     
     Utility::ForceAccum RHSLiftForce(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     Utility::ForceAccum RHSLiftForceRebuild(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    Utility::ForceAccum RHSLiftForceSymmetric(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
