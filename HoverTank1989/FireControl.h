@@ -525,11 +525,19 @@ struct MissileConsts
 
     const float detonationRange = 10.0f;
 
+    /*
     const float finDeployDelay = 0.2f;
     const float rocketFireDelay = 1.0f;
-
     const float finDeployTime = 0.4f;
     const float rocketFireFullTime = 0.5f;
+    */
+
+    const float finDeployDelay = 0.1f;
+    const float rocketFireDelay = 0.05f;
+
+    const float finDeployTime = 0.15f;
+    const float rocketFireFullTime = 0.01f;
+    
     const float wingArea = 0.3f;
     const float testFinArea = 0.3f;
 
@@ -917,6 +925,7 @@ private:
     Utility::ForceAccum RHSLiftForce(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     Utility::ForceAccum RHSLiftForceRebuild(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
     Utility::ForceAccum RHSLiftForceSymmetric(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
+    DirectX::SimpleMath::Vector3  RHSDragForceSymmetric(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
 
     void RightHandSide(struct ProjectileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
     void RightHandSideMissile(struct MissileData* aProjectile, ProjectileMotion* aQ, ProjectileMotion* aDeltaQ, double aTimeDelta, float aQScale, ProjectileMotion* aDQ);
@@ -1084,6 +1093,7 @@ private:
     float m_debugDistanceToTarget3 = 0.0f;
 
     const int m_selectMissileFire = 2;
+    //const int m_selectMissileFire = 3;
 
     const bool m_isDebugAngularStabilityOn = true;
     const bool m_isHardBurnModeTestOn = true;
@@ -1129,6 +1139,8 @@ private:
 
     DirectX::SimpleMath::Vector3 m_testLiftVec = DirectX::SimpleMath::Vector3::Zero;
  
+    bool m_isTestLiftInducedDragOn = false;
+
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
