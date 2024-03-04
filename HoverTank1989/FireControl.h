@@ -192,6 +192,7 @@ struct FinDataStatic
     float chord;
     float semiSpan; // half span value for fin span
     float span;
+    float wingSpanFull; // full wing span including body
     float thickness;
 
     float wingArea;
@@ -832,6 +833,9 @@ private:
     float CalculateFinLiftCoefFlatOld2(const float aAngleOfAttack);
 
     void CalculateGimbaledThrust(MissileData& aMissile, const float aTimeDelta);
+
+    float CalculateLiftInducedDrag(const float aLiftCoeff, const float aLiftForce, const float aVelocity, const float aWingSpan, const float aChord, const float aWingArea);
+
     DirectX::SimpleMath::Vector3 CalculateWindVaningTorqueForce(const MissileData& aMissile);
 
     void CastRayLaser();

@@ -5103,7 +5103,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
 {
     float dragBase = 0.04f;
     float dragModMax = 1.17f;
-
+    const float bodyDiameter = m_missileConsts.dimensions.z * 2.0f;
     FinDataStatic finDat;
     finDat.finType = FinType::CANARD_PITCH;
     finDat.name = "CANARD_PITCH";
@@ -5117,6 +5117,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     //finDat.span = m_missileConsts.canardSpan * 2.0f;
     finDat.span = m_missileConsts.canardSpan;
     finDat.semiSpan = finDat.span * 0.5f;
+    finDat.wingSpanFull = finDat.span + bodyDiameter;
     finDat.thickness = m_missileConsts.canardThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
@@ -5139,6 +5140,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     //finDat.span = m_missileConsts.tailSpan * 2.0f;
     finDat.span = m_missileConsts.tailSpan;
     finDat.semiSpan = finDat.span * 0.5f;
+    finDat.wingSpanFull = finDat.span + bodyDiameter;
     finDat.thickness = m_missileConsts.tailThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
@@ -5160,6 +5162,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     //finDat.span = m_missileConsts.mainSpan * 2.0f;
     finDat.span = m_missileConsts.mainSpan;
     finDat.semiSpan = finDat.span * 0.5f;
+    finDat.wingSpanFull = finDat.span + bodyDiameter;
     finDat.thickness = m_missileConsts.mainThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
@@ -5169,6 +5172,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     //finDat.span = m_missileConsts.tailSpan * 2.0f;
     finDat.span = m_missileConsts.tailSpan;
     finDat.semiSpan = finDat.span * 0.5f;
+    finDat.wingSpanFull = finDat.span + bodyDiameter;
     finDat.thickness = m_missileConsts.tailThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
@@ -7501,7 +7505,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     //DirectX::SimpleMath::Vector3 drag = CalcDragLinearCurrent(aProjectile, newQ.velocity);
     DirectX::SimpleMath::Vector3 drag = airResistance;
     DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, drag, DirectX::Colors::Blue, false, false);
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("drag        = ", drag.Length(), "");
 
     m_debugData->ToggleDebugOff();
@@ -10369,7 +10373,7 @@ DirectX::SimpleMath::Vector3 FireControl::RHSFinForce(const FinDataStatic& aStat
     // lift = coefficient * density * (vel^2 / two) * wing area
     auto lift = cl * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * surface;
 
-    float liftLength = lift.Length();
+    const float liftLength = lift.Length();
     //auto liftTest = cl * rho * ((airSpeedLocal.Length() * airSpeedLocal.Length()) / 2.0f) * surface;
 
     auto axisTest = aStaticDat.axis;
@@ -10401,18 +10405,13 @@ DirectX::SimpleMath::Vector3 FireControl::RHSFinForce(const FinDataStatic& aStat
     const float cd = dragCoefBase + (dragModMax * airImpactDot);
     auto finDrag = cd * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * dragSurface;
     //auto lift2   = cl * rho * ((airSpeedLocal * airSpeedLocal) / 2.0f) * surface;
-    ////////////     aFinDyn.dragForce = airSpeedLocalNorm * finDrag.Length();
-
-    ////////////     aFinDyn.resultantForce = aFinDyn.liftForce + aFinDyn.dragForce;
-
 
     //auto testDrag = (liftF * liftF) / (.5f * m_environment->GetAirDensity() * (aVelocity.Length() * aVelocity.Length()) * Utility::GetPi() * (m_finLib.mainYaw.span * m_finLib.mainYaw.span));
     auto testDrag = (lift.Length() * lift.Length()) 
         / (.5f * m_environment->GetAirDensity() * (aVelocity.Length() * aVelocity.Length()) * Utility::GetPi() * ( aStaticDat.span * aStaticDat.span));
-
+    auto testDrag2 = CalculateLiftInducedDrag(cl, liftLength, aVelocity.Length(), aStaticDat.wingSpanFull, aStaticDat.chord, aStaticDat.wingArea);
     //return (liftNormTest * lift.Length()) + (airSpeedLocalNorm * finDrag.Length());
-    return (liftNormTest * lift.Length()) + ((airSpeedLocalNorm * finDrag.Length()) + airSpeedLocalNorm * testDrag);
-    //return DirectX::SimpleMath::Vector3::Zero;
+    return (liftNormTest * lift.Length()) + ((airSpeedLocalNorm * finDrag.Length()) + airSpeedLocalNorm * testDrag2);
 }
 
 
@@ -11045,7 +11044,10 @@ Utility::ForceAccum FireControl::RHSLiftForceSymmetric(MissileData* aMissile, co
     const auto liftVec = liftF * liftNorm;
     const auto dragVec = RHSDragForceSymmetric(aMissile, aVelocity);
 
-    auto testDrag = (liftF * liftF) / (.5f * m_environment->GetAirDensity() * (aVelocity.Length() * aVelocity.Length()) * Utility::GetPi() * (m_finLib.mainYaw.span * m_finLib.mainYaw.span));
+    //auto testDrag2 = CalculateLiftInducedDrag(cL, liftF, aVelocity.Length(), m_finLib.mainYaw.wingSpanFull, m_finLib.mainYaw.chord, m_finLib.mainYaw.wingArea);
+    //auto testDrag = (liftF * liftF) / (.5f * m_environment->GetAirDensity() * (aVelocity.Length() * aVelocity.Length()) * Utility::GetPi() * (m_finLib.mainYaw.span * m_finLib.mainYaw.span));
+    //auto testDrag = (liftF * liftF) / (.5f * m_environment->GetAirDensity() * (aVelocity.Length() * aVelocity.Length()) * Utility::GetPi() * (m_finLib.mainYaw.wingSpanFull * m_finLib.mainYaw.wingSpanFull));
+    auto testDrag = CalculateLiftInducedDrag(cL, liftF, aVelocity.Length(), m_finLib.mainYaw.wingSpanFull, m_finLib.mainYaw.chord, m_finLib.mainYaw.wingArea);
     auto liftDrag = testDrag * -velocityNorm;
 
     //DirectX::SimpleMath::Vector3 forceDir = liftVec;
@@ -11060,7 +11062,7 @@ Utility::ForceAccum FireControl::RHSLiftForceSymmetric(MissileData* aMissile, co
     //DebugPushDrawData(m_missileConsts.centerOfMassLocal, velocityNorm, DirectX::Colors::White, false, true);
 
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     //m_debugData->DebugPushUILineDecimalNumber("forceDir = ", forceDir.Length(), "");
     //m_debugData->DebugPushUILineDecimalNumber("liftVec = ", liftVec.Length(), "");
     m_debugData->DebugPushUILineDecimalNumber("mDD = ", mDD, "");
@@ -11132,7 +11134,7 @@ DirectX::SimpleMath::Vector3 FireControl::RHSDragForceSymmetric(MissileData* aMi
     {
         dragCoeffSum += dragCoeffSide;
     }
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("dragCoeffSum = ", dragCoeffSum, "");
     m_debugData->ToggleDebugOff();
 
@@ -11547,4 +11549,31 @@ float FireControl::CalculateFinLiftCoefUpdate(const float aAngleOfAttack)
     }
 
     return clTarget;
+}
+
+
+float FireControl::CalculateLiftInducedDrag(const float aLiftCoeff, const float aLiftForce, const float aVelocity, const float aWingSpan, const float aChord, const float aWingArea)
+{
+    const auto airDensity = m_environment->GetAirDensity();
+    const auto pi = Utility::GetPi();
+    const auto effiFactor = 1.0f;
+    //const auto 
+    auto dI = (aLiftForce * aLiftForce) / (0.5f * airDensity * (aVelocity * aVelocity) * pi * (aWingSpan * aWingSpan));
+    auto AR = (aWingSpan * aWingSpan) / aWingArea;
+    auto cDi1 = dI / (0.5f * airDensity * (aVelocity * aVelocity) * aWingArea);
+    auto cDi2 = (aLiftCoeff * aLiftCoeff) / (pi * AR * effiFactor);
+
+    auto testDrag = (aLiftForce * aLiftForce) / (0.5f * m_environment->GetAirDensity() * (aVelocity * aVelocity) * Utility::GetPi() * (aWingSpan * aWingSpan));
+    //auto liftDrag = testDrag * -velocityNorm;
+
+
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("dI       = ", dI, "");
+    m_debugData->DebugPushUILineDecimalNumber("cDi1     = ", cDi1, "");
+    m_debugData->DebugPushUILineDecimalNumber("cDi2     = ", cDi2, "");
+    m_debugData->DebugPushUILineDecimalNumber("testDrag = ", testDrag, "");
+    //m_debugData->DebugPushUILineDecimalNumber("", , "");
+
+    m_debugData->ToggleDebugOff();
+    return testDrag;
 }
