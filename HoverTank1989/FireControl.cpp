@@ -2715,6 +2715,40 @@ Utility::ForceAccum FireControl::DragAccum(MissileData& aMissile, const float aT
     return accum;
 }
 
+void FireControl::DrawContrails(MissileData& aMissile)
+{
+    m_debugData->ToggleDebugOnOverRide();
+    unsigned int itt = aMissile.contrails.iterator;
+    unsigned int nextItt = itt + 1;
+    for (unsigned int i = 0; i < m_missileConsts.contrailDrawCountMax; ++i)
+    {
+        if (itt >= m_missileConsts.contrailDrawCountMax)
+        {
+            itt = 0;
+        }
+        if (nextItt >= m_missileConsts.contrailDrawCountMax)
+        {
+            nextItt = 0;
+        }
+
+
+        if (i == 0)
+        {
+            // do nothing
+        }
+        else
+        {
+            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.starboard.posVec[itt], aMissile.contrails.starboard.posVec[nextItt], DirectX::Colors::White);
+            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.bottom.posVec[itt], aMissile.contrails.bottom.posVec[nextItt], DirectX::Colors::White);
+            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.port.posVec[itt], aMissile.contrails.port.posVec[nextItt], DirectX::Colors::White);
+            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.top.posVec[itt], aMissile.contrails.top.posVec[nextItt], DirectX::Colors::White);
+        }
+        ++itt;
+        ++nextItt;
+    }
+    m_debugData->ToggleDebugOff();
+}
+
 void FireControl::DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj)
 {
     for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
@@ -3969,6 +4003,7 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
     m_npcController->UpdateMissleGuidance(m_currentTargetID, firedMissile.guidance.targetPosition, firedMissile.guidance.targetVelocity, firedMissile.guidance.targetForward);
     firedMissile.guidance.targetDistance = (aLaunchPos - firedMissile.guidance.targetPosition).Length();
 
+    InitializeContrails(firedMissile);
     m_missileVec.push_back(firedMissile);
 }
 
@@ -5049,6 +5084,31 @@ void FireControl::InitializeAmmoShotgun(AmmoStruct& aAmmo)
     aAmmo.ammoData.frontSurfaceArea = Utility::GetPi() * (aAmmo.ammoData.radius * aAmmo.ammoData.radius);
     aAmmo.ammoData.tickDownCounter = 1;
     aAmmo.ammoData.isGuided = false;
+}
+
+void FireControl::InitializeContrails(MissileData& aMissile)
+{
+    aMissile.contrails.bottom.posLocal = DirectX::SimpleMath::Vector3(m_finLib.tailPitch.semiSpan * 0.5f, 0.0f, 0.0f);
+    aMissile.contrails.starboard.posLocal = DirectX::SimpleMath::Vector3(m_finLib.tailPitch.semiSpan * 0.5f, 0.0f, 0.0f);
+    aMissile.contrails.top.posLocal = DirectX::SimpleMath::Vector3(m_finLib.tailPitch.semiSpan * 0.5f, 0.0f, 0.0f);
+    aMissile.contrails.port.posLocal = DirectX::SimpleMath::Vector3(m_finLib.tailPitch.semiSpan * 0.5f, 0.0f, 0.0f);
+
+    aMissile.contrails.bottom.posVec.clear();
+    aMissile.contrails.top.posVec.clear();
+    aMissile.contrails.starboard.posVec.clear();
+    aMissile.contrails.port.posVec.clear();
+
+    aMissile.contrails.bottom.posVec.resize(m_missileConsts.contrailDrawCountMax);
+    aMissile.contrails.top.posVec.resize(m_missileConsts.contrailDrawCountMax);
+    aMissile.contrails.starboard.posVec.resize(m_missileConsts.contrailDrawCountMax);
+    aMissile.contrails.port.posVec.resize(m_missileConsts.contrailDrawCountMax);
+
+    aMissile.contrails.iterator = 0;
+
+    for (unsigned int i = 0; i < m_missileConsts.contrailDrawCountMax; ++i)
+    {
+        UpdateContrails(aMissile);
+    }
 }
 
 void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData)
@@ -9492,6 +9552,12 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateMissileAlignment(m_missileVec[i], static_cast<float>(aTimeDelta));
         UpdateMissileModelData(m_missileVec[i]);
 
+        if (m_missileConsts.isContrailsOn == true)
+        {
+            UpdateContrails(m_missileVec[i]);
+            DrawContrails(m_missileVec[i]);
+        }
+
         PrintFlightStateData(m_missileVec[i]);
         PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ResetMissileForceAccumulators(m_missileVec[i]);
@@ -10038,6 +10104,62 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     m_debugData->DebugPushUILineDecimalNumber("updateThrustQuat.wd ", Utility::ToDegrees(updateThrustQuat.w), "");
     
     m_debugData->ToggleDebugOff();
+}
+
+void FireControl::UpdateContrails(MissileData& aMissile)
+{
+    ++aMissile.contrails.iterator;
+    if (aMissile.contrails.iterator >= m_missileConsts.contrailDrawCountMax)
+    {
+        aMissile.contrails.iterator = 0;
+    }
+
+    // tail fin position variables
+    const float finDeployAngle = Utility::ToRadians(0.0f) + m_ammoMissile.modelData.tailFinDeployAngleMax * aMissile.guidance.finDeployPercent;
+
+    auto updateMat = DirectX::SimpleMath::Matrix::Identity;
+    updateMat *= m_ammoMissile.modelData.localTailFinMat;
+    updateMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(finDeployAngle);
+
+    // Starboard
+    auto conPos = aMissile.contrails.starboard.posLocal;
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, updateMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationY(aMissile.guidance.finPak.tailPitch.finAngle));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, m_ammoMissile.modelData.tailFinTransMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f)));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, aMissile.projectileData.alignmentQuat);
+    conPos += aMissile.projectileData.q.position;
+    aMissile.contrails.starboard.posVec[aMissile.contrails.iterator] = conPos;
+
+    // bottom
+    conPos = aMissile.contrails.bottom.posLocal;
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, updateMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationY(-aMissile.guidance.finPak.tailYaw.finAngle));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, m_ammoMissile.modelData.tailFinTransMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f)));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, aMissile.projectileData.alignmentQuat);
+    conPos += aMissile.projectileData.q.position;
+    aMissile.contrails.bottom.posVec[aMissile.contrails.iterator] = conPos;
+
+    // port 
+    conPos = aMissile.contrails.port.posLocal;
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, updateMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationY(-aMissile.guidance.finPak.tailPitch.finAngle));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, m_ammoMissile.modelData.tailFinTransMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f)));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, aMissile.projectileData.alignmentQuat);
+    conPos += aMissile.projectileData.q.position;
+    aMissile.contrails.port.posVec[aMissile.contrails.iterator] = conPos;
+
+    // top
+    conPos = aMissile.contrails.top.posLocal;
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, updateMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationY(aMissile.guidance.finPak.tailYaw.finAngle));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, m_ammoMissile.modelData.tailFinTransMat);
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f)));
+    conPos = DirectX::SimpleMath::Vector3::Transform(conPos, aMissile.projectileData.alignmentQuat);
+    conPos += aMissile.projectileData.q.position;
+    aMissile.contrails.top.posVec[aMissile.contrails.iterator] = conPos;
 }
 
 void FireControl::DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal, const DirectX::SimpleMath::Vector3 aVecLocal, const DirectX::XMVECTORF32 aColor, const bool aIsDrawScaledTrue, const bool aIsRealignTrue)
@@ -11577,3 +11699,9 @@ float FireControl::CalculateLiftInducedDrag(const float aLiftCoeff, const float 
     m_debugData->ToggleDebugOff();
     return testDrag;
 }
+
+
+
+
+
+

@@ -16,6 +16,22 @@ enum class AmmoType
     AMMOTYPE_GUIDEDMISSILE,
 };
 
+struct ContrailData
+{
+    std::vector<DirectX::SimpleMath::Vector3> posVec;
+    DirectX::SimpleMath::Vector3 posLocal;
+    
+};
+
+struct ContrailPackage
+{
+    ContrailData top;
+    ContrailData port;
+    ContrailData starboard;
+    ContrailData bottom;
+    unsigned int iterator;
+};
+
 struct LauncherData
 {
     DirectX::SimpleMath::Vector3 launchDirectionNorm;
@@ -512,6 +528,7 @@ struct MissileData
 {
     ProjectileData projectileData;
     GuidanceSystem guidance;
+    ContrailPackage contrails;
 };
 
 struct MissileStruct
@@ -626,6 +643,8 @@ struct MissileConsts
     const float mainThickness = tailThickness;
     */
 
+    const unsigned int contrailDrawCountMax = 20;
+
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
     const bool isMissleTargetingLaserTrue = true;
@@ -636,6 +655,7 @@ struct MissileConsts
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = false;
     const bool isBodyAeroOn = false;
+    const bool isContrailsOn = true;
 };
 
 enum class ExplosionType
@@ -852,6 +872,8 @@ private:
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
 
+    void DrawContrails(MissileData& aMissile);
+
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawMissiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -881,6 +903,9 @@ private:
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
     void InitializeAmmoMissile(MissileStruct& aAmmo);
+
+
+    void InitializeContrails(MissileData& aMissile);
 
     void InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, ExplosionData& aExplosionData);
     void InitializeFinLibrary(FinLibrary& aFinLib);
@@ -940,6 +965,8 @@ private:
     DirectX::SimpleMath::Vector3 Pursuit(MissileData& aMissile, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Vector3 aTargLocalPos, const DirectX::SimpleMath::Vector3 aTargLocalVel);
 
     void UpdateAngularStability(MissileData& aMissile, const float aTimeDelta);
+
+    void UpdateContrails(MissileData& aMissile);
 
     void UpdateControlData(MissileData& aMissile, const float aTimeDelta);
 
