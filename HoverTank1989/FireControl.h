@@ -427,7 +427,11 @@ struct ProjectileData
 struct MissileModel
 {
     // consts & colors
-    // colors
+    
+    const float contrailColorMax = 0.9f; 
+    const float contrailColorMin = 0.3f;
+    const unsigned int contrailDrawCountMax = 20;
+
     const DirectX::SimpleMath::Vector4 bodyColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -642,8 +646,6 @@ struct MissileConsts
     const float mainSpan = tailSpan;
     const float mainThickness = tailThickness;
     */
-
-    const unsigned int contrailDrawCountMax = 20;
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
