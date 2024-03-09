@@ -610,7 +610,7 @@ struct MissileConsts
 
     const float climbOutDuration = 0.5f;
 
-    const float launchVelocity = 0.0f;
+    const float launchVelocity = 20.0f;
 
     const float testVal = 1.0f;
     const float testVal2 = testVal * 2.0f;
@@ -652,8 +652,8 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isManualControlTrue = true;
-    const bool isThrustVecOn = false;
+    const bool isManualControlTrue = false;
+    const bool isThrustVecOn = true;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = false;
     const bool isBodyAeroOn = false;
@@ -890,12 +890,6 @@ private:
 
     unsigned int GetUniqueMissileID();
     
-    void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
-    void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
-    void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
-    void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
-    void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
-
     void HardBurnModeActivator(MissileData& aMissile, const float aTimeDelta);
     void HardBurnModeTest(MissileData& aMissile, const float aTimeDelta);
 
@@ -905,7 +899,6 @@ private:
     void InitializeAmmoMirv(AmmoStruct& aAmmo);
     void InitializeAmmoShotgun(AmmoStruct& aAmmo);
     void InitializeAmmoMissile(MissileStruct& aAmmo);
-
 
     void InitializeContrails(MissileData& aMissile);
 
@@ -938,13 +931,7 @@ private:
     void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
     void PrintFlightStateData(MissileData& aMissile);
     void PrintMissileData(MissileData& aMissile, const float aTimeDelta);
-    void ProNavTest(MissileData& aMissile, const float aTimeDelta);
-    void ProNav(MissileData& aMissile, const float aTimeDelta);
-    void ProNav2(MissileData& aMissile, const float aTimeDelta);
-    void ProNav3(MissileData& aMissile, const float aTimeDelta);
-    void ProNav4(MissileData& aMissile, const float aTimeDelta);
-    void ProNav5(MissileData& aMissile, const float aTimeDelta);
-    void ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta);
+
     void ResetMissileForceAccumulators(MissileData& aMissile);
 
     Utility::ForceAccum RHSBodyAero(MissileData* aMissile, const DirectX::SimpleMath::Vector3 aVelocity);
@@ -985,8 +972,6 @@ private:
 
     void UpdateMissileDragLinear(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileForcesLift(MissileData& aMissile, const float aTimeDelta);
-    void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
-    void CruiseGuidance(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateMissileCoefficients(MissileData& aMissile, const float aTimeDelta);
    
@@ -1126,7 +1111,6 @@ private:
     float m_debugDistanceToTarget3 = 0.0f;
 
     const int m_selectMissileFire = 2;
-    //const int m_selectMissileFire = 3;
 
     const bool m_isDebugAngularStabilityOn = true;
     const bool m_isHardBurnModeTestOn = true;
@@ -1173,6 +1157,27 @@ private:
     DirectX::SimpleMath::Vector3 m_testLiftVec = DirectX::SimpleMath::Vector3::Zero;
  
     bool m_isTestLiftInducedDragOn = false;
+
+    // grouping up guidance functions for testing and debuging
+    void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceBasicGravity(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceTestOld(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
+
+    void ProNavTest(MissileData& aMissile, const float aTimeDelta);
+    void ProNav(MissileData& aMissile, const float aTimeDelta);
+    void ProNav2(MissileData& aMissile, const float aTimeDelta);
+    void ProNav3(MissileData& aMissile, const float aTimeDelta);
+    void ProNav4(MissileData& aMissile, const float aTimeDelta);
+    void ProNav5(MissileData& aMissile, const float aTimeDelta);
+    void ProNavOpenSteer(MissileData& aMissile, const float aTimeDelta);
+
+    void UpdateMissileGuidance(MissileData& aMissile, const float aTimeDelta);
+    void CruiseGuidance(MissileData& aMissile, const float aTimeDelta);
+    // end guidance functions
 
 public:
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
