@@ -599,8 +599,9 @@ struct MissileConsts
     const float mass = 11.0f;
     const float rocketBoostForceMax = mass * 10.0f; // Use desired thrust to weight ratio for boost value
 
-    //const float velMaxEst = (rocketBoostForceMax / mass) * 10.0f;
-    const float velMaxEst = 10.0f;
+    const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
+    //const float velMaxEst = (rocketBoostForceMax / mass);
+    //const float velMaxEst = 10.0f;
 
     // flight modeling
     const float climbOutAltMin = 20.0f;
@@ -652,12 +653,13 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isManualControlTrue = false;
+    const bool isManualControlTrue = true;
     const bool isThrustVecOn = true;
     const bool isDynamicFinOn = true;
-    const bool isFinForceOn = false;
+    const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
     const bool isContrailsOn = true;
+    const bool isGravityOn = false;
 };
 
 enum class ExplosionType
@@ -979,8 +981,6 @@ private:
     void AccumulateMissileForces(MissileData& aMissile, const float aTimeDelta);
     Utility::ForceAccum AeroAccum(MissileData& aMissile);
     Utility::ForceAccum BoosterAccum(MissileData& aMissile);
-    Utility::ForceAccum BoosterAccumStatic(MissileData& aMissile);
-    Utility::ForceAccum BoosterAccumVectored(MissileData& aMissile);
     void BoosterSteeringUpdate(MissileData& aMissile);
     Utility::ForceAccum DragAccum(MissileData& aMissile, const float aTimeDelta);
     Utility::ForceAccum BodyAeroAccum(MissileData& aMissile);
@@ -1007,6 +1007,7 @@ private:
     void UpdateSteeringDirNorm(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld2(MissileData& aMissile, const float aTimeDelta);
+    void UpdateThrustVector(MissileData& aMissile);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
