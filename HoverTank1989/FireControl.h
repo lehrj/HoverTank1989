@@ -83,6 +83,7 @@ enum class FlightState
     FLIGHTSTATE_DEBUG,
     FLIGHTSTATE_EXPLODING,
     FLIGHTSTATE_LAUNCH,
+    FLIGHTSTATE_OVERSHOOT,
 };
 
 struct Seeker
@@ -590,7 +591,8 @@ struct MissileConsts
 
     const float headingRadiansPerSecondMax = 1.12f;
     const float steerAngMax = Utility::ToRadians(15.0f);
-    const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
+    //const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
+    const float steeringAngPerSecDeltaMax = Utility::ToRadians(2.0f);
 
     const float tailFinAngMax = Utility::ToRadians(25.0f);
     const float tailFinAngPerSecDeltaMax = Utility::ToRadians(110.0f);
@@ -658,7 +660,7 @@ struct MissileConsts
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = false;
-    const bool isThrustVecOn = false;
+    const bool isThrustVecOn = true;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;

@@ -9987,8 +9987,8 @@ void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
     else
     {
         //GuidanceBasicGravity(aMissile, aTimeDelta);
-        GuidanceBasic(aMissile, aTimeDelta);
-        //GuidanceTest(aMissile, aTimeDelta);
+        //GuidanceBasic(aMissile, aTimeDelta);
+        GuidanceTest(aMissile, aTimeDelta);
         //GuidanceVelocitySteeringTest(aMissile, aTimeDelta);
         
         
