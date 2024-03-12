@@ -241,6 +241,9 @@ struct NavData
     DirectX::SimpleMath::Vector3 vecToTargLocal = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion quatToTarg = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 targPosLocalized = DirectX::SimpleMath::Vector3::UnitX;
+
+    DirectX::SimpleMath::Vector3 thrustVec = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion thrustQuat = DirectX::SimpleMath::Quaternion::Identity;
 };
 
 struct ControlData
@@ -576,6 +579,7 @@ struct MissileConsts
     const float laserDepoyDelay = 3.9f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
+    //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.65f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 thrustPosLocalOffset = DirectX::SimpleMath::Vector3(0.01f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
@@ -653,8 +657,8 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isManualControlTrue = true;
-    const bool isThrustVecOn = true;
+    const bool isManualControlTrue = false;
+    const bool isThrustVecOn = false;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
