@@ -971,6 +971,10 @@ private:
     void UpdateExplosionVec(double aTimeDelta);
 
     void UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta);
+  
+    void UpdateFlightState(MissileData& aMissile, const double aTimeDelta);
+    void UpdateFlightDataDependantVars(MissileData& aMissile, const double aTimeDelta);
+    void UpdateFlightDataIndependentVars(MissileData& aMissile, const double aTimeDelta);
 
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
 
