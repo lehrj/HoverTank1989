@@ -584,7 +584,7 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 thrustPosLocalOffset = DirectX::SimpleMath::Vector3(0.01f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
-
+    const DirectX::SimpleMath::Vector3 centerOfPressureFullDeployLocal = centerOfPressureBasePosLocal + centerOfPressureFullFinDeployOffset;
     const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
     const float plumeRotationRate = 0.432f;

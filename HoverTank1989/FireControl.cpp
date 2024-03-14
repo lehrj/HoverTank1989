@@ -6345,7 +6345,7 @@ void FireControl::PrintFlightStateData(MissileData& aMissile)
     m_debugData->PushDebugLine(aMissile.projectileData.q.position, vec, 2.0f, 0.0f, DirectX::Colors::Yellow);
 
     m_debugData->ToggleDebugOnOverRide();
-    /*
+    
     if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_ATTACK)
     {
         m_debugData->DebugPushUILineWholeNumber("FlightState::FLIGHTSTATE_ATTACK ", 1, "");
@@ -6370,7 +6370,7 @@ void FireControl::PrintFlightStateData(MissileData& aMissile)
     {
         m_debugData->DebugPushUILineWholeNumber("FlightState::FLIGHTSTATE_LAUNCH ", 1, "");
     }
-    */
+    
 
     m_debugData->ToggleDebugOff();
 }
@@ -9817,11 +9817,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //DebugGraphCurveData(m_missileVec[i], aTimeDelta);
 
         //UpdateFlightStateData(m_missileVec[i], aTimeDelta);
-
         UpdateFlightDataDependantVars(m_missileVec[i], aTimeDelta);
         UpdateFlightState(m_missileVec[i], aTimeDelta);
         UpdateFlightDataIndependentVars(m_missileVec[i], aTimeDelta);
-
 
 
 
@@ -11982,9 +11980,6 @@ float FireControl::CalculateLiftInducedDrag(const float aLiftCoeff, const float 
 }
 
 
-
-
-
 void FireControl::UpdateThrustVector(MissileData& aMissile)
 {
     //DebugPushDrawData(m_missileConsts.thrustPosLocal, dirVec, DirectX::Colors::Red, false, true);
@@ -12007,11 +12002,9 @@ void FireControl::UpdateThrustVector(MissileData& aMissile)
 
 
 
-
-
-
 void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDelta)
 {
+    // check for detonation / explosion
     if (aMissile.guidance.isExplodingTrue == true)
     {
         aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_EXPLODING;
@@ -12019,6 +12012,14 @@ void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDel
         if (aMissile.guidance.postExplosionDrawCountDown <= 0.0f)
         {
             aMissile.projectileData.isDeleteTrue = true;
+        }
+    }
+
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    {
+        if (aMissile.guidance.isRocketFired == true)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
         }
     }
 
@@ -12042,6 +12043,19 @@ void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDel
 
 void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const double aTimeDelta)
 {
+    // laser targeting
+    if (aMissile.guidance.isTargetingLaserOn == false && aMissile.projectileData.time >= m_missileConsts.laserDepoyDelay)
+    {
+        aMissile.guidance.isTargetingLaserOn = true;
+    }
+
+    // rocket toggle
+    if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
+    {
+        aMissile.guidance.isRocketFired = true;
+    }
+    // rocket center of thrust
+    aMissile.guidance.centerOfThrustLocalPos = m_missileConsts.thrustPosLocal;
     // Update rocket throttle value
     float rocketThrottle;
     if (aMissile.projectileData.time >= m_missileConsts.rocketFireFullTime + m_missileConsts.rocketFireDelay)
@@ -12056,10 +12070,16 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
     {
         rocketThrottle = (aMissile.projectileData.time - m_missileConsts.rocketFireDelay) / (m_missileConsts.rocketFireFullTime);
     }
-    //aMissile.guidance.throttlePercentage = (aMissile.guidance.throttlePercentage + rocketThrottle) * 0.5f;
     aMissile.guidance.throttlePercentage = rocketThrottle;
 
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    // fin deploy percent and center of pressure
+    if (aMissile.guidance.isFinsDeployEnd == true)
+    {
+        aMissile.guidance.finDeployPercent = 1.0f;
+        aMissile.guidance.centerOfThrustLocalPos = m_missileConsts.thrustPosLocal;
+        aMissile.guidance.centerOfPressureLocalPos = m_missileConsts.centerOfPressureFullDeployLocal;
+    }
+    else
     {
         if (aMissile.guidance.isFinsDeployStarted == false)
         {
@@ -12072,6 +12092,7 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
                 aMissile.guidance.isFinsDeployStarted = true;
             }
         }
+
         if (aMissile.guidance.isFinsDeployStarted == true)
         {
             if (aMissile.guidance.isFinsDeployEnd == false)
@@ -12095,45 +12116,6 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
                 }
             }
         }
-
-        if (aMissile.guidance.isTargetingLaserOn == false && aMissile.projectileData.time >= m_missileConsts.laserDepoyDelay)
-        {
-            aMissile.guidance.isTargetingLaserOn = true;
-        }
-        if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
-        {
-            aMissile.guidance.isRocketFired = true;
-        }
-
-        if (aMissile.guidance.isRocketFired == true)
-        {
-            /*
-            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
-            aMissile.guidance.isFinsDeployEnd = true;
-            aMissile.guidance.finDeployPercent = 1.0f;
-            */
-        }
-    }
-
-    // Update center of pressure 
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH || aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT ||
-        aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
-    {
-        float finDeployPercent = aMissile.guidance.finDeployPercent;
-        if (finDeployPercent > 1.0f)
-        {
-            finDeployPercent = 1.0f;
-        }
-        else if (finDeployPercent < 0.0f)
-        {
-            finDeployPercent = 0.0f;
-        }
-
-        const float thrustAnglePercent = aMissile.guidance.thrustAngle / m_missileConsts.steerAngMax;
-        const DirectX::SimpleMath::Vector3 thrustPosOffset = m_missileConsts.thrustPosLocalOffset;
-        DirectX::SimpleMath::Vector3 centerOfThrust = m_missileConsts.thrustPosLocal;
-        //centerOfThrust += thrustPosOffset * thrustAnglePercent;
-        aMissile.guidance.centerOfThrustLocalPos = centerOfThrust;
 
         DirectX::SimpleMath::Vector3 centerOfPressure = m_missileConsts.centerOfPressureBasePosLocal;
         centerOfPressure += m_missileConsts.centerOfPressureFullFinDeployOffset * aMissile.guidance.finDeployPercent;
@@ -12164,21 +12146,5 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
     else
     {
         aMissile.guidance.isVelocityForward = false;
-    }
-
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
-    {
-        aMissile.guidance.climbOutTimer += static_cast<float>(aTimeDelta);
-        if (aMissile.guidance.climbOutTimer >= m_missileConsts.climbOutDuration)
-        {
-            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CRUISE;
-        }
-    }
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
-    {
-        if (aMissile.guidance.targetDistance <= m_missileConsts.terminalRange)
-        {
-            //aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_ATTACK;
-        }
     }
 }
