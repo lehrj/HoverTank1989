@@ -659,7 +659,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isManualControlTrue = false;
+    const bool isManualControlTrue = true;
     const bool isThrustVecOn = true;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
@@ -1172,6 +1172,9 @@ private:
     // grouping up guidance functions for testing and debuging
     void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
     void GuidanceBasicGravity(MissileData& aMissile, const float aTimeDelta);
+
+    void GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta);
+
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
     void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
