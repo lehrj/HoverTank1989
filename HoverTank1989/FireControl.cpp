@@ -4691,6 +4691,8 @@ void FireControl::GuidanceBasic(MissileData& aMissile, const float aTimeDelta)
     const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
     const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
     const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
+    //const DirectX::SimpleMath::Vector3 targPosW = DirectX::SimpleMath::Vector3(300.0f, 11.0f, 0.0f);;
+    
     const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
 
     const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
@@ -4943,19 +4945,23 @@ void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta
     climbOutLocal = DirectX::SimpleMath::Vector3::Transform(climbOutLocal, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(testRight, climbOutAngle));
 
     //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, climbOutLocal, DirectX::Colors::Red, false, false);
-    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, climbOutLocal, DirectX::Colors::Blue, false, true);
-        
+    
+    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, climbOutLocal, DirectX::Colors::Blue, false, true);
+      
+    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, upLocal, DirectX::Colors::Blue, false, true);
+
     //auto targVecNorm = targPosL;
-    auto targVecNorm = climbOutLocal;
+    //auto targVecNorm = climbOutLocal;
+    auto targVecNorm = upLocal;
     targVecNorm.Normalize();
 
     auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVecNorm);
     toTargQuat.Normalize();
     toTargQuat.Inverse(toTargQuat);
 
-    //aMissile.guidance.nav.vecToTargLocal = targVecNorm;
-    //aMissile.guidance.nav.quatToTarg = toTargQuat;
-    //aMissile.guidance.nav.targPosLocalized = targVecNorm;
+    aMissile.guidance.nav.vecToTargLocal = targVecNorm;
+    aMissile.guidance.nav.quatToTarg = toTargQuat;
+    aMissile.guidance.nav.targPosLocalized = targVecNorm;
 }
 
 void FireControl::GuidanceTest(MissileData& aMissile, const float aTimeDelta)
@@ -9915,6 +9921,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
 
         UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
+        
         //UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         //ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
@@ -10077,17 +10084,17 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
 
 void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
 {
-    GuidanceClimbOut(aMissile, aTimeDelta);
-
     if (m_missileConsts.isManualControlTrue == true)
     {
         GuidanceManualVector(aMissile, aTimeDelta);
     }
     else
     {
+        //GuidanceClimbOut(aMissile, aTimeDelta);
+
         //GuidanceBasicGravity(aMissile, aTimeDelta);
-        //GuidanceBasic(aMissile, aTimeDelta);
-        GuidanceTest(aMissile, aTimeDelta);
+        GuidanceBasic(aMissile, aTimeDelta);
+        //GuidanceTest(aMissile, aTimeDelta);
         //GuidanceVelocitySteeringTest(aMissile, aTimeDelta);
         
         //GuidanceClimbOut(aMissile, aTimeDelta);
