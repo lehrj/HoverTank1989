@@ -4948,7 +4948,7 @@ void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta
     
     //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, climbOutLocal, DirectX::Colors::Blue, false, true);
       
-    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, upLocal, DirectX::Colors::Blue, false, true);
+    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, upLocal, DirectX::Colors::Blue, false, true);
 
     //auto targVecNorm = targPosL;
     //auto targVecNorm = climbOutLocal;
@@ -9913,15 +9913,24 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //DebugGraphCurveData(m_missileVec[i], aTimeDelta);
 
         //UpdateFlightStateData(m_missileVec[i], aTimeDelta);
-        UpdateFlightDataDependantVars(m_missileVec[i], aTimeDelta);
-        UpdateFlightState(m_missileVec[i], aTimeDelta);
-        UpdateFlightDataIndependentVars(m_missileVec[i], aTimeDelta);
-
-
-
-
-        UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
+          
+        //UpdateFlightDataDependantVars(m_missileVec[i], aTimeDelta);
+        //UpdateFlightState(m_missileVec[i], aTimeDelta);
+        //UpdateFlightDataIndependentVars(m_missileVec[i], aTimeDelta);
         
+        UpdateFlightDataIndependentVars(m_missileVec[i], aTimeDelta);
+        UpdateFlightDataTarget(m_missileVec[i], aTimeDelta);
+
+        UpdateFlightState(m_missileVec[i], aTimeDelta);
+        UpdateFlightDataDependantVars(m_missileVec[i], aTimeDelta);
+
+   
+
+
+        //UpdateMissileGuidance(m_missileVec[i], static_cast<float>(aTimeDelta));
+        
+
+
         //UpdateLOSData(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         //ProNavTest(m_missileVec[i], static_cast<float>(aTimeDelta));
@@ -10090,10 +10099,19 @@ void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
     }
     else
     {
+        if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
+        {
+            GuidanceClimbOut(aMissile, aTimeDelta);
+        }
+        else
+        {
+            GuidanceBasic(aMissile, aTimeDelta);
+        }
+
         //GuidanceClimbOut(aMissile, aTimeDelta);
 
         //GuidanceBasicGravity(aMissile, aTimeDelta);
-        GuidanceBasic(aMissile, aTimeDelta);
+        //GuidanceBasic(aMissile, aTimeDelta);
         //GuidanceTest(aMissile, aTimeDelta);
         //GuidanceVelocitySteeringTest(aMissile, aTimeDelta);
         
@@ -12102,45 +12120,6 @@ void FireControl::UpdateThrustVector(MissileData& aMissile)
 
 
 
-void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDelta)
-{
-    // check for detonation / explosion
-    if (aMissile.guidance.isExplodingTrue == true)
-    {
-        aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_EXPLODING;
-        aMissile.guidance.postExplosionDrawCountDown -= aTimeDelta;
-        if (aMissile.guidance.postExplosionDrawCountDown <= 0.0f)
-        {
-            aMissile.projectileData.isDeleteTrue = true;
-        }
-    }
-
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
-    {
-        if (aMissile.guidance.isRocketFired == true)
-        {
-            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
-        }
-    }
-
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
-    {
-        aMissile.guidance.climbOutTimer += static_cast<float>(aTimeDelta);
-
-        if (aMissile.guidance.altitude > m_missileConsts.climbOutAltMin)
-        {
-            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CRUISE;
-        }
-    }
-
-    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
-    {
-        if (aMissile.guidance.targetDistance <= m_missileConsts.terminalRange)
-        {
-            //aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_ATTACK;
-        }
-    }
-}
 
 void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const double aTimeDelta)
 {
@@ -12248,4 +12227,71 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
     {
         aMissile.guidance.isVelocityForward = false;
     }
+}
+
+void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDelta)
+{
+    // check for detonation / explosion
+    if (aMissile.guidance.isExplodingTrue == true)
+    {
+        aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_EXPLODING;
+        aMissile.guidance.postExplosionDrawCountDown -= aTimeDelta;
+        if (aMissile.guidance.postExplosionDrawCountDown <= 0.0f)
+        {
+            aMissile.projectileData.isDeleteTrue = true;
+        }
+    }
+
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_LAUNCH)
+    {
+        if (aMissile.guidance.isRocketFired == true)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CLIMBOUT;
+        }
+    }
+
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
+    {
+        aMissile.guidance.climbOutTimer += static_cast<float>(aTimeDelta);
+
+        if (aMissile.guidance.altitude > m_missileConsts.climbOutAltMin)
+        {
+            aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CRUISE;
+        }
+    }
+
+    if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
+    {
+        if (aMissile.guidance.targetDistance <= m_missileConsts.terminalRange)
+        {
+            //aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_ATTACK;
+        }
+    }
+}
+
+void FireControl::UpdateFlightDataTarget(MissileData& aMissile, const double aTimeDelta)
+{
+    const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
+    const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
+    const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
+    //const DirectX::SimpleMath::Vector3 targPosW = DirectX::SimpleMath::Vector3(300.0f, 11.0f, 0.0f);;
+
+    const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
+
+    const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
+    const DirectX::SimpleMath::Vector3 targPosL = DirectX::SimpleMath::Vector3::Transform((targPosW - selfPosW), aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
+
+    
+    aMissile.guidance.targetDestLocal = targPosL;
+    aMissile.guidance.targetPosLocal = targPosL;
+    aMissile.guidance.targetVelLocal = targVelL;
+    aMissile.guidance.targetForwLocal = aMissile.guidance.targetForward;
+    aMissile.guidance.targetForwLocal = DirectX::SimpleMath::Vector3::Transform(aMissile.guidance.targetForwLocal, aMissile.projectileData.inverseAlignmentQuat);
+
+    auto testLine = aMissile.guidance.targetPosLocal;
+    testLine.Normalize();
+    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testLine, DirectX::Colors::Lavender, false, true);
+
 }

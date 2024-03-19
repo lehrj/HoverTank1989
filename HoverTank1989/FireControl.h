@@ -328,6 +328,11 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 headingLocal = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Vector3 targetDestLocal = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetPosLocal = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetVelLocal = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetForwLocal = DirectX::SimpleMath::Vector3::UnitX;
+
     DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
@@ -975,6 +980,9 @@ private:
     void UpdateFlightState(MissileData& aMissile, const double aTimeDelta);
     void UpdateFlightDataDependantVars(MissileData& aMissile, const double aTimeDelta);
     void UpdateFlightDataIndependentVars(MissileData& aMissile, const double aTimeDelta);
+
+    void UpdateFlightDataTarget(MissileData& aMissile, const double aTimeDelta);
+
 
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
 
