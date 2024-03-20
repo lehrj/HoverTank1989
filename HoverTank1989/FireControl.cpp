@@ -4700,8 +4700,10 @@ void FireControl::GuidanceBasic(MissileData& aMissile, const float aTimeDelta)
     //const DirectX::SimpleMath::Vector3 targPosL = aMissile.guidance.nav.targPosLocalized;
     const DirectX::SimpleMath::Vector3 targPosL = aMissile.guidance.targetPosLocal;
     
-    const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
-    const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
+    //const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 targVelL = aMissile.guidance.targetVelLocal;
+    //const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
+    const DirectX::SimpleMath::Vector3 selfVelL = aMissile.guidance.selfVelLocal;
 
     auto targVecNorm = targPosL;
     targVecNorm.Normalize();
@@ -10578,8 +10580,9 @@ void FireControl::DebugPushDrawData(const DirectX::SimpleMath::Vector3 aPosLocal
 void FireControl::DebugDrawUpdate(MissileData& aMissile)
 {
     auto posWorld = aMissile.projectileData.q.position;
+    //auto posWorld = aMissile.guidance.targetPosition;
     auto quatWorld = aMissile.projectileData.alignmentQuat;
-    const float lineLength = 5.0f;
+    const float lineLength = 15.0f;
     const float offset = 0.0f;
     const float scaleLengthMin = 1.0f;
     const float scaleLengthMod = 1.0f;
@@ -12277,6 +12280,11 @@ void FireControl::UpdateFlightDataTarget(MissileData& aMissile, const double aTi
     const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
     const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
     const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
+    DirectX::SimpleMath::Vector3 targPosNormW = targPosW - selfPosW;
+    targPosNormW.Normalize();
+    DirectX::SimpleMath::Vector3 targPosNormLocal = targPosNormW;
+    targPosNormLocal = DirectX::SimpleMath::Vector3::Transform(targPosNormLocal, aMissile.projectileData.inverseAlignmentQuat);
+
     const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
 
     const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
@@ -12287,4 +12295,11 @@ void FireControl::UpdateFlightDataTarget(MissileData& aMissile, const double aTi
     aMissile.guidance.targetDestLocal = targPosL;
     aMissile.guidance.targetVelLocal = targVelL;
     aMissile.guidance.targetPosLocal = targPosL;
+    aMissile.guidance.selfVelLocal = selfVelL;
+
+    //DebugPushDrawData(targPosW, targVelL, DirectX::Colors::Red, false, false);
+    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targVelL, DirectX::Colors::Yellow, false, false);
+
+    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targPosL, DirectX::Colors::Yellow, false, true);
+    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targPosNormLocal, DirectX::Colors::Teal, false, true);
 }

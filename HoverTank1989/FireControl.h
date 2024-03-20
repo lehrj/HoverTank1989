@@ -328,6 +328,7 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 headingLocal = DirectX::SimpleMath::Vector3::Zero;
 
+    DirectX::SimpleMath::Vector3 selfVelLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetDestLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelLocal = DirectX::SimpleMath::Vector3::Zero;
