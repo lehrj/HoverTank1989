@@ -600,13 +600,15 @@ struct MissileConsts
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(2.0f);
 
     const float tailFinAngMax = Utility::ToRadians(25.0f);
-    const float tailFinAngPerSecDeltaMax = Utility::ToRadians(110.0f);
+    //const float tailFinAngPerSecDeltaMax = Utility::ToRadians(110.0f);
+    const float tailFinAngPerSecDeltaMax = Utility::ToRadians(50.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
-    const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
+    //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
+    //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(30.0f);
+    const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(0.0f);
 
-    
     const float mass = 11.0f;
     const float rocketBoostForceMax = mass * 10.0f; // Use desired thrust to weight ratio for boost value
 
@@ -615,7 +617,7 @@ struct MissileConsts
     //const float velMaxEst = 10.0f;
 
     // flight modeling
-    const float climbOutAltMin = 20.0f;
+    const float climbOutAltMin = 80.0f;
     const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
     const float terminalRange = 100.0f;
@@ -670,7 +672,7 @@ struct MissileConsts
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
     const bool isContrailsOn = true;
-    const bool isGravityOn = false;
+    const bool isGravityOn = true;
 };
 
 enum class ExplosionType

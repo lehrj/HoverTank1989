@@ -9949,6 +9949,22 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         UpdateControlData(m_missileVec[i], static_cast<float>(aTimeDelta));
 
         UpdateThrustVector(m_missileVec[i]);
+
+
+        m_debugData->ToggleDebugOnOverRide();
+        float prePitch = m_missileVec[i].guidance.finPak.tailPitch.prevFinAngle;
+        float postPitch = m_missileVec[i].guidance.finPak.tailPitch.finAngle;
+
+        float preYaw = m_missileVec[i].guidance.finPak.tailYaw.prevFinAngle;
+        float postYaw = m_missileVec[i].guidance.finPak.tailYaw.finAngle;
+
+        float pitchDelta = (postPitch - prePitch) / aTimeDelta;
+        float yawDelta = (postYaw - preYaw) / aTimeDelta;
+
+        m_debugData->DebugPushUILineDecimalNumber("pitchDelta  ", Utility::ToDegrees(pitchDelta), "");
+        m_debugData->DebugPushUILineDecimalNumber("yawDelta  ", Utility::ToDegrees(yawDelta), "");
+        m_debugData->ToggleDebugOff();
+
         UpdateFinData(m_missileVec[i]);
         //BoosterSteeringUpdate(m_missileVec[i]);
         AccumulateMissileForces(m_missileVec[i], static_cast<float>(aTimeDelta));
