@@ -604,10 +604,10 @@ struct MissileConsts
     const float tailFinAngPerSecDeltaMax = Utility::ToRadians(50.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
-    const float thrustVecDeadZoneAng = Utility::ToRadians(1.0f);
+    const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
     //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
     //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(30.0f);
-    const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(0.0f);
+    const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(30.0f);
 
     const float mass = 11.0f;
     const float rocketBoostForceMax = mass * 10.0f; // Use desired thrust to weight ratio for boost value
@@ -667,7 +667,7 @@ struct MissileConsts
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = false;
-    const bool isThrustVecOn = false;
+    const bool isThrustVecOn = true;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;

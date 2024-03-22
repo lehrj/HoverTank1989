@@ -9915,6 +9915,12 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
     {
         auto prevVelocity = m_missileVec[i].projectileData.q.velocity;
 
+
+        auto prevThrustVecNorm = m_missileVec[i].guidance.conDat.thrustVecNorm;
+        auto prevThrustVecQuat = m_missileVec[i].guidance.conDat.thrustVecQuat;
+        auto prevThrustPitch = m_missileVec[i].guidance.conDat.thrustPitch;
+        auto prevThrustYaw = m_missileVec[i].guidance.conDat.thrustYaw;
+
         //DebugGraphCurveData(m_missileVec[i], aTimeDelta);
 
         //UpdateFlightStateData(m_missileVec[i], aTimeDelta);
@@ -9963,6 +9969,22 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         m_debugData->DebugPushUILineDecimalNumber("pitchDelta  ", Utility::ToDegrees(pitchDelta), "");
         m_debugData->DebugPushUILineDecimalNumber("yawDelta  ", Utility::ToDegrees(yawDelta), "");
+
+        float finVectAng = DirectX::SimpleMath::Quaternion::Angle(m_missileVec[i].guidance.conDat.tailFinQuat, DirectX::SimpleMath::Quaternion::Identity);
+        m_debugData->DebugPushUILineDecimalNumber("finVectAng         ", Utility::ToDegrees(finVectAng), "");
+   
+        /////////////
+
+        auto postThrustVecNorm = m_missileVec[i].guidance.conDat.thrustVecNorm;
+        auto postThrustVecQuat = m_missileVec[i].guidance.conDat.thrustVecQuat;
+        auto postThrustPitch = m_missileVec[i].guidance.conDat.thrustPitch;
+        auto postThrustYaw = m_missileVec[i].guidance.conDat.thrustYaw;
+
+        float thrustVectAng = DirectX::SimpleMath::Quaternion::Angle(m_missileVec[i].guidance.conDat.thrustVecQuat, DirectX::SimpleMath::Quaternion::Identity);
+        float thrustVectAngDelta = DirectX::SimpleMath::Quaternion::Angle(postThrustVecQuat, prevThrustVecQuat) / aTimeDelta;
+        
+        m_debugData->DebugPushUILineDecimalNumber("thrustVectAng       ", Utility::ToDegrees(thrustVectAng), "");
+        m_debugData->DebugPushUILineDecimalNumber("thrustVectAngDelta  ", Utility::ToDegrees(thrustVectAngDelta), "");
         m_debugData->ToggleDebugOff();
 
         UpdateFinData(m_missileVec[i]);
