@@ -329,6 +329,7 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 headingLocal = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 selfVelLocal = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 selfVelLocalNorm = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 targetDestLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelLocal = DirectX::SimpleMath::Vector3::Zero;
@@ -667,7 +668,7 @@ struct MissileConsts
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = false;
-    const bool isThrustVecOn = true;
+    const bool isThrustVecOn = false;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
@@ -1184,6 +1185,7 @@ private:
     void GuidanceBasicGravity(MissileData& aMissile, const float aTimeDelta);
 
     void GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceClimbOutOld(MissileData& aMissile, const float aTimeDelta);
 
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
