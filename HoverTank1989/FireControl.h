@@ -330,6 +330,9 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 selfVelLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 selfVelLocalNorm = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Quaternion selfLocalVelQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion selfLocalVelQuatInverse = DirectX::SimpleMath::Quaternion::Identity;
+
     DirectX::SimpleMath::Vector3 targetDestLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelLocal = DirectX::SimpleMath::Vector3::Zero;
@@ -623,6 +626,7 @@ struct MissileConsts
     const float maxAlt = 200.0f;
     const float terminalRange = 100.0f;
 
+    const float climbOutAngle = Utility::ToRadians(45.0f);
     const float climbOutDuration = 0.5f;
 
     const float launchVelocity = 20.0f;
@@ -1183,10 +1187,7 @@ private:
     // grouping up guidance functions for testing and debuging
     void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
     void GuidanceBasicGravity(MissileData& aMissile, const float aTimeDelta);
-
     void GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta);
-    void GuidanceClimbOutOld(MissileData& aMissile, const float aTimeDelta);
-
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
     void GuidanceTest(MissileData& aMissile, const float aTimeDelta);

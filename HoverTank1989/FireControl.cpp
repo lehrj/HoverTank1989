@@ -4875,91 +4875,31 @@ void FireControl::GuidanceBasicGravity(MissileData& aMissile, const float aTimeD
     aMissile.guidance.nav.targPosLocalized = targVecNorm;
 }
 
-void FireControl::GuidanceClimbOutOld(MissileData& aMissile, const float aTimeDelta)
+void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta)
 {
-    const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
-    const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
-    const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
-    const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
-
-    const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
-    const DirectX::SimpleMath::Vector3 targPosL = DirectX::SimpleMath::Vector3::Transform((targPosW - selfPosW), aMissile.projectileData.inverseAlignmentQuat);
-    const DirectX::SimpleMath::Vector3 targVelL = DirectX::SimpleMath::Vector3::Transform(targVelW, aMissile.projectileData.inverseAlignmentQuat);
-    const DirectX::SimpleMath::Vector3 selfVelL = DirectX::SimpleMath::Vector3::Transform(selfVelW, aMissile.projectileData.inverseAlignmentQuat);
-
-
-    auto velNormLocal = selfVelL;
-    velNormLocal.Normalize();
-    if (velNormLocal.Length() < 0.9f || velNormLocal.Length() > 1.1f)
-    {
-        velNormLocal = DirectX::SimpleMath::Vector3::UnitX;
-    }
-
-    auto velQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, velNormLocal);
-    velQuat.Normalize();
-    auto inversVelQuat = velQuat;
-    inversVelQuat.Inverse(inversVelQuat);
-
+    auto velNormLocal = aMissile.guidance.selfVelLocalNorm;
+    auto velQuat = aMissile.guidance.selfLocalVelQuat;
+    auto inversVelQuat = aMissile.guidance.selfLocalVelQuatInverse;
     auto upLocal = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aMissile.projectileData.inverseAlignmentQuat);
     auto upVelocityLocal = DirectX::SimpleMath::Vector3::Transform(upLocal, inversVelQuat);
 
-    auto testUp = upVelocityLocal;
-    testUp = DirectX::SimpleMath::Vector3::Transform(testUp, velQuat);
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testUp, DirectX::Colors::Yellow, false, false);
-    testUp = DirectX::SimpleMath::Vector3::Transform(testUp, aMissile.projectileData.alignmentQuat);
+    auto velToUpQuat = DirectX::SimpleMath::Quaternion::FromToRotation(velNormLocal, upLocal);
+    auto climbAngleCurrent = DirectX::SimpleMath::Quaternion::Angle(DirectX::SimpleMath::Quaternion::Identity, velToUpQuat);
 
-    auto crossUp = upLocal.Cross(velNormLocal);
-    if (crossUp.Length() < 0.9f || crossUp.Length() > 1.1f)
+    const float maxClimbAng = m_missileConsts.climbOutAngle;
+    float climbAngSet = climbAngleCurrent - maxClimbAng;
+    if (climbAngSet < 0.0f)
     {
-        crossUp = DirectX::SimpleMath::Vector3::UnitZ;
-    }
-    //auto crossUpVel = upVelocityLocal.Cross(velNormLocal);
-    auto crossUpVel = upVelocityLocal.Cross(DirectX::SimpleMath::Vector3::UnitX);
-    if (crossUpVel.Length() < 0.9f || crossUpVel.Length() > 1.1f)
-    {
-        crossUpVel = DirectX::SimpleMath::Vector3::UnitZ;
-    }
-    auto testRight = crossUpVel;
-    testRight = DirectX::SimpleMath::Vector3::Transform(testRight, velQuat);
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testRight, DirectX::Colors::Blue, false, false);
-    //testRight = DirectX::SimpleMath::Vector3::Transform(testRight, aMissile.projectileData.alignmentQuat);
-
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testRight, DirectX::Colors::Orange, false, false);
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testRight, DirectX::Colors::Yellow, false, true);
-
-    /*
-    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, crossUp, DirectX::Colors::Orange, false, false);
-    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, crossUpVel, DirectX::Colors::Lavender, false, false);
-
-    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, upVelocityLocal, DirectX::Colors::Red, false, false);
-    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testUp, DirectX::Colors::Blue, false, false);
-    */
-
-    auto climbOutCompassHeading = velNormLocal;
-    climbOutCompassHeading.y = 0.0f;
-    climbOutCompassHeading.Normalize();
-    if (climbOutCompassHeading.Length() < 0.9f || climbOutCompassHeading.Length() > 1.1f)
-    {
-        climbOutCompassHeading = DirectX::SimpleMath::Vector3::UnitX;
+        climbAngSet = 0.0f;
     }
 
-    const float climbOutAngle = Utility::ToRadians(-45.0f);
-    //auto climbOutLocal = DirectX::SimpleMath::Vector3::UnitX;
-    //auto climbOutLocal = velNormLocal;
-    auto climbOutLocal = climbOutCompassHeading;
-    climbOutLocal = DirectX::SimpleMath::Vector3::Transform(climbOutLocal, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(testRight, climbOutAngle));
+    auto navQuat = velQuat;
+    navQuat.RotateTowards(velToUpQuat, climbAngSet);
 
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, climbOutLocal, DirectX::Colors::Red, false, false);
-    
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, climbOutLocal, DirectX::Colors::Blue, false, true);
-      
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, upLocal, DirectX::Colors::Blue, false, true);
+    auto navVec = DirectX::SimpleMath::Vector3::UnitX;
+    navVec = DirectX::SimpleMath::Vector3::Transform(navVec, navQuat);
 
-    //auto targVecNorm = targPosL;
-    //auto targVecNorm = climbOutLocal;
-    auto targVecNorm = upLocal;
-    targVecNorm.Normalize();
-
+    auto targVecNorm = navVec;
     auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVecNorm);
     toTargQuat.Normalize();
     toTargQuat.Inverse(toTargQuat);
@@ -12346,84 +12286,15 @@ void FireControl::UpdateFlightDataTarget(MissileData& aMissile, const double aTi
     aMissile.guidance.selfVelLocalNorm = selfVelL;
     aMissile.guidance.selfVelLocalNorm.Normalize();
 
-    //DebugPushDrawData(targPosW, targVelL, DirectX::Colors::Red, false, false);
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targVelL, DirectX::Colors::Yellow, false, false);
-
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targPosL, DirectX::Colors::Yellow, false, true);
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targPosNormLocal, DirectX::Colors::Teal, false, true);
-}
-
-
-
-void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta)
-{
-    m_debugData->ToggleDebugOnOverRide();
-
-    //const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
-    //const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
-    //const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
-    //const DirectX::SimpleMath::Vector3 targVelW = aMissile.guidance.targetVelocity;
-
-    //const DirectX::SimpleMath::Vector3 selfPosL = DirectX::SimpleMath::Vector3::Zero;
-    //const DirectX::SimpleMath::Vector3 targPosL = aMissile.guidance.targetPosLocal;
-    //const DirectX::SimpleMath::Vector3 targVelL = aMissile.guidance.targetVelLocal;
-    //const DirectX::SimpleMath::Vector3 selfVelL = aMissile.guidance.selfVelLocal;
-
-    //auto velNormLocal = selfVelL;
-    auto velNormLocal = aMissile.guidance.selfVelLocalNorm;
-
-    auto velQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, velNormLocal);
+    auto velQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, aMissile.guidance.selfVelLocalNorm);
     velQuat.Normalize();
+    aMissile.guidance.selfLocalVelQuat = velQuat;
+
     auto inversVelQuat = velQuat;
     inversVelQuat.Inverse(inversVelQuat);
-
-    auto upLocal = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aMissile.projectileData.inverseAlignmentQuat);
-    auto upVelocityLocal = DirectX::SimpleMath::Vector3::Transform(upLocal, inversVelQuat);
-
-    auto testUp = upVelocityLocal;
-    testUp = DirectX::SimpleMath::Vector3::Transform(testUp, velQuat);
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testUp, DirectX::Colors::Yellow, false, false);
-    testUp = DirectX::SimpleMath::Vector3::Transform(testUp, aMissile.projectileData.alignmentQuat);
-
-    /////////
-    auto velToUpQuat = DirectX::SimpleMath::Quaternion::FromToRotation(velNormLocal, upLocal);
-    auto testAng = DirectX::SimpleMath::Quaternion::Angle(DirectX::SimpleMath::Quaternion::Identity, velToUpQuat);
-    
-    m_debugData->DebugPushUILineDecimalNumber("testAng = ", Utility::ToDegrees(testAng) , "");
-
-    const float maxClimbAng = Utility::ToRadians(45.0f);
-    float climbAngSet = testAng - maxClimbAng;
-    if (climbAngSet < 0.0f)
-    {
-        climbAngSet = 0.0f;
-    }
-    m_debugData->DebugPushUILineDecimalNumber("climbAngSet = ", Utility::ToDegrees(climbAngSet), "");
-
-    auto testQuat = velQuat;
-    //testQuat.RotateTowards(velToUpQuat, Utility::ToRadians(45.0f));
-    testQuat.RotateTowards(velToUpQuat, climbAngSet);
-
-    auto testVec = DirectX::SimpleMath::Vector3::UnitX;
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, testQuat);
-
-    DebugPushDrawData(DirectX::SimpleMath::Vector3::UnitX, testVec, DirectX::Colors::Red, false, true);
-
-    ////////
-    //auto targVecNorm = upLocal;
-    auto targVecNorm = testVec;
-    targVecNorm.Normalize();
-
-    auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVecNorm);
-    toTargQuat.Normalize();
-    toTargQuat.Inverse(toTargQuat);
-
-    aMissile.guidance.nav.vecToTargLocal = targVecNorm;
-    aMissile.guidance.nav.quatToTarg = toTargQuat;
-    aMissile.guidance.nav.targPosLocalized = targVecNorm;
-
-
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::UnitX, testUp, DirectX::Colors::Red, false, false);
-    //DebugPushDrawData(DirectX::SimpleMath::Vector3::UnitX, upLocal, DirectX::Colors::Aqua, false, true);
-
-    m_debugData->ToggleDebugOff();
+    aMissile.guidance.selfLocalVelQuatInverse = inversVelQuat;
 }
+
+
+
+
