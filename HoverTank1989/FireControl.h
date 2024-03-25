@@ -325,6 +325,7 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 linearDragSum = DirectX::SimpleMath::Vector3::Zero;
 
     // heading, steering, targeting, & seeker data, needs to be streamlined
+    
     DirectX::SimpleMath::Vector3 heading = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 headingLocal = DirectX::SimpleMath::Vector3::Zero;
 
@@ -332,6 +333,7 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 selfVelLocalNorm = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion selfLocalVelQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion selfLocalVelQuatInverse = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Vector3 selfUpLocal = DirectX::SimpleMath::Vector3::UnitY;
 
     DirectX::SimpleMath::Vector3 targetDestLocal = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosLocal = DirectX::SimpleMath::Vector3::Zero;
@@ -351,12 +353,11 @@ struct GuidanceSystem
     DirectX::SimpleMath::Vector3 headingLocalVecTest = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Quaternion headingLocalQuatTest = DirectX::SimpleMath::Quaternion::Identity;
 
-    DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
-
     bool isFacingDestTrue = true;
     bool isVelocityForward = true;
 
     DirectX::SimpleMath::Quaternion angularStepQuat = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
 
     float climbOutTimer = 0.0f;
 
@@ -621,13 +622,14 @@ struct MissileConsts
     //const float velMaxEst = 10.0f;
 
     // flight modeling
-    const float climbOutAltMin = 80.0f;
+    const float climbOutAngle = Utility::ToRadians(45.0f);
+    const float climbOutDuration = 0.5f;
+    //const float climbOutAltMin = 80.0f;
+    const float climbOutAltMin = 40.0f;
+
     const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
     const float terminalRange = 100.0f;
-
-    const float climbOutAngle = Utility::ToRadians(45.0f);
-    const float climbOutDuration = 0.5f;
 
     const float launchVelocity = 20.0f;
 
@@ -666,6 +668,8 @@ struct MissileConsts
     const float mainThickness = tailThickness;
     */
 
+    const int selectFirePattern = 2;
+
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
     const bool isMissleTargetingLaserTrue = true;
@@ -677,7 +681,7 @@ struct MissileConsts
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
     const bool isContrailsOn = true;
-    const bool isGravityOn = true;
+    const bool isGravityOn = false;
 };
 
 enum class ExplosionType
@@ -1136,8 +1140,6 @@ private:
     float m_debugDistanceToTarget2 = 0.0f;
     float m_debugDistanceToTarget3 = 0.0f;
 
-    const int m_selectMissileFire = 2;
-
     const bool m_isDebugAngularStabilityOn = true;
     const bool m_isHardBurnModeTestOn = true;
     bool m_isUseProNavOn = false;
@@ -1186,12 +1188,16 @@ private:
 
     // grouping up guidance functions for testing and debuging
     void GuidanceBasic(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceBasicGravityOld(MissileData& aMissile, const float aTimeDelta);
     void GuidanceBasicGravity(MissileData& aMissile, const float aTimeDelta);
     void GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
     void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
     void GuidanceTestOld(MissileData& aMissile, const float aTimeDelta);
+
+    void GuidanceOvershoot(MissileData& aMissile, const float aTimeDelta);
+
     void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
 
     void ProNavTest(MissileData& aMissile, const float aTimeDelta);
