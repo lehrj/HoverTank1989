@@ -625,7 +625,7 @@ struct MissileConsts
     const float climbOutAngle = Utility::ToRadians(45.0f);
     const float climbOutDuration = 0.5f;
     //const float climbOutAltMin = 80.0f;
-    const float climbOutAltMin = 40.0f;
+    const float climbOutAltMin = 10.0f;
 
     const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
@@ -681,7 +681,7 @@ struct MissileConsts
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
     const bool isContrailsOn = true;
-    const bool isGravityOn = false;
+    const bool isGravityOn = true;
 };
 
 enum class ExplosionType
@@ -1199,6 +1199,8 @@ private:
     void GuidanceOvershoot(MissileData& aMissile, const float aTimeDelta);
 
     void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
+
+    DirectX::SimpleMath::Vector3 GuidanceCalcInercept(MissileData& aMissile, const float aTimeDelta);
 
     void ProNavTest(MissileData& aMissile, const float aTimeDelta);
     void ProNav(MissileData& aMissile, const float aTimeDelta);
