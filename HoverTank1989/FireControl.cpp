@@ -9918,7 +9918,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         }
 
         PrintFlightStateData(m_missileVec[i]);
-        PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
+        //PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ResetMissileForceAccumulators(m_missileVec[i]);
 
         auto postVelocity = m_missileVec[i].projectileData.q.velocity;
@@ -9949,7 +9949,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         m_debugData->ToggleDebugOnOverRide();
 
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.closureRate             = ", m_missileVec[i].guidance.closureRate, "");
+        //m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.closureRate             = ", m_missileVec[i].guidance.closureRate, "");
         float velocity = m_missileVec[i].projectileData.q.velocity.Length();
         //float timeToGo = velocity / m_missileVec[i].guidance.targetDistance;
         float timeToGo = m_missileVec[i].guidance.targetDistance / velocity;
@@ -9957,6 +9957,10 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         float timeToGo2 =  m_missileVec[i].guidance.targetDistance / m_missileVec[i].guidance.closureRate;
         m_debugData->DebugPushUILineDecimalNumber("timeToGo2            = ", timeToGo2, "");
+
+        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.testTimerDeltaA = ", m_missileVec[i].guidance.testTimerDeltaA, "");
+        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.testTimerDeltaB = ", m_missileVec[i].guidance.testTimerDeltaB, "");
+        //m_debugData->DebugPushUILineDecimalNumber("timeToGo2            = ", timeToGo2, "");
         m_debugData->ToggleDebugOff();
         DebugDrawUpdate(m_missileVec[i]);
 
@@ -10072,10 +10076,11 @@ void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
         else if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
         {
             //GuidanceBasic(aMissile, aTimeDelta);
-            GuidanceBasicGravity(aMissile, aTimeDelta);
+            //GuidanceBasicGravity(aMissile, aTimeDelta);
             //GuidanceTest(aMissile, aTimeDelta);
             //GuidanceVelocitySteeringTest(aMissile, aTimeDelta);
             //ProNavOpenSteer(aMissile, aTimeDelta);
+            GuidancePrototype(aMissile, aTimeDelta);
         }
         else if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_OVERSHOOT)
         { 
@@ -10322,16 +10327,31 @@ DirectX::SimpleMath::Vector3 FireControl::Seek(const DirectX::SimpleMath::Vector
 DirectX::SimpleMath::Vector3 FireControl::Pursuit(MissileData& aMissile, const DirectX::SimpleMath::Vector3 aVelLocal, const DirectX::SimpleMath::Vector3 aTargLocalPos, const DirectX::SimpleMath::Vector3 aTargLocalVel)
 {
     // PBA: using velocity instead of heading, val used in ai textbook
-    auto toEvader = aTargLocalPos;
+    //auto toEvader = aTargLocalPos;
+    auto toEvader = aMissile.guidance.targetPosLocal;
+    auto toEvaderNorm = toEvader;
+    toEvaderNorm.Normalize();
 
-    float relativeHeading = aVelLocal.Dot(aTargLocalVel);
+    auto selfHeadingNormLocal = aVelLocal;
+    selfHeadingNormLocal.Normalize();
+    auto targetHeadingNormLocal = aTargLocalVel;
+    targetHeadingNormLocal.Normalize();
+    //float relativeHeading = aVelLocal.Dot(aTargLocalVel);
+    float relativeHeading = selfHeadingNormLocal.Dot(targetHeadingNormLocal);
 
-    if (toEvader.Dot(aVelLocal) > 0.0f && (relativeHeading < -0.95f)) //acos(0.95)=18 degs
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("relativeHeading = ", relativeHeading, "");
+
+    m_debugData->ToggleDebugOff();
+
+    //if (toEvader.Dot(aVelLocal) > 0.0f && (relativeHeading < -0.95f)) //acos(0.95)=18 degs
+    if (toEvaderNorm.Dot(selfHeadingNormLocal) > 0.0f && (relativeHeading < -0.95f)) //acos(0.95)=18 degs
     {
         return Seek(aVelLocal, aTargLocalPos);
     }
 
-    float lookAheadTime = toEvader.Length() / (m_missileConsts.velMaxEst + aTargLocalVel.Length());
+    //float lookAheadTime = toEvader.Length() / (m_missileConsts.velMaxEst + aTargLocalVel.Length());
+    float lookAheadTime = toEvader.Length() / (m_missileConsts.velMaxEst + aMissile.guidance.targetVelLocal.Length());
     //lookAheadTime = 1.0f;
 
     auto targPosW = aTargLocalPos;
@@ -10352,7 +10372,8 @@ DirectX::SimpleMath::Vector3 FireControl::Pursuit(MissileData& aMissile, const D
     m_debugData->ToggleDebugOff();
 
     //return Seek(aTargLocalPos + aTargLocalVel * lookAheadTime, aTargLocalPos);
-    return Seek(aVelLocal, aTargLocalPos + aTargLocalVel * lookAheadTime);
+    //return Seek(aVelLocal, aTargLocalPos + aTargLocalVel * lookAheadTime);
+    return Seek(aMissile.guidance.selfVelLocal, aMissile.guidance.targetPosLocal + aMissile.guidance.targetVelLocal * lookAheadTime);
 }
 
 
@@ -12317,6 +12338,21 @@ void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDel
 
     if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
     {
+        aMissile.guidance.testTimer += aTimeDelta;
+
+        float velocity = aMissile.projectileData.q.velocity.Length();
+
+        if (aMissile.guidance.testTimerTriggerIsTrueA == true)
+        {
+            aMissile.guidance.testTimerTriggerIsTrueB = true;
+        }
+
+        if (aMissile.guidance.testTimerTriggerIsTrueA == false)
+        {
+            aMissile.guidance.testTimerTriggerIsTrueA = true;
+        }
+
+
         if (aMissile.guidance.targetDistance <= m_missileConsts.terminalRange)
         {
             //aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_ATTACK;
@@ -12330,6 +12366,10 @@ void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDel
 
     if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_OVERSHOOT)
     {
+
+        float deltaA = aMissile.guidance.testTimerFirstGuessA - aMissile.guidance.testTimer;
+        float deltaB = aMissile.guidance.testTimerFirstGuessB - aMissile.guidance.testTimer;
+
         if (aMissile.guidance.isFacingDestTrue == true)
         {
             aMissile.guidance.flightStateCurrent = FlightState::FLIGHTSTATE_CRUISE;
@@ -12386,8 +12426,6 @@ void FireControl::UpdateFlightDataTarget(MissileData& aMissile, const double aTi
 
 void FireControl::GuidanceBasicGravity(MissileData& aMissile, const float aTimeDelta)
 {
-    auto interceptPos = GuidanceCalcInercept(aMissile, aTimeDelta);
-
     const DirectX::SimpleMath::Vector3 selfPosW = aMissile.projectileData.q.position;
     const DirectX::SimpleMath::Vector3 selfVelW = aMissile.projectileData.q.velocity;
     const DirectX::SimpleMath::Vector3 targPosW = aMissile.guidance.targetPosition;
@@ -12398,6 +12436,8 @@ void FireControl::GuidanceBasicGravity(MissileData& aMissile, const float aTimeD
     const DirectX::SimpleMath::Vector3 targVelL = aMissile.guidance.targetVelLocal;
     const DirectX::SimpleMath::Vector3 selfVelL = aMissile.guidance.selfVelLocal;
     
+    auto interceptPosLocal = GuidanceCalcInercept(aMissile, aTimeDelta);
+
     //auto targPosNormW = targPosW;
     //targPosNormW.Normalize();
     auto targPosNormL = targPosL;
@@ -12446,7 +12486,7 @@ void FireControl::GuidanceBasicGravity(MissileData& aMissile, const float aTimeD
 
     m_debugData->PushDebugLinePositionIndicator(updateTargPosW, 25.0f, 0.0f, DirectX::Colors::Orange);
 
-    updateTargPosW.y += height;
+    //updateTargPosW.y += height;
     m_debugData->PushDebugLinePositionIndicator(updateTargPosW, 25.0f, 0.0f, DirectX::Colors::Lime);
     auto updateTargPosL = DirectX::SimpleMath::Vector3::Transform((updateTargPosW - selfPosW), aMissile.projectileData.inverseAlignmentQuat);
     m_debugData->ToggleDebugOff();
@@ -12454,6 +12494,7 @@ void FireControl::GuidanceBasicGravity(MissileData& aMissile, const float aTimeD
     
     //auto targVecNorm = targPosL;
     auto targVecNorm = updateTargPosL;
+    //auto targVecNorm = interceptPosLocal;
     targVecNorm.Normalize();
 
     auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVecNorm);
@@ -12468,7 +12509,7 @@ void FireControl::GuidanceBasicGravity(MissileData& aMissile, const float aTimeD
 
     ///////////////
 
-    m_debugData->ToggleDebugOnOverRide();
+  //  m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("timeToGo2       = ", timeToGo2, "");
     m_debugData->DebugPushUILineDecimalNumber("timeToImpactRaw = ", timeToImpactRaw, "");
     m_debugData->DebugPushUILineDecimalNumber("timeToImpact    = ", timeToImpact, "");
@@ -12491,13 +12532,21 @@ void FireControl::GuidanceBasicGravity(MissileData& aMissile, const float aTimeD
     float timeToGo = velocity / aMissile.guidance.targetDistance;
     m_debugData->DebugPushUILineDecimalNumber("timeToGo             = ", timeToGo, "");
 
-    //m_debugData->PushDebugLinePositionIndicator(interceptPos, 20.0f, 0.0f, DirectX::Colors::White);
-
     m_debugData->ToggleDebugOff();
     /////////////
     aMissile.guidance.nav.vecToTargLocal = targVecNorm;
     aMissile.guidance.nav.quatToTarg = toTargQuat;
     aMissile.guidance.nav.targPosLocalized = targVecNorm;
+
+
+    if (aMissile.guidance.testTimerTriggerIsTrueA == true && aMissile.guidance.testTimerTriggerIsTrueB == false)
+    {
+        aMissile.guidance.testTimerFirstGuessB = timeToGo2;
+    }
+    
+    float deltaB = (aMissile.guidance.testTimerDeltaB - timeToGo2) * aTimeDelta;
+    aMissile.guidance.testTimerDeltaB = deltaB;
+
 }
 
 void FireControl::GuidanceOvershoot(MissileData& aMissile, const float aTimeDelta)
@@ -12566,19 +12615,98 @@ DirectX::SimpleMath::Vector3 FireControl::GuidanceCalcInercept(MissileData& aMis
     auto b = j * sin(ABC);
 
     auto timeToCollision = b / aMissile.projectileData.q.velocity.Length();
+    timeToCollision += a / aMissile.projectileData.q.velocity.Length();
+    auto timeToCollisionA = a / aMissile.projectileData.q.velocity.Length();
+
+    //float height = 0.5f * -m_environment->GetGravity() * (timeToImpact * timeToImpact);
+    //float height = 0.5f * -m_environment->GetGravity() * ((timeToImpact * timeToImpact) * 0.5f);
+    auto heightDropForTime = 0.5f * -m_environment->GetGravity() * (timeToCollision * timeToCollision);
+
     auto collisionPos = aMissile.guidance.targetPosition + (aMissile.guidance.targetVelocity * timeToCollision);
+    auto collisionPosWithHeightDrop = collisionPos;
+    collisionPosWithHeightDrop.y += heightDropForTime;
 
     auto intercepPos = aMissile.projectileData.q.position - collisionPos;
+
+    auto collisionPosLocal = collisionPos - aMissile.projectileData.q.position;
+    //auto collisionPosLocal = collisionPosWithHeightDrop - aMissile.projectileData.q.position;
+    collisionPosLocal = DirectX::SimpleMath::Vector3::Transform(collisionPosLocal, aMissile.projectileData.inverseAlignmentQuat);
+
+    DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, collisionPosLocal, DirectX::Colors::Pink, false, true);
+
+
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("timeToCollision       = ", timeToCollision, "");
-    m_debugData->DebugPushUILineDecimalNumber("a       = ", a, "");
-    m_debugData->DebugPushUILineDecimalNumber("b       = ", b, "");
-    m_debugData->DebugPushUILineDecimalNumber("j       = ", j, "");
-    m_debugData->DebugPushUILineDecimalNumber("k       = ", k, "");
+    m_debugData->DebugPushUILineDecimalNumber("timeToCollisionA      = ", timeToCollisionA, "");
+    m_debugData->DebugPushUILineDecimalNumber("heightDropForTime       = ", heightDropForTime, "");
+
     m_debugData->PushDebugLinePositionIndicator(collisionPos, 20.0f, 0.0f, DirectX::Colors::White);
-    m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, intercepPos, DirectX::Colors::Red);
+    //m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, intercepPos, DirectX::Colors::Orange);
     m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, collisionPos, DirectX::Colors::Blue);
+
+    m_debugData->PushDebugLinePositionIndicator(collisionPosWithHeightDrop, 20.0f, 0.0f, DirectX::Colors::Gold);
+    //m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, intercepPos, DirectX::Colors::Orange);
+    m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, collisionPosWithHeightDrop, DirectX::Colors::Teal);
+
     m_debugData->ToggleDebugOff();
 
-    return aMissile.projectileData.q.position - collisionPos;
+    if (aMissile.guidance.testTimerTriggerIsTrueA == true && aMissile.guidance.testTimerTriggerIsTrueB == false)
+    {
+        aMissile.guidance.testTimerFirstGuessA = timeToCollision;
+    }
+
+    float deltaA = (aMissile.guidance.testTimerDeltaA - timeToCollision) * aTimeDelta;
+    aMissile.guidance.testTimerDeltaA = deltaA;
+
+    //return aMissile.projectileData.q.position - collisionPos;
+    return collisionPosLocal;
+}
+
+void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelta)
+{
+    m_debugData->ToggleDebugOnOverRide();
+
+    auto distance = aMissile.guidance.targetDistance;
+    auto selfSpeed = aMissile.projectileData.q.velocity.Length();
+    auto timeToTargetDirect = distance / selfSpeed;
+
+    m_debugData->DebugPushUILineDecimalNumber("timeToTargetDirect =", timeToTargetDirect, "");
+
+    const float timeToTargetMax = 10.0f;
+    if (timeToTargetDirect > timeToTargetMax)
+    {
+        timeToTargetDirect = timeToTargetMax;
+    }
+   
+    auto targVelNormW = aMissile.guidance.targetVelocity;
+    targVelNormW.Normalize();
+
+    auto targPosAtTime = (targVelNormW * aMissile.guidance.targetVelocity.Length()) * timeToTargetDirect;
+    targPosAtTime += aMissile.guidance.targetPosition;
+
+    auto gravDrop = 0.5f * m_environment->GetGravity() * (timeToTargetDirect * timeToTargetDirect);
+    targPosAtTime.y -= gravDrop;
+
+
+
+    m_debugData->PushDebugLinePositionIndicator(targPosAtTime, 20.0f, 0.0f, DirectX::Colors::Coral);
+    m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, targPosAtTime, DirectX::Colors::Lime);
+    m_debugData->ToggleDebugOff();
+
+
+    auto targPosAtTimeLocal = targPosAtTime;
+    targPosAtTimeLocal -= aMissile.projectileData.q.position;
+    targPosAtTimeLocal = DirectX::SimpleMath::Vector3::Transform(targPosAtTimeLocal, aMissile.projectileData.inverseAlignmentQuat);
+
+    //auto targVecNorm = aMissile.guidance.targetPosLocal;
+    auto targVecNorm = targPosAtTimeLocal;
+    targVecNorm.Normalize();
+
+    auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVecNorm);
+    toTargQuat.Normalize();
+    toTargQuat.Inverse(toTargQuat);
+
+    aMissile.guidance.nav.vecToTargLocal = targVecNorm;
+    aMissile.guidance.nav.quatToTarg = toTargQuat;
+    aMissile.guidance.nav.targPosLocalized = targVecNorm;
 }

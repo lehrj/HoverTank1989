@@ -404,6 +404,15 @@ struct GuidanceSystem
     float lataxNeeded = 0.0f;
     DirectX::SimpleMath::Vector3 lataxAxis = DirectX::SimpleMath::Vector3::UnitY;
 
+
+    float testTimer = 0.0f;
+    float testTimerFirstGuessA = 0.0f;
+    float testTimerFirstGuessB = 0.0f;
+    bool testTimerTriggerIsTrueA = false;
+    bool testTimerTriggerIsTrueB = false;
+
+    float testTimerDeltaA = 0.0f;
+    float testTimerDeltaB = 0.0f;
 };
 
 struct AmmoStruct
@@ -680,7 +689,7 @@ struct MissileConsts
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
-    const bool isContrailsOn = true;
+    const bool isContrailsOn = false;
     const bool isGravityOn = true;
 };
 
@@ -1197,7 +1206,7 @@ private:
     void GuidanceTestOld(MissileData& aMissile, const float aTimeDelta);
 
     void GuidanceOvershoot(MissileData& aMissile, const float aTimeDelta);
-
+    void GuidancePrototype(MissileData& aMissile, const float aTimeDelta);
     void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
 
     DirectX::SimpleMath::Vector3 GuidanceCalcInercept(MissileData& aMissile, const float aTimeDelta);
