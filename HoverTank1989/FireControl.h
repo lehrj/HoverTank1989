@@ -413,6 +413,9 @@ struct GuidanceSystem
 
     float testTimerDeltaA = 0.0f;
     float testTimerDeltaB = 0.0f;
+
+    float afterBurnFlickerRotation = 0.0f;
+
 };
 
 struct AmmoStruct
@@ -454,6 +457,10 @@ struct MissileModel
     const float contrailColorMax = 0.9f; 
     const float contrailColorMin = 0.3f;
     const unsigned int contrailDrawCountMax = 20;
+    //const float afterBurnFlickerRate = Utility::ToRadians(100.1f);
+    const float afterBurnFlickerRate = 100.1f;
+    const float plumeflickerScaleLength = 0.5f;
+    const float plumeflickerScaleWidth = 0.7f;
 
     const DirectX::SimpleMath::Vector4 bodyColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -580,9 +587,11 @@ struct MissileConsts
     const float finDeployDelay = 0.1f;
     const float rocketFireDelay = 0.05f;
 
-    const float finDeployTime = 0.15f;
-    const float rocketFireFullTime = 0.01f;
-    
+    //const float finDeployTime = 0.15f;
+    const float finDeployTime = 1.15f;
+    //const float rocketFireFullTime = 0.01f;
+    const float rocketFireFullTime = 1.01f;
+
     const float wingArea = 0.3f;
     const float testFinArea = 0.3f;
 
@@ -689,7 +698,7 @@ struct MissileConsts
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
-    const bool isContrailsOn = false;
+    const bool isContrailsOn = true;
     const bool isGravityOn = true;
 };
 
@@ -912,6 +921,8 @@ private:
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawExplosions2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawMissiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -1035,7 +1046,9 @@ private:
 
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
 
-    void UpdateMissileModelData(MissileData& aMissile);
+    //void UpdateMissileModelData(MissileData& aMissile);
+    void UpdateMissileModelData(MissileData& aMissile, const float aTimeDelta);
+
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateNavData(MissileData& aMissile, const float aTimeDelta);
