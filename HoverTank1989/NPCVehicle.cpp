@@ -3729,6 +3729,7 @@ void NPCVehicle::UpdateImpulseForces(const float aTimeDelta)
         m_vehicleStruct00.vehicleData.impulseForceVec.end()
     );
 }
+
 void NPCVehicle::UpdateJetCounterTorqueData(const float aTimeDelta)
 {
     DirectX::SimpleMath::Vector3 eulerVec = DirectX::SimpleMath::Vector3::Zero;
@@ -4331,7 +4332,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     leftBurnLengthMod = (leftBurnLengthMod + prevBurnLengthLeft + prevBurnLengthLeft1 + prevBurnLengthLeft2) / 4.0f;
     rightBurnLengthMod = (rightBurnLengthMod + prevBurnLengthRight + prevBurnLengthRight1 + prevBurnLengthRight2) / 4.0f;
 
-   
     const float delta = leftBurnLengthMod - rightBurnLengthMod;
     if (abs(delta) > abs(m_vehicleStruct00.npcModel.maxDelta))
     {
@@ -4502,7 +4502,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     baseBurnLength = (baseBurnLength + m_vehicleStruct00.npcModel.baseBurnLengthPrev1) * 0.5f;
     m_vehicleStruct00.npcModel.baseBurnLengthPrev1 = baseBurnLength;
     float baseBurnY = (baseBurnLength * 0.5f) * 0.1f;
-
+  
     m_vehicleStruct00.npcModel.baseBurnLength = baseBurnY;
     m_vehicleStruct00.npcModel.baseBurnScaledHeight = m_vehicleStruct00.npcModel.baseBurnHeight * abs(baseBurnLength);
     DirectX::SimpleMath::Matrix baseBurnScale = DirectX::SimpleMath::Matrix::CreateScale(1.0f, abs(baseBurnLength), 1.0f);

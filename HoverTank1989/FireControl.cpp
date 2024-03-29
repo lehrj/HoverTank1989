@@ -9741,7 +9741,7 @@ void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTim
     {
         aMissile.guidance.isRocketPlumeFlickerTrue = true;
     }
-    /*
+    
     // after burn plume sphere
     //const DirectX::SimpleMath::Vector3 toUseSteeringVecLocal = aMissile.guidance.steeringDirNormLocal;
     //const DirectX::SimpleMath::Quaternion toUseSteeringQuat = aMissile.guidance.steeringQuat;
@@ -9830,15 +9830,13 @@ void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTim
     aMissile.guidance.finAngle3 = (aMissile.guidance.finAngle3 + vertAng) * 0.5f;
     aMissile.guidance.finAngle4 = (aMissile.guidance.finAngle4 - vertAng) * 0.5f;
 
-    */
+    
 }
 
 void FireControl::UpdateMissileVec(double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        auto prevVelocity = m_missileVec[i].projectileData.q.velocity;
-
         auto prevThrustVecNorm = m_missileVec[i].guidance.conDat.thrustVecNorm;
         auto prevThrustVecQuat = m_missileVec[i].guidance.conDat.thrustVecQuat;
         auto prevThrustPitch = m_missileVec[i].guidance.conDat.thrustPitch;
@@ -9928,47 +9926,12 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ResetMissileForceAccumulators(m_missileVec[i]);
 
-        auto postVelocity = m_missileVec[i].projectileData.q.velocity;
-        auto deltaVelocity = (postVelocity - prevVelocity) / aTimeDelta;
-        auto velocityNorm = m_missileVec[i].projectileData.q.velocity;
-        velocityNorm.Normalize();
-
         //m_debugData->ToggleDebugOnOverRide();
-        //m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, 4.0f, 0.0f, DirectX::Colors::LimeGreen);
-        m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, velocityNorm, 4.0f, 0.0f, DirectX::Colors::Coral);
-        //m_debugData->DebugPushUILineDecimalNumber("deltaVelocity = ", deltaVelocity.Length(), "");
-        m_debugData->ToggleDebugOff();
-
-        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, -m_missileVec[i].projectileData.q.velocity, DirectX::Colors::Yellow, false, false);
-
-
-        //auto postVelocity = m_missileVec[i].projectileData.q.velocity;
-        auto velDelta = prevVelocity - postVelocity;
-        auto deltaVelocity2 = (postVelocity.Length() - prevVelocity.Length()) / aTimeDelta;
         float speed = m_missileVec[i].projectileData.q.velocity.Length();
         float mph = speed * 2.237f;
-
-        //m_debugData->ToggleDebugOnOverRide();
-        //m_debugData->DebugPushUILineDecimalNumber("mph   = ", mph, "");
-        m_debugData->DebugPushUILineWholeNumber("mph = ", static_cast<int>(mph), "");
-        m_debugData->DebugPushUILineDecimalNumber("deltaVelocity ", deltaVelocity2, "");
+        //m_debugData->DebugPushUILineWholeNumber("mph = ", static_cast<int>(mph), "");
         m_debugData->ToggleDebugOff();
 
-        m_debugData->ToggleDebugOnOverRide();
-
-        //m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.closureRate             = ", m_missileVec[i].guidance.closureRate, "");
-        float velocity = m_missileVec[i].projectileData.q.velocity.Length();
-        //float timeToGo = velocity / m_missileVec[i].guidance.targetDistance;
-        float timeToGo = m_missileVec[i].guidance.targetDistance / velocity;
-        m_debugData->DebugPushUILineDecimalNumber("timeToGo             = ", timeToGo, "");
-
-        float timeToGo2 =  m_missileVec[i].guidance.targetDistance / m_missileVec[i].guidance.closureRate;
-        m_debugData->DebugPushUILineDecimalNumber("timeToGo2            = ", timeToGo2, "");
-
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.testTimerDeltaA = ", m_missileVec[i].guidance.testTimerDeltaA, "");
-        m_debugData->DebugPushUILineDecimalNumber("m_missileVec[i].guidance.testTimerDeltaB = ", m_missileVec[i].guidance.testTimerDeltaB, "");
-        //m_debugData->DebugPushUILineDecimalNumber("timeToGo2            = ", timeToGo2, "");
-        m_debugData->ToggleDebugOff();
         DebugDrawUpdate(m_missileVec[i]);
 
         m_debugDrawVec.clear();
@@ -12734,10 +12697,27 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         DirectX::SimpleMath::Vector3 mainLightDirection2;
         m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
 
+        mainLightDirection0 = -DirectX::SimpleMath::Vector3::UnitY;
+        mainLightDirection1 = DirectX::SimpleMath::Vector3::UnitY;
+        mainLightDirection2 = -DirectX::SimpleMath::Vector3::UnitY;
+
+        auto afterBurnLightingVec = DirectX::SimpleMath::Vector3::UnitX;
+        afterBurnLightingVec = DirectX::SimpleMath::Vector3::Transform(afterBurnLightingVec, m_missileVec[i].guidance.conDat.thrustVecQuat);
+        afterBurnLightingVec = DirectX::SimpleMath::Vector3::Transform(afterBurnLightingVec, m_missileVec[i].projectileData.alignmentQuat);
+        //mainLightDirection2 = afterBurnLightingVec;
+        //mainLightDirection1 = afterBurnLightingVec;
+        mainLightDirection0 = afterBurnLightingVec;
+
+        const DirectX::SimpleMath::Vector3 toUseSteeringVecLocal2 = m_missileVec[i].guidance.conDat.thrustVecNorm;
+        const DirectX::SimpleMath::Quaternion toUseSteeringQuat2 = m_missileVec[i].guidance.conDat.thrustVecQuat;
+
         aEffect->SetLightDirection(0, mainLightDirection0);
         aEffect->SetLightDirection(1, mainLightDirection1);
         aEffect->SetLightDirection(2, mainLightDirection2);
 
+        DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection0, DirectX::Colors::Yellow, false, false);
+        DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection1, DirectX::Colors::Orange, false, false);
+        DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection2, DirectX::Colors::Red, false, false);
 
         DirectX::SimpleMath::Vector4 finColor = m_ammoMissile.modelData.finColor2;
         if (m_missileVec[i].guidance.type == MissileType::TYPE_BLUE)
@@ -12757,7 +12737,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat = m_ammoMissile.modelData.localBodyMatrix;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.mainBodyShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.mainBodyShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12766,30 +12745,17 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat = m_ammoMissile.modelData.localNoseConeMatrix;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.noseConeShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.noseConeShape->Draw(aEffect.get(), aInputLayout.Get());
-
-        // tailBlackVoid
-        updateMat = m_ammoMissile.modelData.localBlackVoidMatrix;
-        updateMat *= alignRotMat;
-        updateMat *= posTransMat;
-        //m_ammoMissile.modelData.tailBlackVoidShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.voidBlackColor);
-        aEffect->SetWorld(updateMat);
-        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.voidBlackColor);
-        m_ammoMissile.modelData.tailBlackVoidShape->Draw(aEffect.get(), aInputLayout.Get());
 
         // tailEndCap
         updateMat = m_ammoMissile.modelData.localTailEndCapMatrix;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.tailEndCapShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.tailEndCapShape->Draw(aEffect.get(), aInputLayout.Get());
-
-
 
         // tail fin 
         const float finDeployAngle = Utility::ToRadians(0.0f) + m_ammoMissile.modelData.tailFinDeployAngleMax * m_missileVec[i].guidance.finDeployPercent;
@@ -12801,7 +12767,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.tailFinTransMat;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12815,7 +12780,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, finColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12829,7 +12793,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, finColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12843,7 +12806,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(270.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, finColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12859,7 +12821,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             updateMat *= m_ammoMissile.modelData.canardFinTransMat;
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
-            //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
             aEffect->SetWorld(updateMat);
             aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
             m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12873,7 +12834,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
-            //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
             aEffect->SetWorld(updateMat);
             aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
             m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12887,7 +12847,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
-            //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
             aEffect->SetWorld(updateMat);
             aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
             m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12901,7 +12860,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(270.0f));
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
-            //m_ammoMissile.modelData.tailFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
             aEffect->SetWorld(updateMat);
             aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
             m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12914,7 +12872,7 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(finTransTest));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.finAxelShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.axelColor);
+
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.axelColor);
         m_ammoMissile.modelData.finAxelShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12924,7 +12882,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(finTransTest));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.finAxelShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.axelColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.axelColor);
         m_ammoMissile.modelData.finAxelShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12933,10 +12890,10 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat = DirectX::SimpleMath::Matrix::Identity;
         updateMat *= m_ammoMissile.modelData.localThrustVectorMainMatrix;
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.conDat.thrustYaw);
+        //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileVec[i].guidance.finPak.tailPitch.finAngle);
         updateMat *= m_ammoMissile.modelData.thrustVectorTrans1;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.thrustVectorMainShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12948,7 +12905,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.thrustVectorTrans2;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.thrustVectorMainShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12960,7 +12916,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.thrustVectorTrans3;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.thrustVectorMainShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12972,7 +12927,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.thrustVectorTrans4;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorMainShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.thrustVectorMainShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12982,7 +12936,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.localThrustVectorHousingMatrix;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -12993,7 +12946,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13004,7 +12956,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13015,7 +12966,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13025,7 +12975,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.localThrustVectorHousingEndCapMatrix;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13036,7 +12985,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13047,7 +12995,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13058,7 +13005,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.bodyColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.thrustVectorHousingEndCapShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13069,7 +13015,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.localThrustAxelMatrix;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustAxelShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.axelColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.axelColor);
         m_ammoMissile.modelData.thrustAxelShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13080,7 +13025,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.localThrustAxelMatrix;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.thrustAxelShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.axelColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.axelColor);
         m_ammoMissile.modelData.thrustAxelShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13094,7 +13038,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= m_ammoMissile.modelData.wingTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, finColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13107,7 +13050,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, finColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13120,7 +13062,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(180.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, finColor);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -13133,53 +13074,46 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f));
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
-        //m_ammoMissile.modelData.wingFinShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.finColor1);
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Afterburners and lighting
-
-          
-        /*
-        
-        if (m_missileVec[i].guidance.flickerBool == true)
-        {
-            m_missileVec[i].guidance.flickerBool = false;
-        }
-        else
-        {
-            m_missileVec[i].guidance.flickerBool = true;
-        }
-
-        if (m_missileVec[i].guidance.isRocketPlumeFlickerTrue == true)
-        {
-            m_missileVec[i].guidance.isRocketPlumeFlickerTrue = false;
-        }
-        else
-        {
-            m_missileVec[i].guidance.isRocketPlumeFlickerTrue = true;
-        }
-        
-        */
         
         // after burn plume sphere
         const DirectX::SimpleMath::Vector3 toUseSteeringVecLocal = m_missileVec[i].guidance.conDat.thrustVecNorm;
         const DirectX::SimpleMath::Quaternion toUseSteeringQuat = m_missileVec[i].guidance.conDat.thrustVecQuat;
 
+        //const DirectX::SimpleMath::Vector3 toUseSteeringVecLocal = DirectX::SimpleMath::Vector3::UnitX;
+        //const DirectX::SimpleMath::Quaternion toUseSteeringQuat = DirectX::SimpleMath::Quaternion::Identity;
+
         DirectX::SimpleMath::Matrix sphereMat = DirectX::SimpleMath::Matrix::Identity;
         float plumeBaseScale = 0.0f;
         //float scale = 1.0f;
         float scale = m_missileVec[i].guidance.throttlePercentage;
+        //scale +=
+        const float low = 0.0f;
+        const float high = 0.05f;
+        float xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+        float zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+        float testRand = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+
+        scale -= testRand;
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineDecimalNumber("testRand = ", testRand, "");
+        m_debugData->ToggleDebugOff();
+
+        if (testRand < -1.0f || testRand > 1.0f)
+        {
+            int testBreak = 1;
+            testBreak++;
+        }
+
         float plumeConeScale = 0.0f;
-        //if (m_missileVec[i].guidance.flickerBool == true && 1 == 0)
         if (m_missileVec[i].guidance.flickerBool == true)
         {
-            //const float plumeflickerScaleLength = 0.5f;
-            //const float plumeflickerScaleWidth = 0.8f;
-            //const float plumeflickerScaleLength = m_ammoMissile.modelData.plumeflickerScaleLength;
-            //const float plumeflickerScaleWidth = m_ammoMissile.modelData.plumeflickerScaleWidth;
             const float plumeflickerScaleLength = m_ammoMissile.modelData.plumeflickerScaleLength * scale;
             const float plumeflickerScaleWidth = m_ammoMissile.modelData.plumeflickerScaleWidth * scale;
 
@@ -13187,11 +13121,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             sphereMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleWidth, plumeflickerScaleWidth, plumeflickerScaleWidth));
 
             plumeConeScale = plumeflickerScaleWidth;
-
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineWholeNumber("m_missileVec[i].guidance.flickerBool ", static_cast<bool>(m_missileVec[i].guidance.flickerBool), "");
-            m_debugData->ToggleDebugOff();
-
         }
         else
         {
@@ -13199,9 +13128,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             sphereMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale, scale));
 
             plumeConeScale = scale;
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineWholeNumber("m_missileVec[i].guidance.flickerBool ", static_cast<bool>(m_missileVec[i].guidance.flickerBool), "");
-            m_debugData->ToggleDebugOff();
         }
 
         DirectX::SimpleMath::Vector3 plumeLocalPos = m_ammoMissile.modelData.afterBurnPlumeThrottleModPos * m_missileVec[i].guidance.throttlePercentage;
@@ -13251,50 +13177,62 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         DirectX::SimpleMath::Vector3 lightDirection2;
         auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, alignRotMat);
 
-        //updateMat = m_ammoMissile.modelData.localBodyMatrix;
-        //updateMat *= alignRotMat;
-
-        //Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionBase, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
-        //Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionBase, Utility::ToRadians(baseAngleDegrees), baseBurnRotation, lightDirection0, lightDirection1, lightDirection2);
         Utility::GetDispersedLightDirections(jetDirectionBase, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
         Utility::GetDispersedLightDirectionsRotation(jetDirectionBase, Utility::ToRadians(baseAngleDegrees), baseBurnRotation, lightDirection0, lightDirection1, lightDirection2);
         aEffect->SetLightDirection(0, lightDirection0);
         aEffect->SetLightDirection(1, lightDirection1);
         aEffect->SetLightDirection(2, lightDirection2);
         aEffect->SetAmbientLightColor(DirectX::Colors::White);
-        
-        /*
-        Utility::GetDispersedLightDirections(m_vehicleStruct00.npcModel.jetDirectionBase, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
-        Utility::GetDispersedLightDirectionsRotation(m_vehicleStruct00.npcModel.jetDirectionBase, Utility::ToRadians(baseAngleDegrees), baseBurnRotation, lightDirection0, lightDirection1, lightDirection2);
-        aEffect->SetLightDirection(0, lightDirection0);
-        aEffect->SetLightDirection(1, lightDirection1);
-        aEffect->SetLightDirection(2, lightDirection2);
-        aEffect->SetAmbientLightColor(DirectX::Colors::White);
-        */
 
         // after burn plumes
         if (m_missileVec[i].guidance.isRocketFired == true)
         {
             // afterburn plume base sphere shape
-            updateMat = DirectX::SimpleMath::Matrix::Identity;
+            updateMat = m_missileVec[i].guidance.afterBurnPlumeSphereMat;
+            updateMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.afterBurnFlickerRotation);
             updateMat *= m_missileVec[i].guidance.afterBurnPlumeSphereMat;
-            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(m_missileVec[i].guidance.afterBurnFlickerRotation);
+            //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(m_missileVec[i].guidance.afterBurnFlickerRotation);
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
-            //m_ammoMissile.modelData.rocketPlumeBaseShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.plumeColor);
             aEffect->SetWorld(updateMat);
             aEffect->SetColorAndAlpha(m_ammoMissile.modelData.plumeColor);
             m_ammoMissile.modelData.rocketPlumeBaseShape->Draw(aEffect.get(), aInputLayout.Get());
 
             // afterburn plume extended cone shape
-            updateMat = m_missileVec[i].guidance.afterBurnPlumeConeMat;
-            updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(m_missileVec[i].guidance.afterBurnFlickerRotation);
+            updateMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_missileVec[i].guidance.afterBurnFlickerRotation);
+            updateMat *= m_missileVec[i].guidance.afterBurnPlumeConeMat;
+            //updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(m_missileVec[i].guidance.afterBurnFlickerRotation);
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
-            //m_ammoMissile.modelData.rocketPlumeShape->Draw(updateMat, aView, aProj, m_ammoMissile.modelData.plumeColor);
             aEffect->SetWorld(updateMat);
             aEffect->SetColorAndAlpha(m_ammoMissile.modelData.plumeColor);
             m_ammoMissile.modelData.rocketPlumeShape->Draw(aEffect.get(), aInputLayout.Get());
         }
+
+
+        // blackout lighting for shadows
+        auto lights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
+        if (lights)
+        {
+            lights->SetLightEnabled(0, true);
+            lights->SetLightEnabled(1, true);
+            lights->SetLightEnabled(2, true);
+            lights->SetAmbientLightColor(DirectX::Colors::Black);
+            lights->SetLightDiffuseColor(0, DirectX::Colors::Black);
+            lights->SetLightDiffuseColor(1, DirectX::Colors::Black);
+            lights->SetLightDiffuseColor(2, DirectX::Colors::Black);
+            lights->SetLightSpecularColor(0, DirectX::Colors::Black);
+            lights->SetLightSpecularColor(1, DirectX::Colors::Black);
+            lights->SetLightSpecularColor(2, DirectX::Colors::Black);
+        }
+
+        updateMat = m_ammoMissile.modelData.localBlackVoidMatrix;
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.voidBlackColor);
+        m_ammoMissile.modelData.tailBlackVoidShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        aEffect->EnableDefaultLighting();
     }
 }
