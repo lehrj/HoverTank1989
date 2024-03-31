@@ -457,8 +457,10 @@ struct MissileModel
     const float contrailColorMax = 0.9f; 
     const float contrailColorMin = 0.3f;
     const unsigned int contrailDrawCountMax = 20;
-    //const float afterBurnFlickerRate = Utility::ToRadians(100.1f);
-    const float afterBurnFlickerRate = 100.1f;
+    const float afterBurnFlickerRate = Utility::ToRadians(100.1f);
+    //const float afterBurnFlickerRate = 0.001f;
+    const float afterBurnFlickerRateScale = 300.1f;
+    const float afterBurnFlickerRateLength = 0.05f;
     const float plumeflickerScaleLength = 0.5f;
     const float plumeflickerScaleWidth = 0.7f;
 
@@ -485,11 +487,13 @@ struct MissileModel
     DirectX::SimpleMath::Matrix worldNoseConeMatrix;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShapeInvert;
     DirectX::SimpleMath::Matrix localPlumeMatrix;
     DirectX::SimpleMath::Matrix worldPlumeMatrix;
     DirectX::SimpleMath::Matrix plumeTranslation;
     DirectX::SimpleMath::Matrix plumeTranslationTest;
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeBaseShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeBaseShapeInvert;
     DirectX::SimpleMath::Matrix localPlumeBaseMatrix;
     DirectX::SimpleMath::Matrix worldPlumeBaseMatrix;
     DirectX::SimpleMath::Matrix plumeBaseTranslation;
