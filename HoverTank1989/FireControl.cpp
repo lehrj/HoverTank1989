@@ -4408,7 +4408,7 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
                 }
                 else if (m_missileConsts.selectFirePattern == 3)
                 {
-                    //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
+                    FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
                     const float fireTimeOffset = 0.0f;
                     FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
                 }
@@ -9721,7 +9721,7 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 
 void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTimeDelta)
 {
-    aMissile.guidance.afterBurnFlickerRotation = Utility::WrapAngle(aMissile.guidance.afterBurnFlickerRotation + (m_ammoMissile.modelData.afterBurnFlickerRate * aTimeDelta));
+    aMissile.guidance.afterBurnFlickerRotation = Utility::WrapAngle(aMissile.guidance.afterBurnFlickerRotation + (m_ammoMissile.modelData.afterBurnFlickerRotationRate * aTimeDelta));
 
     
     if (aMissile.guidance.flickerBool == true)
@@ -9937,7 +9937,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugDrawVec.clear();
     }
 
-    //CheckCollisionsMissile();
+    CheckCollisionsMissile();
 
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
@@ -12691,11 +12691,14 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
         const DirectX::SimpleMath::Matrix alignRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        //DirectX::SimpleMath::Matrix thrustVecRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].guidance.steeringQuat);
+        //thrustVecRotMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+
         const DirectX::SimpleMath::Matrix posTransMat = DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::Identity;
         
         aEffect->EnableDefaultLighting();
-
+        
         // Afterburners and lighting
         // after burn plume sphere
         const DirectX::SimpleMath::Vector3 toUseSteeringVecLocal = m_missileVec[i].guidance.conDat.thrustVecNorm;
@@ -12710,6 +12713,10 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         testRand = abs(cos(m_missileVec[i].projectileData.time * m_ammoMissile.modelData.afterBurnFlickerRateScale)) * 0.05f;
         scale -= testRand;
 
+
+        DirectX::SimpleMath::Vector4 flickerPlumeColor;
+        flickerPlumeColor = m_ammoMissile.modelData.plumeColor;
+
         float plumeConeScale = 0.0f;
         if (m_missileVec[i].guidance.flickerBool == true)
         {
@@ -12720,6 +12727,8 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             sphereMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleWidth, plumeflickerScaleWidth, plumeflickerScaleWidth));
 
             plumeConeScale = plumeflickerScaleWidth;
+
+            flickerPlumeColor = DirectX::Colors::Red;
         }
         else
         {
@@ -12727,6 +12736,7 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             sphereMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(scale, scale, scale));
 
             plumeConeScale = scale;
+
         }
 
         DirectX::SimpleMath::Vector3 plumeLocalPos = m_ammoMissile.modelData.afterBurnPlumeThrottleModPos * m_missileVec[i].guidance.throttlePercentage;
@@ -12754,7 +12764,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         coneMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_ammoMissile.modelData.afterBurnPlumeBasePos);
         m_missileVec[i].guidance.afterBurnPlumeConeMat = coneMat;
 
-
         const float baseRad = plumeBaseScale;
         const float baseLength = plumeConeScale;
         const float toa = baseLength / baseRad;
@@ -12765,14 +12774,47 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         DirectX::SimpleMath::Vector3 lightDirection0;
         DirectX::SimpleMath::Vector3 lightDirection1;
         DirectX::SimpleMath::Vector3 lightDirection2;
-        auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, alignRotMat);
 
+        DirectX::SimpleMath::Matrix thrustVecRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].guidance.conDat.thrustVecQuat);
+        //thrustVecRotMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+        //auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, alignRotMat);
+        //auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, thrustVecRotMat);
+        auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, thrustVecRotMat);
+
+        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, jetDirectionBase, DirectX::Colors::Yellow, false, false);
         Utility::GetDispersedLightDirections(jetDirectionBase, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
         Utility::GetDispersedLightDirectionsRotation(jetDirectionBase, Utility::ToRadians(baseAngleDegrees), baseBurnRotation, lightDirection0, lightDirection1, lightDirection2);
+        
+        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, lightDirection0, DirectX::Colors::Yellow, false, false);
+        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, lightDirection1, DirectX::Colors::Orange, false, false);
+        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, lightDirection2, DirectX::Colors::Red, false, false);
+        
         aEffect->SetLightDirection(0, lightDirection0);
         aEffect->SetLightDirection(1, lightDirection1);
         aEffect->SetLightDirection(2, lightDirection2);
         //aEffect->SetAmbientLightColor(DirectX::Colors::White);
+               //auto diffuse0 = DirectX::SimpleMath::Vector4(1.0, 0.9607844f, 0.8078432, 1.0f);
+        auto diffuse0 = DirectX::SimpleMath::Vector3(1.0f, 0.9607844f, 0.8078432f);
+        auto specular0 = DirectX::SimpleMath::Vector3(1.0f, 0.9607844f, 0.8078432f);
+
+        auto diffuse1 = DirectX::SimpleMath::Vector3(0.9647059f, 0.7607844f, 0.4078432f);
+        auto specular1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+
+        auto diffuse2 = DirectX::SimpleMath::Vector3(0.3231373f, 0.3607844f, 0.3937255f);
+        auto specular2 = DirectX::SimpleMath::Vector3(0.3231373f, 0.3607844f, 0.3937255f);
+        //Light 0: Direction(-0.5265408, -0.5735765, -0.6275069), Diffuse(1, 0.9607844, 0.8078432), Specular(1, 0.9607844, 0.8078432)
+        //    Light 1 : Direction(0.7198464, 0.3420201, 0.6040227), Diffuse(0.9647059, 0.7607844, 0.4078432), Specular(0, 0, 0)
+        //    Light 2 : Direction(0.4545195, -0.7660444, 0.4545195), Diffuse(0.3231373, 0.3607844, 0.3937255), Specular(0.3231373, 0.3607844, 0.3937255).
+
+        aEffect->SetLightDiffuseColor(0, diffuse0);
+        aEffect->SetLightDiffuseColor(1, diffuse0);
+        aEffect->SetLightDiffuseColor(2, diffuse0);
+
+        aEffect->SetLightSpecularColor(0, specular0);
+        aEffect->SetLightSpecularColor(1, specular0);
+        aEffect->SetLightSpecularColor(2, specular0);
+
+        aEffect->SetAmbientLightColor(DirectX::Colors::Red);
 
         // after burn plumes
         if (m_missileVec[i].guidance.isRocketFired == true)
@@ -12785,7 +12827,8 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
             aEffect->SetWorld(updateMat);
-            aEffect->SetColorAndAlpha(m_ammoMissile.modelData.plumeColor);
+            //aEffect->SetColorAndAlpha(m_ammoMissile.modelData.plumeColor);
+            aEffect->SetColorAndAlpha(flickerPlumeColor);
             m_ammoMissile.modelData.rocketPlumeBaseShape->Draw(aEffect.get(), aInputLayout.Get());
 
             // afterburn plume extended cone shape
@@ -12795,7 +12838,8 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             updateMat *= alignRotMat;
             updateMat *= posTransMat;
             aEffect->SetWorld(updateMat);
-            aEffect->SetColorAndAlpha(m_ammoMissile.modelData.plumeColor);
+            //aEffect->SetColorAndAlpha(m_ammoMissile.modelData.plumeColor);
+            aEffect->SetColorAndAlpha(flickerPlumeColor);
             m_ammoMissile.modelData.rocketPlumeShape->Draw(aEffect.get(), aInputLayout.Get());
         }
 
@@ -12823,23 +12867,6 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         aEffect->SetLightDirection(1, mainLightDirection1);
         aEffect->SetLightDirection(2, mainLightDirection2);
         
-
-
-        //auto diffuse0 = DirectX::SimpleMath::Vector4(1.0, 0.9607844f, 0.8078432, 1.0f);
-        auto diffuse0 = DirectX::SimpleMath::Vector3(1.0f, 0.9607844f, 0.8078432f);
-        auto specular0 = DirectX::SimpleMath::Vector3(1.0f, 0.9607844f, 0.8078432f);
-
-        auto diffuse1 = DirectX::SimpleMath::Vector3(0.9647059f, 0.7607844f, 0.4078432f);
-        auto specular1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-
-        auto diffuse2 = DirectX::SimpleMath::Vector3(0.3231373f, 0.3607844f, 0.3937255f);
-        auto specular2 = DirectX::SimpleMath::Vector3(0.3231373f, 0.3607844f, 0.3937255f);
-        //Light 0: Direction(-0.5265408, -0.5735765, -0.6275069), Diffuse(1, 0.9607844, 0.8078432), Specular(1, 0.9607844, 0.8078432)
-        //    Light 1 : Direction(0.7198464, 0.3420201, 0.6040227), Diffuse(0.9647059, 0.7607844, 0.4078432), Specular(0, 0, 0)
-        //    Light 2 : Direction(0.4545195, -0.7660444, 0.4545195), Diffuse(0.3231373, 0.3607844, 0.3937255), Specular(0.3231373, 0.3607844, 0.3937255).
-
-        aEffect->SetLightDiffuseColor(0, diffuse0);
-
         const float low2 = 0.0f;
         const float high2 = 0.5f;
         float testRand2 = low2 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high2 - low2)));
@@ -12885,9 +12912,10 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             
         }
         */
-        DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection0, DirectX::Colors::Yellow, false, false);
-        DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection1, DirectX::Colors::Orange, false, false);
-        DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection2, DirectX::Colors::Red, false, false);
+
+        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection0, DirectX::Colors::Yellow, false, false);
+        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection1, DirectX::Colors::Orange, false, false);
+        //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection2, DirectX::Colors::Red, false, false);
 
         // main body 
         updateMat = m_ammoMissile.modelData.localBodyMatrix;
@@ -13371,7 +13399,8 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         DirectX::SimpleMath::Quaternion quatTest;
         shadowDrawMat.Decompose(scaleTest, quatTest, transTest);
 
-        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->ToggleDebugOff();
+        //m_debugData->ToggleDebugOnOverRide();
         m_debugData->PushDebugLinePositionIndicator(transTest, 20.0f, 0.0f, DirectX::Colors::Purple);
         m_debugData->PushDebugLinePositionIndicatorAligned(transTest, 15.0f, 0.0f, quatTest, DirectX::Colors::Orange);
         //m_debugData->DebugPushUILineWholeNumber("isShadowBoolTrue ", isShadowBoolTrue, "");

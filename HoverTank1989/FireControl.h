@@ -453,19 +453,17 @@ struct ProjectileData
 struct MissileModel
 {
     // consts & colors
-    
+    // contrails
     const float contrailColorMax = 0.9f; 
     const float contrailColorMin = 0.3f;
     const unsigned int contrailDrawCountMax = 20;
-    const float afterBurnFlickerRate = Utility::ToRadians(100.1f);
-    //const float afterBurnFlickerRate = 0.001f;
-    const float afterBurnFlickerRateScale = 300.1f;
-    const float afterBurnFlickerRateLength = 0.05f;
+    // afterburn flicker
+    const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
+    const float afterBurnFlickerRateScale = 100.1f;
     const float plumeflickerScaleLength = 0.5f;
     const float plumeflickerScaleWidth = 0.7f;
 
     const DirectX::SimpleMath::Vector4 bodyColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    //const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.000000000f, 0.270588249f, 0.000000000f, 1.40000000f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 finColor1 = DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
@@ -620,8 +618,6 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 centerOfPressureFullDeployLocal = centerOfPressureBasePosLocal + centerOfPressureFullFinDeployOffset;
     const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
-    const float plumeRotationRate = 0.432f;
-
     const float headingRadiansPerSecondMax = 1.12f;
     const float steerAngMax = Utility::ToRadians(15.0f);
     //const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
@@ -633,8 +629,6 @@ struct MissileConsts
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
-    //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(110.0f);
-    //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(30.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(30.0f);
 
     const float mass = 11.0f;
