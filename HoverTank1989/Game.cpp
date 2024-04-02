@@ -12,6 +12,30 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
+namespace
+{
+    constexpr X3DAUDIO_CONE c_listenerCone = {
+        X3DAUDIO_PI * 5.0f / 6.0f, X3DAUDIO_PI * 11.0f / 6.0f, 1.0f, 0.75f, 0.0f, 0.25f, 0.708f, 1.0f
+    };
+    constexpr X3DAUDIO_CONE c_emitterCone = {
+        0.f, 0.f, 0.f, 1.f, 0.f, 1.f, 0.f, 1.f
+    };
+
+    constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_emitter_LFE_CurvePoints[3] = {
+        { 0.0f, 1.0f }, { 0.25f, 0.0f}, { 1.0f, 0.0f }
+    };
+    constexpr X3DAUDIO_DISTANCE_CURVE c_emitter_LFE_Curve = {
+        const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(&c_emitter_LFE_CurvePoints[0]), 3
+    };
+
+    constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_emitter_Reverb_CurvePoints[3] = {
+        { 0.0f, 0.5f}, { 0.75f, 1.0f }, { 1.0f, 0.0f }
+    };
+    constexpr X3DAUDIO_DISTANCE_CURVE c_emitter_Reverb_Curve = {
+        const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(&c_emitter_Reverb_CurvePoints[0]), 3
+    };
+}
+
 Game::Game() noexcept(false)
 {
     m_deviceResources = std::make_unique<DX::DeviceResources>();
@@ -95,13 +119,50 @@ void Game::Initialize(HWND window, int width, int height)
     m_mouse->SetWindow(window);
 
     // Audio
+
+    /*
     AUDIO_ENGINE_FLAGS eflags = AudioEngine_Default;
 #ifdef DEBUG  //#ifdef _DEBUG
     eflags |= AudioEngine_Debug;
 #endif
+    */
+
+    AUDIO_ENGINE_FLAGS eflags = AudioEngine_EnvironmentalReverb | AudioEngine_ReverbUseFilters;
+#ifdef _DEBUG
+    eflags |= AudioEngine_Debug;
+#endif
     m_audioEngine = std::make_unique<AudioEngine>(eflags);
+
+    m_audioEngine->SetReverb(Reverb_Hangar);
+
+
+    //m_audioEngine = std::make_unique<AudioEngine>(eflags);
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"Art/Audio/audioBank.xwb");
+
+    m_soundEffect = std::make_unique<SoundEffect>(m_audioEngine.get(), L"Art/Audio/RocketBoostEngineLoop.wav");
+    //m_soundSource = m_soundEffect->CreateInstance();
+    //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
+    //m_soundSource->Play(true);
+
+ 
+ 
+    m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+     
+    //m_soundSource = m_audioBank->CreateInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
+    //m_soundSource = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
+    //m_soundSource = m_audioBank->CreateStreamInstance(2);
+
+
+
+    m_soundSource->Play(true);
+
+    m_listener.pCone = const_cast<X3DAUDIO_CONE*>(&c_listenerCone);
+
+    m_emitter.pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    m_emitter.pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    m_emitter.CurveDistanceScaler = 14.f;
+    m_emitter.pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
 
     // Game Pad
     m_gamePad = std::make_unique<GamePad>();
@@ -467,6 +528,7 @@ Game::~Game()
     }
     m_audioMusicStream.reset();
     m_audioEffectStream.reset();
+    m_soundSource.reset();
 
     delete m_camera;
     delete m_environment;
@@ -589,6 +651,11 @@ void Game::Update(DX::StepTimer const& aTimer)
             {
                 m_audioEffectStream->Play(); // WLJ this could lead to problems and might not be needed, maybe cause unwanted effect to play after reset?
             }
+
+            if (m_soundSource)
+            {
+                m_soundSource->Play(true);
+            }
         }
     }
     else if (!m_audioEngine->Update())
@@ -598,6 +665,18 @@ void Game::Update(DX::StepTimer const& aTimer)
             m_retryAudio = true;
         }
     }
+
+    //m_emitter.Update(m_position, Vector3::Up, static_cast<float>(timer.GetElapsedSeconds()));
+    
+    m_emitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
+    
+    m_listener.Update(m_camera->GetPos(), m_camera->GetUp(), aTimer.GetElapsedSeconds());
+    
+    if (m_soundSource)
+    {
+        m_soundSource->Apply3D(m_listener, m_emitter);
+    }
+
 
 }
 #pragma endregion
@@ -1052,6 +1131,13 @@ void Game::DrawDebugDataUI()
 
     std::string textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
+
+
+    textLine = "m_soundSourceVec   " + std::to_string(m_soundSourceVec.size());
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
@@ -1917,11 +2003,23 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
         }
     }
-    if (kb.Space)
+    //if (kb.Space)
+    if (m_kbStateTracker.pressed.Space)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
+            //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
+            //m_soundSource->Play(true);
+
+            //std::shared_ptr <DirectX::SoundEffectInstance> fireFx;
+
+
+            //fireFx->isDestroyTrue = false;
+            //fireFx = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
+            //m_soundSourceVec.push_back(fireFx);
+
             m_vehicle->FireWeapon();
+            //m_vehicle->FireWeapon(m_soundSource);
         }
     }
     if (m_kbStateTracker.pressed.J)
@@ -2205,6 +2303,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
+
+                //XACT_WAVEBANK_AUDIOBANK_ROCKETBOOSTENGINELOOP
+                AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_ROCKETBOOSTENGINELOOP);
                 //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
                 //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
                 //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);

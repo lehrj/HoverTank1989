@@ -281,6 +281,23 @@ private:
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioMusicStream;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioEffectStream;
 
+    std::unique_ptr<DirectX::SoundEffect>       m_soundEffect;
+    //std::unique_ptr<DirectX::SoundEffectInstance> m_soundSource;
+    std::shared_ptr<DirectX::SoundEffectInstance> m_soundSource;
+
+    struct SoundFx
+    {
+        std::shared_ptr<DirectX::SoundEffectInstance> fx;
+        bool isDestroyTrue;
+    };
+    std::vector<std::shared_ptr<DirectX::SoundEffectInstance>> m_soundSourceVec;
+
+    //std::vector<std::shared_ptr<SoundFx>> m_soundSourceVec;
+    //std::vector<std::unique_ptr<DirectX::SoundEffectInstance>> m_soundSourceVec;
+
+    DirectX::AudioListener m_listener;
+    DirectX::AudioEmitter  m_emitter;
+
     float                                       m_musicFadeOutTimer = 0.0f;
     const float                                 m_musicFadeOutDuration = 5.0f;
     const float                                 m_musicFadeOutRate = 0.2f;

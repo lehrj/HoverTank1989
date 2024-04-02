@@ -6,6 +6,21 @@
 
 class Vehicle;
 
+
+struct AudioFxData
+{
+    enum class FxType
+    {
+        FXTYPE_MISSILE_LAUNCH,
+        FXTYPE_MISSILE_ROCKET_BURN,
+    };
+    FxType type;
+    std::vector<DirectX::SimpleMath::Vector3> position;
+    DirectX::SimpleMath::Vector3 up;
+    bool isLoopTrue;
+    bool isDeadTrue;
+};
+
 enum class AmmoType
 {
     AMMOTYPE_CANNON,
@@ -566,6 +581,7 @@ struct MissileData
     ProjectileData projectileData;
     GuidanceSystem guidance;
     ContrailPackage contrails;
+    DirectX::AudioEmitter  audioFx;
 };
 
 struct MissileStruct

@@ -199,4 +199,9 @@
     <None Include="HoverTankTurret01.cmo" />
     <None Include="HoverTankTurret01.mtl" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Art\Audio\RocketBoostEngineLoop.wav">
+      <Filter>Assets</Filter>
+    </Media>
+  </ItemGroup>
 </Project>
