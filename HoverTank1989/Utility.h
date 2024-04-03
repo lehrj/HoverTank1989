@@ -1218,8 +1218,24 @@ public:
         {
             return 0;
         }
-    }
+    };
 
+
+    struct SoundFx
+    {
+        //std::shared_ptr<DirectX::SoundEffectInstance> fx;
+        std::shared_ptr<DirectX::SoundStreamInstance> fx;
+        std::shared_ptr<DirectX::AudioEmitter> emitter;
+        DirectX::SimpleMath::Vector3 pos;
+        DirectX::SimpleMath::Vector3 up;
+        bool isDestroyTrue;
+
+
+        void SetPos(DirectX::SimpleMath::Vector3 aPos)
+        {
+            pos = aPos;
+        }
+    };
 
 private:
 
