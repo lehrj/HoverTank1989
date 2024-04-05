@@ -871,7 +871,7 @@ public:
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
     
     void GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod);
-
+    bool GetIsFireCooldownTrue() { return m_isCoolDownActive; };
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
@@ -1188,7 +1188,7 @@ private:
     const bool m_isHardBurnModeTestOn = true;
     bool m_isUseProNavOn = false;
 
-    MissileType m_currantMissileType = MissileType::TYPE_TAILCONTRTROL;
+    MissileType m_currentMissileType = MissileType::TYPE_TAILCONTRTROL;
 
     float m_debugVal1 = Utility::ToRadians(0.0f);
     const float m_debugValMax = Utility::ToRadians(180.0f);

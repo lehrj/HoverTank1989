@@ -1009,7 +1009,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx)
         aFireFx->forward = launchDir;
 
         
-        aFireFx->fx->Play();
+        aFireFx->fx->Play(true);
 
         m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx);
 

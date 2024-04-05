@@ -659,7 +659,6 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_isPauseOn = false;
     }
 
-
     // audio
     if (m_isMusicFadeOutTrue == true)
     {
@@ -674,21 +673,21 @@ void Game::Update(DX::StepTimer const& aTimer)
             // ToDo: restart any looped sounds here
             if (m_audioMusicStream)
             {
-                m_audioMusicStream->Play(true);
+                //m_audioMusicStream->Play(true);
             }
             if (m_audioEffectStream)
             {
-                m_audioEffectStream->Play(); // WLJ this could lead to problems and might not be needed, maybe cause unwanted effect to play after reset?
+                //m_audioEffectStream->Play(); // WLJ this could lead to problems and might not be needed, maybe cause unwanted effect to play after reset?
             }
 
             if (m_soundSource)
             {
-                m_soundSource->Play(true);
+                //m_soundSource->Play(true);
             }
 
             if (m_ssiTest)
             {
-                m_ssiTest->Play(true);
+                //m_ssiTest->Play(true);
             }
 
             for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
@@ -2065,69 +2064,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
-            //m_soundSource->Play(true);
-
-            std::shared_ptr<DirectX::SoundStreamInstance> testSEI;
-            testSEI = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
-
-            //std::shared_ptr <DirectX::SoundEffectInstance> fireFx;
-            //std::shared_ptr <SoundFx> fireFx(nullptr);
-            //std::shared_ptr <SoundFx> fireFx(new SoundFx());
-            std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
-            //std::shared_ptr <SoundFx> fireFx = std::make_shared<SoundFx>(new SoundFx());
-
-            fireFx->fx = testSEI;
-
-
-            //std::shared_ptr<DirectX::AudioEmitter> testEmitter;
-            std::shared_ptr<DirectX::AudioEmitter> testEmitter(new DirectX::AudioEmitter);
-
-
-
-            //std::shared_ptr<DirectX::AudioEmitter> testEmitter = new std::shared_ptr<DirectX::AudioEmitter>;
-            //testEmitter = std::make_shared<DirectX::AudioEmitter>;
-            
-            testEmitter->SetOmnidirectional();
-            testEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-            testEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-            testEmitter->CurveDistanceScaler = 14.f;
-            testEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-            //testEmitter->EnableDefaultCurves();
-            
-            //fireFx->emitter = testEmitter;
-            //fireFx->emitter = std::make_shared<DirectX::AudioEmitter>;;
-            fireFx->SetEmitter(testEmitter);
-
-
-            //fireFx->emitter = new std::shared_ptr<DirectX::AudioEmitter>;
-
-            //fireFx->isDestroyTrue = false;
-            //fireFx = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
-            //fireFx->fx = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-            
-            //fireFx->fx(use_shared_ptr_by_value(testSEI));
-
-            //fireFx->SetPos(DirectX::SimpleMath::Vector3::UnitX);
-
-
-            fireFx->pos = DirectX::SimpleMath::Vector3::UnitX;
-
-            /*
-            fireFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-    
-            fireFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-            fireFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-            fireFx->emitter->CurveDistanceScaler = 14.f;
-            fireFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-            */
-      
-
-            //m_vehicle->FireWeapon();
-            //m_vehicle->FireWeapon(m_soundSource);
-            m_vehicle->FireWeapon(fireFx);
-            m_soundFxVecTest.push_back(fireFx);
+            if (m_fireControl->GetIsCoolDownActive() == false)
+            {
+                TriggerFireWithAudio();
+            }
         }
     }
     if (m_kbStateTracker.pressed.J)
@@ -2438,12 +2378,19 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 {
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {
-
         m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
 
-        //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+        m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
         //m_soundFxVecTest[i]->emitter->Update(DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitY, 0.01f);
-        m_soundFxVecTest[i]->fx->Apply3D(m_listener, m_fxEmitter);
+        //m_soundFxVecTest[i]->fx->Apply3D(m_listener, m_fxEmitter);
+        m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+
+        if (m_soundFxVecTest[i]->fx->IsLooped() == true)
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
 
         //if (m_soundFxVecTest[i]->fx->GetState() == DirectX::SoundState::PLAYING)
         if (m_soundFxVecTest[i]->fx->GetState() == DirectX::SoundState::PLAYING)
@@ -2454,11 +2401,9 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             //m_fxEmitter.SetVelocity(m_soundFxVecTest[i]->pos);
             //m_fxEmitter.SetOrientation(m_soundFxVecTest[i]->forward, m_soundFxVecTest[i]->up);
 
-
       //      m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
       //      m_soundFxVecTest[i]->fx->Apply3D(m_listener, m_fxEmitter);
-
-         
+ 
             //m_fxEmitter = m_soundFxVecTest[i]->emitter->
 
             //m_soundFxVecTest[i]->fx->Apply3D(m_listener, m_soundFxVecTest[i]->emitter->Update());
@@ -2484,8 +2429,73 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             m_soundFxVecTest.erase(it);
         }
     }
-
 }
 
+void Game::TriggerFireWithAudio()
+{
+    //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
+//m_soundSource->Play(true);
+
+    std::shared_ptr<DirectX::SoundStreamInstance> testSEI;
+    testSEI = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+
+    //std::shared_ptr <DirectX::SoundEffectInstance> fireFx;
+    //std::shared_ptr <SoundFx> fireFx(nullptr);
+    //std::shared_ptr <SoundFx> fireFx(new SoundFx());
+    std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
+    //std::shared_ptr <SoundFx> fireFx = std::make_shared<SoundFx>(new SoundFx());
+
+    fireFx->fx = testSEI;
+
+
+    //std::shared_ptr<DirectX::AudioEmitter> testEmitter;
+    //std::shared_ptr<DirectX::AudioEmitter> testEmitter(new DirectX::AudioEmitter);
+
+    std::shared_ptr<DirectX::AudioEmitter> testEmitter = std::make_shared<DirectX::AudioEmitter>();
+
+    //std::shared_ptr<DirectX::AudioEmitter> testEmitter = new std::shared_ptr<DirectX::AudioEmitter>;
+    //testEmitter = std::make_shared<DirectX::AudioEmitter>;
+
+    testEmitter->SetOmnidirectional();
+    testEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    testEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    testEmitter->CurveDistanceScaler = 14.f;
+    testEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    //testEmitter->EnableDefaultCurves();
+
+    //fireFx->emitter = testEmitter;
+    //fireFx->emitter = std::make_shared<DirectX::AudioEmitter>;;
+    fireFx->SetEmitter(testEmitter);
+
+
+    //fireFx->emitter = new std::shared_ptr<DirectX::AudioEmitter>;
+
+    //fireFx->isDestroyTrue = false;
+    //fireFx = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
+    //fireFx->fx = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+    //fireFx->fx(use_shared_ptr_by_value(testSEI));
+
+    //fireFx->SetPos(DirectX::SimpleMath::Vector3::UnitX);
+
+
+    fireFx->pos = DirectX::SimpleMath::Vector3::UnitX;
+
+    /*
+    fireFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+
+    fireFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    fireFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    fireFx->emitter->CurveDistanceScaler = 14.f;
+    fireFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    */
+
+
+    //m_vehicle->FireWeapon();
+    //m_vehicle->FireWeapon(m_soundSource);
+    m_vehicle->FireWeapon(fireFx);
+    m_soundFxVecTest.push_back(fireFx);
+}
 
 #pragma endregion

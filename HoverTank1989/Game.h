@@ -60,6 +60,8 @@ public:
 
 private:
 
+    void AudioFxDelete(std::shared_ptr<Utility::SoundFx> aFx);
+    void AudioFxReset(std::shared_ptr<Utility::SoundFx> aFx);
     void AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX);
     void AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX);
 
@@ -90,6 +92,8 @@ private:
     void SetUiAmmoDisplay(AmmoType aAmmoType);
     void SetUiDisplay(std::string aString);
     
+    void TriggerFireWithAudio();
+
     void ToggleMusicFadeOut();
     void TogglePause();
     void Update(DX::StepTimer const& aTimer);
@@ -283,42 +287,13 @@ private:
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioEffectStream;
 
     std::unique_ptr<DirectX::SoundEffect>       m_soundEffect;
-    //std::unique_ptr<DirectX::SoundEffectInstance> m_soundSource;
     std::shared_ptr<DirectX::SoundEffectInstance> m_soundSource;
 
     std::shared_ptr<DirectX::SoundStreamInstance> m_ssiTest;
-
-    std::vector<std::shared_ptr<DirectX::SoundEffectInstance>> m_soundSourceVec;
-
-    struct SoundFx
-    {
-        //std::shared_ptr<DirectX::SoundEffectInstance> fx;
-        std::shared_ptr<DirectX::SoundStreamInstance> fx;
-        std::shared_ptr<DirectX::AudioEmitter> emitter;
-        DirectX::SimpleMath::Vector3 pos;
-        DirectX::SimpleMath::Vector3 up;
-        bool isDestroyTrue;
-
-
-        void SetPos(DirectX::SimpleMath::Vector3 aPos)
-        {
-            pos = aPos;
-        }
-    };
- 
-    //std::vector<std::shared_ptr<SoundFx>> m_soundFxVecTest;
+    //std::vector<std::shared_ptr<DirectX::SoundEffectInstance>> m_soundSourceVec;
     std::vector<std::shared_ptr<Utility::SoundFx>> m_soundFxVecTest;
-    
 
     DirectX::AudioEmitter  m_fxEmitter;
-
-    //void AudioFxDelete(std::shared_ptr<SoundFx> aFx);
-    //void AudioFxReset(std::shared_ptr<SoundFx> aFx);
-    void AudioFxDelete(std::shared_ptr<Utility::SoundFx> aFx);
-    void AudioFxReset(std::shared_ptr<Utility::SoundFx> aFx);
-
-    //std::vector<std::unique_ptr<DirectX::SoundEffectInstance>> m_soundSourceVec;
-
     DirectX::AudioListener m_listener;
     DirectX::AudioEmitter  m_emitter;
 

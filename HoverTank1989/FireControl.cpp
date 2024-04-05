@@ -4057,7 +4057,7 @@ void FireControl::FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, con
         //firedMissile.guidance.type = MissileType::TYPE_ORANGE;
     }
 
-    firedMissile.guidance.type = m_currantMissileType;
+    firedMissile.guidance.type = m_currentMissileType;
 
     firedMissile.guidance.heading = aLaunchDirectionForward;
     firedMissile.guidance.targetID = m_currentTargetID;
@@ -13556,16 +13556,8 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
 
     firedMissile.guidance.uniqueId = GetUniqueMissileID();
 
-    if (firedMissile.guidance.uniqueId % 2 == 0)
-    {
-        //firedMissile.guidance.type = MissileType::TYPE_BLUE;
-    }
-    else
-    {
-        //firedMissile.guidance.type = MissileType::TYPE_ORANGE;
-    }
 
-    firedMissile.guidance.type = m_currantMissileType;
+    firedMissile.guidance.type = m_currentMissileType;
 
     firedMissile.guidance.heading = aLaunchDirectionForward;
     firedMissile.guidance.targetID = m_currentTargetID;
