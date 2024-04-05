@@ -995,26 +995,38 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx)
         DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
         DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
-        //velocity = DirectX::SimpleMath::Vector3::Zero;
         DirectX::SimpleMath::Vector3 up = m_modelController->GetWeaponUpWorld();
-        //DirectX::SimpleMath::Vector3 weaponUp = m_modelController->Get
-        m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);
+        //m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);
+
+        //aFireFx->emitter->SetPosition(pos);
+        //aFireFx->emitter->SetVelocity(velocity);
+        //aFireFx->emitter->SetOmnidirectional();
+        //aFireFx->emitter->SetOrientation(launchDir, up);
+        
+        aFireFx->pos = pos;
+        aFireFx->up = up;
+        aFireFx->isDestroyTrue = false;
+        aFireFx->forward = launchDir;
+
+        
+        aFireFx->fx->Play();
+
+        m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx);
+
+
+        // weapon recoil
         DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
         Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
-
-        //launchDir = DirectX::SimpleMath::Vector3::Transform(launchDir, m_heli.alignmentInverse);
 
         DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = m_heli.localWeaponPos - m_heli.localCenterOfMass;
         weaponTorqueArmLocal = DirectX::SimpleMath::Vector3::Transform(weaponTorqueArmLocal, m_heli.alignmentInverse);
         DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.weaponPos - m_heli.centerOfMass;
-        //DirectX::SimpleMath::Vector3 weaponForce = -m_heli.localWeaponDirection;
+        
         DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
         weaponForce.Normalize();
         DirectX::SimpleMath::Vector3 torqueForceNorm = -launchDirLocal;
         weaponForce.Normalize();
-        //float weaponForceMag = m_testImpulseForce.currentMagnitude * 0.05f;
-        //weaponForce *= weaponForceMag;
-        //weaponTorque = Utility::GetTorqueForce(weaponTorqueArm, weaponForce);
+ 
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
         //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);

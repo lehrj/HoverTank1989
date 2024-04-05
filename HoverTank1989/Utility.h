@@ -1226,6 +1226,7 @@ public:
         //std::shared_ptr<DirectX::SoundEffectInstance> fx;
         std::shared_ptr<DirectX::SoundStreamInstance> fx;
         std::shared_ptr<DirectX::AudioEmitter> emitter;
+        DirectX::SimpleMath::Vector3 forward;
         DirectX::SimpleMath::Vector3 pos;
         DirectX::SimpleMath::Vector3 up;
         bool isDestroyTrue;
@@ -1234,6 +1235,11 @@ public:
         void SetPos(DirectX::SimpleMath::Vector3 aPos)
         {
             pos = aPos;
+        }
+
+        void SetEmitter(std::shared_ptr<DirectX::AudioEmitter> aEmitter)
+        {
+            emitter = aEmitter;
         }
     };
 

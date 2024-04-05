@@ -93,6 +93,7 @@ private:
     void ToggleMusicFadeOut();
     void TogglePause();
     void Update(DX::StepTimer const& aTimer);
+    void UpdateAudioFx(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
 
     // Device resources.
