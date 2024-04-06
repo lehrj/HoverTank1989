@@ -1034,6 +1034,60 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx)
     }
 }
 
+void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_ptr<Utility::SoundFx> aRocketFx)
+{
+    if (m_fireControl->GetIsCoolDownActive() == false)
+    {
+        DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
+        DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
+        DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
+        DirectX::SimpleMath::Vector3 up = m_modelController->GetWeaponUpWorld();
+        //m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);
+
+        aFireFx->emitter->SetPosition(pos);
+        aFireFx->emitter->SetVelocity(velocity);
+        aFireFx->emitter->SetOmnidirectional();
+        aFireFx->emitter->SetOrientation(launchDir, up);
+        aFireFx->pos = pos;
+        aFireFx->up = up;
+        aFireFx->isDestroyTrue = false;
+        aFireFx->forward = launchDir;
+        aFireFx->fx->Play(false);
+
+
+        aRocketFx->emitter->SetPosition(pos);
+        aRocketFx->emitter->SetVelocity(velocity);
+        aRocketFx->emitter->SetOmnidirectional();
+        aRocketFx->emitter->SetOrientation(launchDir, up);
+        aRocketFx->pos = pos;
+        aRocketFx->up = up;
+        aRocketFx->isDestroyTrue = false;
+        aRocketFx->forward = launchDir;
+        aRocketFx->fx->Play(true);
+
+        //m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx);
+        m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aRocketFx);
+
+        // weapon recoil
+        DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
+        Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
+
+        DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = m_heli.localWeaponPos - m_heli.localCenterOfMass;
+        weaponTorqueArmLocal = DirectX::SimpleMath::Vector3::Transform(weaponTorqueArmLocal, m_heli.alignmentInverse);
+        DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.weaponPos - m_heli.centerOfMass;
+
+        DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
+        weaponForce.Normalize();
+        DirectX::SimpleMath::Vector3 torqueForceNorm = -launchDirLocal;
+        weaponForce.Normalize();
+
+        recoil.torqueArm = weaponTorqueArmLocal;
+        recoil.torqueForceNorm = torqueForceNorm;
+        //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
+        //m_testImpulseForce = recoil;
+    }
+}
+
 void Vehicle::TestDrawFireDirection()
 {
     DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
