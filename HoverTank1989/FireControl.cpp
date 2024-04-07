@@ -2062,6 +2062,11 @@ void FireControl::CheckCollisionsMissile()
                 m_missileVec[i].guidance.isRocketFired = false;
             }
         }
+
+        if (m_missileVec[i].projectileData.isDeleteTrue == true)
+        {
+            m_missileVec[i].audioFx->isDestroyTrue = true;
+        }
     }
 }
 
@@ -2221,7 +2226,41 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
         createdExplosion.explosionType = ExplosionType::EXPLOSIONTYPE_NONVEHICLE;
         createdExplosion.vehicleExplosionID = -1;
     }
+    //////////////////////
+    // fx
+        // explosion fx
+    std::shared_ptr <Utility::SoundFx> explosionFx(new Utility::SoundFx());
+    //explosionFx->fx = m_audioBank->CreateStreamInstance(4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+    //std::shared_ptr<DirectX::AudioEmitter> explosionEmitter = std::make_shared<DirectX::AudioEmitter>();
+    //explosionEmitter->SetOmnidirectional();
+
+    explosionFx->emitter = std::make_shared<DirectX::AudioEmitter>();
+    explosionFx->emitter->SetOmnidirectional();
+    /*
+    explosionEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    explosionEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    explosionEmitter->CurveDistanceScaler = 14.f;
+    explosionEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    */
+    auto launchDir = DirectX::SimpleMath::Vector3::UnitX;
+    auto up = DirectX::SimpleMath::Vector3::UnitY;
+    explosionFx->emitter->SetPosition(aPos);
+    explosionFx->emitter->SetVelocity(aVelocity);
+    explosionFx->emitter->SetOmnidirectional();
+    explosionFx->emitter->SetOrientation(launchDir, up);
+    explosionFx->pos = aPos;
+    explosionFx->up = up;
+    explosionFx->isDestroyTrue = false;
+    explosionFx->isTriggeredTrue = true;
+    explosionFx->forward = launchDir;
+    //explosionFx->fx->Play(false);
+
+    //explosionFx->SetEmitter(explosionEmitter);
+    createdExplosion.soundFx = explosionFx;
+
+    /////////////////////
     m_explosionStruct.explosionVec.push_back(createdExplosion);
+    m_fxExplosionVec.push_back(explosionFx);
 }
 
 void FireControl::CruiseGuidance(MissileData& aMissile, const float aTimeDelta)
@@ -2552,6 +2591,7 @@ void FireControl::DeleteMissileFromVecWithSound(const unsigned int aIndex)
         //m_missileVec[aIndex].audioFx->fx.reset();
         //m_missileVec[aIndex].audioFx->emitter.reset();
         m_missileVec[aIndex].audioFx->isDestroyTrue = true;
+        //m_missileVec[aIndex].explosionFx->isDestroyTrue = true;
 
         m_missileVec.erase(it);
     }
@@ -2730,6 +2770,7 @@ void FireControl::DetonateAllMissiles()
         m_missileVec[i].projectileData.isDeleteTrue = true; // placeholder till detonation pipeline is built
 
         m_missileVec[i].audioFx->isDestroyTrue = true;
+        //m_missileVec[i].explosionFx->isDestroyTrue = true;
     }
 }
 
@@ -4451,6 +4492,18 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
 bool FireControl::GetIsMissileActiveTrue() const
 {
     if (m_missileVec.size() > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool FireControl::GetIsMissileFireAvailable() const
+{
+    if (m_isCoolDownActive == false && m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE && m_currentTargetID != -1)
     {
         return true;
     }
@@ -8412,6 +8465,21 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
         CreateExplosion(get<0>(m_explosionStruct.explosionToPushVec[i]), DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_VEHICLEINTERNAL, get<1>(m_explosionStruct.explosionToPushVec[i]));
     }
     m_explosionStruct.explosionToPushVec.clear();
+
+    for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
+    {
+        if (m_explosionStruct.explosionVec[i].isLifeTimeExpired == true)
+        {
+            //std::vector<ExplosionData>::iterator it;
+            //it = m_explosionStruct.explosionVec.begin() + i;
+            //m_explosionStruct.explosionVec.erase(it);
+
+
+            m_explosionStruct.explosionVec[i].soundFx->isDestroyTrue = true;
+            //m_explosionStruct.explosionVec[i].soundFx->fx->Stop();
+            //m_explosionStruct.explosionVec[i].soundFx->emitter.reset();
+        }
+    }
 
     for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
     {
@@ -13515,6 +13583,7 @@ void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaun
     }
 }
 
+
 void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aFireFx)
 {
     AmmoData firedAmmo = m_ammoMissile.ammoData;
@@ -13579,6 +13648,7 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
 }
 
 
+
 void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTimeDelta)
 {
     aMissile.audioFx->pos = aMissile.projectileData.q.position;
@@ -13589,4 +13659,11 @@ void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTim
     aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
     aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
 
+
+
+    //aMissile.explosionFx->pos = aMissile.projectileData.q.position;
+    //aMissile.explosionFx->up = aMissile.projectileData.up;
+
+    //aMissile.explosionFx->emitter->Position = aMissile.projectileData.q.position;
+   // aMissile.explosionFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
 }

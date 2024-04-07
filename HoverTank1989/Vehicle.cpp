@@ -1088,6 +1088,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
     }
 }
 
+
 void Vehicle::TestDrawFireDirection()
 {
     DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();

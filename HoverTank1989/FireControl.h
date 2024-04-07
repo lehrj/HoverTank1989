@@ -582,9 +582,8 @@ struct MissileData
     GuidanceSystem guidance;
     ContrailPackage contrails;
     
-    
-    //DirectX::AudioEmitter  audioFx;
     std::shared_ptr<Utility::SoundFx> audioFx;
+    //std::shared_ptr<Utility::SoundFx> explosionFx;
 };
 
 struct MissileStruct
@@ -711,7 +710,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isManualControlTrue = true;
+    const bool isManualControlTrue = false;
     const bool isThrustVecOn = true;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
@@ -770,6 +769,8 @@ struct ExplosionData
     DirectX::SimpleMath::Vector3 lightDir0 = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 lightDir1 = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 lightDir2 = DirectX::SimpleMath::Vector3::UnitZ;
+
+    std::shared_ptr<Utility::SoundFx> soundFx;
 };
 
 struct ExplosionStruct
@@ -854,7 +855,10 @@ public:
 
     void FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet);
     void FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aFireFx);
+    //void FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aExplosionFx, std::shared_ptr<Utility::SoundFx> aFireFx);
+
     void FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx);
+    //void FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aExplosionFx, std::shared_ptr<Utility::SoundFx> aFireFx);
 
     void FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
@@ -872,6 +876,9 @@ public:
     
     void GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod);
     bool GetIsFireCooldownTrue() { return m_isCoolDownActive; };
+
+    bool GetIsMissileFireAvailable() const;
+
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
@@ -1258,7 +1265,16 @@ private:
     void CruiseGuidance(MissileData& aMissile, const float aTimeDelta);
     // end guidance functions
 
+    // audio and explosions
+    std::vector<std::shared_ptr<Utility::SoundFx>> m_fxExplosionVec;
+    //void AudioExplosionUpdate(const float aTimeDelta);
+
 public:
+
+    unsigned int GetCreateAudioCount() const { return m_fxExplosionVec.size(); };
+    std::shared_ptr <Utility::SoundFx> GetFxToCreate(unsigned int aIndex) { return m_fxExplosionVec[aIndex]; };
+    void ClearCreateAudioVec() { m_fxExplosionVec.clear(); };
+
     float GetExplosiveTorqueArmMod() const { return m_explosiveTorqueArmMod; };
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
     float GetMaxExplosionForce() const { return m_explosionStruct.maxExplosionForce; };

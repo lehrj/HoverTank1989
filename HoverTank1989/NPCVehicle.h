@@ -446,6 +446,9 @@ struct VehicleData
     bool                        isDead = false;
     bool                        isReadyToDelete = false;
     bool                        isVehicleInCameraFrustum = true;
+
+    bool                        isTargetedTrue = false;
+
     float                       deleteCountDownTimer = 1.0f;
     Utility::ImpactForce        impactForce;
     std::vector<Utility::ImpactForce> impactForceVec;
@@ -578,6 +581,9 @@ public:
     void PushImpulseForce(Utility::ImpulseForce aImpulse);
 
     void SetAlignment(const DirectX::SimpleMath::Matrix aMat) { m_vehicleStruct00.vehicleData.alignment = aMat; };
+
+    void SetIsTargetedTrue() { m_vehicleStruct00.vehicleData.isTargetedTrue = true; };
+
     void SetPos(const DirectX::SimpleMath::Vector3 aPos) { m_vehicleStruct00.vehicleData.q.position = aPos; };
     void SetVelocity(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
     bool GetDebugVal() { return m_isDebugToggleTrue; };

@@ -1230,7 +1230,7 @@ public:
         DirectX::SimpleMath::Vector3 pos;
         DirectX::SimpleMath::Vector3 up;
         bool isDestroyTrue;
-
+        bool isTriggeredTrue = true;
 
         void SetPos(DirectX::SimpleMath::Vector3 aPos)
         {

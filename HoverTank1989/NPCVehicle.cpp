@@ -1029,6 +1029,24 @@ void NPCVehicle::DrawNPC3(const DirectX::SimpleMath::Matrix aView, const DirectX
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
+    DirectX::SimpleMath::Vector4 targetColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    if (m_vehicleStruct00.vehicleData.isTargetedTrue == true)
+    {
+        color = targetColor;
+        mainBodyColor = targetColor;
+
+        jetHousingColor = targetColor;
+   
+        //steeringColor = targetColor;
+        //testHighlight = targetColor;
+
+
+        ventColor = targetColor;
+        //ventColorAlt = targetColor;
+        eyeColor = targetColor;
+
+    }
+
     // override default colors with individual npc color schemes
     /*
     eyeColor = m_vehicleStruct00.npcModel.color1;
@@ -1321,6 +1339,8 @@ void NPCVehicle::DrawNPC3(const DirectX::SimpleMath::Matrix aView, const DirectX
     m_vehicleStruct00.npcModel.skirtShape->Draw(m_vehicleStruct00.npcModel.worldSkirtShadowMatrix, aView, aProj, DirectX::Colors::Black);
     m_vehicleStruct00.npcModel.shadowBaseShape->Draw(m_vehicleStruct00.npcModel.worldBodyMainShadowMatrix, aView, aProj, DirectX::Colors::Black);
     */
+
+    m_vehicleStruct00.vehicleData.isTargetedTrue = false;
 }
 
 void NPCVehicle::DrawNPC4(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
@@ -4119,6 +4139,7 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     {
         UpdateNPCModel(aTimeDelta);
     }
+
     UpdateHardPoints();
     //UpdateJetCounterTorqueData(aTimeDelta);
     if (m_vehicleStruct00.vehicleData.q.position.y > 1300.0f || m_vehicleStruct00.vehicleData.q.velocity.y > 500.0f || m_vehicleStruct00.vehicleData.q.position.Length() > 2000.0f)

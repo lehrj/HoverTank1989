@@ -2051,7 +2051,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            if (m_fireControl->GetIsCoolDownActive() == false)
+            if (m_fireControl->GetIsMissileFireAvailable() == true)
             {
                 TriggerFireWithAudio();
             }
@@ -2361,6 +2361,32 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
 void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 {
+    for (unsigned int i = 0; i < m_fireControl->GetCreateAudioCount(); ++i)
+    {
+        std::shared_ptr <Utility::SoundFx> createdFx(new Utility::SoundFx());
+        createdFx = m_fireControl->GetFxToCreate(i);
+
+        createdFx->fx = m_audioBank->CreateStreamInstance(4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+        //std::shared_ptr<DirectX::AudioEmitter> explosionEmitter = std::make_shared<DirectX::AudioEmitter>();
+        //explosionEmitter->SetOmnidirectional();
+        
+        
+        createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+        createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+        createdFx->emitter->CurveDistanceScaler = 14.f;
+        createdFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+        
+        createdFx->isTriggeredTrue = true;
+        
+        createdFx->fx->Play(false);
+        //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+        //m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+        //m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+
+        m_soundFxVecTest.push_back(createdFx);
+    }
+    m_fireControl->ClearCreateAudioVec();
+
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {
         m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
@@ -2390,6 +2416,20 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 
 void Game::TriggerFireWithAudio()
 {
+    // explosion fx
+    /*
+    std::shared_ptr <Utility::SoundFx> explosionFx(new Utility::SoundFx());
+    explosionFx->fx = m_audioBank->CreateStreamInstance(4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+    std::shared_ptr<DirectX::AudioEmitter> explosionEmitter = std::make_shared<DirectX::AudioEmitter>();
+    explosionEmitter->SetOmnidirectional();
+    explosionEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    explosionEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    explosionEmitter->CurveDistanceScaler = 14.f;
+    explosionEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    explosionFx->SetEmitter(explosionEmitter);
+    */
+
+
     // rocket fx
     std::shared_ptr <Utility::SoundFx> rocketFx(new Utility::SoundFx());
     rocketFx->fx = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
@@ -2416,8 +2456,11 @@ void Game::TriggerFireWithAudio()
     //m_vehicle->FireWeapon(m_soundSource);
     //m_vehicle->FireWeapon(fireFx);
     m_vehicle->FireWeapon(fireFx, rocketFx);
+    //m_vehicle->FireWeapon(explosionFx, fireFx, rocketFx);
+
     m_soundFxVecTest.push_back(fireFx);
     m_soundFxVecTest.push_back(rocketFx);
+    //m_soundFxVecTest.push_back(explosionFx);
 }
 
 #pragma endregion

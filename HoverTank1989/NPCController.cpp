@@ -479,6 +479,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
     bool isTargetHit = false;
     float distanceToTarget = 10000.0f;
     int targetID = -1;
+    int targetIndex = 0;
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
         float distance = 0.0f;
@@ -500,6 +501,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
                 distanceToTarget = distance;
                 targetID = m_npcVec[i]->GetID();
                 isTargetHit = true;
+                targetIndex = i;
             }
             else
             {
@@ -507,6 +509,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
                 {
                     targetID = m_npcVec[i]->GetID();
                     distanceToTarget = distance;
+                    targetIndex = i;
                 }
             }
         }
@@ -515,15 +518,22 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
     /////////////////////////////////////////////
     // force target for testing
 
+    
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {   
         float distance = (m_npcVec[i]->GetPos() - aRay.position).Length();
         distanceToTarget = distance;
         targetID = m_npcVec[i]->GetID();
         isTargetHit = true;
+        targetIndex = i;
     }
+    
 
     /////////////////////////////////////////////
+    if (isTargetHit == true)
+    {
+        m_npcVec[targetIndex]->SetIsTargetedTrue();
+    }
 
     aDistance = distanceToTarget;
     aTargetId = targetID;
