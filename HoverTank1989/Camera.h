@@ -77,6 +77,9 @@ public:
     float GetAimTurnRate() const { return m_aimTurnRate; };
     float GetFreeLookSpeed() const { return m_posTravelSpeed; };
 
+    DirectX::SimpleMath::Vector3 GetForwardAudio() const { return m_forwardAudio; };
+    DirectX::SimpleMath::Vector3 GetUpAudio() const { return m_upAudio; };
+
     DirectX::BoundingFrustum GetCameraFrustum() const { return m_boundingFrustum; };
     DirectX::SimpleMath::Vector3 GetHomePos() const { return m_homePosition; };
     float GetPitch() const { return m_pitch; };
@@ -197,6 +200,8 @@ private:
     DirectX::SimpleMath::Vector3    m_homePosition;
     DirectX::SimpleMath::Vector3    m_target;
     DirectX::SimpleMath::Vector3    m_up;
+    DirectX::SimpleMath::Vector3    m_forwardAudio = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3    m_upAudio = DirectX::SimpleMath::Vector3::UnitY;
 
     float                           m_homePitch;
     float                           m_pitch;

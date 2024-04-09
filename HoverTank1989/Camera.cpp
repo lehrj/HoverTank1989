@@ -1163,6 +1163,12 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 
+	m_forwardAudio = m_target - m_position;
+	m_forwardAudio.Normalize();
+	auto rightAudio = m_forwardAudio.Cross(DirectX::SimpleMath::Vector3::UnitY);
+	m_upAudio = rightAudio.Cross(m_forwardAudio);
+	m_upAudio.Normalize();
+
 	UpdateOrthoganalMatrix();
 	UpdateProjectionMatrix();
 	UpdateBoundingFrustum();

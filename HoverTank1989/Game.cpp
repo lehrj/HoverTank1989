@@ -147,7 +147,8 @@ void Game::Initialize(HWND window, int width, int height)
 #endif
     m_audioEngine = std::make_unique<AudioEngine>(eflags);
 
-    m_audioEngine->SetReverb(Reverb_Hangar);
+    //m_audioEngine->SetReverb(Reverb_Hangar);
+    m_audioEngine->SetReverb(Reverb_Mountains);
 
     //m_audioEngine = std::make_unique<AudioEngine>(eflags);
     m_retryAudio = false;
@@ -706,9 +707,9 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     m_emitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
     m_fxEmitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
-
-    m_listener.Update(m_camera->GetPos(), m_camera->GetUp(), aTimer.GetElapsedSeconds());
-    
+    m_listener.SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUpAudio());
+    m_listener.Update(m_camera->GetPos(), m_camera->GetUpAudio(), aTimer.GetElapsedSeconds());
+   
     if (m_soundSource)
     {
         m_soundSource->Apply3D(m_listener, m_emitter);
@@ -2439,6 +2440,11 @@ void Game::TriggerFireWithAudio()
     rocketEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     rocketEmitter->CurveDistanceScaler = 14.f;
     rocketEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+
+    //rocketEmitter->ChannelCount = rocketFx->fx->GetChannelCount();
+    //int channelCount = rocketFx->fx->GetChannelCount();
+
+
     rocketFx->SetEmitter(rocketEmitter);
 
     // trigger fire fx
