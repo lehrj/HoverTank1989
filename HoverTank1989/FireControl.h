@@ -790,8 +790,17 @@ struct ExplosionStruct
     float maxExplosionImpactRadius;
 };
 
+enum class MuzzleFlashType
+{
+    MUZZLEFLASHTYPE_MAINGUN,
+    MUZZLEFLASHTYPE_LEFT,
+    MUZZLEFLASHTYPE_RIGHT,
+};
+
 struct MuzzleFlash
 {
+    MuzzleFlashType flashType = MuzzleFlashType::MUZZLEFLASHTYPE_MAINGUN;
+
     DirectX::SimpleMath::Vector4 color1 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
@@ -799,8 +808,7 @@ struct MuzzleFlash
     DirectX::SimpleMath::Vector4 endColor = DirectX::SimpleMath::Vector4(1.f, 0.4f, 0.f, 0.7f);
     DirectX::SimpleMath::Vector4 currentColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-    std::unique_ptr<DirectX::GeometricPrimitive>    muzzleFlashConeShape;
-    std::unique_ptr<DirectX::GeometricPrimitive>    muzzleFlashConeShape2;
+    DirectX::SimpleMath::Matrix localOrientation = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix worldMuzzleFlashConeMatrix;
     DirectX::SimpleMath::Matrix localMuzzleConeMatrix;
     DirectX::SimpleMath::Matrix worldTestMatrix;
@@ -817,6 +825,20 @@ struct MuzzleFlash
     float flickerScale = 0.5f;
     float baseConeHeight = 1.0f;
     float baseConeDiameter = 0.3f;
+
+    bool isDeleteTrue = false;
+};
+
+struct MuzzleFlashModel
+{
+    std::unique_ptr<DirectX::GeometricPrimitive>    muzzleFlashConeShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    muzzleFlashConeShape2;
+    DirectX::SimpleMath::Matrix worldMuzzleFlashConeMatrix;
+    DirectX::SimpleMath::Matrix localMuzzleConeMatrix;
+    DirectX::SimpleMath::Matrix worldTestMatrix;
+    DirectX::SimpleMath::Matrix localTestMatrix;
+    const float baseConeHeight = 1.0f;
+    const float baseConeDiameter = 0.3f;
 };
 
 struct LaserModel
@@ -953,6 +975,7 @@ private:
     
     void DrawMuzzleFlash(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawMuzzleFlashVec(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
 
@@ -1080,6 +1103,8 @@ private:
     void UpdateMissileAudioData(MissileData& aMissile, const float aTimeDelta);
     void UpdateMissileVec(double aTimeDelta);
     void UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
+    void UpdateMuzzleFlashVec(const double aTimeDelta);
+    void UpdateMuzzleFlashOld(MuzzleFlash& aMuzzleFlash, const double aTimeDelta);
     void UpdateNavData(MissileData& aMissile, const float aTimeDelta);
     void UpdateProjectileVec(double aTimeDelta);
     void UpdateProjectileData(ProjectileData& aProjectile, const float aTimeDelta);
@@ -1128,6 +1153,8 @@ private:
 
     AmmoType m_currentAmmoType;
     MuzzleFlash m_muzzleFlash;
+    MuzzleFlashModel m_muzzleFlashModel;
+    std::vector<MuzzleFlash> m_muzzleFlashVec;
 
     const float m_gravityMod = 1.0f;
     const float m_explosiveTorqueArmMod = 1.0f;
@@ -1268,6 +1295,8 @@ private:
     // audio and explosions
     std::vector<std::shared_ptr<Utility::SoundFx>> m_fxExplosionVec;
     //void AudioExplosionUpdate(const float aTimeDelta);
+
+    bool m_isTubeLeftFireTrue = false;
 
 public:
 

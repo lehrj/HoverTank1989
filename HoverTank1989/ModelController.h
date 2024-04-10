@@ -44,9 +44,11 @@ struct TankModel
 
     // missile tubes
     DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(-0.9f, -0.3f, -0.9f);
-    //DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-
     DirectX::SimpleMath::Vector3 localMissileTubeRightPos = DirectX::SimpleMath::Vector3(0.9f, -0.3f, -0.9f);
+
+    DirectX::SimpleMath::Vector3 localizedTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 localizedTubeRightPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+
     DirectX::SimpleMath::Vector3 worldMissileTubeLeftPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 worldMissileTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Matrix  missileTubeLeftTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f));
@@ -98,7 +100,6 @@ struct TankModel
 class ModelController
 {
 public:
-    //void InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret);
     void InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     void DrawModel(ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
@@ -106,6 +107,11 @@ public:
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_playerModel.muzzlePosWorld; };
     DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };
     
+    DirectX::SimpleMath::Vector3 GetLocalizedTubeLeftPos() const { return m_playerModel.localizedTubeLeftPos; };
+    DirectX::SimpleMath::Vector3 GetLocalizedTubeRightPos() const { return m_playerModel.localizedTubeRightPos; };
+    DirectX::SimpleMath::Matrix GetLocalizedTubeMatLeft() const { return m_missileTubeMatLeft; };
+    DirectX::SimpleMath::Matrix GetLocalizedTubeMatRight() const { return m_missileTubeMatRight; };
+
     DirectX::SimpleMath::Vector3 GetMissileTubeDirLeft() const { return m_playerModel.worldMissileTubeLeftDir; };
     DirectX::SimpleMath::Vector3 GetMissileTubeDirRight() const { return m_playerModel.worldMissileTubeRightDir; };
     DirectX::SimpleMath::Vector3 GetMissileTubePosLeft() const { return m_playerModel.worldMissileTubeLeftPos; };
@@ -126,11 +132,9 @@ public:
     void SetGlowColors(const DirectX::SimpleMath::Vector4 aColorCenter, const DirectX::SimpleMath::Vector4 aColorLeft, const DirectX::SimpleMath::Vector4 aColorRight, const DirectX::SimpleMath::Vector3 aLightDir);
     void SetGlowVals(const float aCenterVal, const float aLeftVal, const float aRightVal, const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aDir, const float aTimeStep);
     void UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane);
-    //void UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane, const DirectX::SimpleMath::Vector4 aGlowColor);
 
 private:
     
-    //void InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret);
     void InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext);
     void DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawTank2(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection);
@@ -139,15 +143,15 @@ private:
     const DirectX::SimpleMath::Vector3 m_centerOfMassOffset = DirectX::SimpleMath::Vector3(0.0f, -0.5f, 0.0f);
 
     TankModel m_playerModel;
-    //std::shared_ptr<Vehicle> m_player;
     std::shared_ptr<DebugData> m_debugData;
     Environment const* m_environment;
 
-    //std::unique_ptr<DirectX::Model> m_testModel;
-    //std::shared_ptr<DirectX::Model> m_testModel2;
-    //std::unique_ptr<DirectX::Model> m_testModel3;
-
-    //DirectX::SimpleMath::Vector3 m_glowLightDirection = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 m_testPos = DirectX::SimpleMath::Vector3::Zero;
+
+    const float m_missileTubeVerticalRot = Utility::ToRadians(40.0f);
+    const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
+
+    const DirectX::SimpleMath::Matrix m_missileTubeMatLeft = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(m_missileTubeHorizontalRot);
+    const DirectX::SimpleMath::Matrix m_missileTubeMatRight = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileTubeHorizontalRot);
 };
 

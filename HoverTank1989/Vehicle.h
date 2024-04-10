@@ -356,6 +356,12 @@ public:
     DirectX::SimpleMath::Vector3 GetMissleTubePosLeft() const { return m_heli.worldMissileTubeLeftPos; };
     DirectX::SimpleMath::Vector3 GetMissleTubePosRight() const { return m_heli.worldMissileTubeRightPos; };
 
+    DirectX::SimpleMath::Vector3 GetMissleTubePosLeftLocalized() const { return m_modelController->GetLocalizedTubeLeftPos(); };
+    DirectX::SimpleMath::Vector3 GetMissleTubePosRightLocalized() const { return m_modelController->GetLocalizedTubeRightPos(); };
+
+    DirectX::SimpleMath::Matrix GetMissileTubeMatLeft() const { return m_modelController->GetLocalizedTubeMatLeft(); };
+    DirectX::SimpleMath::Matrix GetMissileTubeMatRight() const { return m_modelController->GetLocalizedTubeMatRight(); };
+
     DirectX::SimpleMath::Vector3 GetMissleTubeUpLeft() const { return m_heli.worldMissileTubeLeftUp; };
     DirectX::SimpleMath::Vector3 GetMissleTubeUpRight() const { return m_heli.worldMissileTubeRightUp; };
 
@@ -573,5 +579,7 @@ private:
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(400.0f, 9.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-400.0f, 8.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
+
+    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(0.0f, 8.0f, 0.0f);
 };
 
