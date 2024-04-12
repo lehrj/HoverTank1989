@@ -2181,16 +2181,18 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->DebugIntputValUpdate(static_cast<float>(aTimer.GetElapsedSeconds()));
+            //m_fireControl->DebugIntputValUpdate(static_cast<float>(aTimer.GetElapsedSeconds()));
             //m_fireControl->DebugIntputValUpdateStatic(true);
+            m_camera->FovUp(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.OemCloseBrackets)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->DebugIntputValUpdate(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            //m_fireControl->DebugIntputValUpdate(static_cast<float>(-aTimer.GetElapsedSeconds()));
             //m_fireControl->DebugIntputValUpdateStatic(false);
+            m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.OemQuotes)

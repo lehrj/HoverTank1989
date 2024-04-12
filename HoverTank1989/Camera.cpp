@@ -326,6 +326,33 @@ void Camera::DrawUI()
 	m_debugData->ToggleDebugOff();
 }
 
+void Camera::FovDown(const float aInput)
+{
+	if (m_fovMod - m_fovModDelta * aInput < m_fovMin)
+	{
+		m_fovMod = m_fovMin;
+	}
+	else
+	{
+		m_fovMod -= m_fovModDelta * aInput;
+	}
+
+	m_fovZoomPercent = 1.0f - ((m_fovMod - m_fovMin) / (m_fovMax - m_fovMin));
+}
+
+void Camera::FovUp(const float aInput)
+{
+	if (m_fovMod + m_fovModDelta * aInput > m_fovMax)
+	{
+		m_fovMod = m_fovMax;
+	}
+	else
+	{
+		m_fovMod += m_fovModDelta * aInput;
+	}
+	m_fovZoomPercent = 1.0f - ((m_fovMod - m_fovMin) / (m_fovMax - m_fovMin));
+}
+
 void Camera::FreeLookSpeedUp()
 {
 	if (m_posTravelSpeed + m_freeLookSpeedDelta > m_freeLookSpeedMax)
@@ -1174,6 +1201,13 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	UpdateBoundingFrustum();
 
 	//DrawUI();
+
+
+	m_debugData->ToggleDebugOnOverRide();
+	m_debugData->DebugPushUILineDecimalNumber("m_fovMod = ", m_fovMod, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_fovZoomPercent = ", m_fovZoomPercent, "");
+	m_debugData->PushDebugLinePositionIndicator(m_target, 5.0f, 0.0f, DirectX::Colors::Orange);
+	m_debugData->ToggleDebugOff();
 }
 
 void Camera::UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer)
@@ -2097,8 +2131,67 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
 	DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
 	DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
-	DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
-	DirectX::SimpleMath::Vector3 targPos = m_snapTargBase;
+	//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
+	DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+	//DirectX::SimpleMath::Vector3 targPos = m_snapTargBase;
+	DirectX::SimpleMath::Vector3 targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
+	targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
+	targPos.x = 4.14f;
+	targPos.y = 0.82f;
+	targPos.z = 0.0f;
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
+
+	DirectX::SimpleMath::Vector3 testTarg = m_vehicleFocus->GetLocalizedMuzzlePos();
+
+	DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
+	currentQuat *= turretPitchQuat;
+	currentQuat *= turretYawQuat;
+	currentQuat *= vehicleQuat;
+	DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
+	m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
+
+	DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
+	currentTargetQuat *= vehicleQuat;
+	DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
+	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+
+	camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
+
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, vehicleQuat);
+	testTarg = DirectX::SimpleMath::Vector3::Transform(testTarg, vehicleQuat);
+	camPos += m_vehicleFocus->GetPos();
+	targPos += m_vehicleFocus->GetPos();
+	testTarg += m_vehicleFocus->GetPos();
+	const float t = 0.9f;
+	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
+
+	//targPos = m_snapTargBase;
+	targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);;
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
+
+	targPos += m_vehicleFocus->GetPos();
+
+	DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
+	m_viewMatrix = camMat;
+
+	m_snapPosPrev = camPos;
+	m_snapTargPrev = targPos;
+
+	m_position = camPos;
+	m_target = targPos;
+}
+
+void Camera::UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta)
+{
+	DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
+	DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
+	DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
+	//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
+	DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+	//DirectX::SimpleMath::Vector3 targPos = m_snapTargBase;
+	DirectX::SimpleMath::Vector3 targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);;
 	targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
 	targPos.x = 4.14f;
 	targPos.y = 0.82f;
@@ -2544,7 +2637,8 @@ void Camera::UpdateOrthoganalMatrix()
 
 void Camera::UpdateProjectionMatrix()
 {
-	m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(m_fov, (float)m_clientWidth / (float)m_clientHeight, m_nearPlane, m_farPlane);
+	//m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(m_fov, (float)m_clientWidth / (float)m_clientHeight, m_nearPlane, m_farPlane);
+	m_projectionMatrix = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(m_fov * m_fovMod, (float)m_clientWidth / (float)m_clientHeight, m_nearPlane, m_farPlane);
 }
 
 void Camera::UpdateViewMatrix()

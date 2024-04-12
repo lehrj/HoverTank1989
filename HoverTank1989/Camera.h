@@ -73,6 +73,9 @@ public:
     void FreeLookSpeedUp();
     void FreeLookSpeedDown();
 
+    void FovUp(const float aInput);
+    void FovDown(const float aInput);
+
     CameraState GetCameraState() const { return m_cameraState; };
     float GetAimTurnRate() const { return m_aimTurnRate; };
     float GetFreeLookSpeed() const { return m_posTravelSpeed; };
@@ -214,6 +217,13 @@ private:
     const float                     m_farPlane = 255000.0f;
 
     const float                     m_fov = DirectX::XM_PI / 4.f;
+    float                           m_fovMod = 1.0f;
+    const float                     m_fovModDelta = 1.5f;
+    //const float                     m_fovMax = DirectX::XM_PI / 2.f;
+    //const float                     m_fovMin = DirectX::XM_PI / 8.f;
+    const float                     m_fovMax = 1.0f;
+    const float                     m_fovMin = 0.3f;
+    float                           m_fovZoomPercent = 0.0f;
 
     DirectX::SimpleMath::Matrix     m_viewMatrix;
     DirectX::SimpleMath::Matrix     m_projectionMatrix;
@@ -309,6 +319,7 @@ private:
     void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCamera(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta);
 
     // SpinCamera
     float m_cameraSpin = 0.0;
@@ -379,13 +390,16 @@ private:
     const DirectX::SimpleMath::Vector3 m_missileSnapTarg = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
     const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
-    //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-6.0f, 1.5f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-3.0f, 0.3f, 0.0f);
 
+    //const DirectX::SimpleMath::Vector3 m_snapZoomModPos = DirectX::SimpleMath::Vector3(-14.0f, 3.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapZoomModPos = DirectX::SimpleMath::Vector3(7.0f, -3.0f, 0.0f);
 
-    //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(5.0f, 1.0f, 0.0f);
-    //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 1.0f, -4.0f);
-    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 0.5f, -4.0f);
+    //const DirectX::SimpleMath::Vector3 m_snapZoomModTarget = DirectX::SimpleMath::Vector3(0.0f, 6.0f, -14.0f);
+    const DirectX::SimpleMath::Vector3 m_snapZoomModTarget = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -100.0f);
+
+    //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 0.5f, -4.0f);
+    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 3.0f, -4.0f);
 
     DirectX::SimpleMath::Vector3 m_snapPosNorm = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapTargNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -395,7 +409,5 @@ private:
     DirectX::SimpleMath::Vector3 m_snapTargPrev = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Quaternion m_snapQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-
 };
 
