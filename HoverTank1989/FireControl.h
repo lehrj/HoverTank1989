@@ -592,6 +592,14 @@ struct MissileStruct
     MissileModel modelData;
 };
 
+enum class MissileTubeSelected
+{
+    MISSILETUBESELECTED_BOTH,
+    MISSILETUBESELECTED_LEFT,
+    MISSILETUBESELECTED_RIGHT,
+    MISSILETUBESELECTED_DEBUG,
+};
+
 struct MissileConsts
 {
     const float angularDragMod = 0.8f;
@@ -900,6 +908,7 @@ public:
     bool GetIsFireCooldownTrue() { return m_isCoolDownActive; };
 
     bool GetIsMissileFireAvailable() const;
+    bool GetIsMissileDualFireTrue() const {return m_isTubeDualFireTrue;};
 
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
@@ -957,6 +966,8 @@ private:
     void CheckCollisions();
     void CheckCollisionsMissile();
     
+    void CycleMissileTubeSelected();
+
     void DebugMissileFunc(MissileData* aMissile);
     void DebugGraphCurveData(MissileData& aMissile, const float aTimeDelta);
     void DebugSetMissileToPlayerPos(MissileData& aMissile);
@@ -1296,7 +1307,11 @@ private:
     std::vector<std::shared_ptr<Utility::SoundFx>> m_fxExplosionVec;
     //void AudioExplosionUpdate(const float aTimeDelta);
 
-    bool m_isTubeLeftFireTrue = false;
+    bool m_isTubeLeftFireTrue = true;
+    bool m_isTubeRippleFireTrue = true;
+    bool m_isTubeDualFireTrue = true;
+    MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
+
 
 public:
 

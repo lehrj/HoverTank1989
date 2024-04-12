@@ -1202,8 +1202,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	//DrawUI();
 
-
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	m_debugData->DebugPushUILineDecimalNumber("m_fovMod = ", m_fovMod, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_fovZoomPercent = ", m_fovZoomPercent, "");
 	m_debugData->PushDebugLinePositionIndicator(m_target, 5.0f, 0.0f, DirectX::Colors::Orange);
