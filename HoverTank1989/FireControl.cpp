@@ -8976,6 +8976,11 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     UpdateMissileVec(aTimeDelta);
     UpdateExplosionVec(aTimeDelta);
     
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_missileVec.size() = ", m_missileVec.size(),"");
+
+    m_debugData->ToggleDebugOff();
+
     if (m_isManualInputDecayTrue == true)
     {
         m_manualThrustVecPitch = ManualInputDecay(m_manualThrustVecPitch, static_cast<float>(aTimeDelta));
@@ -13913,6 +13918,7 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
 
 void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx)
 {
+
     if (m_isCoolDownActive == false)
     {
         if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
@@ -13975,8 +13981,31 @@ void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaun
                     FireMissileWithAudio(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), 0.0f, aFireFx);
                 }
 
-                m_isCoolDownActive = true;
-                m_coolDownTimer = m_ammoMissile.ammoData.cooldown;
+                if (m_isTubeDualFireTrue == true)
+                {
+                    if (m_isDualFireCoolDownOverRideTrue == false)
+                    {
+                        m_isDualFireCoolDownOverRideTrue = true;
+                    }
+                    else
+                    {
+                        m_isDualFireCoolDownOverRideTrue = false;
+                    }
+
+                    if (m_isDualFireCoolDownOverRideTrue == false)
+                    {
+                        m_isCoolDownActive = true;
+                        m_coolDownTimer = m_ammoMissile.ammoData.cooldown;
+                    }
+                }
+                else
+                {
+                    m_isCoolDownActive = true;
+                    m_coolDownTimer = m_ammoMissile.ammoData.cooldown;
+                }
+
+                //m_isCoolDownActive = true;
+                //m_coolDownTimer = m_ammoMissile.ammoData.cooldown;
             }
         }
     }
@@ -13986,7 +14015,6 @@ void FireControl::CycleMissileTubeSelected()
 {
     if (m_isTubeRippleFireTrue == true)
     {
-
         if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         {
             m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
@@ -14002,8 +14030,8 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
 {
     AmmoData firedAmmo = m_ammoMissile.ammoData;
 
-    m_isCoolDownActive = true;
-    m_coolDownTimer = firedAmmo.cooldown;
+    //m_isCoolDownActive = true;
+    //m_coolDownTimer = firedAmmo.cooldown;
 
     MissileData firedMissile;
     //firedMissile = new MissileData;
@@ -14038,7 +14066,6 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
     firedMissile.projectileData.time = 0.0f + aTimeOffSet;
 
     firedMissile.guidance.uniqueId = GetUniqueMissileID();
-
 
     firedMissile.guidance.type = m_currentMissileType;
 

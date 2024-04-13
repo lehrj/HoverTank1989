@@ -2056,14 +2056,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             {
                 if (m_fireControl->GetIsMissileDualFireTrue() == true)
                 {
-                    TriggerFireWithAudio();
+                    TriggerFireWithAudio();             
                     TriggerFireWithAudio();
                 }
                 else
                 {
                     TriggerFireWithAudio();
-                }
-                
+                }  
             }
         }
     }
