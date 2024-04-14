@@ -148,7 +148,9 @@ private:
 
     DirectX::SimpleMath::Vector3 m_testPos = DirectX::SimpleMath::Vector3::Zero;
 
-    const float m_missileTubeVerticalRot = Utility::ToRadians(40.0f);
+    //const float m_missileTubeVerticalRot = Utility::ToRadians(40.0f);
+    //const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
+    const float m_missileTubeVerticalRot = Utility::ToRadians(50.0f);
     const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
 
     const DirectX::SimpleMath::Matrix m_missileTubeMatLeft = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(m_missileTubeHorizontalRot);

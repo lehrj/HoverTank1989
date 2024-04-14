@@ -3044,11 +3044,408 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
 
     DrawProjectiles(aView, aProj);
     //DrawMissiles(aView, aProj, aEffect, aInputLayout);
-    DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
+    
     DrawLaser(aView, aProj, aEffect, aInputLayout);
+    DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
 }
 
 void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    if (m_isTargetingLaserOn == true)
+    {
+        float scale = m_playerLaser.distance;
+        DirectX::SimpleMath::Matrix updateMat = m_playerVehicle->GetAlignment();
+        updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetPos());
+
+        const float testRot = Utility::WrapAngle(m_playerLaser.flickerRot + m_playerLaser.flickerRate);
+        m_playerLaser.flickerRot = testRot;
+        const float scaleTransOffset = (m_playerLaser.distance) * 0.5f;
+        DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
+
+        float diameterScale = 1.0f;
+        if (m_playerLaser.isFlickerTrue == false)
+        {
+            diameterScale = 0.5f;
+        }
+
+        DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
+        DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
+
+        m_playerLaser.worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+        //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
+        m_playerLaser.worldBodyMatrix *= scaleMat;
+        m_playerLaser.worldBodyMatrix *= scaleTransOffsetMat;
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
+        m_playerLaser.worldBodyMatrix *= updateMat;
+
+        DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
+        DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
+        DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
+
+        m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
+
+        DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
+        DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
+        DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
+
+        //lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+        //lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+        //lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+
+        DirectX::SimpleMath::Vector4 laserColor = m_playerLaser.laserColor;
+        if (m_isTargetingLaserLockTrue == true)
+        {
+            laserColor = m_playerLaser.laserColorLockTrue;
+        }
+
+        //DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColor;
+        //DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+        DirectX::SimpleMath::Vector4 color1 = laserColor;
+        DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+        aEffect->SetEmissiveColor(color2);
+        aEffect->SetLightSpecularColor(0, color2);
+        aEffect->SetLightSpecularColor(1, color2);
+        aEffect->SetLightSpecularColor(2, color2);
+
+        aEffect->SetLightDiffuseColor(0, color1);
+        aEffect->SetLightDiffuseColor(1, color1);
+        aEffect->SetLightDiffuseColor(2, color1);
+
+        aEffect->SetLightDirection(0, lightDir0);
+        aEffect->SetLightDirection(1, lightDir1);
+        aEffect->SetLightDirection(2, lightDir2);
+
+        //aEffect->EnableDefaultLighting();
+        aEffect->SetWorld(m_playerLaser.worldBodyMatrix);
+        //aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+        //m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        if (m_playerLaser.isFlickerTrue == true)
+        {
+            m_playerLaser.isFlickerTrue = false;
+            aEffect->SetColorAndAlpha(laserColor);
+            m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
+        }
+        else
+        {
+            m_playerLaser.isFlickerTrue = true;
+            aEffect->SetColorAndAlpha(laserColor);
+            m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+        }
+    }
+
+    if (m_missileConsts.isMissleTargetingLaserTrue == true)
+    {
+        DirectX::SimpleMath::Vector3 localTargPos = DirectX::SimpleMath::Vector3::Zero;
+        for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+        {
+            if (m_missileVec[i].guidance.isTargetingLaserOn == true && m_missileVec[i].guidance.isTargetLocked == true)
+            {
+
+                //float scale = m_playerLaser.distance;
+                float scale = m_missileVec[i].guidance.targetDistance;
+                //DirectX::SimpleMath::Matrix updateMat = m_playerVehicle->GetAlignment();
+                DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+                //updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetPos());
+                updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+
+                const float testRot = Utility::WrapAngle(m_playerLaser.flickerRot + m_playerLaser.flickerRate);
+                //m_playerLaser.flickerRot = testRot;
+                //const float scaleTransOffset = (m_playerLaser.distance) * 0.5f;
+                const float scaleTransOffset = (m_missileVec[i].guidance.targetDistance) * 0.5f;
+                DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
+
+                //float diameterScale = 1.0f;
+                float diameterScale = (m_missileConsts.dimensions.z * 1.0f) * 4.0f;
+                //float diameterScale = 3.0f;
+                if (m_isLaserFlickerTrue == false)
+                {
+                    //diameterScale *= 0.5f;
+                }
+                //diameterScale = 3.0f;
+
+                DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
+                DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
+
+                DirectX::SimpleMath::Matrix worldBodyMatrix;
+                worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+                //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
+                //worldBodyMatrix *= m_missileVec[i].guidance.targetLaserAlignment;
+                worldBodyMatrix *= scaleMat;
+                worldBodyMatrix *= scaleTransOffsetMat;
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+                worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+                //worldBodyMatrix *= m_missileVec[i].guidance.targetLaserAlignment;
+                //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+                //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+
+                //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
+
+                DirectX::SimpleMath::Matrix updateMatAlign = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+                DirectX::SimpleMath::Matrix updateMatPos = DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+                //worldBodyMatrix *= updateMatAlign;
+                worldBodyMatrix *= updateMatPos;
+
+                //worldBodyMatrix *= updateMatPos;
+                //////////////////////////////////////////////////////////////////////////////
+                worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+                worldBodyMatrix *= scaleMat;
+                worldBodyMatrix *= scaleTransOffsetMat;
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+                worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f));
+
+
+                //DirectX::SimpleMath::Matrix lookAtMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.targetPosition, m_missileVec[i].projectileData.up);
+                DirectX::SimpleMath::Matrix lookAtMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_missileVec[i].guidance.targetPosition, m_missileVec[i].projectileData.up);
+                DirectX::SimpleMath::Matrix testMat = DirectX::SimpleMath::Matrix::CreateRotationX(cos(m_testTimer));
+                //worldBodyMatrix *= lookAtMat;
+                worldBodyMatrix *= testMat;
+                //worldBodyMatrix *= m_missileVec[i].guidance.targetLaserAlignment;
+
+                DirectX::SimpleMath::Matrix createWorldMat = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position, -m_missileVec[i].projectileData.right, m_missileVec[i].projectileData.up);
+                worldBodyMatrix *= createWorldMat;
+                ///////////////////////////////////////////////////////////////////////////////
+
+                DirectX::SimpleMath::Vector3 localizedTargetPos = m_missileVec[i].guidance.targetPosition - m_missileVec[i].projectileData.q.position;
+                localizedTargetPos = DirectX::SimpleMath::Vector3::Transform(localizedTargetPos, m_missileVec[i].projectileData.inverseAlignmentQuat);
+                m_debugData->PushDebugLinePositionIndicator(localizedTargetPos, 200.0f, 0.0f, DirectX::Colors::Olive);
+                DirectX::SimpleMath::Vector3 worldTargetPos = localizedTargetPos;
+                worldTargetPos = DirectX::SimpleMath::Vector3::Transform(worldTargetPos, m_missileVec[i].projectileData.alignmentQuat);
+                DirectX::SimpleMath::Matrix worldTargetMat = DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+                worldTargetPos = DirectX::SimpleMath::Vector3::Transform(worldTargetPos, worldTargetMat);
+                //worldTargetPos = 
+
+                //m_debugData->PushDebugLinePositionIndicator(m_missileVec[i].guidance.targetPosition, 320.0f, 0.0f, DirectX::Colors::Lime);
+                //m_debugData->PushDebugLinePositionIndicator(worldTargetPos, 200.0f, 2.0f, DirectX::Colors::Orange);
+                worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+                worldBodyMatrix *= scaleMat;
+                worldBodyMatrix *= scaleTransOffsetMat;
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-90.0f));
+
+                DirectX::SimpleMath::Vector3 lookAtVec = m_missileVec[i].guidance.targetPosition - m_missileVec[i].projectileData.q.position;
+                lookAtMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_missileVec[i].guidance.targetPosition, m_missileVec[i].projectileData.up);
+                lookAtMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, lookAtVec, DirectX::SimpleMath::Vector3::UnitY);
+                lookAtMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.targetPosition, DirectX::SimpleMath::Vector3::UnitY);
+                //lookAtMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, lookAtVec, m_missileVec[i].projectileData.up);
+                worldBodyMatrix *= lookAtMat;
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+
+                //m_debugData->PushTestDebugBetweenPoints(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.targetPosition, DirectX::Colors::Coral);
+                lookAtMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, localizedTargetPos, DirectX::SimpleMath::Vector3::UnitY);
+                DirectX::SimpleMath::Matrix testWorldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+                testWorldBodyMatrix *= lookAtMat;
+
+                DirectX::SimpleMath::Vector3 testLine = DirectX::SimpleMath::Vector3::UnitX;
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, lookAtMat);
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].projectileData.alignmentQuat);
+                //m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 300.0f, 0.0f, DirectX::Colors::Fuchsia);
+
+                testLine = DirectX::SimpleMath::Vector3::UnitY;
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, lookAtMat);
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].projectileData.alignmentQuat);
+                //m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 300.0f, 0.0f, DirectX::Colors::Yellow);
+
+                DirectX::SimpleMath::Matrix createWorldMat2 = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position, -m_missileVec[i].projectileData.right, m_missileVec[i].projectileData.up);
+                //DirectX::SimpleMath::Matrix createWorldMat2 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -m_missileVec[i].projectileData.right, m_missileVec[i].projectileData.up);
+                DirectX::SimpleMath::Matrix lookAtMat2 = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, localizedTargetPos, DirectX::SimpleMath::Vector3::UnitY);
+                //DirectX::SimpleMath::Matrix lookAtMat2 = DirectX::SimpleMath::Matrix::CreateLookAt(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.targetPosition, m_missileVec[i].projectileData.up);
+                testLine = DirectX::SimpleMath::Vector3::UnitZ;
+                testLine *= m_missileVec[i].guidance.targetDistance;
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, lookAtMat2);
+                //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].guidance.targetLaserAlignment);
+                //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].projectileData.alignmentQuat);
+                //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, createWorldMat2);
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].projectileData.alignmentQuat);
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position));
+                m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 400.0f, 0.0f, DirectX::Colors::SkyBlue);
+                m_debugData->PushTestDebugBetweenPoints(m_missileVec[i].projectileData.q.position, testLine, DirectX::Colors::Lime);
+                m_debugData->DebugPushUILineDecimalNumber("testLine.x = ", testLine.x, "");
+                m_debugData->DebugPushUILineDecimalNumber("testLine.y = ", testLine.y, "");
+                m_debugData->DebugPushUILineDecimalNumber("testLine.z = ", testLine.z, "");
+                m_debugData->PushDebugLinePositionIndicator(testLine, 100.0f, 0.0f, DirectX::Colors::Teal);
+
+
+                DirectX::SimpleMath::Matrix lookAtMat3 = DirectX::SimpleMath::Matrix::CreateLookAt(
+                    DirectX::SimpleMath::Vector3::Zero, m_missileVec[i].projectileData.q.position - m_missileVec[i].guidance.targetPosition,
+                    DirectX::SimpleMath::Vector3::UnitY);
+
+                testLine = -DirectX::SimpleMath::Vector3::UnitX;
+                testLine *= m_missileVec[i].guidance.targetDistance;
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, lookAtMat3);
+                //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].guidance.targetLaserAlignment);
+                testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].projectileData.alignmentQuat);
+                //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, createWorldMat2);
+                //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, m_missileVec[i].projectileData.alignmentQuat);
+                //testLine = DirectX::SimpleMath::Vector3::Transform(testLine, DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position));
+                //m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine, 400.0f, 0.0f, DirectX::Colors::Red);
+                //m_debugData->PushTestDebugBetweenPoints(m_missileVec[i].projectileData.q.position, testLine, DirectX::Colors::Orange);
+                //m_debugData->PushDebugLinePositionIndicator(testLine, 330.0f, 0.0f, DirectX::Colors::Coral);
+
+                //m_debugData->PushDebugLine(m_playerVehicle->GetPos(), DirectX::SimpleMath::Vector3::UnitZ, 100.0f, 0.0f, DirectX::Colors::White);
+
+                //DirectX::SimpleMath::Matrix lookAtMat4 = DirectX::SimpleMath::Matrix::CreateLookAt(m_missileVec[i].projectileData.q.position, m_missileVec[i].guidance.targetPosition, m_missileVec[i].projectileData.up);
+
+                localizedTargetPos = m_missileVec[i].guidance.targetPosition - m_missileVec[i].projectileData.q.position;
+                //localizedTargetPos = m_missileVec[i].projectileData.q.position - m_missileVec[i].guidance.targetPosition;
+                //localizedTargetPos = DirectX::SimpleMath::Vector3::Transform(localizedTargetPos, m_missileVec[i].projectileData.inverseAlignmentQuat);
+
+                DirectX::SimpleMath::Matrix lookAtMat4 = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, localizedTargetPos, DirectX::SimpleMath::Vector3::UnitY);
+                //DirectX::SimpleMath::Matrix lookAtMat4 = DirectX::SimpleMath::Matrix::CreateLookAt(localizedTargetPos, DirectX::SimpleMath::Vector3::Zero, DirectX::SimpleMath::Vector3::UnitY);
+
+                DirectX::SimpleMath::Vector3 testLine2 = DirectX::SimpleMath::Vector3::UnitX;
+                testLine2 = DirectX::SimpleMath::Vector3::Transform(testLine2, lookAtMat4);
+                testLine2 = DirectX::SimpleMath::Vector3::Transform(testLine2, m_missileVec[i].projectileData.alignmentQuat);
+                //testLine2 = DirectX::SimpleMath::Vector3::Transform(testLine2, DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position));
+                testLine2 = DirectX::SimpleMath::Vector3::Transform(testLine2, DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].guidance.targetPosition));
+                //m_debugData->DebugClearUI();
+                m_debugData->PushTestDebugBetweenPoints(m_missileVec[i].projectileData.q.position, testLine2, DirectX::Colors::Orange);
+                m_debugData->PushDebugLinePositionIndicator(testLine2, 330.0f, 0.0f, DirectX::Colors::Lime);
+                m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, testLine2, 100.0f, 0.0f, DirectX::Colors::White);
+                m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.forward, 50.0f, 0.0f, DirectX::Colors::Red);
+
+                worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+                worldBodyMatrix *= scaleMat;
+                worldBodyMatrix *= scaleTransOffsetMat;
+                worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+                worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+                worldBodyMatrix *= lookAtMat4;
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].guidance.targetPosition);
+                //worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
+                //////////////////////////////////////////////////////////////////////////////
+
+                ///////////////////////////////////////////////////////////////
+                // From tank prototype
+                DirectX::SimpleMath::Vector3 toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
+                toUseLocalMuzzlePos.z = -2.0f;
+                //toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseLocalMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
+                DirectX::SimpleMath::Vector3 toUseWorldMuzzlePos = toUseLocalMuzzlePos;
+                toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
+                toUseWorldMuzzlePos.x = 2.0f;
+                toUseWorldMuzzlePos.x = m_missileConsts.dimensions.x * 0.5f;
+                toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseWorldMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
+
+
+                //DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(5) - (m_playerVehicle->GetPos() + toUseLocalMuzzlePos);
+                //DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(m_missileVec[i].guidance.targetID) - (m_missileVec[i].projectileData.q.position + toUseLocalMuzzlePos);
+                DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(m_missileVec[i].guidance.targetID) - (m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos);
+                //forwardToTargNorm = DirectX::SimpleMath::Vector3::UnitX;
+                //forwardToTargNorm = DirectX::SimpleMath::Vector3::Transform(forwardToTargNorm, m_missileVec[i].projectileData.alignmentQuat);
+
+                //forwardToTargNorm = DirectX::SimpleMath::Vector3::UnitX;
+                //DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::Identity;
+                //alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_missileVec[i].guidance.targetLaserAlignment);
+                //alignQuat.Normalize();
+                //alignQuat *= m_missileVec[i].projectileData.inverseAlignmentQuat;
+                //forwardToTargNorm = DirectX::SimpleMath::Vector3::Transform(forwardToTargNorm, m_missileVec[i].guidance.targetLaserAlignment);
+                //forwardToTargNorm = DirectX::SimpleMath::Vector3::Transform(forwardToTargNorm, m_missileVec[i].projectileData.alignmentQuat);
+                //forwardToTargNorm = m_missileVec[i].guidance.heading;
+                //forwardToTargNorm = DirectX::SimpleMath::Vector3::Transform(forwardToTargNorm, alignQuat);
+                //forwardToTargNorm = DirectX::SimpleMath::Vector3::Transform(forwardToTargNorm, m_missileVec[i].guidance.targetLaserAlignment);
+                forwardToTargNorm.Normalize();
+                DirectX::SimpleMath::Vector3 rightCross = forwardToTargNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
+                DirectX::SimpleMath::Vector3 testUp = rightCross.Cross(forwardToTargNorm);
+
+                //DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_playerVehicle->GetPos() + toUseLocalMuzzlePos, forwardToTargNorm, testUp);
+                //DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseLocalMuzzlePos, forwardToTargNorm, testUp);
+                //DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseLocalMuzzlePos, forwardToTargNorm, testUp);
+                DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos, forwardToTargNorm, testUp);
+                //updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position, forwardToTargNorm, testUp);
+
+
+                DirectX::SimpleMath::Matrix updateMatTest = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos, forwardToTargNorm, testUp);
+
+                posOffset = DirectX::SimpleMath::Vector3(0.0f, -2.0f, 4.0f);
+                posOffset = DirectX::SimpleMath::Vector3(0.0f, 2.0f, 0.0f);
+                
+                worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
+                worldBodyMatrix *= scaleMat;
+                worldBodyMatrix *= scaleTransOffsetMat;
+                worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
+                worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+
+                worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(toUseLocalMuzzlePos);
+
+                worldBodyMatrix *= updateMat6;
+
+                //////////////////////////////////////////////////////////////
+
+                DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
+                DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
+                DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
+
+                m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
+
+                DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
+                DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
+                DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
+
+                DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColor;
+                DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+                //color1 = color2;
+                aEffect->SetEmissiveColor(color2);
+                aEffect->SetLightSpecularColor(0, color2);
+                aEffect->SetLightSpecularColor(1, color2);
+                aEffect->SetLightSpecularColor(2, color2);
+
+                aEffect->SetLightDiffuseColor(0, color1);
+                aEffect->SetLightDiffuseColor(1, color1);
+                aEffect->SetLightDiffuseColor(2, color1);
+
+                aEffect->SetLightDirection(0, lightDir0);
+                aEffect->SetLightDirection(1, lightDir1);
+                aEffect->SetLightDirection(2, lightDir2);
+                aEffect->EnableDefaultLighting();
+                aEffect->SetWorld(worldBodyMatrix);
+
+                aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+                //aEffect->SetColorAndAlpha(DirectX::Colors::Purple);
+                //m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+
+                /////////////////////////////
+                if (m_isLaserFlickerTrue == true)
+                {
+                    m_isLaserFlickerTrue = false;
+                    aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+                    m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
+                }
+                else
+                {
+                    m_isLaserFlickerTrue = true;
+                    aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+                    m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+                }
+
+                ////////////////////////////
+
+                //m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+                aEffect->EnableDefaultLighting();
+                //m_debugData->DebugClearUI();
+                DirectX::SimpleMath::Vector3 decomTrans = DirectX::SimpleMath::Vector3::Zero;
+                DirectX::SimpleMath::Vector3 decomScale = DirectX::SimpleMath::Vector3::Zero;
+                DirectX::SimpleMath::Quaternion decomQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+                worldBodyMatrix.Decompose(decomScale, decomQuat, decomTrans);
+                m_debugData->PushDebugLinePositionIndicator(decomTrans, 350.0f, 0.0f, DirectX::Colors::Aqua);
+
+                DirectX::SimpleMath::Vector3 testAlignVec = DirectX::SimpleMath::Vector3::UnitX;
+                testAlignVec = DirectX::SimpleMath::Vector3::Transform(testAlignVec, decomQuat);
+
+                m_debugData->PushDebugLine(m_playerVehicle->GetPos(), testAlignVec, 250.0f, 0.0f, DirectX::Colors::BlueViolet);
+
+                localTargPos = m_missileVec[i].guidance.targetPosition;
+            }
+        }
+    }
+}
+
+void FireControl::DrawLaserOld(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
     if (m_isTargetingLaserOn == true)
     {
@@ -6045,6 +6442,27 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     DirectX::SimpleMath::Vector3 noseConeTranslation = DirectX::SimpleMath::Vector3(ammoLength * 0.5f, 0.0f, 0.0f);
     aAmmo.modelData.localNoseConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
     aAmmo.modelData.worldNoseConeMatrix = aAmmo.modelData.localNoseConeMatrix;
+
+    // seeker housing
+    const float seekerHousingHeight = ammoDiameter * 0.3f;
+    const float seekerHousingDiameter = ammoDiameter * 1.02f;
+    aAmmo.modelData.seekerHousingShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), seekerHousingHeight, seekerHousingDiameter);
+    aAmmo.modelData.localSeekerHousingMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.modelData.localSeekerHousingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    aAmmo.modelData.localSeekerHousingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
+    //aAmmo.modelData.localSeekerHousingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    aAmmo.modelData.seekerHousingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+
+    // seeker lens
+    const float seekerLensHeight = seekerHousingDiameter * 1.02f;
+    const float seekerLensDiameter = seekerHousingHeight * 0.8f;
+    aAmmo.modelData.seekerLensShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), seekerLensHeight, seekerLensDiameter);
+    aAmmo.modelData.localSeekerLensMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
+    //aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    aAmmo.modelData.seekerLensTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    aAmmo.modelData.localSeekerLensTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f , -seekerLensHeight * 0.05f));
 
     // rocket plume
     //const float plumeLength = aAmmo.ammoData.length * 0.5f;
@@ -10057,7 +10475,76 @@ void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTim
     aMissile.guidance.finAngle3 = (aMissile.guidance.finAngle3 + vertAng) * 0.5f;
     aMissile.guidance.finAngle4 = (aMissile.guidance.finAngle4 - vertAng) * 0.5f;
 
-    
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    auto targetPosLocalized = aMissile.guidance.targetPositionWorld - aMissile.projectileData.q.position;
+    targetPosLocalized = DirectX::SimpleMath::Vector3::Transform(targetPosLocalized, aMissile.projectileData.inverseAlignmentQuat);
+
+
+    DirectX::SimpleMath::Vector3 toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
+    toUseLocalMuzzlePos.z = -2.0f;
+    //toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseLocalMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
+    DirectX::SimpleMath::Vector3 toUseWorldMuzzlePos = toUseLocalMuzzlePos;
+    toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
+    toUseWorldMuzzlePos.x = 2.0f;
+    toUseWorldMuzzlePos.x = m_missileConsts.dimensions.x * 0.5f;
+    //toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseWorldMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
+    toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseWorldMuzzlePos, aMissile.projectileData.alignmentQuat);
+
+    auto localSeekerPos = DirectX::SimpleMath::Vector3(m_missileConsts.dimensions.x * 0.5f, 0.0f, 0.0f);
+    //auto forwardToTargNormTest = targetPosLocalized - localSeekerPos;
+    auto forwardToTargNormTest = targetPosLocalized;
+
+    //DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(m_missileVec[i].guidance.targetID) - (m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos);
+    DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(aMissile.guidance.targetID) - (aMissile.projectileData.q.position + toUseWorldMuzzlePos);
+
+    forwardToTargNorm.Normalize();
+    forwardToTargNormTest.Normalize();
+
+    if (forwardToTargNormTest.x < 0.0f)
+    {
+        forwardToTargNormTest.x = 0.0f;
+        forwardToTargNormTest.Normalize();
+    }
+
+    DirectX::SimpleMath::Vector3 rightCross = forwardToTargNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
+    DirectX::SimpleMath::Vector3 testUp = rightCross.Cross(forwardToTargNorm);
+
+    auto testUpLocal = DirectX::SimpleMath::Vector3::UnitY;
+
+    //DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos, forwardToTargNorm, testUp);
+    //DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(aMissile.projectileData.q.position + toUseWorldMuzzlePos, forwardToTargNorm, testUp);
+    //DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(localSeekerPos, forwardToTargNormTest, testUpLocal);
+    DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, forwardToTargNormTest, testUpLocal);
+    //updateMat6 = DirectX::SimpleMath::Matrix::Identity;
+    aMissile.guidance.seekerHousingMat = updateMat6;
+    aMissile.guidance.seekerLensMat = updateMat6;
+
+    auto eularVec = updateMat6.ToEuler();
+    aMissile.guidance.seekerHousingMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, 0.0f, 0.0f);
+    //aMissile.guidance.seekerHousingMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.x, eularVec.y, eularVec.z);
+    //aMissile.guidance.seekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.x, eularVec.y, eularVec.z);
+    aMissile.guidance.seekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, eularVec.x, 0.0);
+    auto seekerPosWorld = DirectX::SimpleMath::Vector3(m_missileConsts.dimensions.x * 0.5f, 0.0f, 0.0f);
+    seekerPosWorld = DirectX::SimpleMath::Vector3::Transform(seekerPosWorld, aMissile.projectileData.alignmentQuat);
+    seekerPosWorld += aMissile.projectileData.q.position;
+
+    auto housingTestLine = DirectX::SimpleMath::Vector3::UnitX;
+    housingTestLine = DirectX::SimpleMath::Vector3::Transform(housingTestLine, aMissile.guidance.seekerHousingMat);
+    auto lensTestLine = DirectX::SimpleMath::Vector3::UnitX;
+    lensTestLine = DirectX::SimpleMath::Vector3::Transform(lensTestLine, aMissile.guidance.seekerLensMat);
+
+    /*
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(seekerPosWorld, lensTestLine, 4.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(seekerPosWorld, housingTestLine, 3.0f, 0.0f, DirectX::Colors::Purple);
+
+    m_debugData->DebugPushUILineDecimalNumber("eularVec.x = ", Utility::ToDegrees(eularVec.x), "");
+    m_debugData->DebugPushUILineDecimalNumber("eularVec.y = ", Utility::ToDegrees(eularVec.y), "");
+    m_debugData->DebugPushUILineDecimalNumber("eularVec.z = ", Utility::ToDegrees(eularVec.z), "");
+    m_debugData->ToggleDebugOff();
+    */
 }
 
 void FireControl::UpdateMissileVec(double aTimeDelta)
@@ -12704,7 +13191,9 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
 
     aMissile.guidance.altitude = aMissile.projectileData.q.position.y - (m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position));
 
-    m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
+    //m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
+    m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
+    aMissile.guidance.targetPosition = aMissile.guidance.targetPositionWorld;
     float prevDistance = aMissile.guidance.targetDistance;
     aMissile.guidance.targetDistance = (aMissile.projectileData.q.position - aMissile.guidance.targetPosition).Length();
     aMissile.guidance.targetDistanceDelta = prevDistance - aMissile.guidance.targetDistance;
@@ -13153,8 +13642,8 @@ void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelt
 
 
 
-    m_debugData->PushDebugLinePositionIndicator(targPosAtTime, 20.0f, 0.0f, DirectX::Colors::Coral);
-    m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, targPosAtTime, DirectX::Colors::Lime);
+    //m_debugData->PushDebugLinePositionIndicator(targPosAtTime, 20.0f, 0.0f, DirectX::Colors::Coral);
+    //m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, targPosAtTime, DirectX::Colors::Lime);
     m_debugData->ToggleDebugOff();
 
 
@@ -13425,6 +13914,32 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         aEffect->SetWorld(updateMat);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.noseConeShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        // seeker housing
+        updateMat = m_ammoMissile.modelData.localSeekerHousingMatrix;
+        updateMat *= m_ammoMissile.modelData.localSeekerLensTranslation;
+        updateMat *= m_missileVec[i].guidance.seekerHousingMat;
+        updateMat *= m_ammoMissile.modelData.seekerHousingTranslation;
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        //aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
+        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.axelColor);
+        //aEffect->SetColorAndAlpha(DirectX::Colors::Orange);
+        m_ammoMissile.modelData.seekerHousingShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        // seeker lens
+        updateMat = m_ammoMissile.modelData.localSeekerLensMatrix;
+        updateMat *= m_ammoMissile.modelData.localSeekerLensTranslation;
+        updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        //updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        updateMat *= m_ammoMissile.modelData.seekerLensTranslation;
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        //aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
+        aEffect->SetColorAndAlpha(DirectX::Colors::White);
+        m_ammoMissile.modelData.seekerLensShape->Draw(aEffect.get(), aInputLayout.Get());
 
         // tailEndCap
         updateMat = m_ammoMissile.modelData.localTailEndCapMatrix;

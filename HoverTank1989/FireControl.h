@@ -356,6 +356,7 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Vector3 targetDestination = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetPosition = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 targetPositionWorld = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetVelocity = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 targetForward = DirectX::SimpleMath::Vector3::UnitX;
     float targetDistance = 0.0f;
@@ -431,6 +432,8 @@ struct GuidanceSystem
 
     float afterBurnFlickerRotation = 0.0f;
 
+    DirectX::SimpleMath::Matrix seekerHousingMat = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix seekerLensMat = DirectX::SimpleMath::Matrix::Identity;
 };
 
 struct AmmoStruct
@@ -498,6 +501,17 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    noseConeShape;
     DirectX::SimpleMath::Matrix localNoseConeMatrix;
     DirectX::SimpleMath::Matrix worldNoseConeMatrix;
+
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    seekerHousingShape;
+    DirectX::SimpleMath::Matrix localSeekerHousingMatrix;
+    DirectX::SimpleMath::Matrix seekerHousingTranslation;
+
+    std::unique_ptr<DirectX::GeometricPrimitive>    seekerLensShape;
+    DirectX::SimpleMath::Matrix localSeekerLensMatrix;
+    DirectX::SimpleMath::Matrix localSeekerLensTranslation;
+    DirectX::SimpleMath::Matrix seekerLensTranslation;
+
 
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShapeInvert;
@@ -611,8 +625,14 @@ struct MissileConsts
     const float rocketFireDelay = 1.0f;
     const float finDeployTime = 0.4f;
     const float rocketFireFullTime = 0.5f;
-    */
+    */    
 
+    const float finDeployDelay = 0.2f;
+    const float rocketFireDelay = 0.6f;
+    const float finDeployTime = 0.4f;
+    const float rocketFireFullTime = 0.5f;
+
+    /*
     const float finDeployDelay = 0.1f;
     const float rocketFireDelay = 0.05f;
 
@@ -620,6 +640,7 @@ struct MissileConsts
     const float finDeployTime = 1.15f;
     //const float rocketFireFullTime = 0.01f;
     const float rocketFireFullTime = 1.01f;
+    */
 
     const float wingArea = 0.3f;
     const float testFinArea = 0.3f;
@@ -671,7 +692,7 @@ struct MissileConsts
     const float climbOutAngle = Utility::ToRadians(45.0f);
     const float climbOutDuration = 0.5f;
     //const float climbOutAltMin = 80.0f;
-    const float climbOutAltMin = 10.0f;
+    const float climbOutAltMin = 50.0f;
 
     const float cruiseAltMin = 100.0f;
     const float maxAlt = 200.0f;
@@ -722,11 +743,11 @@ struct MissileConsts
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = false;
-    const bool isThrustVecOn = true;
+    const bool isThrustVecOn = false;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
-    const bool isContrailsOn = true;
+    const bool isContrailsOn = false;
     const bool isGravityOn = true;
 };
 
@@ -991,6 +1012,7 @@ private:
     void DrawMuzzleFlash2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawMuzzleFlashVec(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawLaserOld(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawProjectiles(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
 
     float GetAeroTensorControlInput(const float aAng, const float aMinAng, const float aMaxAng);
