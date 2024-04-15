@@ -473,8 +473,9 @@ struct MissileModel
     // consts & colors
     // contrails
     const float contrailColorMax = 0.9f; 
-    const float contrailColorMin = 0.3f;
-    const unsigned int contrailDrawCountMax = 20;
+    //const float contrailColorMin = 0.35f;
+    const float contrailColorMin = 0.0f;
+    const unsigned int contrailDrawCountMax = 30;
     // afterburn flicker
     const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
     const float afterBurnFlickerRateScale = 100.1f;
@@ -747,7 +748,7 @@ struct MissileConsts
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
     const bool isBodyAeroOn = false;
-    const bool isContrailsOn = false;
+    const bool isContrailsOn = true;
     const bool isGravityOn = true;
 };
 
@@ -876,8 +877,8 @@ struct MuzzleFlashModel
 struct LaserModel
 {
     // colors
-    const DirectX::SimpleMath::Vector4 laserColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-    const DirectX::SimpleMath::Vector4 laserColorLockTrue = DirectX::SimpleMath::Vector4(0.0f, 1.f, 0.f, 1.0f);
+    const DirectX::SimpleMath::Vector4 laserColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    const DirectX::SimpleMath::Vector4 laserColorLockTrue = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 1.0f, 1.0f);
     float distance = 0.0f;
     float flickerRot = 0.0f;

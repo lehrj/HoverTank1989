@@ -518,7 +518,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
     /////////////////////////////////////////////
     // force target for testing
 
-    
+    /*
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {   
         float distance = (m_npcVec[i]->GetPos() - aRay.position).Length();
@@ -527,7 +527,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
         isTargetHit = true;
         targetIndex = i;
     }
-    
+    */
 
     /////////////////////////////////////////////
     if (isTargetHit == true)
@@ -696,13 +696,13 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     const float high = 5.0f;
     //const float zPosOffSet = 12.0f;
     //const float zPosOffSet = 25.0f;
-    const float zPosOffSet = 75.0f;
+    const float zPosOffSet = -75.0f;
     float baseHeight = 10.0f;
     //const int rows = 6;
     //const int columns = 4;
     const int rows = 1;
     //const int columns = 12;
-    const int columns = 12;
+    const int columns = 6;
     //const float xOrgVal = -500.0f;
     //const float xOrgVal = -200.0f;
     //const float zOrgVal = (static_cast<float>(columns * 0.5f) * -zPosOffSet) + (zPosOffSet * 0.5f);
@@ -712,7 +712,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, -40.0f);
     //DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3(xOrgVal, 11.0f, zOrgVal);
     DirectX::SimpleMath::Vector3 pos = m_startPos;
-    /*
+    
     for (int i = 0; i < columns; ++i)
     {
         for (int j = 0; j < rows; ++j)
@@ -720,16 +720,16 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
             float yOffSet = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
             pos.y = baseHeight + yOffSet;
             this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
-            pos.x += 25.0f;
+            pos.x += 55.0f;
         }
         //baseHeight = 120.0f;
         pos.x = xOrgVal;
         pos.z += zPosOffSet;
     }
-    */
+    
 
     pos = m_startPos;
-    this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
+    //this->AddNPC(aContext, NPCType::NPCTYPE_NPC00, heading, pos, aNpcController);
 
     const float xLine = 85.0f;
     const float yLine = 10.0f;
@@ -925,6 +925,41 @@ void NPCController::UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vec
         ++testBreak;
     }
 }
+
+bool NPCController::UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward)
+{
+    int idIndex = -1;
+    bool isIdFound = false;
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            if (idIndex == -1)
+            {
+                idIndex = i;
+            }
+            else
+            {
+                int testBreak = 0;
+                ++testBreak;
+            }
+        }
+    }
+    if (idIndex != -1)
+    {
+        isIdFound = true;
+        aPosition = m_npcVec[idIndex]->GetPos();
+        aVelocity = m_npcVec[idIndex]->GetVelocity();
+    }
+    else
+    {
+        isIdFound = false;
+        int testBreak = 0;
+        ++testBreak;
+    }
+    return isIdFound;
+}
+
 
 void NPCController::UpdateNPCController(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta)
 {

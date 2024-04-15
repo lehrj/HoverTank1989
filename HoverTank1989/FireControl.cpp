@@ -2841,6 +2841,16 @@ void FireControl::DrawContrails(MissileData& aMissile)
         }
 
         float ratio = static_cast<float>(i) / static_cast<float>(m_ammoMissile.modelData.contrailDrawCountMax);
+        if (ratio > 0.5f)
+        {
+            ratio = m_ammoMissile.modelData.contrailColorMax;
+        }
+        else
+        {
+            ratio = static_cast<float>(i) / static_cast<float>(m_ammoMissile.modelData.contrailDrawCountMax);
+            ratio *= 2.0f;
+        }
+
         auto conColor = DirectX::Colors::White;
         // To prevent the contrails color going all the way to black, this cuts off color change at set value
         if (ratio >= m_ammoMissile.modelData.contrailColorMax)
@@ -3413,12 +3423,14 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 {
                     m_isLaserFlickerTrue = false;
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+                    aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
                     m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
                 }
                 else
                 {
                     m_isLaserFlickerTrue = true;
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+                    aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
                     m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
                 }
 
@@ -13192,7 +13204,20 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
     aMissile.guidance.altitude = aMissile.projectileData.q.position.y - (m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position));
 
     //m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
-    m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
+    //m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
+
+    m_npcController->UpdateMissleGuidance(aMissile.guidance.targetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
+
+    if (m_npcController->UpdateMissleGuidanceBool(aMissile.guidance.targetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward) == false)
+    {
+        if (m_npcController->UpdateMissleGuidanceBool(m_currentTargetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward) == false)
+        {
+            aMissile.guidance.isExplodingTrue = true;
+            CreateExplosion(aMissile.projectileData.q.position, aMissile.projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+            aMissile.projectileData.isDeleteTrue = true;
+        }
+    }
+
     aMissile.guidance.targetPosition = aMissile.guidance.targetPositionWorld;
     float prevDistance = aMissile.guidance.targetDistance;
     aMissile.guidance.targetDistance = (aMissile.projectileData.q.position - aMissile.guidance.targetPosition).Length();
