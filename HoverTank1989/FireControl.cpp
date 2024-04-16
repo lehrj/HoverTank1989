@@ -3103,18 +3103,12 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
         DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
 
-        //lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
-        //lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
-        //lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
-
         DirectX::SimpleMath::Vector4 laserColor = m_playerLaser.laserColor;
         if (m_isTargetingLaserLockTrue == true)
         {
             laserColor = m_playerLaser.laserColorLockTrue;
         }
 
-        //DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColor;
-        //DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
         DirectX::SimpleMath::Vector4 color1 = laserColor;
         DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
         aEffect->SetEmissiveColor(color2);
@@ -3129,11 +3123,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         aEffect->SetLightDirection(0, lightDir0);
         aEffect->SetLightDirection(1, lightDir1);
         aEffect->SetLightDirection(2, lightDir2);
-
-        //aEffect->EnableDefaultLighting();
         aEffect->SetWorld(m_playerLaser.worldBodyMatrix);
-        //aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
-        //m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
 
         if (m_playerLaser.isFlickerTrue == true)
         {
@@ -3424,34 +3414,15 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                     m_isLaserFlickerTrue = false;
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
-                    m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
+                    //m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
                 }
                 else
                 {
                     m_isLaserFlickerTrue = true;
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
-                    m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+                    //m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
                 }
-
-                ////////////////////////////
-
-                //m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
-                aEffect->EnableDefaultLighting();
-                //m_debugData->DebugClearUI();
-                DirectX::SimpleMath::Vector3 decomTrans = DirectX::SimpleMath::Vector3::Zero;
-                DirectX::SimpleMath::Vector3 decomScale = DirectX::SimpleMath::Vector3::Zero;
-                DirectX::SimpleMath::Quaternion decomQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-                worldBodyMatrix.Decompose(decomScale, decomQuat, decomTrans);
-                m_debugData->PushDebugLinePositionIndicator(decomTrans, 350.0f, 0.0f, DirectX::Colors::Aqua);
-
-                DirectX::SimpleMath::Vector3 testAlignVec = DirectX::SimpleMath::Vector3::UnitX;
-                testAlignVec = DirectX::SimpleMath::Vector3::Transform(testAlignVec, decomQuat);
-
-                m_debugData->PushDebugLine(m_playerVehicle->GetPos(), testAlignVec, 250.0f, 0.0f, DirectX::Colors::BlueViolet);
-
-                localTargPos = m_missileVec[i].guidance.targetPosition;
             }
         }
     }
@@ -6455,26 +6426,82 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.localNoseConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
     aAmmo.modelData.worldNoseConeMatrix = aAmmo.modelData.localNoseConeMatrix;
 
+    //auto seekerOffset = 0.0025 * 2.0f;
+    //auto seekerOffset = 0.25 * 2.0f;
+    auto seekerOffset = ammoDiameter * 0.05f;
+    auto seekerBaseTranslation = noseConeTranslation;
+    seekerBaseTranslation.x += seekerOffset;
+    //seekerBaseTranslation.x += 0.5f;
+
     // seeker housing
     const float seekerHousingHeight = ammoDiameter * 0.3f;
-    const float seekerHousingDiameter = ammoDiameter * 1.02f;
+    //const float seekerHousingDiameter = ammoDiameter * 1.02f;
+    const float seekerHousingDiameter = ammoDiameter * 0.98f;
+    //const float noseToHousingRatio = seekerHousingDiameter - ammoDiameter;
+    const float noseToHousingRatio = 0.0025;
+    noseConeTranslation.x += seekerOffset;
     aAmmo.modelData.seekerHousingShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), seekerHousingHeight, seekerHousingDiameter);
     aAmmo.modelData.localSeekerHousingMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.localSeekerHousingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     aAmmo.modelData.localSeekerHousingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
     //aAmmo.modelData.localSeekerHousingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
-    aAmmo.modelData.seekerHousingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    //aAmmo.modelData.localSeekerHousingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -seekerOffset, 0.0f));
+    aAmmo.modelData.seekerHousingTranslation *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    //aAmmo.modelData.seekerHousingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(seekerBaseTranslation);
+    //aAmmo.modelData.localSeekerHousingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(noseToHousingRatio, 0.0f, 0.0f));
+    //aAmmo.modelData.localSeekerHousingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -noseToHousingRatio * 2.0f));
+    aAmmo.modelData.localSeekerHousingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -seekerOffset));
 
     // seeker lens
-    const float seekerLensHeight = seekerHousingDiameter * 1.02f;
+    //const float seekerLensHeight = seekerHousingDiameter * 0.95f;
+    //const float seekerLensHeight = seekerHousingDiameter * 0.25f;
+    const float seekerLensHeight = 0.007f;
     const float seekerLensDiameter = seekerHousingHeight * 0.8f;
     aAmmo.modelData.seekerLensShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), seekerLensHeight, seekerLensDiameter);
     aAmmo.modelData.localSeekerLensMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
     aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
+    
+    //auto localSeekerLensTrans = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -seekerLensHeight * 1.0f);
+    //auto localSeekerLensTrans = DirectX::SimpleMath::Vector3(0.0f, 0.0f, seekerLensHeight * 0.5f);
+    auto localSeekerLensTrans = DirectX::SimpleMath::Vector3(0.0f, 0.0f, (-ammoDiameter * 0.5f) + (seekerLensHeight * 1.0f));
+ 
+    aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(localSeekerLensTrans);
+    //aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(localSeekerLensTrans);
+    //aAmmo.modelData.localSeekerLensMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(localSeekerLensTrans);
     //aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
-    aAmmo.modelData.seekerLensTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
-    aAmmo.modelData.localSeekerLensTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f , -seekerLensHeight * 0.05f));
+    aAmmo.modelData.seekerLensTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(seekerBaseTranslation);
+    //aAmmo.modelData.seekerLensTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    //auto localSeekerLensTrans = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -seekerLensHeight * 1.0f);
+    //aAmmo.modelData.localSeekerLensTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(localSeekerLensTrans);
+    aAmmo.modelData.localSeekerLensTranslation = aAmmo.modelData.localSeekerHousingTranslation;
+
+    // seeker ring
+    //const float seekerRingThickness = 0.0067f;
+    const float seekerRingThickness = seekerLensHeight * 1.0f;
+    //const float seekerRingDiameter = seekerLensDiameter - (seekerRingThickness * 0.5f);
+    const float seekerRingDiameter = seekerLensDiameter;
+    //const float seekerRingThickness = seekerRingDiameter * 0.14f;
+    
+    aAmmo.modelData.seekerRingShape = DirectX::GeometricPrimitive::CreateTorus(aContext.Get(), seekerRingDiameter, seekerRingThickness);
+    //aAmmo.modelData.seekerRingShape = DirectX::GeometricPrimitive::CreateSphere(aContext.Get(), seekerRingDiameter);
+    aAmmo.modelData.localSeekerRingMatrix = DirectX::SimpleMath::Matrix::Identity;
+    //aAmmo.modelData.localSeekerRingMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 0.3f, 1.0f));
+    aAmmo.modelData.localSeekerRingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+    aAmmo.modelData.localSeekerRingMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
+    aAmmo.modelData.localSeekerRingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(localSeekerLensTrans);
+    //aAmmo.modelData.localSeekerRingMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(noseConeTranslation);
+    aAmmo.modelData.seekerRingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(seekerBaseTranslation);
+    //auto localSeekerRingTrans = DirectX::SimpleMath::Vector3(0.0f, 0.0f, (-seekerLensHeight * 0.5f) + (-seekerRingThickness * 0.5f));
+    auto localSeekerRingTrans = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    //localSeekerRingTrans.z += localSeekerLensTrans.z * 0.5f;
+
+    //aAmmo.modelData.localSeekerRingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, (-seekerLensHeight * 0.5f) + (-seekerLensHeight * 0.05f) + (seekerRingThickness * 0.5f)));
+    aAmmo.modelData.localSeekerRingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, (-seekerLensHeight * 0.5f) + (-seekerLensHeight * 0.0f) + (-seekerRingThickness * 0.5f)));
+    aAmmo.modelData.localSeekerRingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, (-seekerLensHeight * 0.5f) + (-seekerRingThickness * 0.25f)));
+    aAmmo.modelData.localSeekerRingTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(localSeekerRingTrans);
+    //aAmmo.modelData.localSeekerRingTranslation  *= DirectX::SimpleMath::Matrix::CreateTranslation(localSeekerLensTrans);
+    aAmmo.modelData.localSeekerRingTranslation *= aAmmo.modelData.localSeekerHousingTranslation;
 
     // rocket plume
     //const float plumeLength = aAmmo.ammoData.length * 0.5f;
@@ -10538,6 +10565,34 @@ void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTim
     //aMissile.guidance.seekerHousingMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.x, eularVec.y, eularVec.z);
     //aMissile.guidance.seekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.x, eularVec.y, eularVec.z);
     aMissile.guidance.seekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, eularVec.x, 0.0);
+    
+    auto eularVecLimited = eularVec;
+    if (eularVecLimited.x < Utility::ToRadians(90.0f))
+    {
+        eularVecLimited.x = Utility::ToRadians(-90.0f);
+    }
+    if (eularVecLimited.x > Utility::ToRadians(90.0f))
+    {
+        eularVecLimited.x = Utility::ToRadians(90.0f);
+    }
+    if (eularVecLimited.y < Utility::ToRadians(90.0f))
+    {
+        eularVecLimited.y = Utility::ToRadians(-90.0f);
+    }
+    if (eularVecLimited.y > Utility::ToRadians(90.0f))
+    {
+        eularVecLimited.y = Utility::ToRadians(90.0f);
+    }
+    eularVecLimited.z = 0.0f;
+    eularVecLimited.Normalize();
+    //aMissile.guidance.seekerHousingMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVecLimited.y, 0.0f, 0.0f);
+    //aMissile.guidance.seekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVecLimited.y, eularVecLimited.x, 0.0);
+
+    //auto testRot = cos(m_testTimer);
+    auto testRot = Utility::WrapAngle(m_testTimer);
+    //aMissile.guidance.seekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, testRot, 0.0);
+    
+    
     auto seekerPosWorld = DirectX::SimpleMath::Vector3(m_missileConsts.dimensions.x * 0.5f, 0.0f, 0.0f);
     seekerPosWorld = DirectX::SimpleMath::Vector3::Transform(seekerPosWorld, aMissile.projectileData.alignmentQuat);
     seekerPosWorld += aMissile.projectileData.q.position;
@@ -13924,6 +13979,8 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection1, DirectX::Colors::Orange, false, false);
         //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, mainLightDirection2, DirectX::Colors::Red, false, false);
 
+        aEffect->EnableDefaultLighting();
+
         // main body 
         updateMat = m_ammoMissile.modelData.localBodyMatrix;
         updateMat *= alignRotMat;
@@ -13942,7 +13999,8 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
 
         // seeker housing
         updateMat = m_ammoMissile.modelData.localSeekerHousingMatrix;
-        updateMat *= m_ammoMissile.modelData.localSeekerLensTranslation;
+        //updateMat *= m_ammoMissile.modelData.localSeekerLensTranslation;
+        //updateMat *= m_ammoMissile.modelData.localSeekerHousingTranslation;
         updateMat *= m_missileVec[i].guidance.seekerHousingMat;
         updateMat *= m_ammoMissile.modelData.seekerHousingTranslation;
         updateMat *= alignRotMat;
@@ -13950,21 +14008,35 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         aEffect->SetWorld(updateMat);
         //aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.axelColor);
-        //aEffect->SetColorAndAlpha(DirectX::Colors::Orange);
+        //aEffect->SetColorAndAlpha(DirectX::Colors::Black);
         m_ammoMissile.modelData.seekerHousingShape->Draw(aEffect.get(), aInputLayout.Get());
 
         // seeker lens
         updateMat = m_ammoMissile.modelData.localSeekerLensMatrix;
         updateMat *= m_ammoMissile.modelData.localSeekerLensTranslation;
         updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        updateMat *= m_ammoMissile.modelData.seekerLensTranslation;
+        //updateMat *= m_ammoMissile.modelData.seekerHousingTranslation;
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        //aEffect->SetColorAndAlpha(m_ammoMissile.modelData.axelColor);
+        aEffect->SetColorAndAlpha(DirectX::Colors::Black);
+        m_ammoMissile.modelData.seekerLensShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        // seeker ring
+        updateMat = m_ammoMissile.modelData.localSeekerRingMatrix;
+        updateMat *= m_ammoMissile.modelData.localSeekerRingTranslation;
+        updateMat *= m_missileVec[i].guidance.seekerLensMat;
         //updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        //updateMat *= m_ammoMissile.modelData.seekerRingTranslation;
         updateMat *= m_ammoMissile.modelData.seekerLensTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
         aEffect->SetWorld(updateMat);
-        //aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
-        aEffect->SetColorAndAlpha(DirectX::Colors::White);
-        m_ammoMissile.modelData.seekerLensShape->Draw(aEffect.get(), aInputLayout.Get());
+        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
+        //aEffect->SetColorAndAlpha(DirectX::Colors::Red);
+        m_ammoMissile.modelData.seekerRingShape->Draw(aEffect.get(), aInputLayout.Get());
 
         // tailEndCap
         updateMat = m_ammoMissile.modelData.localTailEndCapMatrix;

@@ -506,6 +506,7 @@ struct MissileModel
 
     std::unique_ptr<DirectX::GeometricPrimitive>    seekerHousingShape;
     DirectX::SimpleMath::Matrix localSeekerHousingMatrix;
+    DirectX::SimpleMath::Matrix localSeekerHousingTranslation;
     DirectX::SimpleMath::Matrix seekerHousingTranslation;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    seekerLensShape;
@@ -513,6 +514,10 @@ struct MissileModel
     DirectX::SimpleMath::Matrix localSeekerLensTranslation;
     DirectX::SimpleMath::Matrix seekerLensTranslation;
 
+    std::unique_ptr<DirectX::GeometricPrimitive>    seekerRingShape;
+    DirectX::SimpleMath::Matrix localSeekerRingMatrix;
+    DirectX::SimpleMath::Matrix localSeekerRingTranslation;
+    DirectX::SimpleMath::Matrix seekerRingTranslation;
 
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    rocketPlumeShapeInvert;
