@@ -294,6 +294,10 @@ struct HeliData
     ControlInput  controlInput;
     Rotor         mainRotor;
     Rotor         tailRotor;
+
+    std::vector<Utility::ImpulseForce> impulseForceVec;
+    DirectX::SimpleMath::Vector3 impulseForceSum = DirectX::SimpleMath::Vector3::Zero;
+    Utility::Torque              impulseTorqueSum;
 };
 
 class Vehicle
@@ -472,6 +476,7 @@ private:
     void UpdateCyclicStick(ControlInput& aInput);
     void UpdateCyclicNorm(); 
     float UpdateGroundEffectForce(const float aLiftForce);
+    void UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDelta);
     void UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep);
     void UpdateModelColorVals(const float aTimeStep);
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);

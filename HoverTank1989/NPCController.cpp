@@ -518,7 +518,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
     /////////////////////////////////////////////
     // force target for testing
 
-    /*
+    
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {   
         float distance = (m_npcVec[i]->GetPos() - aRay.position).Length();
@@ -527,7 +527,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
         isTargetHit = true;
         targetIndex = i;
     }
-    */
+    
 
     /////////////////////////////////////////////
     if (isTargetHit == true)

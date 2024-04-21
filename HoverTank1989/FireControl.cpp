@@ -110,15 +110,13 @@ void FireControl::ActivateMuzzleFlash(AmmoType aAmmoType)
         mf.flashDuration = 0.35f;
         mf.growthRate = 20.0f;
 
-        if (m_isTubeLeftFireTrue == true)
+        if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
         {
-            m_isTubeLeftFireTrue = false;
             mf.flashType = MuzzleFlashType::MUZZLEFLASHTYPE_LEFT;
             mf.localOrientation = m_playerVehicle->GetMissileTubeMatLeft();
         }
         else
         {
-            m_isTubeLeftFireTrue = true;
             mf.flashType = MuzzleFlashType::MUZZLEFLASHTYPE_RIGHT;
             mf.localOrientation = m_playerVehicle->GetMissileTubeMatRight();
         }
@@ -5179,6 +5177,37 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
         recoilImpulseForce.directionNorm.Normalize();
         recoilImpulseForce.isActive = true;
     }
+    else  if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
+    {
+        
+        
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
+        recoilImpulseForce.currentTime = 0.0f;
+        recoilImpulseForce.totalTime = 0.2f;
+        recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.currentTorqueMagnitude = 0.0f;
+        recoilImpulseForce.torqueForceMod = 0.6f;
+        recoilImpulseForce.maxMagnitude = 550000.0f;
+        recoilImpulseForce.directionNorm = aDirectionNorm;
+        recoilImpulseForce.directionNorm.Normalize();
+        recoilImpulseForce.isActive = true;
+        
+        
+
+        /*
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
+        recoilImpulseForce.currentTime = 0.0f;
+        recoilImpulseForce.totalTime = 5.0f;
+        recoilImpulseForce.currentMagnitude = 0.0f;
+        recoilImpulseForce.currentTorqueMagnitude = 0.0f;
+        recoilImpulseForce.torqueForceMod = 0.6f;
+        recoilImpulseForce.maxMagnitude = 1.0f;
+        recoilImpulseForce.directionNorm = aDirectionNorm;
+        recoilImpulseForce.directionNorm.Normalize();
+        recoilImpulseForce.isActive = true;
+        */
+
+    }
     else  // Default to cannon, AmmoType::AMMOTYPE_CANNON
     {
         recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
@@ -5192,7 +5221,6 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
         recoilImpulseForce.directionNorm.Normalize();
         recoilImpulseForce.isActive = true;
     }
-
     return recoilImpulseForce;
 }
 
@@ -14537,58 +14565,23 @@ void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaun
         {
             if (m_currentTargetID != -1)
             {
-                CycleMissileTubeSelected();
+                
                 ActivateMuzzleFlash(m_currentAmmoType);
 
-                //if (m_missileConsts.selectFirePattern == 0)
                 if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_DEBUG)
                 {
                     FireMissileWithAudio(m_playerVehicle->GetWeaponPos(), aLaunchDirectionForward, DirectX::SimpleMath::Vector3::Zero, m_playerVehicle->GetVehicleUp(), 0.0f, aFireFx);
                 }
-                //else if (m_missileConsts.selectFirePattern == 1)
                 else if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
                 {
-                    DirectX::SimpleMath::Vector3 launchDir = m_playerVehicle->GetWeaponDirection();
-                    DirectX::SimpleMath::Vector3 launchDirUp = m_playerVehicle->GetVehicleUp();
-                    DirectX::SimpleMath::Vector3 launchDirRight = launchDirUp.Cross(launchDir);
-                    const float missileTubeVerticalRot = Utility::ToRadians(-40.0f);
-                    launchDir = DirectX::SimpleMath::Vector3::Transform(launchDir, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(launchDirRight, missileTubeVerticalRot));
-                    launchDirUp = DirectX::SimpleMath::Vector3::Transform(launchDirUp, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(launchDirRight, missileTubeVerticalRot));
-                    //FireMissile(m_playerVehicle->GetWeaponPos(), launchDir, aLauncherVelocity, launchDirUp, 0.0f);
-                    //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
-
-                    //FireMissileWithAudio(m_playerVehicle->GetWeaponPos(), launchDir, aLauncherVelocity, launchDirUp, 0.0f, aFireFx);
-
                     FireMissileWithAudio(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx);
-                   
                 }
-                //else if (m_missileConsts.selectFirePattern == 2)
                 else if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
                 {
-                    DirectX::SimpleMath::Vector3 launchDir = m_playerVehicle->GetWeaponDirection();
-                    DirectX::SimpleMath::Vector3 launchDirUp = m_playerVehicle->GetVehicleUp();
-                    DirectX::SimpleMath::Vector3 launchDirRight = launchDirUp.Cross(launchDir);
-                    //const float missileTubeVerticalRot = Utility::ToRadians(-40.0f);
-                    const float missileTubeVerticalRot = -m_playerVehicle->GetWeaponPitch();
-                    launchDir = DirectX::SimpleMath::Vector3::Transform(launchDir, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(launchDirRight, missileTubeVerticalRot));
-                    launchDirUp = DirectX::SimpleMath::Vector3::Transform(launchDirUp, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(launchDirRight, missileTubeVerticalRot));
-                //    FireMissile(m_playerVehicle->GetWeaponPos(), launchDir, aLauncherVelocity, launchDirUp, 0.0f);
-
-                    //FireMissileWithAudio(m_playerVehicle->GetWeaponPos(), launchDir, aLauncherVelocity, launchDirUp, 0.0f, aFireFx);
-
-                    //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
-                    //FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetWeaponDirection(), aLauncherVelocity, m_playerVehicle->GetVehicleUp(), 0.0f);
-
-
                     FireMissileWithAudio(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), 0.0f, aFireFx);
-
                 }
                 else if (m_missileConsts.selectFirePattern == 3)
                 {
-                    //FireMissile(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f);
-                    const float fireTimeOffset = 0.0f;
-                    //FireMissile(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), fireTimeOffset);
-
                     FireMissileWithAudio(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx);
                     FireMissileWithAudio(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), 0.0f, aFireFx);
                 }
@@ -14616,8 +14609,7 @@ void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaun
                     m_coolDownTimer = m_ammoMissile.ammoData.cooldown;
                 }
 
-                //m_isCoolDownActive = true;
-                //m_coolDownTimer = m_ammoMissile.ammoData.cooldown;
+                CycleMissileTubeSelected();
             }
         }
     }

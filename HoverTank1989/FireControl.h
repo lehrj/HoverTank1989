@@ -1338,10 +1338,9 @@ private:
     std::vector<std::shared_ptr<Utility::SoundFx>> m_fxExplosionVec;
     //void AudioExplosionUpdate(const float aTimeDelta);
 
-    bool m_isTubeLeftFireTrue = true;
     bool m_isTubeRippleFireTrue = true;
     bool m_isTubeDualFireTrue = false;
-    MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
+    MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
     bool m_isDualFireCoolDownOverRideTrue = false;
 
 public:
@@ -1354,6 +1353,8 @@ public:
     bool GetIsCoolDownActive() const { return m_isCoolDownActive; };
     float GetMaxExplosionForce() const { return m_explosionStruct.maxExplosionForce; };
     float GetMaxExplosionImpactRadius() const { return m_explosionStruct.maxExplosionImpactRadius; };
+
+    MissileTubeSelected GetNextTubeToFire() const { return m_tubeFireSelected; };
 
     void CamMissileSelectNext();
 

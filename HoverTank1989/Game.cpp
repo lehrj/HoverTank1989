@@ -2427,20 +2427,6 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 
 void Game::TriggerFireWithAudio()
 {
-    // explosion fx
-    /*
-    std::shared_ptr <Utility::SoundFx> explosionFx(new Utility::SoundFx());
-    explosionFx->fx = m_audioBank->CreateStreamInstance(4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
-    std::shared_ptr<DirectX::AudioEmitter> explosionEmitter = std::make_shared<DirectX::AudioEmitter>();
-    explosionEmitter->SetOmnidirectional();
-    explosionEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-    explosionEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-    explosionEmitter->CurveDistanceScaler = 14.f;
-    explosionEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-    explosionFx->SetEmitter(explosionEmitter);
-    */
-
-
     // rocket fx
     std::shared_ptr <Utility::SoundFx> rocketFx(new Utility::SoundFx());
     rocketFx->fx = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
@@ -2450,10 +2436,6 @@ void Game::TriggerFireWithAudio()
     rocketEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     rocketEmitter->CurveDistanceScaler = 14.f;
     rocketEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-
-    //rocketEmitter->ChannelCount = rocketFx->fx->GetChannelCount();
-    //int channelCount = rocketFx->fx->GetChannelCount();
-
 
     rocketFx->SetEmitter(rocketEmitter);
 
@@ -2468,15 +2450,10 @@ void Game::TriggerFireWithAudio()
     fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
     fireFx->SetEmitter(fireEmitter);
 
-    //m_vehicle->FireWeapon();
-    //m_vehicle->FireWeapon(m_soundSource);
-    //m_vehicle->FireWeapon(fireFx);
     m_vehicle->FireWeapon(fireFx, rocketFx);
-    //m_vehicle->FireWeapon(explosionFx, fireFx, rocketFx);
 
     m_soundFxVecTest.push_back(fireFx);
     m_soundFxVecTest.push_back(rocketFx);
-    //m_soundFxVecTest.push_back(explosionFx);
 }
 
 #pragma endregion

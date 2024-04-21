@@ -107,6 +107,13 @@ public:
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_playerModel.muzzlePosWorld; };
     DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };
     
+
+    DirectX::SimpleMath::Vector3 GetLocalizedTubeLeftDir() const { return m_playerModel.localMissileTubeLeftDir; };
+    DirectX::SimpleMath::Vector3 GetLocalizedTubeRightDir() const { return m_playerModel.localMissileTubeRightDir; };
+    //DirectX::SimpleMath::Vector3 GetLocalizedTubeLeftDir() const { return m_playerModel.localMissileTubeLeftDir; };
+    //DirectX::SimpleMath::Vector3 GetLocalizedTubeRightDir() const { return m_playerModel.localMissileTubeRightDir; };
+
+
     DirectX::SimpleMath::Vector3 GetLocalizedTubeLeftPos() const { return m_playerModel.localizedTubeLeftPos; };
     DirectX::SimpleMath::Vector3 GetLocalizedTubeRightPos() const { return m_playerModel.localizedTubeRightPos; };
     DirectX::SimpleMath::Matrix GetLocalizedTubeMatLeft() const { return m_missileTubeMatLeft; };
@@ -150,7 +157,11 @@ private:
 
     //const float m_missileTubeVerticalRot = Utility::ToRadians(40.0f);
     //const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
-    const float m_missileTubeVerticalRot = Utility::ToRadians(50.0f);
+    //const float m_missileTubeVerticalRot = Utility::ToRadians(50.0f);
+    //const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
+    //const float m_missileTubeVerticalRot = Utility::ToRadians(35.0f);
+    //const float m_missileTubeHorizontalRot = Utility::ToRadians(70.0f);
+    const float m_missileTubeVerticalRot = Utility::ToRadians(40.0f);
     const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
 
     const DirectX::SimpleMath::Matrix m_missileTubeMatLeft = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(m_missileTubeHorizontalRot);

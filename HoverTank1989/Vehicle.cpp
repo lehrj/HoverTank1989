@@ -1038,11 +1038,45 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
 {
     if (m_fireControl->GetIsCoolDownActive() == false)
     {
+        
+
         DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
         DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
         DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
         DirectX::SimpleMath::Vector3 up = m_modelController->GetWeaponUpWorld();
         //m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);
+        DirectX::SimpleMath::Vector3 recoilPosLocal = DirectX::SimpleMath::Vector3::Zero;
+        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
+        {
+            
+            pos = m_modelController->GetMissileTubePosRight();
+            //launchDir = m_modelController->GetMissileTubeDirRight();
+            launchDir = m_modelController->GetLocalizedTubeRightDir();
+            velocity = m_heli.q.velocity;
+            up = m_modelController->GetMissileTubeRightUp();
+            recoilPosLocal = -m_modelController->GetLocalizedTubeRightPos();
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 5.0f, 0.0f, DirectX::Colors::Lime);
+            m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 5.0f, 0.0f, DirectX::Colors::Red);
+            m_debugData->ToggleDebugOff();
+
+        }
+        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
+        {
+            pos = m_modelController->GetMissileTubePosLeft();
+            //launchDir = m_modelController->GetMissileTubeDirLeft();
+            launchDir = -m_modelController->GetLocalizedTubeLeftDir();
+            velocity = m_heli.q.velocity;
+            up = m_modelController->GetMissileTubeLeftUp();
+            recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
+        }
+        else
+        {
+            int testBreak = 0; 
+            testBreak++;
+        }
+
+        //recoilPosLocal.x *= 0.5f;
 
         aFireFx->emitter->SetPosition(pos);
         aFireFx->emitter->SetVelocity(velocity);
@@ -1065,26 +1099,55 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         aRocketFx->forward = launchDir;
         aRocketFx->fx->Play(true);
 
+        auto pos2 = pos;
+        auto launchDir2 = launchDir;
+        auto velocity2 = velocity;
+        auto up2 = up;
         //m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx);
-        m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aRocketFx);
+        //m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aRocketFx);
 
         // weapon recoil
-        DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
+        //auto weaponPosLocal = pos;
+        
+        //recoilPosLocal = DirectX::SimpleMath::Vector3::Transform(recoilPosLocal, m_heli.alignmentInverse);
+
+        //DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
         Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
 
-        DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = m_heli.localWeaponPos - m_heli.localCenterOfMass;
-        weaponTorqueArmLocal = DirectX::SimpleMath::Vector3::Transform(weaponTorqueArmLocal, m_heli.alignmentInverse);
-        DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.weaponPos - m_heli.centerOfMass;
+        //DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = m_heli.localWeaponPos - m_heli.localCenterOfMass;
+        //DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = recoilPosLocal - m_heli.localCenterOfMass;
+        DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = recoilPosLocal;
 
-        DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
+        weaponTorqueArmLocal = DirectX::SimpleMath::Vector3::Transform(weaponTorqueArmLocal, m_heli.alignmentInverse);
+        //DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.weaponPos - m_heli.centerOfMass;
+
+        //DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
+        DirectX::SimpleMath::Vector3 weaponForce = launchDir;
         weaponForce.Normalize();
-        DirectX::SimpleMath::Vector3 torqueForceNorm = -launchDirLocal;
-        weaponForce.Normalize();
+        //DirectX::SimpleMath::Vector3 torqueForceNorm = -launchDirLocal;
+        //DirectX::SimpleMath::Vector3 torqueForceNorm = launchDir;
+        //DirectX::SimpleMath::Vector3 torqueForceNorm = m_modelController->GetMissileTubeDirLeft();
+        //DirectX::SimpleMath::Vector3 torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
+        DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::UnitX;
+        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
+        {
+            torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
+        }
+        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
+        {
+            torqueForceNorm = m_modelController->GetLocalizedTubeRightDir();
+        }
+        torqueForceNorm.Normalize();
+        //weaponTorqueArmLocal.x = 0.0f;
 
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
         //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
         //m_testImpulseForce = recoil;
+
+        m_heli.impulseForceVec.push_back(recoil);
+
+        m_fireControl->FireSelectedWithAudio(pos2, launchDir2, velocity2, up, aRocketFx);
     }
 }
 
@@ -1431,6 +1494,8 @@ void Vehicle::InitializeRotorBlades(HeliData& aHeliData)
 void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNPCController, std::shared_ptr<Vehicle> aVehicle)
 {
     InitializeFlightControls(m_heli.controlInput);
+
+    m_heli.impulseForceVec.clear();
 
     // helicopter data
     m_heli.mainRotorRPM = 0.0f;
@@ -4118,6 +4183,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
         //UpdateCollisionImpulseForces(static_cast<float>(aTimeDelta));
     }
    
+    UpdateImpulseForces(m_heli, aTimeDelta);
+
     //UpdateInertiaTensor(m_heli, static_cast<float>(aTimeDelta));
     UpdateVehicleForces(static_cast<float>(aTimeDelta));
     RungeKutta4(&m_heli, aTimeDelta);
@@ -4176,6 +4243,20 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     float angRadsPerSecond = angRad / aTimeDelta;
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 5.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 5.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->DebugPushUILineWholeNumber("m_heli.impulseForceVec.size() = ", m_heli.impulseForceVec.size(), "");
+
+    auto leftTube = m_modelController->GetMissileTubeDirLeft();
+    //leftTube = DirectX::SimpleMath::Vector3::Transform(leftTube, m_heli.alignment);
+    auto leftTubePos = m_modelController->GetLocalizedTubeLeftPos();
+    leftTubePos = DirectX::SimpleMath::Vector3::Transform(leftTubePos, m_heli.alignment);
+    leftTubePos += m_heli.q.position;
+    m_debugData->PushDebugLine(leftTubePos, leftTube, 15.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_heli.q.position, leftTube, 15.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->ToggleDebugOff();
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
@@ -4252,6 +4333,11 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     m_heli.vehicleLinearForcesSum = velocityUpdate;
     m_heli.vehicleAngularForcesSum = localAngularVec;
 
+    if (m_heli.impulseForceVec.size() > 0)
+    {
+        m_heli.vehicleLinearForcesSum += m_heli.impulseForceSum;
+        m_heli.vehicleAngularForcesSum += m_heli.impulseTorqueSum.axis * m_heli.impulseTorqueSum.magnitude;
+    }
 }
 
 void Vehicle::CalculateGroundImpactForce(DirectX::SimpleMath::Vector3& aForce, DirectX::SimpleMath::Vector3& aTorque)
@@ -4282,3 +4368,116 @@ void Vehicle::CalculateGroundImpactForce(DirectX::SimpleMath::Vector3& aForce, D
 }
 
 
+void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDelta)
+{
+    m_debugData->ToggleDebugOnOverRide();
+
+    aVehicle.impulseForceSum = DirectX::SimpleMath::Vector3::Zero;
+    aVehicle.impulseTorqueSum.axis = DirectX::SimpleMath::Vector3::Zero;
+    aVehicle.impulseTorqueSum.magnitude = 0.0f;
+
+
+    DirectX::SimpleMath::Vector3 forceSum = DirectX::SimpleMath::Vector3::Zero;
+    Utility::Torque torqueSum;
+    torqueSum.axis = DirectX::SimpleMath::Vector3::Zero;
+    torqueSum.magnitude = 0.0f;
+    for (int i = 0; i < aVehicle.impulseForceVec.size(); ++i)
+    {
+        Utility::ImpulseForce testImpulse2 = aVehicle.impulseForceVec[i];
+        Utility::UpdateImpulseForceBellCurve2(testImpulse2, static_cast<float>(aTimeDelta));
+        Utility::UpdateImpulseForceBellCurve(aVehicle.impulseForceVec[i], static_cast<float>(aTimeDelta));
+        Utility::ImpulseForce testImpulse = aVehicle.impulseForceVec[i];
+
+        if (aVehicle.impulseForceVec[i].isActive == true)
+        {
+
+            forceSum += (aVehicle.impulseForceVec[i].currentMagnitude * aVehicle.impulseForceVec[i].directionNorm) * 1.0f;
+
+
+            Utility::Torque torqueImpulse = Utility::GetTorqueForce(aVehicle.impulseForceVec[i].torqueArm, (aVehicle.impulseForceVec[i].currentTorqueMagnitude * aVehicle.impulseForceVec[i].torqueForceNorm));
+
+            torqueSum.axis += torqueImpulse.axis * torqueImpulse.magnitude;
+            torqueSum.magnitude += torqueImpulse.magnitude;
+
+
+            /////////////////////////////////////////////////
+            //m_debugData->DebugPushUILineDecimalNumber("", , "");
+            m_debugData->DebugPushUILineDecimalNumber("torqueSum.axis.x = ", torqueSum.axis.x, "");
+            m_debugData->DebugPushUILineDecimalNumber("torqueSum.axis.y = ", torqueSum.axis.y, "");
+            m_debugData->DebugPushUILineDecimalNumber("torqueSum.axis.z = ", torqueSum.axis.z, "");
+            m_debugData->DebugPushUILineDecimalNumber("torqueSum.magnitude = ", torqueSum.magnitude, "");
+
+            m_debugData->DebugPushUILineDecimalNumber("forceSum.x = ", forceSum.x, "");
+            m_debugData->DebugPushUILineDecimalNumber("forceSum.y = ", forceSum.y, "");
+            m_debugData->DebugPushUILineDecimalNumber("forceSum.z = ", forceSum.z, "");
+
+            auto tubePosWorld = m_modelController->GetLocalizedTubeLeftPos();
+            if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
+            {
+                tubePosWorld = m_modelController->GetLocalizedTubeRightPos();
+            }
+            else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
+            {
+                tubePosWorld = m_modelController->GetLocalizedTubeLeftPos();
+            }
+            tubePosWorld = DirectX::SimpleMath::Vector3::Transform(tubePosWorld, aVehicle.alignment);
+            tubePosWorld += aVehicle.q.position;
+
+            auto posWorld = aVehicle.q.position;
+            auto alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(aVehicle.alignment);
+
+            auto testVec = aVehicle.impulseForceVec[i].directionNorm;
+            //testVec = DirectX::SimpleMath::Vector3::Transform(testVec, alignQuat);
+
+            m_debugData->PushDebugLine(tubePosWorld, testVec, 5.0f, 0.0f, DirectX::Colors::White);
+            //m_debugData->PushDebugLine(posWorld, testVec, 5.0f, 0.0f, DirectX::Colors::White);
+            //m_modelController->GetMissileTubePosLeft();
+            //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), testVec, 5.0f, 0.0f, DirectX::Colors::White);
+
+            testVec = aVehicle.impulseForceVec[i].torqueArm;
+            //testVec = DirectX::SimpleMath::Vector3::Transform(testVec, alignQuat);
+            //m_debugData->PushDebugLine(posWorld, testVec, 5.0f, 0.0f, DirectX::Colors::Yellow);
+            m_debugData->PushDebugLineScaled(posWorld, testVec, 0.1f, 1.0f, 0.0f, DirectX::Colors::Orange);
+
+            /////////////////////////////////////////////////
+
+            DirectX::SimpleMath::Vector3 testAxis = torqueImpulse.axis;
+            testAxis.Normalize();
+            //m_testTorqueVec += (testAxis * torqueImpulse.magnitude);
+ 
+
+            DirectX::SimpleMath::Vector3 directionNorm = aVehicle.impulseForceVec[i].directionNorm;
+            DirectX::SimpleMath::Vector3 torqueArm = aVehicle.impulseForceVec[i].torqueArm;
+            DirectX::SimpleMath::Vector3 forcePoint = aVehicle.centerOfMass + aVehicle.impulseForceVec[i].torqueArm;
+
+        }
+    }
+
+    torqueSum.axis.Normalize();
+
+    aVehicle.impulseForceSum = forceSum;
+    aVehicle.impulseTorqueSum = torqueSum;
+
+    /*
+    m_vehicleStruct00.vehicleData.testProjectileImpulse = forceSum;
+    m_vehicleStruct00.vehicleData.testProjectileTorque = torqueSum;
+    m_vehicleStruct00.vehicleData.collisionImpulseForceSum = forceSum;
+    m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum = torqueSum;
+    */
+
+    Utility::Torque zeroTorque;
+    zeroTorque.axis = DirectX::SimpleMath::Vector3::Zero;
+    zeroTorque.magnitude = 0.0f;
+    //m_testTorqueVec = DirectX::SimpleMath::Vector3::Zero;
+
+    aVehicle.impulseForceVec.erase(
+        std::remove_if(
+            aVehicle.impulseForceVec.begin(),
+            aVehicle.impulseForceVec.end(),
+            [](Utility::ImpulseForce const& p) {return p.isActive == false; }
+        ),
+        aVehicle.impulseForceVec.end()
+    );
+
+    m_debugData->ToggleDebugOff();
+}
