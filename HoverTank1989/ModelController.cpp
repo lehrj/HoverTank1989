@@ -101,7 +101,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetLightDirection(1, defaultLightDir1);
     aEffect->SetLightDirection(2, defaultLightDir2);
 
-    //aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
+    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
   
     aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
         {
@@ -124,7 +124,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetLightDirection(1, defaultLightDir1);
     aEffect->SetLightDirection(2, defaultLightDir2);
 
-    //aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
+    aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
    
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
@@ -517,6 +517,15 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.worldMissileTubeRightUp = aModel.localMissileTubeRightUp;
     aModel.worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightUp, turretMat);
     aModel.worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightUp, aAlignment);
+
+
+    aModel.turretLocalMissileTubeLeftUp = aModel.localMissileTubeLeftUp;
+    aModel.turretLocalMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftUp, turretMat);
+    //aModel.turretLocalMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftUp, aAlignment);
+
+    aModel.turretLocalMissileTubeRightUp = aModel.localMissileTubeRightUp;
+    aModel.turretLocalMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightUp, turretMat);
+    //aModel.turretLocalMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightUp, aAlignment);
 
     // shadows
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();

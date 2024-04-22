@@ -61,6 +61,8 @@ struct TankModel
 
     DirectX::SimpleMath::Vector3 localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 localMissileTubeRightUp = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 turretLocalMissileTubeLeftUp = DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 turretLocalMissileTubeRightUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 worldMissileTubeLeftUp = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::UnitY;
 
@@ -125,7 +127,11 @@ public:
     DirectX::SimpleMath::Vector3 GetMissileTubePosRight() const { return m_playerModel.worldMissileTubeRightPos; };
 
     DirectX::SimpleMath::Vector3 GetMissileTubeLeftUp() const { return m_playerModel.worldMissileTubeLeftUp; };
-    DirectX::SimpleMath::Vector3 GetMissileTubeRightUp() const { return m_playerModel.worldMissileTubeRightUp; };
+    DirectX::SimpleMath::Vector3 GetMissileTubeRightUp() const { return m_playerModel.worldMissileTubeLeftUp; };
+
+    DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalLeftUp() const { return m_playerModel.turretLocalMissileTubeLeftUp; };
+    DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightUp() const { return m_playerModel.turretLocalMissileTubeRightUp; };
+
 
     DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_playerModel.targetingMatrix; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };

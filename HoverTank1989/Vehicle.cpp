@@ -1053,9 +1053,10 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
             //launchDir = m_modelController->GetMissileTubeDirRight();
             launchDir = m_modelController->GetLocalizedTubeRightDir();
             velocity = m_heli.q.velocity;
-            up = m_modelController->GetMissileTubeRightUp();
+            //up = m_modelController->GetMissileTubeRightUp();
+            up = m_modelController->GetMissileTubeTurretLocalRightUp();
             recoilPosLocal = -m_modelController->GetLocalizedTubeRightPos();
-            m_debugData->ToggleDebugOnOverRide();
+            //m_debugData->ToggleDebugOnOverRide();
             m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 5.0f, 0.0f, DirectX::Colors::Lime);
             m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 5.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->ToggleDebugOff();
@@ -1067,7 +1068,8 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
             //launchDir = m_modelController->GetMissileTubeDirLeft();
             launchDir = -m_modelController->GetLocalizedTubeLeftDir();
             velocity = m_heli.q.velocity;
-            up = m_modelController->GetMissileTubeLeftUp();
+            //up = m_modelController->GetMissileTubeLeftUp();
+            up = m_modelController->GetMissileTubeTurretLocalLeftUp();
             recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
         }
         else
@@ -1145,7 +1147,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
         //m_testImpulseForce = recoil;
 
-        m_heli.impulseForceVec.push_back(recoil);
+        //m_heli.impulseForceVec.push_back(recoil);
 
         m_fireControl->FireSelectedWithAudio(pos2, launchDir2, velocity2, up, aRocketFx);
     }
@@ -4244,7 +4246,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 5.0f, 0.0f, DirectX::Colors::Lime);
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 5.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->DebugPushUILineWholeNumber("m_heli.impulseForceVec.size() = ", m_heli.impulseForceVec.size(), "");
