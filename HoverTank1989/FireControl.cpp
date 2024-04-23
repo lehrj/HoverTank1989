@@ -5180,7 +5180,7 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     else  if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
     {
         
-        
+        /*
         recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 0.2f;
@@ -5191,10 +5191,10 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
         recoilImpulseForce.isActive = true;
-        
+        */
         
 
-        /*
+        
         recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = 5.0f;
@@ -5205,7 +5205,7 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
         recoilImpulseForce.isActive = true;
-        */
+        
 
     }
     else  // Default to cannon, AmmoType::AMMOTYPE_CANNON

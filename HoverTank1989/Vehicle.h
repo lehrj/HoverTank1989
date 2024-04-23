@@ -325,8 +325,8 @@ public:
     //void FireWeapon(std::shared_ptr<SoundFx> aFireFx);
     void FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx);
     void FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_ptr<Utility::SoundFx> aRocketFx);
-    void FireWeapon(std::shared_ptr<Utility::SoundFx> aExplosionFx, std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_ptr<Utility::SoundFx> aRocketFx);
-    
+    void FireWeaponOld(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_ptr<Utility::SoundFx> aRocketFx);
+
     float GetAccel() const { return m_heli.testAccel; };
     DirectX::SimpleMath::Vector3 GetAccelVec() const { return m_heli.testAccelVec; };
     
