@@ -269,7 +269,9 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     // turret
     aModel.turretLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
-    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
+    //DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
+    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+
     aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
     DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0f);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
@@ -309,14 +311,22 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
 
+    //aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+    //aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+    
     aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+
 
     aModel.localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftUp, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
 
+    //aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+    //aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+
     aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+
 
     // front center glow
     DirectX::SimpleMath::Vector3 frontGlowCenterSize = DirectX::SimpleMath::Vector3(0.2f, 0.5f, 1.75f);
@@ -518,7 +528,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightUp, turretMat);
     aModel.worldMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightUp, aAlignment);
 
-
     aModel.turretLocalMissileTubeLeftUp = aModel.localMissileTubeLeftUp;
     aModel.turretLocalMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftUp, turretMat);
     //aModel.turretLocalMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftUp, aAlignment);
@@ -526,6 +535,44 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.turretLocalMissileTubeRightUp = aModel.localMissileTubeRightUp;
     aModel.turretLocalMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightUp, turretMat);
     //aModel.turretLocalMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightUp, aAlignment);
+
+    aModel.turretLocalMissileTubeLeftDir = aModel.localMissileTubeLeftDir;
+    aModel.turretLocalMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftDir, turretMat);
+    //aModel.turretLocalMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftDir, aAlignment);
+
+    aModel.turretLocalMissileTubeRightDir = aModel.localMissileTubeLeftDir;
+    aModel.turretLocalMissileTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightDir, turretMat);
+    //aModel.turretLocalMissileTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightDir, aAlignment);
+    /////////////////////////////////////
+
+    auto testVec = DirectX::SimpleMath::Vector3::Zero;
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLinePositionIndicator(aModel.worldMissileTubeLeftPos, 10.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLinePositionIndicator(aModel.worldMissileTubeRightPos, 10.0f, 0.0f, DirectX::Colors::Red);
+
+    testVec = aModel.turretLocalMissileTubeLeftDir;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
+    m_debugData->PushDebugLine(aModel.worldMissileTubeLeftPos, testVec, 10.0f, 0.0f, DirectX::Colors::Lime);
+
+    testVec = aModel.turretLocalMissileTubeRightDir;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
+    m_debugData->PushDebugLine(aModel.worldMissileTubeRightPos, testVec, 10.0f, 0.0f, DirectX::Colors::Red);
+
+    testVec = aModel.turretLocalMissileTubeLeftUp;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
+    m_debugData->PushDebugLine(aModel.worldMissileTubeLeftPos, testVec, 10.0f, 0.0f, DirectX::Colors::Lime);
+
+    testVec = aModel.turretLocalMissileTubeRightUp;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
+    m_debugData->PushDebugLine(aModel.worldMissileTubeRightPos, testVec, 10.0f, 0.0f, DirectX::Colors::Red);
+
+    testVec = DirectX::SimpleMath::Vector3::Zero;
+    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, updateMat);
+    m_debugData->PushDebugLinePositionIndicator(testVec, 10.0f, 0.0f, DirectX::Colors::PaleGoldenrod);
+    m_debugData->ToggleDebugOff();
+
+
+    /////////////////////////////////////
 
     // shadows
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();

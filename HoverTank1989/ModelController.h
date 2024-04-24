@@ -43,16 +43,26 @@ struct TankModel
     DirectX::SimpleMath::Matrix  muzzleTransMatrix;
 
     // missile tubes
+    //DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(-0.9f, -0.3f, -0.9f);
+    //DirectX::SimpleMath::Vector3 localMissileTubeRightPos = DirectX::SimpleMath::Vector3(0.9f, -0.3f, -0.9f);
+
     DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(-0.9f, -0.3f, -0.9f);
     DirectX::SimpleMath::Vector3 localMissileTubeRightPos = DirectX::SimpleMath::Vector3(0.9f, -0.3f, -0.9f);
+    //DirectX::SimpleMath::Vector3 localMissileTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 localMissileTubeRightPos = DirectX::SimpleMath::Vector3(0.9f, -0.3f, -0.9f);
+    //DirectX::SimpleMath::Vector3 localMissileTubeRightPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
     DirectX::SimpleMath::Vector3 localizedTubeLeftPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Vector3 localizedTubeRightPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 
     DirectX::SimpleMath::Vector3 worldMissileTubeLeftPos = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 worldMissileTubeRightPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Matrix  missileTubeLeftTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f));
-    DirectX::SimpleMath::Matrix  missileTubeRightTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f));
+    //DirectX::SimpleMath::Matrix  missileTubeLeftTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f));
+    //DirectX::SimpleMath::Matrix  missileTubeRightTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f));
+    //DirectX::SimpleMath::Matrix  missileTubeRightTransMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f));
+
+    DirectX::SimpleMath::Vector3 turretLocalMissileTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
+    DirectX::SimpleMath::Vector3 turretLocalMissileTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
 
     DirectX::SimpleMath::Vector3 localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 localMissileTubeRightDir = DirectX::SimpleMath::Vector3::UnitX;
@@ -107,30 +117,39 @@ public:
 
     DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_playerModel.muzzleWorldMatrix; };
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_playerModel.muzzlePosWorld; };
-    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };
-    
+    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_playerModel.localizedMuzzlePos; };   
 
     DirectX::SimpleMath::Vector3 GetLocalizedTubeLeftDir() const { return m_playerModel.localMissileTubeLeftDir; };
     DirectX::SimpleMath::Vector3 GetLocalizedTubeRightDir() const { return m_playerModel.localMissileTubeRightDir; };
-    //DirectX::SimpleMath::Vector3 GetLocalizedTubeLeftDir() const { return m_playerModel.localMissileTubeLeftDir; };
-    //DirectX::SimpleMath::Vector3 GetLocalizedTubeRightDir() const { return m_playerModel.localMissileTubeRightDir; };
-
+    //DirectX::SimpleMath::Vector3 GetLocalizedTubeRightDir() const { return m_playerModel.localMissileTubeLeftDir; };
 
     DirectX::SimpleMath::Vector3 GetLocalizedTubeLeftPos() const { return m_playerModel.localizedTubeLeftPos; };
     DirectX::SimpleMath::Vector3 GetLocalizedTubeRightPos() const { return m_playerModel.localizedTubeRightPos; };
+    //DirectX::SimpleMath::Vector3 GetLocalizedTubeRightPos() const { return m_playerModel.localizedTubeLeftPos; };
+    
     DirectX::SimpleMath::Matrix GetLocalizedTubeMatLeft() const { return m_missileTubeMatLeft; };
     DirectX::SimpleMath::Matrix GetLocalizedTubeMatRight() const { return m_missileTubeMatRight; };
+    //DirectX::SimpleMath::Matrix GetLocalizedTubeMatRight() const { return m_missileTubeMatLeft; };
 
     DirectX::SimpleMath::Vector3 GetMissileTubeDirLeft() const { return m_playerModel.worldMissileTubeLeftDir; };
     DirectX::SimpleMath::Vector3 GetMissileTubeDirRight() const { return m_playerModel.worldMissileTubeRightDir; };
+    //DirectX::SimpleMath::Vector3 GetMissileTubeDirRight() const { return m_playerModel.worldMissileTubeLeftDir; };
+
     DirectX::SimpleMath::Vector3 GetMissileTubePosLeft() const { return m_playerModel.worldMissileTubeLeftPos; };
     DirectX::SimpleMath::Vector3 GetMissileTubePosRight() const { return m_playerModel.worldMissileTubeRightPos; };
+    //DirectX::SimpleMath::Vector3 GetMissileTubePosRight() const { return m_playerModel.worldMissileTubeLeftPos; };
 
     DirectX::SimpleMath::Vector3 GetMissileTubeLeftUp() const { return m_playerModel.worldMissileTubeLeftUp; };
     DirectX::SimpleMath::Vector3 GetMissileTubeRightUp() const { return m_playerModel.worldMissileTubeLeftUp; };
+    //DirectX::SimpleMath::Vector3 GetMissileTubeRightUp() const { return m_playerModel.worldMissileTubeLeftUp; };
 
     DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalLeftUp() const { return m_playerModel.turretLocalMissileTubeLeftUp; };
     DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightUp() const { return m_playerModel.turretLocalMissileTubeRightUp; };
+    //DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightUp() const { return m_playerModel.turretLocalMissileTubeLeftUp; };
+
+    DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalLeftDir() const { return m_playerModel.turretLocalMissileTubeLeftDir; };
+    DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightDir() const { return m_playerModel.turretLocalMissileTubeRightDir; };
+    //DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightDir() const { return m_playerModel.turretLocalMissileTubeLeftDir; };
 
 
     DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_playerModel.targetingMatrix; };
@@ -167,10 +186,13 @@ private:
     //const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
     //const float m_missileTubeVerticalRot = Utility::ToRadians(35.0f);
     //const float m_missileTubeHorizontalRot = Utility::ToRadians(70.0f);
-    const float m_missileTubeVerticalRot = Utility::ToRadians(40.0f);
-    const float m_missileTubeHorizontalRot = Utility::ToRadians(10.0f);
+    const float m_missileTubeVerticalRot = Utility::ToRadians(0.0f);
+    const float m_missileTubeHorizontalRot = Utility::ToRadians(0.0f);
 
-    const DirectX::SimpleMath::Matrix m_missileTubeMatLeft = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(m_missileTubeHorizontalRot);
+    const DirectX::SimpleMath::Matrix m_missileTubeMatLeft  = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(m_missileTubeHorizontalRot);
     const DirectX::SimpleMath::Matrix m_missileTubeMatRight = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileTubeHorizontalRot);
+
+    //const DirectX::SimpleMath::Matrix m_missileTubeMatRight = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(m_missileTubeHorizontalRot);
+
 };
 
