@@ -5183,11 +5183,11 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
         
         recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
-        recoilImpulseForce.totalTime = 0.2f;
+        recoilImpulseForce.totalTime = 0.1f;
         recoilImpulseForce.currentMagnitude = 0.0f;
         recoilImpulseForce.currentTorqueMagnitude = 0.0f;
-        recoilImpulseForce.torqueForceMod = 0.6f;
-        recoilImpulseForce.maxMagnitude = 55000.0f;
+        recoilImpulseForce.torqueForceMod = 1.0f;
+        recoilImpulseForce.maxMagnitude = 5500.0f;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
         recoilImpulseForce.isActive = true;

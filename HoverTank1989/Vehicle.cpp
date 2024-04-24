@@ -1053,7 +1053,8 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
             posWorld = m_modelController->GetMissileTubePosRight();
             ////////pos = m_modelController->GetMissileTubeTurretLocalRightUp();
             pos = m_modelController->GetLocalizedTubeRightPos();
-            launchDir = m_modelController->GetLocalizedTubeRightDir();
+            //launchDir = m_modelController->GetLocalizedTubeRightDir();
+            launchDir = m_modelController->GetMissileTubeTurretLocalRightDir();
             launchDirWorld = m_modelController->GetMissileTubeDirRight();
             velocity = m_heli.q.velocity;
             up = m_modelController->GetMissileTubeTurretLocalRightUp();
@@ -1064,7 +1065,8 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
             posWorld = m_modelController->GetMissileTubePosLeft();
             ////////////pos = m_modelController->GetMissileTubeTurretLocalLeftUp();
             pos = m_modelController->GetLocalizedTubeLeftPos();
-            launchDir = m_modelController->GetLocalizedTubeLeftDir();
+            //launchDir = m_modelController->GetLocalizedTubeLeftDir();
+            launchDir = m_modelController->GetMissileTubeTurretLocalLeftDir();
             launchDirWorld = m_modelController->GetMissileTubeDirRight();
             velocity = m_heli.q.velocity;
             up = m_modelController->GetMissileTubeTurretLocalLeftUp();
@@ -1111,16 +1113,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         weaponForceNorm.Normalize();
        
         DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::UnitX;
-        /*
-        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
-        {
-            torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
-        }
-        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
-        {
-            torqueForceNorm = m_modelController->GetLocalizedTubeRightDir();
-        }
-        */
+
         if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         {
             torqueForceNorm = m_modelController->GetLocalizedTubeRightDir();
@@ -1137,7 +1130,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         recoil.torqueForceNorm = torqueForceNorm;
         //recoil.directionNorm = torqueForceNorm;
         auto alignedLaunchDir = -launchDir;
-        alignedLaunchDir = DirectX::SimpleMath::Vector3::Transform(alignedLaunchDir, m_heli.alignment);
+        //alignedLaunchDir = DirectX::SimpleMath::Vector3::Transform(alignedLaunchDir, m_heli.alignment);
         recoil.directionNorm = alignedLaunchDir;
        // recoil.directionNorm = -launchDir;
         
@@ -4585,16 +4578,7 @@ void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDe
             //m_debugData->PushDebugLine(posWorld, testVec, 5.0f, 0.0f, DirectX::Colors::Yellow);
             m_debugData->PushDebugLineScaled(posWorld, testVec, 0.1f, 1.0f, 0.0f, DirectX::Colors::Orange);
 
-            /////////////////////////////////////////////////
-
-            DirectX::SimpleMath::Vector3 testAxis = torqueImpulse.axis;
-            testAxis.Normalize();
-            //m_testTorqueVec += (testAxis * torqueImpulse.magnitude);
- 
-
-            DirectX::SimpleMath::Vector3 directionNorm = aVehicle.impulseForceVec[i].directionNorm;
-            DirectX::SimpleMath::Vector3 torqueArm = aVehicle.impulseForceVec[i].torqueArm;
-            DirectX::SimpleMath::Vector3 forcePoint = aVehicle.centerOfMass + aVehicle.impulseForceVec[i].torqueArm;
+            ////////////////////////////////////////////////
 
         }
     }

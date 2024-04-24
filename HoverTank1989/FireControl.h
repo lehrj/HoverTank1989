@@ -1338,7 +1338,7 @@ private:
     std::vector<std::shared_ptr<Utility::SoundFx>> m_fxExplosionVec;
     //void AudioExplosionUpdate(const float aTimeDelta);
 
-    bool m_isTubeRippleFireTrue = false;
+    bool m_isTubeRippleFireTrue = true;
     bool m_isTubeDualFireTrue = false;
     MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
     bool m_isDualFireCoolDownOverRideTrue = false;
