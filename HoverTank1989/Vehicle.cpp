@@ -1051,9 +1051,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         { 
             posWorld = m_modelController->GetMissileTubePosRight();
-            ////////pos = m_modelController->GetMissileTubeTurretLocalRightUp();
             pos = m_modelController->GetLocalizedTubeRightPos();
-            //launchDir = m_modelController->GetLocalizedTubeRightDir();
             launchDir = m_modelController->GetMissileTubeTurretLocalRightDir();
             launchDirWorld = m_modelController->GetMissileTubeDirRight();
             velocity = m_heli.q.velocity;
@@ -1063,9 +1061,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
         {
             posWorld = m_modelController->GetMissileTubePosLeft();
-            ////////////pos = m_modelController->GetMissileTubeTurretLocalLeftUp();
             pos = m_modelController->GetLocalizedTubeLeftPos();
-            //launchDir = m_modelController->GetLocalizedTubeLeftDir();
             launchDir = m_modelController->GetMissileTubeTurretLocalLeftDir();
             launchDirWorld = m_modelController->GetMissileTubeDirRight();
             velocity = m_heli.q.velocity;
@@ -1104,10 +1100,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         auto up2 = up;
 
         Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
-        //DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = recoilPosLocal;
         DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = pos;
-        //weaponTorqueArmLocal = 
-        //weaponTorqueArmLocal = DirectX::SimpleMath::Vector3::Transform(weaponTorqueArmLocal, m_heli.alignmentInverse);
    
         DirectX::SimpleMath::Vector3 weaponForceNorm = launchDir;
         weaponForceNorm.Normalize();
@@ -1128,11 +1121,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
 
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
-        //recoil.directionNorm = torqueForceNorm;
-        auto alignedLaunchDir = -launchDir;
-        //alignedLaunchDir = DirectX::SimpleMath::Vector3::Transform(alignedLaunchDir, m_heli.alignment);
-        recoil.directionNorm = alignedLaunchDir;
-       // recoil.directionNorm = -launchDir;
+        recoil.directionNorm = -launchDir;
         
         m_heli.impulseForceVec.push_back(recoil);
 
@@ -4347,53 +4336,6 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     float angRadsPerSecond = angRad / aTimeDelta;
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 5.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 5.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->DebugPushUILineWholeNumber("m_heli.impulseForceVec.size() = ", m_heli.impulseForceVec.size(), "");
-
-    auto leftTube = m_modelController->GetMissileTubeDirLeft();
-    //leftTube = DirectX::SimpleMath::Vector3::Transform(leftTube, m_heli.alignment);
-    auto leftTubePos = m_modelController->GetLocalizedTubeLeftPos();
-    leftTubePos = DirectX::SimpleMath::Vector3::Transform(leftTubePos, m_heli.alignment);
-    leftTubePos += m_heli.q.position;
-    m_debugData->PushDebugLine(leftTubePos, leftTube, 15.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(m_heli.q.position, leftTube, 15.0f, 0.0f, DirectX::Colors::Red);
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushTestDebugBetweenPoints(m_heli.centerOfMass, m_modelController->GetMissileTubePosLeft(), DirectX::Colors::Yellow);
-    m_debugData->PushTestDebugBetweenPoints(m_heli.centerOfMass, m_modelController->GetMissileTubePosRight(), DirectX::Colors::Yellow);
-    m_debugData->PushDebugLinePositionIndicator(m_heli.centerOfMass, 15.0f, 0.0f, DirectX::Colors::Lavender);
-
-    //DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalLeftDir() const { return m_playerModel.turretLocalMissileTubeLeftDir; };
-    //DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightDir() const { return m_playerModel.turretLocalMissileTubeRightDir; };
-
-    auto posWorldRight = m_modelController->GetMissileTubePosRight();
-    
-    auto posLocalRight = m_modelController->GetLocalizedTubeRightPos();
-    auto launchDirLocalRight = m_modelController->GetMissileTubeTurretLocalLeftDir();
-    auto launchDirWorldRight = m_modelController->GetMissileTubeDirRight();
-
-    auto posWorldLeft = m_modelController->GetMissileTubePosLeft();
-    auto posLocalLeft = m_modelController->GetLocalizedTubeLeftPos();
-    auto launchDirLocalLeft = m_modelController->GetMissileTubeTurretLocalLeftDir();
-    auto launchDirWorldLeft = m_modelController->GetMissileTubeDirLeft();
-
-    m_debugData->PushDebugLine(posWorldRight, launchDirWorldRight, 4.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLine(posWorldLeft, launchDirWorldLeft, 4.0f, 0.0f, DirectX::Colors::Lime);
-
-
-    auto testPos = posLocalLeft;
-    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, m_heli.alignment);
-    testPos += m_heli.q.position;
-
-    auto testVec = launchDirLocalLeft;
-    //testVec = DirectX::SimpleMath::Vector3::Transform(testVec, m_heli.alignment);
-
-    m_debugData->PushDebugLine(testPos, testVec, 3.0f, 0.0f, DirectX::Colors::Yellow);
-
-    m_debugData->ToggleDebugOff();
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
@@ -4507,12 +4449,9 @@ void Vehicle::CalculateGroundImpactForce(DirectX::SimpleMath::Vector3& aForce, D
 
 void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDelta)
 {
-    //m_debugData->ToggleDebugOnOverRide();
-
     aVehicle.impulseForceSum = DirectX::SimpleMath::Vector3::Zero;
     aVehicle.impulseTorqueSum.axis = DirectX::SimpleMath::Vector3::Zero;
     aVehicle.impulseTorqueSum.magnitude = 0.0f;
-
 
     DirectX::SimpleMath::Vector3 forceSum = DirectX::SimpleMath::Vector3::Zero;
     Utility::Torque torqueSum;
@@ -4521,15 +4460,12 @@ void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDe
     for (int i = 0; i < aVehicle.impulseForceVec.size(); ++i)
     {
         Utility::ImpulseForce testImpulse2 = aVehicle.impulseForceVec[i];
-        //Utility::UpdateImpulseForceBellCurve2(testImpulse2, static_cast<float>(aTimeDelta));
         Utility::UpdateImpulseForceBellCurve(aVehicle.impulseForceVec[i], static_cast<float>(aTimeDelta));
         Utility::ImpulseForce testImpulse = aVehicle.impulseForceVec[i];
 
         if (aVehicle.impulseForceVec[i].isActive == true)
         {
-
             forceSum += (aVehicle.impulseForceVec[i].currentMagnitude * aVehicle.impulseForceVec[i].directionNorm) * 1.0f;
-
 
             Utility::Torque torqueImpulse = Utility::GetTorqueForce(aVehicle.impulseForceVec[i].torqueArm, (aVehicle.impulseForceVec[i].currentTorqueMagnitude * aVehicle.impulseForceVec[i].torqueForceNorm));
 
@@ -4537,18 +4473,6 @@ void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDe
             torqueSum.magnitude += torqueImpulse.magnitude;
 
             forceSum = DirectX::SimpleMath::Vector3::Transform(forceSum, aVehicle.alignment);
-            //torqueSum.axis = DirectX::SimpleMath::Vector3::Transform(torqueSum.axis, aVehicle.alignment);
-
-            /////////////////////////////////////////////////
-            //m_debugData->DebugPushUILineDecimalNumber("", , "");
-            m_debugData->DebugPushUILineDecimalNumber("torqueSum.axis.x = ", torqueSum.axis.x, "");
-            m_debugData->DebugPushUILineDecimalNumber("torqueSum.axis.y = ", torqueSum.axis.y, "");
-            m_debugData->DebugPushUILineDecimalNumber("torqueSum.axis.z = ", torqueSum.axis.z, "");
-            m_debugData->DebugPushUILineDecimalNumber("torqueSum.magnitude = ", torqueSum.magnitude, "");
-
-            m_debugData->DebugPushUILineDecimalNumber("forceSum.x = ", forceSum.x, "");
-            m_debugData->DebugPushUILineDecimalNumber("forceSum.y = ", forceSum.y, "");
-            m_debugData->DebugPushUILineDecimalNumber("forceSum.z = ", forceSum.z, "");
 
             auto tubePosWorld = m_modelController->GetLocalizedTubeLeftPos();
             if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
@@ -4561,25 +4485,6 @@ void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDe
             }
             tubePosWorld = DirectX::SimpleMath::Vector3::Transform(tubePosWorld, aVehicle.alignment);
             tubePosWorld += aVehicle.q.position;
-
-            auto posWorld = aVehicle.q.position;
-            auto alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(aVehicle.alignment);
-
-            auto testVec = aVehicle.impulseForceVec[i].directionNorm;
-            //testVec = DirectX::SimpleMath::Vector3::Transform(testVec, alignQuat);
-
-            m_debugData->PushDebugLine(tubePosWorld, testVec, 5.0f, 0.0f, DirectX::Colors::White);
-            //m_debugData->PushDebugLine(posWorld, testVec, 5.0f, 0.0f, DirectX::Colors::White);
-            //m_modelController->GetMissileTubePosLeft();
-            //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), testVec, 5.0f, 0.0f, DirectX::Colors::White);
-
-            testVec = aVehicle.impulseForceVec[i].torqueArm;
-            //testVec = DirectX::SimpleMath::Vector3::Transform(testVec, alignQuat);
-            //m_debugData->PushDebugLine(posWorld, testVec, 5.0f, 0.0f, DirectX::Colors::Yellow);
-            m_debugData->PushDebugLineScaled(posWorld, testVec, 0.1f, 1.0f, 0.0f, DirectX::Colors::Orange);
-
-            ////////////////////////////////////////////////
-
         }
     }
 
@@ -4587,18 +4492,6 @@ void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDe
 
     aVehicle.impulseForceSum = forceSum;
     aVehicle.impulseTorqueSum = torqueSum;
-
-    /*
-    m_vehicleStruct00.vehicleData.testProjectileImpulse = forceSum;
-    m_vehicleStruct00.vehicleData.testProjectileTorque = torqueSum;
-    m_vehicleStruct00.vehicleData.collisionImpulseForceSum = forceSum;
-    m_vehicleStruct00.vehicleData.collisionImpulseTorqueSum = torqueSum;
-    */
-
-    Utility::Torque zeroTorque;
-    zeroTorque.axis = DirectX::SimpleMath::Vector3::Zero;
-    zeroTorque.magnitude = 0.0f;
-    //m_testTorqueVec = DirectX::SimpleMath::Vector3::Zero;
 
     aVehicle.impulseForceVec.erase(
         std::remove_if(

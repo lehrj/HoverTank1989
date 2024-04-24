@@ -170,86 +170,6 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aModel.turretModel->Draw(deviceContext, states, aModel.turretShadowMatrix, aView, aProjection);
 }
 
-void ModelController::DrawTank2(TankModel& aModel, ID3D11DeviceContext* deviceContext, const DirectX::CommonStates& states, DirectX::SimpleMath::Matrix aView, DirectX::SimpleMath::Matrix aProjection)
-{
-
-    aModel.rearGlowCenterShape->Draw(aModel.worldRearGlowCenterMatrix, aView, aProjection, aModel.rearGlowCenterColor);
-    aModel.rearGlowSideShape->Draw(aModel.worldRearGlowLeftMatrix, aView, aProjection, aModel.rearGlowLeftColor);
-    aModel.rearGlowSideShape->Draw(aModel.worldRearGlowRightMatrix, aView, aProjection, aModel.rearGlowRightColor);
-
-    aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
-        {
-            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
-            if (lights)
-            {
-                lights->EnableDefaultLighting();
-                lights->SetLightEnabled(0, true);
-                lights->SetLightEnabled(1, true);
-                lights->SetLightEnabled(2, true);
-            }
-        });
-    aModel.bodyModel->Modified();
-    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
-
-    aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
-        {
-            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
-            if (lights)
-            {
-                lights->EnableDefaultLighting();
-                lights->SetLightEnabled(0, true);
-                lights->SetLightEnabled(1, true);
-                lights->SetLightEnabled(2, true);
-
-            }
-        });
-    aModel.turretModel->Modified();
-    aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
-    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
-
-    aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
-        {
-            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
-            if (lights)
-            {
-                lights->SetLightEnabled(0, false);
-                lights->SetLightEnabled(1, false);
-                lights->SetLightEnabled(2, false);
-                lights->SetAmbientLightColor(DirectX::Colors::Black);
-            }
-        });
-    aModel.bodyModel->Modified();
-    aModel.barrelModel->UpdateEffects([&](DirectX::IEffect* effect)
-        {
-            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
-            if (lights)
-            {
-                lights->SetLightEnabled(0, false);
-                lights->SetLightEnabled(1, false);
-                lights->SetLightEnabled(2, false);
-                lights->SetAmbientLightColor(DirectX::Colors::Black);
-            }
-        });
-    aModel.barrelModel->Modified();
-
-    aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
-        {
-            auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
-            if (lights)
-            {
-                lights->SetLightEnabled(0, false);
-                lights->SetLightEnabled(1, false);
-                lights->SetLightEnabled(2, false);
-                lights->SetAmbientLightColor(DirectX::Colors::Black);
-            }
-        });
-    aModel.turretModel->Modified();
-
-    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyShadowMatrix, aView, aProjection);
-    aModel.barrelModel->Draw(deviceContext, states, aModel.barrelShadowMatrix, aView, aProjection);
-    aModel.turretModel->Draw(deviceContext, states, aModel.turretShadowMatrix, aView, aProjection);
-}
-
 void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
 {
     aModel.barrelModel = aBarrel;
@@ -381,6 +301,11 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
 
 }
 
+void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
+{
+    InitializeModel(m_playerModel, aBarrel, aBody, aTurret, aContext);
+}
+
 void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
 { 
     //////// Update Glow Colors;
@@ -454,16 +379,12 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirLocal, muzzleMat);
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirLocal, turretMat);
     aModel.weaponDirWorld = aModel.weaponDirLocal;
-    //aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, muzzleMat);
-    //aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, turretMat);
     aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, aAlignment);
 
     aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::UnitY;
     aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpLocal, muzzleMat);
     aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpLocal, turretMat);
     aModel.weaponUpWorld = aModel.weaponUpLocal;
-    //aModel.weaponUpWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpWorld, muzzleMat);
-    //aModel.weaponUpWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpWorld, turretMat);
     aModel.weaponUpWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpWorld, aAlignment);
 
     aModel.weaponPosWorld = aModel.weaponPosLocal;
@@ -478,8 +399,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.muzzleWorldMatrix *= turretMat;
     aModel.muzzleWorldMatrix *= aModel.barrelTransMatrix;
     aModel.localizedMuzzlePos = DirectX::SimpleMath::Vector3::Transform(aModel.muzzlePosLocal, aModel.muzzleWorldMatrix);
-
-
 
     aModel.targetingMatrix = aModel.muzzleWorldMatrix;
     aModel.muzzleWorldMatrix *= updateMat;
@@ -499,18 +418,10 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.worldMissileTubeRightPos = aModel.localMissileTubeRightPos;
     aModel.worldMissileTubeRightPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightPos, missileTubMat);
 
-
     aModel.localizedTubeLeftPos = aModel.localMissileTubeLeftPos;
-    //aModel.localizedTubeLeftPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeLeftPos, localizedMissileTubeMat);
     aModel.localizedTubeLeftPos = DirectX::SimpleMath::Vector3::Transform(aModel.localizedTubeLeftPos, localizedMissileTubeMat);
     aModel.localizedTubeRightPos = aModel.localMissileTubeRightPos;
-    //aModel.localizedTubeRightPos = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeRightPos, localizedMissileTubeMat);
     aModel.localizedTubeRightPos = DirectX::SimpleMath::Vector3::Transform(aModel.localizedTubeRightPos, localizedMissileTubeMat);
-
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->PushDebugLinePositionIndicator(aModel.worldMissileTubeLeftPos, 10.0f, 0.0f, DirectX::Colors::Orange);
-    //m_debugData->PushDebugLinePositionIndicator(aModel.worldMissileTubeRightPos, 10.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->ToggleDebugOff();
 
     aModel.worldMissileTubeLeftDir = aModel.localMissileTubeLeftDir;
     aModel.worldMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.worldMissileTubeLeftDir, turretMat);
@@ -530,49 +441,15 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
 
     aModel.turretLocalMissileTubeLeftUp = aModel.localMissileTubeLeftUp;
     aModel.turretLocalMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftUp, turretMat);
-    //aModel.turretLocalMissileTubeLeftUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftUp, aAlignment);
 
     aModel.turretLocalMissileTubeRightUp = aModel.localMissileTubeRightUp;
     aModel.turretLocalMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightUp, turretMat);
-    //aModel.turretLocalMissileTubeRightUp = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightUp, aAlignment);
 
     aModel.turretLocalMissileTubeLeftDir = aModel.localMissileTubeLeftDir;
     aModel.turretLocalMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftDir, turretMat);
-    //aModel.turretLocalMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftDir, aAlignment);
 
     aModel.turretLocalMissileTubeRightDir = aModel.localMissileTubeLeftDir;
     aModel.turretLocalMissileTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightDir, turretMat);
-    //aModel.turretLocalMissileTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightDir, aAlignment);
-    /////////////////////////////////////
-
-    auto testVec = DirectX::SimpleMath::Vector3::Zero;
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLinePositionIndicator(aModel.worldMissileTubeLeftPos, 10.0f, 0.0f, DirectX::Colors::Orange);
-    m_debugData->PushDebugLinePositionIndicator(aModel.worldMissileTubeRightPos, 10.0f, 0.0f, DirectX::Colors::Red);
-
-    testVec = aModel.turretLocalMissileTubeLeftDir;
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
-    m_debugData->PushDebugLine(aModel.worldMissileTubeLeftPos, testVec, 10.0f, 0.0f, DirectX::Colors::Lime);
-
-    testVec = aModel.turretLocalMissileTubeRightDir;
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
-    m_debugData->PushDebugLine(aModel.worldMissileTubeRightPos, testVec, 10.0f, 0.0f, DirectX::Colors::Red);
-
-    testVec = aModel.turretLocalMissileTubeLeftUp;
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
-    m_debugData->PushDebugLine(aModel.worldMissileTubeLeftPos, testVec, 10.0f, 0.0f, DirectX::Colors::Lime);
-
-    testVec = aModel.turretLocalMissileTubeRightUp;
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, aAlignment);
-    m_debugData->PushDebugLine(aModel.worldMissileTubeRightPos, testVec, 10.0f, 0.0f, DirectX::Colors::Red);
-
-    testVec = DirectX::SimpleMath::Vector3::Zero;
-    testVec = DirectX::SimpleMath::Vector3::Transform(testVec, updateMat);
-    m_debugData->PushDebugLinePositionIndicator(testVec, 10.0f, 0.0f, DirectX::Colors::PaleGoldenrod);
-    m_debugData->ToggleDebugOff();
-
-
-    /////////////////////////////////////
 
     // shadows
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
@@ -633,11 +510,6 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
 {
     UpdateModel(m_playerModel, aAlignment, aAltitude, aPos, aBarrelPitch, aTurretRotation, aPlane);
-}
-
-void ModelController::InitializePlayerModel(std::shared_ptr<DirectX::Model> aBarrel, std::shared_ptr<DirectX::Model> aBody, std::shared_ptr<DirectX::Model> aTurret, Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext)
-{
-    InitializeModel(m_playerModel, aBarrel, aBody, aTurret, aContext);
 }
 
 void ModelController::SetEnvironment(Environment const* aEnviron)
