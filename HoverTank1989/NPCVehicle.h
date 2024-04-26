@@ -447,7 +447,9 @@ struct VehicleData
     bool                        isReadyToDelete = false;
     bool                        isVehicleInCameraFrustum = true;
 
-    bool                        isTargetedTrue = false;
+    //bool                        isTargetedTrue = false;
+    bool                        isPlayerTargetedTrue = false;
+    bool                        isMissileTargetedTrue = false;
 
     float                       deleteCountDownTimer = 1.0f;
     Utility::ImpactForce        impactForce;
@@ -582,7 +584,10 @@ public:
 
     void SetAlignment(const DirectX::SimpleMath::Matrix aMat) { m_vehicleStruct00.vehicleData.alignment = aMat; };
 
-    void SetIsTargetedTrue() { m_vehicleStruct00.vehicleData.isTargetedTrue = true; };
+    //void SetIsTargetedTrue() { m_vehicleStruct00.vehicleData.isTargetedTrue = true; };
+    //void SetIsTargetedTrue() { m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; };
+    void SetIsPlayerTargetedTrue() { m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; };
+    void SetIsMissileTargetedTrue() { m_vehicleStruct00.vehicleData.isMissileTargetedTrue = true; };
 
     void SetPos(const DirectX::SimpleMath::Vector3 aPos) { m_vehicleStruct00.vehicleData.q.position = aPos; };
     void SetVelocity(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };

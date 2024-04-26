@@ -778,8 +778,9 @@ void Game::Render()
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-        //DrawTestTrack();
-        DrawTestRangeMissile();
+        DrawTestTrack();
+        //DrawTestRangeMissile();
+        DrawSpawner();
         DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
@@ -1083,12 +1084,46 @@ void Game::CreateDeviceDependentResources()
     m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret, context);
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
-    //m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
-    m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(m_missileRangeDistance, 1.0f, 6.0f));
+    m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
+    //m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(m_missileRangeDistance, 1.0f, 6.0f));
   
     //m_testShape3 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
     //m_testShape3 = DirectX::GeometricPrimitive::CreateCylinder(context, -m_baseTerrainHeight, -m_baseTerrainDiameter);
     m_testShape3 = DirectX::GeometricPrimitive::CreateTorus(context, m_ringDiameter, m_ringHeight);
+
+    const float spawnerHeight = 50.0f;
+    const float spawnerDiameter = 50.0f;
+    const float spawnerThickness = 10.0f;
+    const float spawnerScale = 15.0f;
+    auto pos = DirectX::SimpleMath::Vector3(200.0f, 0.0f, 0.0f);
+    m_spawnerOuterShape = DirectX::GeometricPrimitive::CreateTorus(context, spawnerDiameter, spawnerThickness);
+    m_spawnerOuterMat = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
+    m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    const float spawnerInnerSize = spawnerDiameter;
+    m_spawnerInnerShape = DirectX::GeometricPrimitive::CreateCylinder(context, 2.0f, spawnerInnerSize);
+    m_spawnerInnerMat = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    //m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    //m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 10.0f));
+    m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+}
+
+void Game::DrawSpawner()
+{
+    auto pos = DirectX::SimpleMath::Vector3::Zero;
+    auto mat = DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerOuterShape->Draw(m_spawnerOuterMat, m_camera->GetViewMatrix(), m_proj);
+    m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Red);
+
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLinePositionIndicator(m_spawnerPos, 50.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushTestDebugBetweenPoints(m_spawnerPos, m_vehicle->GetPos(), DirectX::Colors::Red);
+
+    m_debugData->ToggleDebugOff();
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -1437,8 +1472,9 @@ void Game::DrawTestTrack()
 {
     const float yOffset = 0.5f;
     const float rodOffset = 0.05f;
+    const float xOffset = 300.0f;
     // inside top left
-    DirectX::SimpleMath::Vector3 pos1(300.0f, yOffset, -100.0f);
+    DirectX::SimpleMath::Vector3 pos1(300.0f + xOffset, yOffset, -100.0f);
     DirectX::SimpleMath::Matrix posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     DirectX::SimpleMath::Vector3 pos2 = pos1;
     pos2.z -= 100.0f;
@@ -1448,12 +1484,12 @@ void Game::DrawTestTrack()
     m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
 
     // outside top left
-    pos1 = DirectX::SimpleMath::Vector3(300.0f, yOffset, -300.0f);
+    pos1 = DirectX::SimpleMath::Vector3(300.0f + xOffset, yOffset, -300.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
 
     // inside top right
-    pos1 = DirectX::SimpleMath::Vector3(300.0f, yOffset, 100.0f);
+    pos1 = DirectX::SimpleMath::Vector3(300.0f + xOffset, yOffset, 100.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     pos2 = pos1;
     pos2.z += 100.0f;
@@ -1463,12 +1499,12 @@ void Game::DrawTestTrack()
     m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
 
     // outside top right
-    pos1 = DirectX::SimpleMath::Vector3(300.0f, yOffset, 300.0f);
+    pos1 = DirectX::SimpleMath::Vector3(300.0f + xOffset, yOffset, 300.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
 
     // inside bottom right
-    pos1 = DirectX::SimpleMath::Vector3(75.0f, yOffset, 100.0f);
+    pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, 100.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     pos2 = pos1;
     pos2.z += 100.0f;
@@ -1478,7 +1514,7 @@ void Game::DrawTestTrack()
     m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
 
     // outside bottom right
-    pos1 = DirectX::SimpleMath::Vector3(75.0f, yOffset, 300.0f);
+    pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, 300.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     pos2 = pos1;
     pos2.x += 100.0f;
@@ -1489,7 +1525,7 @@ void Game::DrawTestTrack()
     m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
 
     // inside bottom left
-    pos1 = DirectX::SimpleMath::Vector3(75.0f, yOffset, -100.0f);
+    pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, -100.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     pos2 = pos1;
     pos2.z -= 100.0f;
@@ -1499,7 +1535,7 @@ void Game::DrawTestTrack()
     m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
 
     // outside bottom left
-    pos1 = DirectX::SimpleMath::Vector3(75.0f, yOffset, -300.0f);
+    pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, -300.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     pos2 = pos1;
     pos2.x += 100.0f;
@@ -1510,7 +1546,7 @@ void Game::DrawTestTrack()
     m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
 
     // cross 1
-    pos2 = DirectX::SimpleMath::Vector3(187.0f, yOffset - rodOffset, 0.0f);
+    pos2 = DirectX::SimpleMath::Vector3(187.0f + xOffset, yOffset - rodOffset, 0.0f);
     const float angle = 50.0f;
     posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(angle));
     posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
@@ -1523,7 +1559,7 @@ void Game::DrawTestTrack()
 
 void Game::DrawTerrainNew(Terrain& aTerrain)
 {
-    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
+    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
 
     DirectX::SimpleMath::Vector3 vertNorm = -DirectX::SimpleMath::Vector3::UnitY;

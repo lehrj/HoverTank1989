@@ -81,49 +81,58 @@ void NpcAI::CreateWayPath()
 
     const float low = -10.0f;
     const float high = 10.0f;
+    const float xOffSetMod = 300.0f;
     float xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
     float zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     Utility::Waypoint wp1;
     pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, -100.0f + zOffset);
     wp1 = Utility::CreateWaypoint(pos, radius);
     xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
 
     Utility::Waypoint wp2;
     pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, 100.0f + zOffset);
     wp2 = Utility::CreateWaypoint(pos, radius);
     xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
 
     Utility::Waypoint wp3;
     pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, 100.0f + zOffset);
     wp3 = Utility::CreateWaypoint(pos, radius);
     xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
 
     Utility::Waypoint wp4;
     pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, -100.0f + zOffset);
     wp4 = Utility::CreateWaypoint(pos, radius + 15.0f);
     xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
 
     Utility::Waypoint wp5;
     pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, -300.0f + zOffset);
     wp5 = Utility::CreateWaypoint(pos, radius);
     xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
 
     Utility::Waypoint wp6;
     pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, -300.0f + zOffset);
     wp6 = Utility::CreateWaypoint(pos, radius);
     xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
 
     Utility::Waypoint wp7;
     pos = DirectX::SimpleMath::Vector3(300.0f + xOffset, 3.0f, 300.0f + zOffset);
     wp7 = Utility::CreateWaypoint(pos, radius);
     xOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
     zOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    xOffset += xOffSetMod;
 
     Utility::Waypoint wp8;
     pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, 300.0f + zOffset);
@@ -264,9 +273,9 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicl
 
     Utility::ClearWayPath(m_currentWayPath);
 
-    //CreateWayPath();
+    CreateWayPath();
     //CreateWayPathTestFireRange();
-    CreateWayPathTestMissileRange();
+    //CreateWayPathTestMissileRange();
 
     m_currentDestination = DirectX::SimpleMath::Vector3::Zero;
 

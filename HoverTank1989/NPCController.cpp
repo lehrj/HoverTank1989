@@ -532,7 +532,8 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
     /////////////////////////////////////////////
     if (isTargetHit == true)
     {
-        m_npcVec[targetIndex]->SetIsTargetedTrue();
+        //m_npcVec[targetIndex]->SetIsTargetedTrue();
+        m_npcVec[targetIndex]->SetIsPlayerTargetedTrue();
     }
 
     aDistance = distanceToTarget;
@@ -950,6 +951,7 @@ bool NPCController::UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath:
         isIdFound = true;
         aPosition = m_npcVec[idIndex]->GetPos();
         aVelocity = m_npcVec[idIndex]->GetVelocity();
+        m_npcVec[idIndex]->SetIsMissileTargetedTrue();
     }
     else
     {

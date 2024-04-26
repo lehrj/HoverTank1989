@@ -76,6 +76,7 @@ private:
     void DrawSky();
     void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
+    void DrawSpawner();
     void DrawTerrainNew(Terrain& aTerrain);
     void DrawTestRangeMissile();
     void DrawTestTrack();
@@ -134,7 +135,6 @@ private:
     std::shared_ptr<NPCController>  m_npcController;
     std::shared_ptr<Vehicle>        m_vehicle;
     
-
     std::shared_ptr<VehicleHover> m_testVehicleHover;
 
     using VertexType = DirectX::VertexPositionNormalColorTexture;
@@ -418,6 +418,13 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape3;
+
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerOuterShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerOuterMat;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;
+    DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 950.0f);
+
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;
 
