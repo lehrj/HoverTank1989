@@ -423,7 +423,7 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat;
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
     DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;
-    DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 950.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
 
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;

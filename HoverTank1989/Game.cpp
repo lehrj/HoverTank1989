@@ -769,12 +769,8 @@ void Game::Render()
         DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
-        //m_vehicle->DrawVehicleProjectiles(m_camera->GetViewMatrix(), m_proj);
-        //m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
-        //m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj);
-        m_npcController->DrawNPCs2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+ 
+        m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -1113,10 +1109,10 @@ void Game::CreateDeviceDependentResources()
 
 void Game::DrawSpawner()
 {
-    auto pos = DirectX::SimpleMath::Vector3::Zero;
-    auto mat = DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    //auto pos = DirectX::SimpleMath::Vector3::Zero;
+    //auto mat = DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     m_spawnerOuterShape->Draw(m_spawnerOuterMat, m_camera->GetViewMatrix(), m_proj);
-    m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Red);
+    m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
 
 
     m_debugData->ToggleDebugOnOverRide();
@@ -2141,7 +2137,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            TogglePause();
+            //TogglePause();
         }
     }
     if (m_kbStateTracker.pressed.D1)

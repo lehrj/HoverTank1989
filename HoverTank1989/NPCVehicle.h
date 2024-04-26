@@ -74,6 +74,7 @@ enum class NPCType
     NPCTYPE_NPC00,
     NPCTYPE_NPC01,
     NPCTYPE_NPC02,
+    NPCTYPE_SPAWNED,
 };
 
 struct NPCModel

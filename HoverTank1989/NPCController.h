@@ -41,8 +41,7 @@ public:
     void CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aDistance, int& aTargetId, bool& aIsTargetLockTrue);
 
     void DebugToggleAI();
-    void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
-    void DrawNPCs2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, 
+    void DrawNPCs(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, 
         Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
 
     void InitializeNPCController(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, Environment const* aEnvironment);
@@ -77,11 +76,11 @@ public:
     void ToggleDebugBool();
     void UnlockJumpAbility();
     void UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const double aTimeDelta);
-    //void UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity);
     void UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward);
     bool UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward);
     void UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta);
     void UpdateNPCController(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta);
+    void UpdateSpawner(const double aTimeDelta);
 
 private:
     void CheckNpcAvoidance();
@@ -89,6 +88,8 @@ private:
     void CheckPlayerCollisions();
 
     unsigned int GetUniqueID();
+    
+    void SpawnToQueue();
 
     Environment const* m_environment;
     std::shared_ptr<Vehicle> m_player;
@@ -109,13 +110,16 @@ private:
 
     const bool m_isNpcAiOn = true;
 
-    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(570.0f, 11.0f, -375.0f);
-    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-570.0f, 11.0f, -375.0f);
-    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(570.0f, 11.0f, 0.0f);
-    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(70.0f, 11.0f, 0.0f);
-    //const DirectX::SimpleMath::Vector3 m_startHeading = -DirectX::SimpleMath::Vector3::UnitX;
-    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(300.0f, 11.0f, (1400.0f * 0.5f));
     const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(300.0f, 11.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_startHeading = -DirectX::SimpleMath::Vector3::UnitZ;
+
+    float m_spawnerCooldown = 5.0f;
+    const float m_spawnerCooldownTime = 5.0f;
+    bool m_isSpawnerReady = false;
+    const int m_spawnCountMax = 8;
+    int m_spawnCount;
+    const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
+    //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_spawnerHeading = - DirectX::SimpleMath::Vector3::UnitZ;
 };
 

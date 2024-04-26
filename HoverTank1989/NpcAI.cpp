@@ -138,6 +138,7 @@ void NpcAI::CreateWayPath()
     pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, 300.0f + zOffset);
     wp8 = Utility::CreateWaypoint(pos, radius);
 
+    Utility::PushWaypointToPath(m_currentWayPath, wp7);
     Utility::PushWaypointToPath(m_currentWayPath, wp2);
     Utility::PushWaypointToPath(m_currentWayPath, wp4);
     Utility::PushWaypointToPath(m_currentWayPath, wp5);
@@ -145,7 +146,7 @@ void NpcAI::CreateWayPath()
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
-    Utility::PushWaypointToPath(m_currentWayPath, wp7);
+ 
     m_currentWayPath.targetNode = 0;
 }
 
