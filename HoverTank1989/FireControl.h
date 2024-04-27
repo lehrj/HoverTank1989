@@ -671,20 +671,14 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 centerOfPressureFullDeployLocal = centerOfPressureBasePosLocal + centerOfPressureFullFinDeployOffset;
     const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
-    //const float headingRadiansPerSecondMax = 1.12f;
-    const float steerAngMax = Utility::ToRadians(15.0f);
-    //const float steeringAngPerSecDeltaMax = Utility::ToRadians(80.0f);
-    //const float steeringAngPerSecDeltaMax = Utility::ToRadians(2.0f);
+    const float steerAngMax = Utility::ToRadians(25.0f);
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(50.0f);
 
-    const float tailFinAngMax = Utility::ToRadians(25.0f);
-    //const float tailFinAngPerSecDeltaMax = Utility::ToRadians(110.0f);
-    //const float tailFinAngPerSecDeltaMax = Utility::ToRadians(50.0f);
+    const float tailFinAngMax = Utility::ToRadians(15.0f);
     const float tailFinAngPerSecDeltaMax = Utility::ToRadians(90.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
-    //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(30.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(40.0f);
 
     const float mass = 11.0f;

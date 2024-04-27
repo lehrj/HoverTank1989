@@ -1971,7 +1971,6 @@ void FireControl::CastRayLaser()
     DirectX::SimpleMath::Ray laserRay = DirectX::SimpleMath::Ray(m_playerVehicle->GetMuzzlePos(), m_playerVehicle->GetWeaponDirection());
     bool isTargetHit = false;
     float distanceToTarget = 0.0f;
-    //int targetID = m_npcController->CheckTargetingLaser(laserRay, distanceToTarget);
     int targetID = -1;
 
     m_npcController->CheckTargetingLaser(laserRay, distanceToTarget, targetID, isTargetHit);
@@ -5490,6 +5489,8 @@ void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta
     auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVecNorm);
     toTargQuat.Normalize();
     toTargQuat.Inverse(toTargQuat);
+
+    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targVecNorm, DirectX::Colors::Orange, false, true);
 
     aMissile.guidance.nav.vecToTargLocal = targVecNorm;
     aMissile.guidance.nav.quatToTarg = toTargQuat;
@@ -11458,10 +11459,9 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     DirectX::SimpleMath::Vector3 steeringLine = DirectX::SimpleMath::Vector3::UnitX;
     steeringLine = DirectX::SimpleMath::Vector3::Transform(steeringLine, navQuat);
     float steeringL = steeringLine.Length();
-    const float maxAng = m_missileConsts.tailFinAngMax;
     DirectX::SimpleMath::Quaternion steeringConeLimitQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion steeringConeQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, steeringLine);
-    steeringConeLimitQuat.RotateTowards(steeringConeQuat, maxAng);
+    steeringConeLimitQuat.RotateTowards(steeringConeQuat, m_missileConsts.tailFinAngMax);
 
     const float maxAngPerTime = aTimeDelta * m_missileConsts.tailFinAngPerSecDeltaMax;
 

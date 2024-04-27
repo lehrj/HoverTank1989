@@ -777,7 +777,7 @@ void Game::Render()
         DrawTestTrack();
         //DrawTestRangeMissile();
         DrawSpawner();
-        DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
     m_effect->EnableDefaultLighting();
@@ -1109,17 +1109,8 @@ void Game::CreateDeviceDependentResources()
 
 void Game::DrawSpawner()
 {
-    //auto pos = DirectX::SimpleMath::Vector3::Zero;
-    //auto mat = DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     m_spawnerOuterShape->Draw(m_spawnerOuterMat, m_camera->GetViewMatrix(), m_proj);
     m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
-
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLinePositionIndicator(m_spawnerPos, 50.0f, 0.0f, DirectX::Colors::Orange);
-    m_debugData->PushTestDebugBetweenPoints(m_spawnerPos, m_vehicle->GetPos(), DirectX::Colors::Red);
-
-    m_debugData->ToggleDebugOff();
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.

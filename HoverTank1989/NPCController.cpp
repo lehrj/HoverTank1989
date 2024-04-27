@@ -991,7 +991,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
     /////////////////////////////////////////////
     // force target for testing
 
-    
+    /*
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {   
         float distance = (m_npcVec[i]->GetPos() - aRay.position).Length();
@@ -1000,7 +1000,7 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
         isTargetHit = true;
         targetIndex = i;
     }
-    
+    */
 
     /////////////////////////////////////////////
     if (isTargetHit == true)
@@ -1028,7 +1028,7 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
     {
         if (m_npcVec[i]->GetIsDead() == false && m_npcVec[i]->GetIsActivated() == true && m_npcVec[i]->GetIsInCameraFrustrum() == true)
         {
-            m_npcVec[i]->DrawNPC3(aView, aProj, aEffect, aInputLayout);
+            m_npcVec[i]->DrawNPC(aView, aProj, aEffect, aInputLayout);
         }
     }
 }

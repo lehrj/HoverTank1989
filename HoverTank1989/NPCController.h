@@ -116,7 +116,7 @@ private:
     float m_spawnerCooldown = 5.0f;
     const float m_spawnerCooldownTime = 5.0f;
     bool m_isSpawnerReady = false;
-    const int m_spawnCountMax = 8;
+    const int m_spawnCountMax = 6;
     int m_spawnCount;
     const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
