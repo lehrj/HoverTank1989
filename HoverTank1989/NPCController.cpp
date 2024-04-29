@@ -1165,7 +1165,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     //const int columns = 4;
     const int rows = 1;
     //const int columns = 12;
-    const int columns = 6;
+    const int columns = 1;
     //const float xOrgVal = -500.0f;
     //const float xOrgVal = -200.0f;
     //const float zOrgVal = (static_cast<float>(columns * 0.5f) * -zPosOffSet) + (zPosOffSet * 0.5f);
@@ -1444,11 +1444,6 @@ void NPCController::UpdateNPCController(const DirectX::BoundingFrustum& aFrustum
 {
     UpdateSpawner(aTimeDelta);
     UpdateNPCs(aFrustum, aTimeDelta);
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_spawnCount    ", m_spawnCount, "");
-    m_debugData->DebugPushUILineWholeNumber("m_npcVec.size() ", m_npcVec.size(), "");
-    m_debugData->ToggleDebugOff();
 }
 
 void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta)

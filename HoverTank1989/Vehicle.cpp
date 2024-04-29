@@ -1063,7 +1063,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
             posWorld = m_modelController->GetMissileTubePosLeft();
             pos = m_modelController->GetLocalizedTubeLeftPos();
             launchDir = m_modelController->GetMissileTubeTurretLocalLeftDir();
-            launchDirWorld = m_modelController->GetMissileTubeDirRight();
+            launchDirWorld = m_modelController->GetMissileTubeDirLeft();
             velocity = m_heli.q.velocity;
             up = m_modelController->GetMissileTubeTurretLocalLeftUp();
             recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
@@ -1110,10 +1110,12 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         {
             torqueForceNorm = m_modelController->GetLocalizedTubeRightDir();
+            //weaponTorqueArmLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 1.0f);
         }
         else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
         {
             torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
+            //weaponTorqueArmLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f);
         }
 
         torqueForceNorm = -weaponForceNorm;
@@ -4336,6 +4338,21 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     float angRadsPerSecond = angRad / aTimeDelta;
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
+
+
+    m_debugData->ToggleDebugOnOverRide();
+    //pos = m_modelController->GetLocalizedTubeRightPos();
+    //m_debugData->PushDebugLinePositionIndicator(m_modelController->GetLocalizedTubeRightPos(), 10.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLinePositionIndicator(m_modelController->GetLocalizedTubeLeftPos(), 10.0f, 0.0f, DirectX::Colors::Lime);
+
+    //m_debugData->PushDebugLine(m_heli.q.position, m_modelController->GetLocalizedTubeRightPos(), 10.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_heli.q.position, m_modelController->GetLocalizedTubeLeftPos(), 10.0f, 0.0f, DirectX::Colors::Lime);
+
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetLocalizedTubeLeftPos(), 15.0f, 0.0f, DirectX::Colors::Lavender);
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetLocalizedTubeRightPos(), 14.0f, 0.0f, DirectX::Colors::Orange);
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->ToggleDebugOff();
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
@@ -4459,9 +4476,9 @@ void Vehicle::UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDe
     torqueSum.magnitude = 0.0f;
     for (int i = 0; i < aVehicle.impulseForceVec.size(); ++i)
     {
-        Utility::ImpulseForce testImpulse2 = aVehicle.impulseForceVec[i];
+        //Utility::ImpulseForce testImpulse2 = aVehicle.impulseForceVec[i];
         Utility::UpdateImpulseForceBellCurve(aVehicle.impulseForceVec[i], static_cast<float>(aTimeDelta));
-        Utility::ImpulseForce testImpulse = aVehicle.impulseForceVec[i];
+        //Utility::ImpulseForce testImpulse = aVehicle.impulseForceVec[i];
 
         if (aVehicle.impulseForceVec[i].isActive == true)
         {

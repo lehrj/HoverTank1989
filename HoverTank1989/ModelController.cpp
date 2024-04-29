@@ -101,7 +101,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetLightDirection(1, defaultLightDir1);
     aEffect->SetLightDirection(2, defaultLightDir2);
 
-    //aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
+    aModel.bodyModel->Draw(deviceContext, states, aModel.bodyWorldMatrix, aView, aProjection);
   
     aModel.turretModel->UpdateEffects([&](DirectX::IEffect* effect)
         {
@@ -124,7 +124,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetLightDirection(1, defaultLightDir1);
     aEffect->SetLightDirection(2, defaultLightDir2);
 
-    //aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
+    aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
    
     aModel.bodyModel->UpdateEffects([&](DirectX::IEffect* effect)
@@ -228,14 +228,16 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     const float missileTubeVerticalRot = m_missileTubeVerticalRot;
     const float missileTubeHorizontalRot = m_missileTubeHorizontalRot;
 
-    aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
+    aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+
 
     //aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     //aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
     
-    aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
+    aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
+
 
 
     aModel.localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
@@ -247,6 +249,8 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeRightUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightUp, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
 
+    //aModel.localMissileTubeLeftUp = aModel.localMissileTubeRightUp;
+    //aModel.localMissileTubeLeftDir = aModel.localMissileTubeRightDir;
 
     // front center glow
     DirectX::SimpleMath::Vector3 frontGlowCenterSize = DirectX::SimpleMath::Vector3(0.2f, 0.5f, 1.75f);

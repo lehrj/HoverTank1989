@@ -1201,12 +1201,13 @@ void Game::DrawDebugDataUI()
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
 
-
+    /*
     textLine = "m_soundFxVecTest   " + std::to_string(m_soundFxVecTest.size());
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
+    */
 
     /*
     textLine = "m_unlockTimer1   " + std::to_string(m_unlockTimer1);

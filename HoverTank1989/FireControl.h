@@ -300,7 +300,7 @@ struct GuidanceSystem
     bool isRocketPlumeFlickerTrue = false;
     bool isSelfDestructTrue = false;
     bool isExplodingTrue = false;
-    bool isTargetingLaserOn = false;
+    bool isTargetingLaserOn = true;
     float postExplosionDrawCountDown = 2.0f;
 
     float finDeployPercent = 0.0f;
@@ -473,8 +473,7 @@ struct MissileModel
     // consts & colors
     // contrails
     const float contrailColorMax = 0.9f; 
-    //const float contrailColorMin = 0.35f;
-    const float contrailColorMin = 0.0f;
+    const float contrailColorMin = 0.35f;
     const unsigned int contrailDrawCountMax = 30;
     // afterburn flicker
     const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
@@ -636,7 +635,7 @@ struct MissileConsts
     const float finDeployDelay = 0.2f;
     const float rocketFireDelay = 0.6f;
     const float finDeployTime = 0.4f;
-    const float rocketFireFullTime = 0.5f;
+    const float rocketFireFullTime = 0.3f;
 
     /*
     const float finDeployDelay = 0.1f;
@@ -668,6 +667,7 @@ struct MissileConsts
     const DirectX::SimpleMath::Vector3 thrustPosLocalOffset = DirectX::SimpleMath::Vector3(0.01f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
+    const DirectX::SimpleMath::Vector3 centerOfPressureAngleOfAttackOffSetMax = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullDeployLocal = centerOfPressureBasePosLocal + centerOfPressureFullFinDeployOffset;
     const DirectX::SimpleMath::Vector3 centerOfMassLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
 
@@ -682,7 +682,7 @@ struct MissileConsts
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(40.0f);
 
     const float mass = 11.0f;
-    const float rocketBoostForceMax = mass * 10.0f; // Use desired thrust to weight ratio for boost value
+    const float rocketBoostForceMax = mass * 11.0f; // Use desired thrust to weight ratio for boost value
 
     const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
     //const float velMaxEst = (rocketBoostForceMax / mass);
@@ -691,7 +691,6 @@ struct MissileConsts
     // flight modeling
     const float climbOutAngle = Utility::ToRadians(45.0f);
     const float climbOutDuration = 0.5f;
-    //const float climbOutAltMin = 80.0f;
     const float climbOutAltMin = 50.0f;
 
     const float cruiseAltMin = 100.0f;
@@ -1305,6 +1304,7 @@ private:
     void GuidanceBasicGravityOld(MissileData& aMissile, const float aTimeDelta);
     void GuidanceBasicGravity(MissileData& aMissile, const float aTimeDelta);
     void GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta);
+    void GuidanceClimbOutOld(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManual(MissileData& aMissile, const float aTimeDelta);
     void GuidanceManualVector(MissileData& aMissile, const float aTimeDelta);
     void GuidanceTest(MissileData& aMissile, const float aTimeDelta);
@@ -1333,8 +1333,8 @@ private:
     //void AudioExplosionUpdate(const float aTimeDelta);
 
     bool m_isTubeRippleFireTrue = true;
-    bool m_isTubeDualFireTrue = false;
-    MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
+    bool m_isTubeDualFireTrue = true;
+    MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
     bool m_isDualFireCoolDownOverRideTrue = false;
 
 public:

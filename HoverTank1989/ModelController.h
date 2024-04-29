@@ -126,7 +126,7 @@ public:
     DirectX::SimpleMath::Vector3 GetMissileTubePosRight() const { return m_playerModel.worldMissileTubeRightPos; };
 
     DirectX::SimpleMath::Vector3 GetMissileTubeLeftUp() const { return m_playerModel.worldMissileTubeLeftUp; };
-    DirectX::SimpleMath::Vector3 GetMissileTubeRightUp() const { return m_playerModel.worldMissileTubeLeftUp; };
+    DirectX::SimpleMath::Vector3 GetMissileTubeRightUp() const { return m_playerModel.worldMissileTubeRightUp; };
 
     DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalLeftUp() const { return m_playerModel.turretLocalMissileTubeLeftUp; };
     DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightUp() const { return m_playerModel.turretLocalMissileTubeRightUp; };
