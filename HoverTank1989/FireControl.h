@@ -395,7 +395,6 @@ struct GuidanceSystem
     float navigationTime = 0.0f;
     DirectX::SimpleMath::Vector3 pnAdjusted = DirectX::SimpleMath::Vector3::Zero;
 
-    //DirectX::SimpleMath::Vector3 losNormTest = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 losNormTest = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3 losDeltaTest = DirectX::SimpleMath::Vector3::Zero;
 
@@ -741,7 +740,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isManualControlTrue = false;
+    const bool isManualControlTrue = true;
     const bool isThrustVecOn = false;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;
@@ -1333,7 +1332,7 @@ private:
     //void AudioExplosionUpdate(const float aTimeDelta);
 
     bool m_isTubeRippleFireTrue = true;
-    bool m_isTubeDualFireTrue = true;
+    bool m_isTubeDualFireTrue = false;
     MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
     bool m_isDualFireCoolDownOverRideTrue = false;
 

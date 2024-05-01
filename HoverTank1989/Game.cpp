@@ -1547,9 +1547,10 @@ void Game::DrawTestTrack()
 
 void Game::DrawTerrainNew(Terrain& aTerrain)
 {
-    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
+    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
 
+    // Create base to black out skydome under terrain
     DirectX::SimpleMath::Vector3 vertNorm = -DirectX::SimpleMath::Vector3::UnitY;
     const float baseSize = m_skyBoxSize;
     const float heightOffSet = -m_groundBlackHeight;

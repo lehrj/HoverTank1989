@@ -10778,8 +10778,13 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->ToggleDebugOnOverRide();
         float speed = m_missileVec[i].projectileData.q.velocity.Length();
         float mph = speed * 2.237f;
-        //m_debugData->DebugPushUILineWholeNumber("mph = ", static_cast<int>(mph), "");
+        m_debugData->DebugPushUILineWholeNumber("mph = ", static_cast<int>(mph), "");
         //m_debugData->DebugPushUILineDecimalNumber("AoA = ", Utility::ToDegrees(m_missileVec[i].guidance.angleOfAttack), "");
+
+        
+        m_debugData->DebugPushUILineDecimalNumber("finPitch = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finPitch), "");
+        m_debugData->DebugPushUILineDecimalNumber("finYaw   = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finYaw), "");
+
         m_debugData->ToggleDebugOff();
 
         DebugDrawUpdate(m_missileVec[i]);
@@ -14738,18 +14743,7 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
 void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTimeDelta)
 {
     aMissile.audioFx->pos = aMissile.projectileData.q.position;
-    //aMissile.audioFx->SetPos(aMissile.projectileData.q.position);
     aMissile.audioFx->up = aMissile.projectileData.up;
-
-    //aMissile.audioFx->emitter->SetPosition(aMissile.projectileData.q.position);
     aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
     aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
-
-
-
-    //aMissile.explosionFx->pos = aMissile.projectileData.q.position;
-    //aMissile.explosionFx->up = aMissile.projectileData.up;
-
-    //aMissile.explosionFx->emitter->Position = aMissile.projectileData.q.position;
-   // aMissile.explosionFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
 }

@@ -1126,7 +1126,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         recoil.directionNorm = -launchDir;
         
         m_heli.impulseForceVec.push_back(recoil);
-
+        //velocity2 = DirectX::SimpleMath::Vector3::Zero;
         m_fireControl->FireSelectedWithAudio(pos2, launchDir2, velocity2, up, aRocketFx);
     }
 }
@@ -4352,6 +4352,12 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetLocalizedTubeRightPos(), 14.0f, 0.0f, DirectX::Colors::Orange);
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeLeftUp(), 10.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeRightUp(), 10.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
 }
 
