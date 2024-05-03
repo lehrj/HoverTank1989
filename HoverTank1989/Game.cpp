@@ -1209,6 +1209,14 @@ void Game::DrawDebugDataUI()
     textLinePos.y += 30;
     */
 
+    
+    textLine = "m_currentFxShotBang   " + std::to_string(m_currentFxShotBang);
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
+
+
     /*
     textLine = "m_unlockTimer1   " + std::to_string(m_unlockTimer1);
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
@@ -2402,7 +2410,12 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
         std::shared_ptr <Utility::SoundFx> createdFx(new Utility::SoundFx());
         createdFx = m_fireControl->GetFxToCreate(i);
 
-        createdFx->fx = m_audioBank->CreateStreamInstance(4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+        unsigned int fxIndex = GetRandomNonRepeatingFxIndex(m_currentFxExplosion, createdFx->fxType);
+
+
+        //createdFx->fx = m_audioBank->CreateStreamInstance(4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+        //createdFx->fx = m_audioBank->CreateStreamInstance(5, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_ATARI_BOOM2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         //std::shared_ptr<DirectX::AudioEmitter> explosionEmitter = std::make_shared<DirectX::AudioEmitter>();
         //explosionEmitter->SetOmnidirectional();
         
@@ -2466,7 +2479,10 @@ void Game::TriggerFireWithAudio()
 
     // trigger fire fx
     std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
-    fireFx->fx = m_audioBank->CreateStreamInstance(2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+    fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG;
+    m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+    //fireFx->fx = m_audioBank->CreateStreamInstance(2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
     fireEmitter->SetOmnidirectional();
     fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
@@ -2481,4 +2497,35 @@ void Game::TriggerFireWithAudio()
     m_soundFxVecTest.push_back(rocketFx);
 }
 
+unsigned int Game::GetRandomNonRepeatingFxIndex(unsigned int aCurrentIndex, Utility::SoundFxType aFxType)
+{
+    unsigned int min;
+    unsigned int max;
+    if (aFxType == Utility::SoundFxType::SOUNDFXTYPE_EXPLOSION)
+    {
+        min = m_fxExplosionRangeMin;
+        max = m_fxExplosionRangeMax;
+    }
+    else if (aFxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG)
+    {
+        min = m_fxShotBangRangeMin;
+        max = m_fxShotBangRangeMax;
+    }
+    else if (aFxType == Utility::SoundFxType::SOUNDFXTYPE_DEBUG)
+    {
+        return 1;
+    }
+
+    unsigned int randomInt = min + static_cast <unsigned int> (rand()) / (static_cast <unsigned int> (RAND_MAX / (max - min)));
+
+    if (randomInt == aCurrentIndex)
+    {
+        ++randomInt;
+    }
+    if (randomInt > max)
+    {
+        randomInt = min;
+    }
+    return randomInt; 
+}
 #pragma endregion

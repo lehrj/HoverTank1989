@@ -1221,16 +1221,24 @@ public:
     };
 
 
+    enum class SoundFxType
+    {
+        SOUNDFXTYPE_DEBUG,
+        SOUNDFXTYPE_EXPLOSION,
+        SOUNDFXTYPE_SHOTBANG,
+    };
+
     struct SoundFx
     {
-        //std::shared_ptr<DirectX::SoundEffectInstance> fx;
-        std::shared_ptr<DirectX::SoundStreamInstance> fx;
         std::shared_ptr<DirectX::AudioEmitter> emitter;
+        std::shared_ptr<DirectX::SoundStreamInstance> fx;
+
         DirectX::SimpleMath::Vector3 forward;
         DirectX::SimpleMath::Vector3 pos;
         DirectX::SimpleMath::Vector3 up;
         bool isDestroyTrue;
         bool isTriggeredTrue = true;
+        SoundFxType fxType = SoundFxType::SOUNDFXTYPE_DEBUG;
 
         void SetPos(DirectX::SimpleMath::Vector3 aPos)
         {

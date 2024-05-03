@@ -740,7 +740,7 @@ struct MissileConsts
     const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
-    const bool isManualControlTrue = true;
+    const bool isManualControlTrue = false;
     const bool isThrustVecOn = false;
     const bool isDynamicFinOn = true;
     const bool isFinForceOn = true;

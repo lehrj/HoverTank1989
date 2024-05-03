@@ -2274,9 +2274,9 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
     explosionFx->isDestroyTrue = false;
     explosionFx->isTriggeredTrue = true;
     explosionFx->forward = launchDir;
-    //explosionFx->fx->Play(false);
 
-    //explosionFx->SetEmitter(explosionEmitter);
+    explosionFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG;
+
     createdExplosion.soundFx = explosionFx;
 
     /////////////////////

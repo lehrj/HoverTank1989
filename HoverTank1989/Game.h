@@ -85,6 +85,8 @@ private:
 
     void FadeOutMusic();
 
+    unsigned int GetRandomNonRepeatingFxIndex(unsigned int aCurrentIndex, Utility::SoundFxType aFxType);
+
     bool InitializeTerrainArray();
     bool InitializeTerrainArrayNew(Terrain& aTerrain);
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
@@ -296,6 +298,13 @@ private:
     DirectX::AudioEmitter  m_fxEmitter;
     DirectX::AudioListener m_listener;
     DirectX::AudioEmitter  m_emitter;
+
+    unsigned int m_currentFxExplosion = 4;
+    unsigned int m_currentFxShotBang = 10;
+    const unsigned int m_fxExplosionRangeMax = 9;
+    const unsigned int m_fxExplosionRangeMin = 4;
+    const unsigned int m_fxShotBangRangeMax = 16;
+    const unsigned int m_fxShotBangRangeMin = 10;
 
     float                                       m_musicFadeOutTimer = 0.0f;
     const float                                 m_musicFadeOutDuration = 5.0f;
