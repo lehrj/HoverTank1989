@@ -2275,7 +2275,7 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
     explosionFx->isTriggeredTrue = true;
     explosionFx->forward = launchDir;
 
-    explosionFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG;
+    explosionFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_EXPLOSION;
 
     createdExplosion.soundFx = explosionFx;
 
@@ -14738,12 +14738,13 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
     m_missileVec.push_back(firedMissile);
 }
 
-
-
 void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTimeDelta)
 {
-    aMissile.audioFx->pos = aMissile.projectileData.q.position;
-    aMissile.audioFx->up = aMissile.projectileData.up;
-    aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
-    aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
+    if (aMissile.audioFx->isDestroyTrue == false)
+    {
+        aMissile.audioFx->pos = aMissile.projectileData.q.position;
+        aMissile.audioFx->up = aMissile.projectileData.up;
+        aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
+        aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
+    }
 }
