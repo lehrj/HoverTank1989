@@ -1980,6 +1980,28 @@ void FireControl::CastRayLaser()
     //m_debugData->DebugPushUILineWholeNumber("isTargetHit = ", isTargetHit, "");
     m_currentTargetID = targetID;
     m_isTargetingLaserLockTrue = isTargetHit;
+
+    if (m_isLaserHitLastFrameTrue == false && m_isTargetingLaserLockTrue == true)
+    {
+        std::shared_ptr <Utility::SoundFx> beaconFx(new Utility::SoundFx());
+        beaconFx->emitter = std::make_shared<DirectX::AudioEmitter>();
+        beaconFx->emitter->SetOmnidirectional();
+        auto forward = m_playerVehicle->GetForward();
+        auto up = m_playerVehicle->GetVehicleUp();
+        beaconFx->emitter->SetPosition(m_playerVehicle->GetPos());
+        beaconFx->emitter->SetVelocity(m_playerVehicle->GetVelocity());
+        beaconFx->emitter->SetOmnidirectional();
+        beaconFx->emitter->SetOrientation(forward, up);
+        beaconFx->pos = m_playerVehicle->GetPos();
+        beaconFx->up = up;
+        beaconFx->isDestroyTrue = false;
+        beaconFx->isTriggeredTrue = true;
+        beaconFx->forward = forward;
+        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON;
+        m_fxExplosionVec.push_back(beaconFx);
+    }
+
+    m_isLaserHitLastFrameTrue = m_isTargetingLaserLockTrue;
 }
 
 void FireControl::CheckCollisions()
@@ -10782,9 +10804,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //m_debugData->DebugPushUILineDecimalNumber("AoA = ", Utility::ToDegrees(m_missileVec[i].guidance.angleOfAttack), "");
 
         
-        m_debugData->DebugPushUILineDecimalNumber("finPitch = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finPitch), "");
-        m_debugData->DebugPushUILineDecimalNumber("finYaw   = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finYaw), "");
-
+        //m_debugData->DebugPushUILineDecimalNumber("finPitch = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finPitch), "");
+        //m_debugData->DebugPushUILineDecimalNumber("finYaw   = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finYaw), "");
+        m_debugData->DebugPushUILineDecimalNumber("guidance.throttlePercentage   = ", m_missileVec[i].guidance.throttlePercentage, "");
         m_debugData->ToggleDebugOff();
 
         DebugDrawUpdate(m_missileVec[i]);
@@ -13270,7 +13292,16 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
     {
         rocketThrottle = (aMissile.projectileData.time - m_missileConsts.rocketFireDelay) / (m_missileConsts.rocketFireFullTime);
     }
+
     aMissile.guidance.throttlePercentage = rocketThrottle;
+
+    if (aMissile.projectileData.time >= m_missileConsts.rocketFireFullTime + m_missileConsts.rocketFireDelay
+        && aMissile.projectileData.time <= m_missileConsts.rocketFireFullTime + m_missileConsts.rocketFireDelay + m_missileConsts.rocketOverBoostTime)
+    {
+        //aMissile.guidance.throttlePercentage = 2.0f;
+    }
+
+
 
     // fin deploy percent and center of pressure
     if (aMissile.guidance.isFinsDeployEnd == true)
@@ -13290,6 +13321,24 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
             else
             {
                 aMissile.guidance.isFinsDeployStarted = true;
+
+                // sound fx for fin deploy
+                std::shared_ptr <Utility::SoundFx> poofFx(new Utility::SoundFx());
+                poofFx->emitter = std::make_shared<DirectX::AudioEmitter>();
+                poofFx->emitter->SetOmnidirectional();
+                auto forward = aMissile.projectileData.forward;
+                auto up = aMissile.projectileData.up;
+                poofFx->emitter->SetPosition(aMissile.projectileData.q.position);
+                poofFx->emitter->SetVelocity(aMissile.projectileData.q.velocity);
+                poofFx->emitter->SetOmnidirectional();
+                poofFx->emitter->SetOrientation(forward, up);
+                poofFx->pos = aMissile.projectileData.q.position;
+                poofFx->up = up;
+                poofFx->isDestroyTrue = false;
+                poofFx->isTriggeredTrue = true;
+                poofFx->forward = forward;
+                poofFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_POOF;
+                m_fxExplosionVec.push_back(poofFx);
             }
         }
 
@@ -14604,14 +14653,12 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
 
 void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx)
 {
-
     if (m_isCoolDownActive == false)
     {
         if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
         {
             if (m_currentTargetID != -1)
             {
-                
                 ActivateMuzzleFlash(m_currentAmmoType);
 
                 if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_DEBUG)
@@ -14714,6 +14761,14 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
     firedMissile.projectileData.collisionData.isCollisionTrue = firedMissile.projectileData.isCollisionTrue;
     //firedMissile.projectileData.time = 0.0f;
     firedMissile.projectileData.time = 0.0f + aTimeOffSet;
+
+    /////////////////////
+    // time offset so dual shots audio isn't in sync and more realisitic look
+    const float low = 0.0f;
+    const float high = 0.1f;
+    const float timeOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+    firedMissile.projectileData.time += timeOffset;
+    /////////////////////
 
     firedMissile.guidance.uniqueId = GetUniqueMissileID();
 

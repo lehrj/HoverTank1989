@@ -635,6 +635,8 @@ struct MissileConsts
     const float rocketFireDelay = 0.6f;
     const float finDeployTime = 0.4f;
     const float rocketFireFullTime = 0.3f;
+    const float rocketOverBoostTime = 0.3f;
+    const float rocketOverBoostMax = 2.0f;
 
     /*
     const float finDeployDelay = 0.1f;
@@ -1099,7 +1101,6 @@ private:
 
     void UpdateFlightDataTarget(MissileData& aMissile, const double aTimeDelta);
 
-
     void UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta);
 
     void UpdateLOSData(MissileData& aMissile, const float aTimeDelta);
@@ -1199,6 +1200,9 @@ private:
     bool m_isTargetingLaserOn = true;
     int m_currentTargetID = -1;
     bool m_isTargetingLaserLockTrue = false;
+    bool m_isLaserHitLastFrameTrue = false;
+
+    bool m_isLaserFlickerTrue = false;
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
@@ -1209,7 +1213,6 @@ private:
     DirectX::SimpleMath::Vector3 m_testVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 1.0f);
     float m_testAng = 0.0f;
     int m_cameraTrackedMissileID = -1;
-    bool m_isLaserFlickerTrue = false;
 
     unsigned int m_nextUniqueMissileID = 0;
     unsigned int m_camTrackMissileId = 0;

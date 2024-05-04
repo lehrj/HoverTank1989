@@ -2403,8 +2403,20 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
     {
         std::shared_ptr <Utility::SoundFx> createdFx(new Utility::SoundFx());
         createdFx = m_fireControl->GetFxToCreate(i);
-        m_currentFxExplosion = GetRandomNonRepeatingFxIndex(m_currentFxExplosion, createdFx->fxType);
-        createdFx->fx = m_audioBank->CreateStreamInstance(m_currentFxExplosion, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+        if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_EXPLOSION)
+        {
+            m_currentFxExplosion = GetRandomNonRepeatingFxIndex(m_currentFxExplosion, createdFx->fxType);
+            createdFx->fx = m_audioBank->CreateStreamInstance(m_currentFxExplosion, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        }
+        else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_BEACON)
+        {
+            createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        }
+        else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_POOF)
+        {
+            createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_POOF_2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        }
         createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
         createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
         createdFx->emitter->CurveDistanceScaler = 14.f;

@@ -1226,6 +1226,8 @@ public:
         SOUNDFXTYPE_DEBUG,
         SOUNDFXTYPE_EXPLOSION,
         SOUNDFXTYPE_SHOTBANG,
+        SOUNDFXTYPE_BEACON,
+        SOUNDFXTYPE_POOF,
     };
 
     struct SoundFx
