@@ -306,6 +306,12 @@ private:
     const unsigned int m_fxShotBangRangeMax = 16;
     const unsigned int m_fxShotBangRangeMin = 10;
 
+    const float m_audioDistanceBang = 14.0f;
+    const float m_audioDistanceBeacon = 14.0f;
+    const float m_audioDistanceExplosion = 140.0f;
+    const float m_audioDistancePoof = 14.0f;
+    const float m_audioDistanceRocketLoopable = 14.0f;
+
     float                                       m_musicFadeOutTimer = 0.0f;
     const float                                 m_musicFadeOutDuration = 5.0f;
     const float                                 m_musicFadeOutRate = 0.2f;

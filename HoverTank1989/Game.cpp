@@ -2408,21 +2408,36 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
         {
             m_currentFxExplosion = GetRandomNonRepeatingFxIndex(m_currentFxExplosion, createdFx->fxType);
             createdFx->fx = m_audioBank->CreateStreamInstance(m_currentFxExplosion, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+            createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+            createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+            createdFx->emitter->CurveDistanceScaler = m_audioDistanceExplosion;
+            createdFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+            createdFx->isTriggeredTrue = true;
+            createdFx->fx->Play(false);
         }
         else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_BEACON)
         {
             createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+            createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+            createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+            createdFx->emitter->CurveDistanceScaler = m_audioDistanceBeacon;
+            createdFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+            createdFx->isTriggeredTrue = true;
+            createdFx->fx->Play(false);
         }
         else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_POOF)
         {
             createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_POOF_2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+            createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+            createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+            createdFx->emitter->CurveDistanceScaler = m_audioDistancePoof;
+            createdFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+            createdFx->isTriggeredTrue = true;
+            createdFx->fx->Play(false);
         }
-        createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-        createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-        createdFx->emitter->CurveDistanceScaler = 14.f;
-        createdFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-        createdFx->isTriggeredTrue = true;
-        createdFx->fx->Play(false);
 
         m_soundFxVecTest.push_back(createdFx);
     }

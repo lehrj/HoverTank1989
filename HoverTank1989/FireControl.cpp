@@ -13261,8 +13261,6 @@ void FireControl::UpdateThrustVector(MissileData& aMissile)
 }
 
 
-
-
 void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const double aTimeDelta)
 {
     // laser targeting
@@ -13300,8 +13298,6 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
     {
         //aMissile.guidance.throttlePercentage = 2.0f;
     }
-
-
 
     // fin deploy percent and center of pressure
     if (aMissile.guidance.isFinsDeployEnd == true)
