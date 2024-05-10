@@ -13338,6 +13338,11 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
             }
         }
 
+
+        if (aMissile.guidance.isFinDeployAudioTriggered == false)
+        {
+        }
+
         if (aMissile.guidance.isFinsDeployStarted == true)
         {
             if (aMissile.guidance.isFinsDeployEnd == false)

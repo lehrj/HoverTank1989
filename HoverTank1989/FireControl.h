@@ -295,12 +295,16 @@ struct GuidanceSystem
     
     bool isFinsDeployStarted = false;
     bool isFinsDeployEnd = false;
+    bool isFinDeployAudioTriggered = false;
+
     bool isRocketFired = false;
     bool isTargetLocked = false;
     bool isRocketPlumeFlickerTrue = false;
     bool isSelfDestructTrue = false;
     bool isExplodingTrue = false;
     bool isTargetingLaserOn = true;
+
+
     float postExplosionDrawCountDown = 2.0f;
 
     float finDeployPercent = 0.0f;
@@ -601,7 +605,6 @@ struct MissileData
     ContrailPackage contrails;
     
     std::shared_ptr<Utility::SoundFx> audioFx;
-    //std::shared_ptr<Utility::SoundFx> explosionFx;
 };
 
 struct MissileStruct
