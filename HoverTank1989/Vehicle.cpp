@@ -4340,7 +4340,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_testAngularRotationPerSecond = angRadsPerSecond;
 
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     //pos = m_modelController->GetLocalizedTubeRightPos();
     //m_debugData->PushDebugLinePositionIndicator(m_modelController->GetLocalizedTubeRightPos(), 10.0f, 0.0f, DirectX::Colors::Red);
     //m_debugData->PushDebugLinePositionIndicator(m_modelController->GetLocalizedTubeLeftPos(), 10.0f, 0.0f, DirectX::Colors::Lime);

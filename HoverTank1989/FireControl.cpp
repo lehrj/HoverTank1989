@@ -13319,6 +13319,7 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
                 aMissile.guidance.isFinsDeployStarted = true;
 
                 // sound fx for fin deploy
+                /*
                 std::shared_ptr <Utility::SoundFx> poofFx(new Utility::SoundFx());
                 poofFx->emitter = std::make_shared<DirectX::AudioEmitter>();
                 poofFx->emitter->SetOmnidirectional();
@@ -13335,12 +13336,39 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
                 poofFx->forward = forward;
                 poofFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_POOF;
                 m_fxExplosionVec.push_back(poofFx);
+                */
             }
         }
 
+        const float finAudioTime = 0.3f;
 
         if (aMissile.guidance.isFinDeployAudioTriggered == false)
         {
+            if (aMissile.guidance.isFinsDeployStarted == true && aMissile.projectileData.time >= m_missileConsts.finDeployDelay + (m_missileConsts.finDeployTime * 0.5f))
+            {
+                int testBreak = 0;
+                testBreak++;
+
+                // sound fx for fin deploy
+                std::shared_ptr <Utility::SoundFx> poofFx(new Utility::SoundFx());
+                poofFx->emitter = std::make_shared<DirectX::AudioEmitter>();
+                poofFx->emitter->SetOmnidirectional();
+                auto forward = aMissile.projectileData.forward;
+                auto up = aMissile.projectileData.up;
+                poofFx->emitter->SetPosition(aMissile.projectileData.q.position);
+                poofFx->emitter->SetVelocity(aMissile.projectileData.q.velocity);
+                poofFx->emitter->SetOmnidirectional();
+                poofFx->emitter->SetOrientation(forward, up);
+                poofFx->pos = aMissile.projectileData.q.position;
+                poofFx->up = up;
+                poofFx->isDestroyTrue = false;
+                poofFx->isTriggeredTrue = true;
+                poofFx->forward = forward;
+                poofFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_POOF;
+                m_fxExplosionVec.push_back(poofFx);
+
+                aMissile.guidance.isFinDeployAudioTriggered = true;
+            }
         }
 
         if (aMissile.guidance.isFinsDeployStarted == true)
