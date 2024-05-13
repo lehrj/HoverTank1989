@@ -8814,6 +8814,24 @@ void FireControl::ToggleTargetingLaser()
     if (m_isTargetingLaserOn == false)
     {
         m_isTargetingLaserOn = true;
+
+        std::shared_ptr <Utility::SoundFx> beaconFx(new Utility::SoundFx());
+        beaconFx->emitter = std::make_shared<DirectX::AudioEmitter>();
+        beaconFx->emitter->SetOmnidirectional();
+        auto forward = m_playerVehicle->GetForward();
+        auto up = m_playerVehicle->GetVehicleUp();
+        beaconFx->emitter->SetPosition(m_playerVehicle->GetPos());
+        beaconFx->emitter->SetVelocity(m_playerVehicle->GetVelocity());
+        beaconFx->emitter->SetOmnidirectional();
+        beaconFx->emitter->SetOrientation(forward, up);
+        beaconFx->pos = m_playerVehicle->GetPos();
+        beaconFx->up = up;
+        beaconFx->isDestroyTrue = false;
+        beaconFx->isTriggeredTrue = true;
+        beaconFx->forward = forward;
+        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON;
+        m_fxExplosionVec.push_back(beaconFx);
+
     }
     else
     {
