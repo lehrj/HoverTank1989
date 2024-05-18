@@ -2449,7 +2449,17 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             createdFx->isTriggeredTrue = true;
             createdFx->fx->Play(false);
         }
+        else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE)
+        {
+            createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_UFO_11, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
 
+            createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+            createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+            createdFx->emitter->CurveDistanceScaler = m_audioDistancePoof;
+            createdFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+            createdFx->isTriggeredTrue = true;
+            createdFx->fx->Play(false);
+        }
         m_soundFxVecTest.push_back(createdFx);
     }
     m_fireControl->ClearCreateAudioVec();
