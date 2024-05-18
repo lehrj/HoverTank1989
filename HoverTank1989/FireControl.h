@@ -1204,7 +1204,7 @@ private:
     int m_currentTargetID = -1;
     bool m_isTargetingLaserLockTrue = false;
     bool m_isLaserHitLastFrameTrue = false;
-
+    bool m_isLaserLockToneOn = false;
     bool m_isLaserFlickerTrue = false;
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
