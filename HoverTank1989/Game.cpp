@@ -2452,13 +2452,14 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
         else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE)
         {
             createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_UFO_11, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
+            //createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
             createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
             createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
             createdFx->emitter->CurveDistanceScaler = m_audioDistancePoof;
             createdFx->emitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
             createdFx->isTriggeredTrue = true;
-            createdFx->fx->Play(false);
+            //createdFx->fx->IsLooped();
+            createdFx->fx->Play(true);
         }
         m_soundFxVecTest.push_back(createdFx);
     }
@@ -2469,6 +2470,19 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
         m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
         m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+    }
+
+    // laser tone
+    for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
+    {
+        if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE)
+        {
+            if (m_fireControl->GetIsTargetingLaserHitTrue() == false)
+            {
+                m_soundFxVecTest[i]->fx->Stop();
+                m_soundFxVecTest[i]->isDestroyTrue = true;
+            }
+        }
     }
 
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)

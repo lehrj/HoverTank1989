@@ -1997,7 +1997,9 @@ void FireControl::CastRayLaser()
         beaconFx->isDestroyTrue = false;
         beaconFx->isTriggeredTrue = true;
         beaconFx->forward = forward;
-        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON;
+        //beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON;
+        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+        
         m_fxExplosionVec.push_back(beaconFx);
     }
 
@@ -8836,6 +8838,23 @@ void FireControl::ToggleTargetingLaser()
     else
     {
         m_isTargetingLaserOn = false;
+
+        std::shared_ptr <Utility::SoundFx> beaconFx(new Utility::SoundFx());
+        beaconFx->emitter = std::make_shared<DirectX::AudioEmitter>();
+        beaconFx->emitter->SetOmnidirectional();
+        auto forward = m_playerVehicle->GetForward();
+        auto up = m_playerVehicle->GetVehicleUp();
+        beaconFx->emitter->SetPosition(m_playerVehicle->GetPos());
+        beaconFx->emitter->SetVelocity(m_playerVehicle->GetVelocity());
+        beaconFx->emitter->SetOmnidirectional();
+        beaconFx->emitter->SetOrientation(forward, up);
+        beaconFx->pos = m_playerVehicle->GetPos();
+        beaconFx->up = up;
+        beaconFx->isDestroyTrue = false;
+        beaconFx->isTriggeredTrue = true;
+        beaconFx->forward = forward;
+        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON_ALT;
+        m_fxExplosionVec.push_back(beaconFx);
     }
 }
 

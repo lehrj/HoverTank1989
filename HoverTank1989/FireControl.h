@@ -933,6 +933,9 @@ public:
     
     void GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod);
     bool GetIsFireCooldownTrue() { return m_isCoolDownActive; };
+    
+    //bool GetIsTargetingLaserHitTrue() { return m_isLaserLockToneOn; };
+    bool GetIsTargetingLaserHitTrue() { return m_isTargetingLaserLockTrue; };
 
     bool GetIsMissileFireAvailable() const;
     bool GetIsMissileDualFireTrue() const {return m_isTubeDualFireTrue;};
