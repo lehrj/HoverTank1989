@@ -1999,7 +1999,7 @@ void FireControl::CastRayLaser()
         beaconFx->forward = forward;
         //beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON;
         beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-        
+        beaconFx->volume = 0.0f;
         m_fxExplosionVec.push_back(beaconFx);
     }
 

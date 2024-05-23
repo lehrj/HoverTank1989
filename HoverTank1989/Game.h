@@ -311,6 +311,7 @@ private:
     const float m_audioDistanceExplosion = 140.0f;
     const float m_audioDistancePoof = 14.0f;
     const float m_audioDistanceRocketLoopable = 14.0f;
+    const float m_audioLockToneFadeRate = 5.0f;
 
     float                                       m_musicFadeOutTimer = 0.0f;
     const float                                 m_musicFadeOutDuration = 5.0f;
