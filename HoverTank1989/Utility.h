@@ -1252,6 +1252,8 @@ public:
         bool isTriggeredTrue = true;
         SoundFxType fxType = SoundFxType::SOUNDFXTYPE_DEBUG;
 
+        float volume = 1.0f;
+
         void SetPos(DirectX::SimpleMath::Vector3 aPos)
         {
             pos = aPos;

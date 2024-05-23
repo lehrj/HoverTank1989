@@ -2479,8 +2479,20 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
         {
             if (m_fireControl->GetIsTargetingLaserHitTrue() == false)
             {
-                m_soundFxVecTest[i]->fx->Stop();
-                m_soundFxVecTest[i]->isDestroyTrue = true;
+                const float soundDropRate = 0.1f;
+                m_soundFxVecTest[i]->volume -= soundDropRate;
+                
+                if (m_soundFxVecTest[i]->volume < 0.0f)
+                {
+                    m_soundFxVecTest[i]->fx->SetVolume(0.0f);
+
+                    m_soundFxVecTest[i]->fx->Stop();
+                    m_soundFxVecTest[i]->isDestroyTrue = true;
+                }
+                else
+                {
+                    m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume);
+                }
             }
         }
     }
