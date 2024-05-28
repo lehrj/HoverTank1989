@@ -652,7 +652,7 @@ struct MissileConsts
     */
 
     const float wingArea = 0.3f;
-    const float testFinArea = 0.3f;
+    //const float testFinArea = 0.3f;
 
     const float dragCoefficientDebug = 0.5f;
     const float dragAreaDebug        = 0.03f;
@@ -712,7 +712,7 @@ struct MissileConsts
 
     const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
 
-    const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
