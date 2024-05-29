@@ -652,7 +652,6 @@ struct MissileConsts
     */
 
     const float wingArea = 0.3f;
-    //const float testFinArea = 0.3f;
 
     const float dragCoefficientDebug = 0.5f;
     const float dragAreaDebug        = 0.03f;
@@ -702,9 +701,6 @@ struct MissileConsts
     const float terminalRange = 100.0f;
 
     const float launchVelocity = 20.0f;
-
-    const float testVal = 1.0f;
-    const float testVal2 = testVal * 2.0f;
 
     const float navigationGain = 3.0f;
 
