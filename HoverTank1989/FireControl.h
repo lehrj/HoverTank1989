@@ -688,8 +688,6 @@ struct MissileConsts
     const float rocketBoostForceMax = mass * 11.0f; // Use desired thrust to weight ratio for boost value
 
     const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
-    //const float velMaxEst = (rocketBoostForceMax / mass);
-    //const float velMaxEst = 10.0f;
 
     // flight modeling
     const float climbOutAngle = Utility::ToRadians(45.0f);
@@ -708,7 +706,6 @@ struct MissileConsts
 
     const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
 
-    //const DirectX::SimpleMath::Vector3 testFinPosLocal = DirectX::SimpleMath::Vector3(-0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 mainWingPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -727,12 +724,6 @@ struct MissileConsts
     const float tailSpan = dimensions.x * 0.3f * 2.0f;
     //const float tailThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
     const float tailThickness = tailChord * 0.11f;
-
-    /*
-    const float mainChord = tailChord;
-    const float mainSpan = tailSpan;
-    const float mainThickness = tailThickness;
-    */
 
     const int selectFirePattern = 2;
 
