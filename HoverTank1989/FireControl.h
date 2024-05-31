@@ -715,9 +715,15 @@ struct MissileConsts
     const float canardSpan = dimensions.x * 0.3f;
     const float canardThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
     
+    /*
     const float mainChord = 0.06f;
     const float mainSpan = 0.3f;
     const float mainThickness = 0.015f;
+    */
+    const float mainChord = 0.132f;
+    const float mainSpan = 0.333f;
+    const float mainThickness = 0.014f;
+
 
     const float tailChord = ((dimensions.x * 0.3f) * 0.2f) * 2.0f;
     //const float tailSpan = dimensions.x * 0.3f * 2.0f;

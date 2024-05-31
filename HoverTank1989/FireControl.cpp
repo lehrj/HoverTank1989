@@ -6221,7 +6221,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.posLocal = m_missileConsts.mainWingPosLocal;
     finDat.chord = m_missileConsts.mainChord;
     //finDat.span = m_missileConsts.mainSpan * 2.0f;
-    finDat.span = m_missileConsts.mainSpan;
+    finDat.span = m_missileConsts.mainSpan * 2.0f;
     finDat.semiSpan = finDat.span * 0.5f;
     finDat.wingSpanFull = finDat.span + bodyDiameter;
     finDat.thickness = m_missileConsts.mainThickness;
@@ -6229,6 +6229,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.frontArea = finDat.thickness * finDat.span;
 
     //////// setting dimensions equal to tail fin for testing
+    /*
     finDat.chord = m_missileConsts.tailChord;
     //finDat.span = m_missileConsts.tailSpan * 2.0f;
     finDat.span = m_missileConsts.tailSpan;
@@ -6237,6 +6238,7 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.thickness = m_missileConsts.tailThickness;
     finDat.wingArea = finDat.chord * finDat.span;
     finDat.frontArea = finDat.thickness * finDat.span;
+    */
     ////////
 
     aFinLib.mainPitch = finDat;
@@ -6752,6 +6754,7 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     aAmmo.modelData.wingFinShape = DirectX::GeometricPrimitive::CreateTetrahedron(aContext.Get(), 1.0f);
     DirectX::SimpleMath::Matrix wingScale = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(m_finLib.mainYaw.chord * 0.5f,
         m_finLib.mainYaw.thickness, m_finLib.mainYaw.semiSpan));
+
     auto wingTrans = DirectX::SimpleMath::Vector3(m_finLib.mainYaw.chord * 0.333f, 0.0f, m_finLib.mainYaw.semiSpan * 0.333f);
     auto wingPosOffset = m_finLib.mainYaw.posLocal;
     wingPosOffset.z += aAmmo.ammoData.radius;
