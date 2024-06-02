@@ -6220,7 +6220,6 @@ void FireControl::InitializeFinLibrary(FinLibrary& aFinLib)
     finDat.dragCoeefMod = dragModMax;
     finDat.posLocal = m_missileConsts.mainWingPosLocal;
     finDat.chord = m_missileConsts.mainChord;
-    //finDat.span = m_missileConsts.mainSpan * 2.0f;
     finDat.span = m_missileConsts.mainSpan * 2.0f;
     finDat.semiSpan = finDat.span * 0.5f;
     finDat.wingSpanFull = finDat.span + bodyDiameter;

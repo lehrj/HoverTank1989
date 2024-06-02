@@ -720,7 +720,9 @@ struct MissileConsts
     const float mainSpan = 0.3f;
     const float mainThickness = 0.015f;
     */
-    const float mainChord = 0.132f;
+
+    //const float mainChord = 0.132f;
+    const float mainChord = 0.17f;
     const float mainSpan = 0.333f;
     const float mainThickness = 0.014f;
 
