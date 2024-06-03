@@ -5486,7 +5486,7 @@ void FireControl::GuidanceBasicGravityOld(MissileData& aMissile, const float aTi
 
 void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta)
 {
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     auto velNormLocal = aMissile.guidance.selfVelLocalNorm;
     //auto velNormLocal = DirectX::SimpleMath::Vector3::UnitX;
@@ -8971,6 +8971,11 @@ void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const
     }
 }
 
+void FireControl::UpdateEstimatedMaxVelocity(MissileData& aMissile)
+{
+    //float vMax = sqrt(
+}
+
 void FireControl::UpdateExplosionVec(double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_explosionStruct.explosionVec.size(); ++i)
@@ -10836,16 +10841,15 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ResetMissileForceAccumulators(m_missileVec[i]);
 
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         float speed = m_missileVec[i].projectileData.q.velocity.Length();
         float mph = speed * 2.237f;
         m_debugData->DebugPushUILineWholeNumber("mph = ", static_cast<int>(mph), "");
         //m_debugData->DebugPushUILineDecimalNumber("AoA = ", Utility::ToDegrees(m_missileVec[i].guidance.angleOfAttack), "");
 
-        
         //m_debugData->DebugPushUILineDecimalNumber("finPitch = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finPitch), "");
         //m_debugData->DebugPushUILineDecimalNumber("finYaw   = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finYaw), "");
-        m_debugData->DebugPushUILineDecimalNumber("guidance.throttlePercentage   = ", m_missileVec[i].guidance.throttlePercentage, "");
+        //m_debugData->DebugPushUILineDecimalNumber("guidance.throttlePercentage   = ", m_missileVec[i].guidance.throttlePercentage, "");
         m_debugData->ToggleDebugOff();
 
         DebugDrawUpdate(m_missileVec[i]);
@@ -13888,7 +13892,7 @@ DirectX::SimpleMath::Vector3 FireControl::GuidanceCalcInercept(MissileData& aMis
 
 void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelta)
 {
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     auto distance = aMissile.guidance.targetDistance;
     auto selfSpeed = aMissile.projectileData.q.velocity.Length();

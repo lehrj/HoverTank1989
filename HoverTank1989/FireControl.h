@@ -290,6 +290,10 @@ struct GuidanceSystem
     unsigned int uniqueId = 0;
     int targetID = 0;
 
+    float estimatedMaxVelocity = 375.0f;
+    float estimatedDrag = 0.0f;
+    float estimatedCrossArea = 0.0f;
+
     float altitude = 0.0f;
     float detonationRadius = 5.0f;
     
@@ -303,7 +307,6 @@ struct GuidanceSystem
     bool isSelfDestructTrue = false;
     bool isExplodingTrue = false;
     bool isTargetingLaserOn = true;
-
 
     float postExplosionDrawCountDown = 2.0f;
 
@@ -422,7 +425,6 @@ struct GuidanceSystem
 
     float lataxNeeded = 0.0f;
     DirectX::SimpleMath::Vector3 lataxAxis = DirectX::SimpleMath::Vector3::UnitY;
-
 
     float testTimer = 0.0f;
     float testTimerFirstGuessA = 0.0f;
@@ -687,8 +689,9 @@ struct MissileConsts
     const float mass = 11.0f;
     const float rocketBoostForceMax = mass * 11.0f; // Use desired thrust to weight ratio for boost value
 
-    const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
-
+    //const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
+    const float velMaxEst = 375.0f;
+    
     // flight modeling
     const float climbOutAngle = Utility::ToRadians(45.0f);
     const float climbOutDuration = 0.5f;
@@ -1092,6 +1095,9 @@ private:
     void UpdateControlData(MissileData& aMissile, const float aTimeDelta);
 
     void UpdateDynamicExplosive(struct ExplosionData& aExplosion, const double aTimeDelta);
+
+    void UpdateEstimatedMaxVelocity(MissileData& aMissile);
+
     void UpdateExplosionVec(double aTimeDelta);
 
     void UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta);
