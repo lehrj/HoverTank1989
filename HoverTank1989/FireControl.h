@@ -689,9 +689,8 @@ struct MissileConsts
     const float mass = 11.0f;
     const float rocketBoostForceMax = mass * 11.0f; // Use desired thrust to weight ratio for boost value
 
-    //const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
-    const float velMaxEst = 375.0f;
-    
+    const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
+
     // flight modeling
     const float climbOutAngle = Utility::ToRadians(45.0f);
     const float climbOutDuration = 0.5f;
@@ -1342,7 +1341,7 @@ private:
     //void AudioExplosionUpdate(const float aTimeDelta);
 
     bool m_isTubeRippleFireTrue = true;
-    bool m_isTubeDualFireTrue = false;
+    bool m_isTubeDualFireTrue = true;
     MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
     bool m_isDualFireCoolDownOverRideTrue = false;
 

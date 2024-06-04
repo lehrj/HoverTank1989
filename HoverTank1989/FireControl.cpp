@@ -8974,6 +8974,10 @@ void FireControl::UpdateDynamicExplosive(struct ExplosionData& aExplosion, const
 void FireControl::UpdateEstimatedMaxVelocity(MissileData& aMissile)
 {
     //float vMax = sqrt(
+
+
+    aMissile.guidance.estimatedCrossArea = 0.0f;
+    aMissile.guidance.estimatedDrag = 0.0f;
 }
 
 void FireControl::UpdateExplosionVec(double aTimeDelta)
@@ -11223,7 +11227,6 @@ void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
     }
     else
     {
-        
         if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
         {
             GuidanceClimbOut(aMissile, aTimeDelta);
