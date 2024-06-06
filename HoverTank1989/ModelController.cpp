@@ -452,7 +452,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.turretLocalMissileTubeLeftDir = aModel.localMissileTubeLeftDir;
     aModel.turretLocalMissileTubeLeftDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeLeftDir, turretMat);
 
-    aModel.turretLocalMissileTubeRightDir = aModel.localMissileTubeLeftDir;
+    aModel.turretLocalMissileTubeRightDir = aModel.localMissileTubeRightDir;
     aModel.turretLocalMissileTubeRightDir = DirectX::SimpleMath::Vector3::Transform(aModel.turretLocalMissileTubeRightDir, turretMat);
 
     // shadows

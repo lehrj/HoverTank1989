@@ -1111,20 +1111,35 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         {
             torqueForceNorm = m_modelController->GetLocalizedTubeRightDir();
             //weaponTorqueArmLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 1.0f);
+            weaponTorqueArmLocal = m_modelController->GetLocalizedTubeRightPos();
+            torqueForceNorm = -weaponForceNorm;
+            torqueForceNorm.Normalize();
+            recoil.torqueArm = weaponTorqueArmLocal;
+            recoil.torqueForceNorm = torqueForceNorm;
+            recoil.directionNorm = -launchDir;
         }
         else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
         {
             torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
             //weaponTorqueArmLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f);
+            weaponTorqueArmLocal = m_modelController->GetLocalizedTubeLeftPos();
+
+            torqueForceNorm = -weaponForceNorm;
+            torqueForceNorm.Normalize();
+            recoil.torqueArm = weaponTorqueArmLocal;
+            recoil.torqueForceNorm = torqueForceNorm;
+            recoil.directionNorm = -launchDir;
         }
 
+        /*
         torqueForceNorm = -weaponForceNorm;
         torqueForceNorm.Normalize();
 
         recoil.torqueArm = weaponTorqueArmLocal;
         recoil.torqueForceNorm = torqueForceNorm;
         recoil.directionNorm = -launchDir;
-        
+        */
+
         m_heli.impulseForceVec.push_back(recoil);
         //velocity2 = DirectX::SimpleMath::Vector3::Zero;
         m_fireControl->FireSelectedWithAudio(pos2, launchDir2, velocity2, up, aRocketFx);
@@ -4353,11 +4368,15 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
 
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
 
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeLeftUp(), 10.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeRightUp(), 10.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeLeftUp(), 10.0f, 0.0f, DirectX::Colors::Lime);
+    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeRightUp(), 10.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeTurretLocalLeftDir(), 10.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeTurretLocalRightDir(), 10.0f, 0.0f, DirectX::Colors::Red);
+    
     m_debugData->ToggleDebugOff();
 }
 
