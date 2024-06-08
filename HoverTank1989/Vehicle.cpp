@@ -1094,173 +1094,26 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         aRocketFx->forward = launchDirWorld;
         aRocketFx->fx->Play(true);
 
-        auto pos2 = posWorld;
-        auto launchDir2 = launchDirWorld;
-        auto velocity2 = velocity;
-        auto up2 = up;
+        m_fireControl->FireSelectedWithAudio(posWorld, launchDirWorld, velocity, up, aRocketFx);
 
         Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
-        DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = pos;
-   
+
         DirectX::SimpleMath::Vector3 weaponForceNorm = launchDir;
         weaponForceNorm.Normalize();
-       
-        DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::UnitX;
-
-        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
-        {
-            torqueForceNorm = m_modelController->GetLocalizedTubeRightDir();
-            //weaponTorqueArmLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 1.0f);
-            weaponTorqueArmLocal = m_modelController->GetLocalizedTubeRightPos();
-            torqueForceNorm = -weaponForceNorm;
-            torqueForceNorm.Normalize();
-            recoil.torqueArm = weaponTorqueArmLocal;
-            recoil.torqueForceNorm = torqueForceNorm;
-            recoil.directionNorm = -launchDir;
-        }
-        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
-        {
-            torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
-            //weaponTorqueArmLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -1.0f);
-            weaponTorqueArmLocal = m_modelController->GetLocalizedTubeLeftPos();
-
-            torqueForceNorm = -weaponForceNorm;
-            torqueForceNorm.Normalize();
-            recoil.torqueArm = weaponTorqueArmLocal;
-            recoil.torqueForceNorm = torqueForceNorm;
-            recoil.directionNorm = -launchDir;
-        }
-
-        /*
-        torqueForceNorm = -weaponForceNorm;
-        torqueForceNorm.Normalize();
-
-        recoil.torqueArm = weaponTorqueArmLocal;
-        recoil.torqueForceNorm = torqueForceNorm;
+        recoil.torqueForceNorm = weaponForceNorm;
         recoil.directionNorm = -launchDir;
-        */
-
-        m_heli.impulseForceVec.push_back(recoil);
-        //velocity2 = DirectX::SimpleMath::Vector3::Zero;
-        m_fireControl->FireSelectedWithAudio(pos2, launchDir2, velocity2, up, aRocketFx);
-    }
-}
-
-void Vehicle::FireWeaponOld(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_ptr<Utility::SoundFx> aRocketFx)
-{
-    if (m_fireControl->GetIsCoolDownActive() == false)
-    {
-        DirectX::SimpleMath::Vector3 pos = m_modelController->GetMuzzlePos();
-        DirectX::SimpleMath::Vector3 launchDir = m_modelController->GetWeaponDirWorld();
-        DirectX::SimpleMath::Vector3 velocity = m_heli.q.velocity;
-        DirectX::SimpleMath::Vector3 up = m_modelController->GetWeaponUpWorld();
-        //m_fireControl->FireSelectedAmmo(pos, launchDir, velocity, up);
-        DirectX::SimpleMath::Vector3 recoilPosLocal = DirectX::SimpleMath::Vector3::Zero;
         if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         {
-            pos = m_modelController->GetMissileTubePosRight();
-            //launchDir = m_modelController->GetMissileTubeDirRight();
-            launchDir = m_modelController->GetLocalizedTubeRightDir();
-            velocity = m_heli.q.velocity;
-            //up = m_modelController->GetMissileTubeRightUp();
-            up = m_modelController->GetMissileTubeTurretLocalRightUp();
-            recoilPosLocal = -m_modelController->GetLocalizedTubeRightPos();
-            //m_debugData->ToggleDebugOnOverRide();
-            m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 5.0f, 0.0f, DirectX::Colors::Lime);
-            m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 5.0f, 0.0f, DirectX::Colors::Red);
-            m_debugData->ToggleDebugOff();
+            recoil.torqueArm = m_modelController->GetLocalizedTubeRightPos();
         }
         else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
         {
-            pos = m_modelController->GetMissileTubePosLeft();
-            //launchDir = m_modelController->GetMissileTubeDirLeft();
-            launchDir = -m_modelController->GetLocalizedTubeLeftDir();
-            velocity = m_heli.q.velocity;
-            //up = m_modelController->GetMissileTubeLeftUp();
-            up = m_modelController->GetMissileTubeTurretLocalLeftUp();
-            recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
+            recoil.torqueArm = m_modelController->GetLocalizedTubeLeftPos();
         }
-        else
-        {
-            int testBreak = 0;
-            testBreak++;
-        }
-
-        //recoilPosLocal.x *= 0.5f;
-
-        aFireFx->emitter->SetPosition(pos);
-        aFireFx->emitter->SetVelocity(velocity);
-        aFireFx->emitter->SetOmnidirectional();
-        aFireFx->emitter->SetOrientation(launchDir, up);
-        aFireFx->pos = pos;
-        aFireFx->up = up;
-        aFireFx->isDestroyTrue = false;
-        aFireFx->forward = launchDir;
-        aFireFx->fx->Play(false);
-
-
-        aRocketFx->emitter->SetPosition(pos);
-        aRocketFx->emitter->SetVelocity(velocity);
-        aRocketFx->emitter->SetOmnidirectional();
-        aRocketFx->emitter->SetOrientation(launchDir, up);
-        aRocketFx->pos = pos;
-        aRocketFx->up = up;
-        aRocketFx->isDestroyTrue = false;
-        aRocketFx->forward = launchDir;
-        aRocketFx->fx->Play(true);
-
-        auto pos2 = pos;
-        auto launchDir2 = launchDir;
-        auto velocity2 = velocity;
-        auto up2 = up;
-        //m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx);
-        //m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aRocketFx);
-
-        // weapon recoil
-        //auto weaponPosLocal = pos;
-
-        //recoilPosLocal = DirectX::SimpleMath::Vector3::Transform(recoilPosLocal, m_heli.alignmentInverse);
-
-        //DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
-        Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
-
-        //DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = m_heli.localWeaponPos - m_heli.localCenterOfMass;
-        //DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = recoilPosLocal - m_heli.localCenterOfMass;
-        DirectX::SimpleMath::Vector3 weaponTorqueArmLocal = recoilPosLocal;
-
-        weaponTorqueArmLocal = DirectX::SimpleMath::Vector3::Transform(weaponTorqueArmLocal, m_heli.alignmentInverse);
-        //DirectX::SimpleMath::Vector3 weaponTorqueArm = m_heli.weaponPos - m_heli.centerOfMass;
-
-        //DirectX::SimpleMath::Vector3 weaponForce = -m_heli.weaponDirection;
-        DirectX::SimpleMath::Vector3 weaponForce = launchDir;
-        weaponForce.Normalize();
-        //DirectX::SimpleMath::Vector3 torqueForceNorm = -launchDirLocal;
-        //DirectX::SimpleMath::Vector3 torqueForceNorm = launchDir;
-        //DirectX::SimpleMath::Vector3 torqueForceNorm = m_modelController->GetMissileTubeDirLeft();
-        //DirectX::SimpleMath::Vector3 torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
-        DirectX::SimpleMath::Vector3 torqueForceNorm = DirectX::SimpleMath::Vector3::UnitX;
-        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
-        {
-            torqueForceNorm = m_modelController->GetLocalizedTubeLeftDir();
-        }
-        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
-        {
-            torqueForceNorm = m_modelController->GetLocalizedTubeRightDir();
-        }
-        torqueForceNorm.Normalize();
-        //weaponTorqueArmLocal.x = 0.0f;
-
-        recoil.torqueArm = weaponTorqueArmLocal;
-        recoil.torqueForceNorm = torqueForceNorm;
-        //m_testImpulseForce = m_fireControl->GetRecoilImpulseForce(-launchDir);
-        //m_testImpulseForce = recoil;
 
         m_heli.impulseForceVec.push_back(recoil);
-
-        m_fireControl->FireSelectedWithAudio(pos2, launchDir2, velocity2, up, aRocketFx);
     }
 }
-
 
 void Vehicle::TestDrawFireDirection()
 {
