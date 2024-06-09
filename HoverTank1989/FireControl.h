@@ -286,6 +286,8 @@ struct GuidanceSystem
     ControlData conDat;
     DynamicFinPackage finPak;
 
+    bool isShotFromLeftTubeTrue = true;
+
     float timeStepDelta = 0.0f;
     unsigned int uniqueId = 0;
     int targetID = 0;
@@ -908,11 +910,9 @@ public:
     void InitializeTextureMapsExplosion(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
     void FireMissile(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet);
-    void FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aFireFx);
-    //void FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aExplosionFx, std::shared_ptr<Utility::SoundFx> aFireFx);
+    void FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aFireFx, bool aDebugToggle);
 
-    void FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx);
-    //void FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aExplosionFx, std::shared_ptr<Utility::SoundFx> aFireFx);
+    void FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx, bool aDebugToggle);
 
     void FireProjectileCannon(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
     void FireProjectileExplosive(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);
@@ -1320,6 +1320,7 @@ private:
 
     void GuidanceOvershoot(MissileData& aMissile, const float aTimeDelta);
     void GuidancePrototype(MissileData& aMissile, const float aTimeDelta);
+    void GuidancePrototypeOld(MissileData& aMissile, const float aTimeDelta);
     void GuidanceVelocitySteeringTest(MissileData& aMissile, const float aTimeDelta);
 
     DirectX::SimpleMath::Vector3 GuidanceCalcInercept(MissileData& aMissile, const float aTimeDelta);

@@ -13895,6 +13895,65 @@ DirectX::SimpleMath::Vector3 FireControl::GuidanceCalcInercept(MissileData& aMis
 
 void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelta)
 {
+    m_debugData->ToggleDebugOnOverRide();
+
+    auto distance = aMissile.guidance.targetDistance;
+    auto selfSpeed = aMissile.projectileData.q.velocity.Length();
+    auto timeToTargetDirect = distance / selfSpeed;
+
+    m_debugData->DebugPushUILineDecimalNumber("timeToTargetDirect =", timeToTargetDirect, "");
+
+    float timeToTargetMax = 5.0f;
+    
+    if (aMissile.guidance.isShotFromLeftTubeTrue == true)
+    {
+        timeToTargetMax = 10.0f;
+    }
+    else
+    {
+        timeToTargetMax = 5.0f;
+    }
+    
+    if (timeToTargetDirect > timeToTargetMax)
+    {
+        timeToTargetDirect = timeToTargetMax;
+    }
+   
+    auto targVelNormW = aMissile.guidance.targetVelocity;
+    targVelNormW.Normalize();
+
+    auto targPosAtTime = (targVelNormW * aMissile.guidance.targetVelocity.Length()) * timeToTargetDirect;
+    targPosAtTime += aMissile.guidance.targetPosition;
+
+    auto gravDrop = 0.5f * m_environment->GetGravity() * (timeToTargetDirect * timeToTargetDirect);
+    targPosAtTime.y -= gravDrop;
+
+    //m_debugData->PushDebugLinePositionIndicator(targPosAtTime, 20.0f, 0.0f, DirectX::Colors::Coral);
+    //m_debugData->PushTestDebugBetweenPoints(aMissile.projectileData.q.position, targPosAtTime, DirectX::Colors::Lime);
+    m_debugData->DebugPushUILineDecimalNumber("gravDrop = ", gravDrop, "");
+    m_debugData->DebugPushUILineDecimalNumber("timeToTargetDirect = ", timeToTargetDirect, "");
+
+    m_debugData->ToggleDebugOff();
+
+    auto targPosAtTimeLocal = targPosAtTime;
+    targPosAtTimeLocal -= aMissile.projectileData.q.position;
+    targPosAtTimeLocal = DirectX::SimpleMath::Vector3::Transform(targPosAtTimeLocal, aMissile.projectileData.inverseAlignmentQuat);
+
+    //auto targVecNorm = aMissile.guidance.targetPosLocal;
+    auto targVecNorm = targPosAtTimeLocal;
+    targVecNorm.Normalize();
+
+    auto toTargQuat = DirectX::SimpleMath::Quaternion::FromToRotation(DirectX::SimpleMath::Vector3::UnitX, targVecNorm);
+    toTargQuat.Normalize();
+    toTargQuat.Inverse(toTargQuat);
+
+    aMissile.guidance.nav.vecToTargLocal = targVecNorm;
+    aMissile.guidance.nav.quatToTarg = toTargQuat;
+    aMissile.guidance.nav.targPosLocalized = targVecNorm;
+}
+
+void FireControl::GuidancePrototypeOld(MissileData& aMissile, const float aTimeDelta)
+{
     //m_debugData->ToggleDebugOnOverRide();
 
     auto distance = aMissile.guidance.targetDistance;
@@ -13908,7 +13967,7 @@ void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelt
     {
         timeToTargetDirect = timeToTargetMax;
     }
-   
+
     auto targVelNormW = aMissile.guidance.targetVelocity;
     targVelNormW.Normalize();
 
@@ -13941,7 +14000,6 @@ void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelt
     aMissile.guidance.nav.quatToTarg = toTargQuat;
     aMissile.guidance.nav.targPosLocalized = targVecNorm;
 }
-
 
 
 
@@ -14726,7 +14784,7 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
 }
 
 
-void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx)
+void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx, bool aDebugToggle)
 {
     if (m_isCoolDownActive == false)
     {
@@ -14738,20 +14796,20 @@ void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaun
 
                 if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_DEBUG)
                 {
-                    FireMissileWithAudio(m_playerVehicle->GetWeaponPos(), aLaunchDirectionForward, DirectX::SimpleMath::Vector3::Zero, m_playerVehicle->GetVehicleUp(), 0.0f, aFireFx);
+                    FireMissileWithAudio(m_playerVehicle->GetWeaponPos(), aLaunchDirectionForward, DirectX::SimpleMath::Vector3::Zero, m_playerVehicle->GetVehicleUp(), 0.0f, aFireFx, false);
                 }
                 else if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
                 {
-                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx);
+                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx, true);
                 }
                 else if (m_tubeFireSelected == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
                 {
-                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), 0.0f, aFireFx);
+                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), 0.0f, aFireFx, false);
                 }
                 else if (m_missileConsts.selectFirePattern == 3)
                 {
-                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx);
-                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), 0.0f, aFireFx);
+                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx, true);
+                    FireMissileWithAudio(m_playerVehicle->GetMissleTubePosRight(), m_playerVehicle->GetMissleTubeDirRight(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpRight(), 0.0f, aFireFx, false);
                 }
 
                 if (m_isTubeDualFireTrue == true)
@@ -14798,7 +14856,7 @@ void FireControl::CycleMissileTubeSelected()
     }
 }
 
-void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aFireFx)
+void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, const float aTimeOffSet, std::shared_ptr<Utility::SoundFx> aFireFx, bool aDebugToggle)
 {
     AmmoData firedAmmo = m_ammoMissile.ammoData;
 
@@ -14863,6 +14921,15 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
     firedMissile.guidance.targetDistance = (aLaunchPos - firedMissile.guidance.targetPosition).Length();
 
     firedMissile.audioFx = aFireFx;
+
+    if (aDebugToggle == true)
+    {
+        firedMissile.guidance.isShotFromLeftTubeTrue = true;
+    }
+    else
+    {
+        firedMissile.guidance.isShotFromLeftTubeTrue = false;
+    }
 
     InitializeContrails(firedMissile);
     m_missileVec.push_back(firedMissile);

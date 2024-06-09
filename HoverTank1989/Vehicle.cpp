@@ -1011,8 +1011,8 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx)
         
         aFireFx->fx->Play(true);
 
-        m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx);
-
+        //m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx);
+        m_fireControl->FireSelectedWithAudio(pos, launchDir, velocity, up, aFireFx, false);
 
         // weapon recoil
         DirectX::SimpleMath::Vector3 launchDirLocal = m_modelController->GetWeaponDirLocal();
@@ -1094,7 +1094,15 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         aRocketFx->forward = launchDirWorld;
         aRocketFx->fx->Play(true);
 
-        m_fireControl->FireSelectedWithAudio(posWorld, launchDirWorld, velocity, up, aRocketFx);
+        
+        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
+        {
+            m_fireControl->FireSelectedWithAudio(posWorld, launchDirWorld, velocity, up, aRocketFx, false);
+        }
+        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
+        {
+            m_fireControl->FireSelectedWithAudio(posWorld, launchDirWorld, velocity, up, aRocketFx, true);
+        }
 
         Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
 
