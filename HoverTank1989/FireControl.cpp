@@ -11230,6 +11230,7 @@ void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
         if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CLIMBOUT)
         {
             GuidanceClimbOut(aMissile, aTimeDelta);
+            //GuidancePrototype(aMissile, aTimeDelta);
         }
         else if (aMissile.guidance.flightStateCurrent == FlightState::FLIGHTSTATE_CRUISE)
         {
@@ -13895,7 +13896,7 @@ DirectX::SimpleMath::Vector3 FireControl::GuidanceCalcInercept(MissileData& aMis
 
 void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelta)
 {
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     auto distance = aMissile.guidance.targetDistance;
     auto selfSpeed = aMissile.projectileData.q.velocity.Length();
@@ -13904,14 +13905,14 @@ void FireControl::GuidancePrototype(MissileData& aMissile, const float aTimeDelt
     m_debugData->DebugPushUILineDecimalNumber("timeToTargetDirect =", timeToTargetDirect, "");
 
     float timeToTargetMax = 5.0f;
-    
+    timeToTargetMax = 10.0f;
     if (aMissile.guidance.isShotFromLeftTubeTrue == true)
     {
-        timeToTargetMax = 10.0f;
+        //timeToTargetMax = 10.0f;
     }
     else
     {
-        timeToTargetMax = 5.0f;
+        //timeToTargetMax = 5.0f;
     }
     
     if (timeToTargetDirect > timeToTargetMax)

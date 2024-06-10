@@ -1119,7 +1119,9 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
             recoil.torqueArm = m_modelController->GetLocalizedTubeLeftPos();
         }
 
-        m_heli.impulseForceVec.push_back(recoil);
+
+        // Turned off for testing
+        //m_heli.impulseForceVec.push_back(recoil);
     }
 }
 

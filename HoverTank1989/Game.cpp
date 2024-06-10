@@ -332,8 +332,10 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         aTerrain.terrainVertexArray[i].normal.z = flipNormal.z;
 
         int testRandom = rand() % 1000;
-        float testFloat = testRandom * 0.000001f;
+        float testFloat = static_cast<float>(testRandom) * 0.000001f;
+     
         baseColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
+    
         float elevationPercentage = aTerrain.terrainVertexArray[i].position.y / m_gameTerrainMaxY;
         float colorVal = elevationPercentage;
 
@@ -345,9 +347,11 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
             baseColor.x = colorMax;
         }
         baseColor.y = colorVal + 0.292156899f;
+        //baseColor.y = colorVal - 0.292156899f;
         if (baseColor.y > colorMax)
         {
             baseColor.y = colorMax;
+            //baseColor.y = 0.0f;
         }
         baseColor.z = colorVal;
         if (baseColor.z > colorMax)
@@ -374,6 +378,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         aTerrain.terrainVertexArrayBase[i].normal.x = flipNormal.x;
         aTerrain.terrainVertexArrayBase[i].normal.y = flipNormal.y;
         aTerrain.terrainVertexArrayBase[i].normal.z = flipNormal.z;
+
 
         if (i % 2 == 0)
         {
@@ -1526,7 +1531,7 @@ void Game::DrawTestTrack()
 
 void Game::DrawTerrainNew(Terrain& aTerrain)
 {
-    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
+    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
 
     // Create base to black out skydome under terrain
