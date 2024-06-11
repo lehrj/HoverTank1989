@@ -2459,7 +2459,7 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
     {
         if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE)
         {
-            if (m_fireControl->GetIsTargetingLaserHitTrue() == false)
+            if (m_fireControl->GetIsTargetingLaserHitTrue() == false || m_fireControl->GetIsTargetingLaserOn() == false)
             {
                 m_soundFxVecTest[i]->volume -= m_audioLockToneFadeRate * aTimer.GetElapsedSeconds();
                 
