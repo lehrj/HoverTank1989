@@ -335,7 +335,159 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         float testFloat = static_cast<float>(testRandom) * 0.000001f;
      
         baseColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
-    
+
+        float elevationPercentage = aTerrain.terrainVertexArray[i].position.y / m_gameTerrainMaxY;
+        float colorVal = elevationPercentage;
+
+        colorVal += testFloat;
+        colorVal += 0.15f; // base val min
+
+        baseColor.x = colorVal;
+        const float colorMax = 0.85f;
+
+        if (baseColor.x > colorMax)
+        {
+            baseColor.x = colorMax;
+        }
+        //baseColor.y = colorVal + 0.292156899f;
+        //baseColor.y = colorVal - 0.292156899f;
+        baseColor.y = colorVal;
+        if (baseColor.y > colorMax)
+        {
+            baseColor.y = colorMax;
+            //baseColor.y = 0.0f;
+        }
+        baseColor.z = colorVal;
+        if (baseColor.z > colorMax)
+        {
+            baseColor.z = colorMax;
+        }
+
+        lineColor = baseColor;
+        lineColor.y += 0.292156899f;
+
+        if (elevationPercentage > 0.4f)
+        {
+            lineColor.z += 0.15f;
+            lineColor.y -= 0.15f;
+        }
+        else
+        {
+            lineColor.y += 0.15f;
+        }
+
+        aTerrain.terrainVertexArray[i].color = lineColor;
+        aTerrain.terrainVertexArrayBase[i].position = vertexPC[i].position;
+
+        // flip normals around for lighting
+        aTerrain.terrainVertexArrayBase[i].normal.x = flipNormal.x;
+        aTerrain.terrainVertexArrayBase[i].normal.y = flipNormal.y;
+        aTerrain.terrainVertexArrayBase[i].normal.z = flipNormal.z;
+
+
+        if (i % 2 == 0)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = baseColor;
+        }
+        else
+        {
+            aTerrain.terrainVertexArrayBase[i].color = baseColor;
+        }
+
+        if (aTerrain.terrainVertexArray[i].position.y >= maxY)
+        {
+            maxY = aTerrain.terrainVertexArray[i].position.y;
+        }
+    }
+
+    std::vector<DirectX::SimpleMath::Vector3> testNorms;
+    testNorms.resize(aTerrain.terrainVertexCount);
+    std::vector<DirectX::SimpleMath::Vector3> testNorms2;
+    testNorms2.resize(aTerrain.terrainVertexCount);
+    float gridLineOffSetY = 0.0f;
+    if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
+    {
+        gridLineOffSetY = 0.003f;
+    }
+    else if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY)
+    {
+        gridLineOffSetY = 0.3f;
+    }
+    gridLineOffSetY = 0.22f;
+    const float gridLineOffSetY2 = 1.1f;
+    //const float gridLineOffSetY2 = 0.1f;
+    const float verticalOffsetHeight = 5.0f;
+    for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
+    {
+        if (aTerrain.terrainVertexArray[i].position.y > verticalOffsetHeight)
+        {
+            aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY2;
+        }
+        else
+        {
+            aTerrain.terrainVertexArray[i].position.y += gridLineOffSetY;
+        }
+        testNorms[i] = aTerrain.terrainVertexArray[i].normal;
+        testNorms2[i] = aTerrain.terrainVertexArrayBase[i].normal;
+    }
+
+    return true;
+}
+
+bool Game::InitializeTerrainArrayNewBackUp(Terrain& aTerrain)
+{
+    std::vector<DirectX::VertexPositionNormalColor> vertexPC = m_environment->GetTerrainPositionNormalColorVertex(aTerrain.environType);
+    m_terrainVector2.clear();
+    m_terrainVector2 = vertexPC;
+    aTerrain.terrainVertexCount = static_cast<int>(vertexPC.size());
+    aTerrain.terrainVertexArray = new DirectX::VertexPositionNormalColor[aTerrain.terrainVertexCount];
+    aTerrain.terrainVertexArrayBase = new DirectX::VertexPositionNormalColor[aTerrain.terrainVertexCount];
+
+    DirectX::XMFLOAT4 lineColor(.486274540f, .988235354f, 0.0, 1.0);
+    DirectX::XMFLOAT4 baseColor(0.01, 0.01, 0.01, 1.0);
+
+    DirectX::XMFLOAT4 baseColor2(1.0, 1.0, 1.0, 1.0);
+    m_testColor = baseColor;
+    DirectX::XMFLOAT4 sandColor1(0.956862807f, 0.643137276f, 0.376470625f, 1.0);
+    DirectX::XMFLOAT4 sandColor2(0.960784376f, 0.960784376f, 0.862745166f, 1.0);
+    DirectX::XMFLOAT4 greenColor1 = DirectX::XMFLOAT4(0.0, 0.501960814f, 0.0, 1.0);
+    DirectX::XMFLOAT4 greenColor2 = DirectX::XMFLOAT4(0.486274540f, 0.988235354f, 0.0, 1.0);
+
+    DirectX::XMFLOAT4 grassColor1 = DirectX::XMFLOAT4(0.133333340f, 0.545098066f, 0.133333340f, 1.0);
+    DirectX::XMFLOAT4 grassColor2 = DirectX::XMFLOAT4(0.000000000f, 0.392156899f, 0.0, 1.0);
+    DirectX::XMFLOAT4 testRed = DirectX::XMFLOAT4(1.000000000f, 0.000000000f, 0.0, 1.0);
+    DirectX::XMFLOAT4 testBlue = DirectX::XMFLOAT4(0.000000000f, 0.000000000f, 1.0, 1.0);
+    DirectX::XMFLOAT4 testGray = DirectX::XMFLOAT4(0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f);
+    DirectX::XMFLOAT4 testWhite = DirectX::XMFLOAT4(1.0, 1.0, 1.0, 1.0);
+    testWhite = baseColor;
+
+    float maxY = 0.0f;
+
+    if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_STARTSCREEN)
+    {
+        baseColor = DirectX::XMFLOAT4(0.01, 0.01, 0.01, 1.0);
+        testWhite = baseColor;
+
+    }
+    if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY)
+    {
+        baseColor = DirectX::XMFLOAT4(0.000000000f, 0.292156899f, 0.000000000f, 1.000000000f);
+        testWhite = baseColor;
+    }
+    for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
+    {
+        DirectX::SimpleMath::Vector3 flipNormal = vertexPC[i].normal;
+        aTerrain.terrainVertexArray[i].position = vertexPC[i].position;
+        // Flip normals around for lighting;
+        aTerrain.terrainVertexArray[i].normal.x = flipNormal.x;
+        aTerrain.terrainVertexArray[i].normal.y = flipNormal.y;
+        aTerrain.terrainVertexArray[i].normal.z = flipNormal.z;
+
+        int testRandom = rand() % 1000;
+        float testFloat = static_cast<float>(testRandom) * 0.000001f;
+
+        baseColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
+
         float elevationPercentage = aTerrain.terrainVertexArray[i].position.y / m_gameTerrainMaxY;
         float colorVal = elevationPercentage;
 

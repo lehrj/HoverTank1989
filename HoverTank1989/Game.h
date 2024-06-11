@@ -89,6 +89,7 @@ private:
 
     bool InitializeTerrainArray();
     bool InitializeTerrainArrayNew(Terrain& aTerrain);
+    bool InitializeTerrainArrayNewBackUp(Terrain& aTerrain);
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
 
     void Render();
