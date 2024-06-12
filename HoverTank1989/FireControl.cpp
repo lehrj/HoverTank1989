@@ -2059,10 +2059,15 @@ void FireControl::CheckCollisionsMissile()
             unsigned int vehicleHitId = -1;
             bool isHitTrue;
             bool isProximityDetonationTrue = false;
-            isHitTrue = m_npcController->CheckProjectileCollisionsMissile(m_missileVec[i].projectileData.collisionData, vehicleHitId, true, 
+            isHitTrue = m_npcController->CheckProjectileCollisionsMissile(m_missileVec[i].projectileData.collisionData, vehicleHitId, true,
                 m_missileVec[i].guidance.targetID, m_missileConsts.detonationRange, isProximityDetonationTrue);
 
-            if (isProximityDetonationTrue == true)
+            if (m_missileVec[i].guidance.altitude < 0.0f)
+            {
+                CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+                m_missileVec[i].projectileData.isDeleteTrue = true;
+            }
+            else if (isProximityDetonationTrue == true)
             {
                 CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
                 m_missileVec[i].projectileData.isDeleteTrue = true;
@@ -10854,6 +10859,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //m_debugData->DebugPushUILineDecimalNumber("finPitch = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finPitch), "");
         //m_debugData->DebugPushUILineDecimalNumber("finYaw   = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finYaw), "");
         //m_debugData->DebugPushUILineDecimalNumber("guidance.throttlePercentage   = ", m_missileVec[i].guidance.throttlePercentage, "");
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineDecimalNumber("altitude   = ", m_missileVec[i].guidance.altitude, "");
         m_debugData->ToggleDebugOff();
 
         DebugDrawUpdate(m_missileVec[i]);
