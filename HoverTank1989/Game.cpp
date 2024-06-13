@@ -333,12 +333,23 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
         int testRandom = rand() % 1000;
         float testFloat = static_cast<float>(testRandom) * 0.000001f;
-     
+
         baseColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
 
         float elevationPercentage = aTerrain.terrainVertexArray[i].position.y / m_gameTerrainMaxY;
-        float colorVal = elevationPercentage;
+        ////////////////////////////////
+        const float treeLineVal = 0.4f;
+        if (elevationPercentage < treeLineVal)
+        {
+            elevationPercentage = 0.0f;
+        }
+        else
+        {
+            elevationPercentage = 1.0f;
+        }
+        ///////////////////////////////
 
+        float colorVal = elevationPercentage;
         colorVal += testFloat;
         colorVal += 0.15f; // base val min
 
@@ -383,7 +394,6 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         aTerrain.terrainVertexArrayBase[i].normal.x = flipNormal.x;
         aTerrain.terrainVertexArrayBase[i].normal.y = flipNormal.y;
         aTerrain.terrainVertexArrayBase[i].normal.z = flipNormal.z;
-
 
         if (i % 2 == 0)
         {
