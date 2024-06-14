@@ -199,6 +199,8 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_raster;
 
+
+
     std::unique_ptr<DirectX::Keyboard>              m_keyboard;
     std::unique_ptr<DirectX::Mouse>                 m_mouse;
     DirectX::Keyboard::KeyboardStateTracker         m_kbStateTracker;
@@ -477,4 +479,11 @@ private:
     const float m_missileRangeHeight = 0.5f;
     const DirectX::SimpleMath::Vector3 m_missileRangePos1 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, (m_missileRangeDistance * 0.5f));
     const DirectX::SimpleMath::Vector3 m_missileRangePos2 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, -(m_missileRangeDistance * 0.5f));
+
+
+    // multisampling
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_offscreenRenderTarget;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_offscreenRenderTargetSRV;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilSRV;
+
 };

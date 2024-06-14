@@ -34,6 +34,10 @@ namespace
     constexpr X3DAUDIO_DISTANCE_CURVE c_emitter_Reverb_Curve = {
         const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(&c_emitter_Reverb_CurvePoints[0]), 3
     };
+
+    // multisampling
+    constexpr UINT MSAA_COUNT = 4;
+    constexpr UINT MSAA_QUALITY = 0;
 }
 
 Game::Game() noexcept(false)
@@ -74,6 +78,9 @@ Game::Game() noexcept(false)
     //m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
+
+    // multisampling
+    m_deviceResources = std::make_unique<DX::DeviceResources>(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_UNKNOWN);
 }
 
 void Game::AudioFxDelete(std::shared_ptr<Utility::SoundFx> aFx)
@@ -912,6 +919,7 @@ void Game::Render()
     context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
     context->OMSetDepthStencilState(m_states->DepthNone(), 0);
     context->RSSetState(m_states->CullNone());
+    //context->RSSetState(m_raster.Get());
 
     m_effect->Apply(context);
     auto sampler = m_states->LinearClamp();
@@ -950,6 +958,58 @@ void Game::Render()
     m_effect->EnableDefaultLighting();
     m_effect->SetWorld(m_world);
 
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+    //context->OMSetDepthStencilState(m_states->DepthNone(), 0);
+    //context->RSSetState(m_states->CullNone());
+    context->RSSetState(m_raster.Get());
+    //m_effect->SetWorld(m_world);
+
+    //m_effect->Apply(context);
+
+    context->IASetInputLayout(m_inputLayout.Get());
+
+    //m_batch->Begin();
+    
+    /*
+    DirectX::SimpleMath::Vector3 xaxis(2.f, 0.f, 0.f);
+    DirectX::SimpleMath::Vector3 yaxis(0.f, 0.f, 2.f);
+    DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
+
+    constexpr size_t divisions = 20;
+
+    for (size_t i = 0; i <= divisions; ++i)
+    {
+        float fPercent = float(i) / float(divisions);
+        fPercent = (fPercent * 2.0f) - 1.0f;
+
+        DirectX::SimpleMath::Vector3 scale = xaxis * fPercent + origin;
+
+        VertexPositionColor v1(scale - yaxis, Colors::White);
+        VertexPositionColor v2(scale + yaxis, Colors::White);
+        //m_batch->DrawLine(v1, v2);
+    }
+
+    for (size_t i = 0; i <= divisions; i++)
+    {
+        float fPercent = float(i) / float(divisions);
+        fPercent = (fPercent * 2.0f) - 1.0f;
+
+        DirectX::SimpleMath::Vector3 scale = yaxis * fPercent + origin;
+
+        VertexPositionColor v1(scale - xaxis, Colors::White);
+        VertexPositionColor v2(scale + xaxis, Colors::White);
+        //m_batch->DrawLine(v1, v2);
+    }
+    */
+
+    //m_batch->End();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     m_effect2->SetWorld(m_world);
     m_effect2->Apply(context);
     context->IASetInputLayout(m_inputLayout2.Get());
@@ -959,6 +1019,7 @@ void Game::Render()
         DrawTerrainNew(m_terrainGamePlay);
     }
     m_batch2->End();
+
 
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
@@ -993,6 +1054,11 @@ void Game::Render()
 
     m_deviceResources->PIXEndEvent();
 
+    // multisamping 
+    context->ResolveSubresource(m_deviceResources->GetRenderTarget(), 0,
+        m_offscreenRenderTarget.Get(), 0,
+        m_deviceResources->GetBackBufferFormat());
+
     // Show the new frame.
     m_deviceResources->Present();
 }
@@ -1004,8 +1070,12 @@ void Game::Clear()
 
     // Clear the views.
     auto context = m_deviceResources->GetD3DDeviceContext();
-    auto renderTarget = m_deviceResources->GetRenderTargetView();
-    auto depthStencil = m_deviceResources->GetDepthStencilView();
+
+    //auto renderTarget = m_deviceResources->GetRenderTargetView();
+    //auto depthStencil = m_deviceResources->GetDepthStencilView();
+    // multisampling
+    auto renderTarget = m_offscreenRenderTargetSRV.Get();
+    auto depthStencil = m_depthStencilSRV.Get();
 
     context->ClearRenderTargetView(renderTarget, Colors::Black);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -1201,7 +1271,6 @@ void Game::CreateDeviceDependentResources()
     m_bitwiseFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/bitwise24.spritefont");
     m_spriteBatch = std::make_unique<SpriteBatch>(context);
 
-
     m_modelTank01 = Model::CreateFromCMO(device, L"HoverTankTest.cmo", *m_fxFactory);
     m_modelTankBody01 = Model::CreateFromCMO(device, L"HoverTankBody02.cmo", *m_fxFactory);
     m_modelTankTurret01 = Model::CreateFromCMO(device, L"HoverTankTurret02.cmo", *m_fxFactory);
@@ -1218,7 +1287,6 @@ void Game::CreateDeviceDependentResources()
             auto lights = dynamic_cast<IEffectLights*>(effect);
             if (lights)
             {
-
                 lights->SetLightingEnabled(true);
                 lights->SetPerPixelLighting(true);
                 lights->SetLightEnabled(0, true);
@@ -1229,7 +1297,6 @@ void Game::CreateDeviceDependentResources()
                 lights->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
                 lights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
                 lights->EnableDefaultLighting();
-
             }
             /*
             auto fog = dynamic_cast<IEffectFog*>(effect);
@@ -1272,6 +1339,14 @@ void Game::CreateDeviceDependentResources()
     //m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     //m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 10.0f));
     m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    // pre multipampling
+    //CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE, D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP, D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, FALSE, FALSE, TRUE);
+    // multisample
+    CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE, D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP, D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, FALSE, TRUE, FALSE);
+
+    DX::ThrowIfFailed(device->CreateRasterizerState(&rastDesc,
+        m_raster.ReleaseAndGetAddressOf()));
 }
 
 void Game::DrawSpawner()
@@ -1294,6 +1369,43 @@ void Game::CreateWindowSizeDependentResources()
     m_effect2->SetProjection(m_proj);
     m_effect3->SetView(m_view);
     m_effect3->SetProjection(m_proj);
+
+    // multisampling
+    auto device = m_deviceResources->GetD3DDevice();
+    auto width = static_cast<UINT>(size.right);
+    auto height = static_cast<UINT>(size.bottom);
+
+    CD3D11_TEXTURE2D_DESC rtDesc(m_deviceResources->GetBackBufferFormat(),
+        width, height, 1, 1,
+        D3D11_BIND_RENDER_TARGET, D3D11_USAGE_DEFAULT, 0,
+        MSAA_COUNT, MSAA_QUALITY);
+
+    DX::ThrowIfFailed(
+        device->CreateTexture2D(&rtDesc, nullptr,
+            m_offscreenRenderTarget.ReleaseAndGetAddressOf()));
+
+    CD3D11_RENDER_TARGET_VIEW_DESC rtvDesc(D3D11_RTV_DIMENSION_TEXTURE2DMS);
+
+    DX::ThrowIfFailed(
+        device->CreateRenderTargetView(m_offscreenRenderTarget.Get(),
+            &rtvDesc,
+            m_offscreenRenderTargetSRV.ReleaseAndGetAddressOf()));
+
+    CD3D11_TEXTURE2D_DESC dsDesc(DXGI_FORMAT_D32_FLOAT,
+        width, height, 1, 1,
+        D3D11_BIND_DEPTH_STENCIL, D3D11_USAGE_DEFAULT, 0,
+        MSAA_COUNT, MSAA_QUALITY);
+
+    ComPtr<ID3D11Texture2D> depthBuffer;
+    DX::ThrowIfFailed(
+        device->CreateTexture2D(&dsDesc, nullptr, depthBuffer.GetAddressOf()));
+
+    CD3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc(D3D11_DSV_DIMENSION_TEXTURE2DMS);
+
+    DX::ThrowIfFailed(
+        device->CreateDepthStencilView(depthBuffer.Get(),
+            &dsvDesc,
+            m_depthStencilSRV.ReleaseAndGetAddressOf()));
 }
 
 void Game::DrawDebugDataUI()
@@ -1825,6 +1937,11 @@ void Game::OnDeviceLost()
     m_testShape.reset();
     m_testShape2.reset();
     m_testShape3.reset();
+
+    // multisampling
+    m_offscreenRenderTarget.Reset();
+    m_offscreenRenderTargetSRV.Reset();
+    m_depthStencilSRV.Reset();
 }
 
 void Game::OnDeviceRestored()
