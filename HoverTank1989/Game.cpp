@@ -941,14 +941,14 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
  
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         //DrawSky();
-        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawTestTrack();
         //DrawTestRangeMissile();
         DrawSpawner();
@@ -1010,12 +1010,14 @@ void Game::Render()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
     m_effect2->SetWorld(m_world);
     m_effect2->Apply(context);
     context->IASetInputLayout(m_inputLayout2.Get());
     m_batch2->Begin();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
+        //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect2, m_inputLayout2);
         DrawTerrainNew(m_terrainGamePlay);
     }
     m_batch2->End();
@@ -1262,9 +1264,10 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType3>(device, m_effect3.get(), m_inputLayout3.ReleaseAndGetAddressOf()));
     m_batch3 = std::make_unique<PrimitiveBatch<VertexType3>>(context);
 
-    //m_skyShape = GeometricPrimitive::CreateSphere(context, m_skyBoxSize, 32, false);
-    m_skyShape = GeometricPrimitive::CreateSphere(context, -m_skyBoxSize, 32);
+    m_skyShape = GeometricPrimitive::CreateSphere(context, m_skyBoxSize, 32, false);
+    //m_skyShape = GeometricPrimitive::CreateSphere(context, -m_skyBoxSize, 32);
     m_skyShape->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
+    //m_skyShape->CreateInputLayout(m_effect2.get(), m_inputLayout2.ReleaseAndGetAddressOf());
 
     m_font = std::make_unique<SpriteFont>(device, L"Art/Fonts/myfile.spritefont");
     m_titleFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/titleFont.spritefont");
@@ -1674,6 +1677,44 @@ void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::Simp
     worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(skyBoxTransVec);
     aEffect->SetWorld(worldMat);
     m_skyShape->Draw(aEffect.get(), aInputLayout.Get(), false, true);
+}
+
+void Game::DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
+    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
+    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
+    //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
+    //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
+
+    /*
+    aEffect->EnableDefaultLighting();
+
+    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
+    aEffect->SetColorAndAlpha(skyColor);
+    DirectX::SimpleMath::Vector3 skyBoxTransVec = DirectX::SimpleMath::Vector3::Zero;
+    skyBoxTransVec.y -= m_skyBoxSize * 0.17f;
+
+    DirectX::SimpleMath::Matrix worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(skyBoxTransVec);
+    aEffect->SetWorld(worldMat);
+
+    */
+
+    DirectX::SimpleMath::Vector3 skyBoxTransVec = DirectX::SimpleMath::Vector3::Zero;
+    skyBoxTransVec.y -= m_skyBoxSize * 0.17f;
+
+    DirectX::SimpleMath::Matrix worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat = DirectX::SimpleMath::Matrix::Identity;
+    worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(skyBoxTransVec);
+    //m_skyShape->Draw(aEffect.get(), aInputLayout.Get(), false, true);
+
+    //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
+    //m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f));
+    m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::Colors::SkyBlue, nullptr, true);
+
 }
 
 void Game::DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
