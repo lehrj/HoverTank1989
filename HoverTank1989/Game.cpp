@@ -430,10 +430,13 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     {
         gridLineOffSetY = 0.3f;
     }
+    
     gridLineOffSetY = 0.22f;
     const float gridLineOffSetY2 = 1.1f;
     //const float gridLineOffSetY2 = 0.1f;
     const float verticalOffsetHeight = 5.0f;
+
+
     for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
     {
         if (aTerrain.terrainVertexArray[i].position.y > verticalOffsetHeight)
@@ -941,14 +944,14 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
  
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         //DrawSky();
-        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         DrawTestTrack();
         //DrawTestRangeMissile();
         DrawSpawner();
@@ -1030,7 +1033,10 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
+        //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect3, m_inputLayout3);
+ 
         DrawDebugLinesVector();
+        //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect3, m_inputLayout3);
     }
     m_batch3->End();
 
@@ -1246,6 +1252,8 @@ void Game::CreateDeviceDependentResources()
     m_effect->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
     m_effect->SetAmbientLightColor(Colors::Blue);
 
+    //m_effect->SetVertexColorEnabled(true);
+
     m_effect2 = std::make_unique<BasicEffect>(device);
     m_effect2->SetVertexColorEnabled(true);
 
@@ -1256,6 +1264,8 @@ void Game::CreateDeviceDependentResources()
     const int maxVertices = 8192;
     const int maxIndices = maxVertices * 3;
     m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context, maxIndices, maxVertices);
+    //m_batch2 = std::make_unique<PrimitiveBatch<VertexType2>>(context);
+
 
     //m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
     DX::ThrowIfFailed(CreateInputLayoutFromEffect<VertexType>(device, m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf()));
@@ -1267,7 +1277,7 @@ void Game::CreateDeviceDependentResources()
     m_skyShape = GeometricPrimitive::CreateSphere(context, m_skyBoxSize, 32, false);
     //m_skyShape = GeometricPrimitive::CreateSphere(context, -m_skyBoxSize, 32);
     m_skyShape->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
-    //m_skyShape->CreateInputLayout(m_effect2.get(), m_inputLayout2.ReleaseAndGetAddressOf());
+    //m_skyShape->CreateInputLayout(m_effect2.get(), m_inputLayout.ReleaseAndGetAddressOf());
 
     m_font = std::make_unique<SpriteFont>(device, L"Art/Fonts/myfile.spritefont");
     m_titleFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/titleFont.spritefont");
@@ -1301,27 +1311,12 @@ void Game::CreateDeviceDependentResources()
                 lights->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
                 lights->EnableDefaultLighting();
             }
-            /*
-            auto fog = dynamic_cast<IEffectFog*>(effect);
-            if (fog)
-            {
-                fog->SetFogEnabled(true);
-                fog->SetFogColor(Colors::CornflowerBlue);
-                fog->SetFogStart(3.f);
-                fog->SetFogEnd(400.f);
-            }
-            */
         });
 
-    //m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret);
     m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret, context);
 
     m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
     m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
-    //m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(m_missileRangeDistance, 1.0f, 6.0f));
-  
-    //m_testShape3 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
-    //m_testShape3 = DirectX::GeometricPrimitive::CreateCylinder(context, -m_baseTerrainHeight, -m_baseTerrainDiameter);
     m_testShape3 = DirectX::GeometricPrimitive::CreateTorus(context, m_ringDiameter, m_ringHeight);
 
     const float spawnerHeight = 50.0f;
@@ -1667,7 +1662,8 @@ void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::Simp
 
     aEffect->EnableDefaultLighting();
 
-    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
+    //DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
+    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.1f, 0.1f, 0.3f, 1.f);
     aEffect->SetColorAndAlpha(skyColor);
     DirectX::SimpleMath::Vector3 skyBoxTransVec = DirectX::SimpleMath::Vector3::Zero;
     skyBoxTransVec.y -= m_skyBoxSize * 0.17f;
@@ -1676,7 +1672,8 @@ void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::Simp
     worldMat = DirectX::SimpleMath::Matrix::Identity;
     worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(skyBoxTransVec);
     aEffect->SetWorld(worldMat);
-    m_skyShape->Draw(aEffect.get(), aInputLayout.Get(), false, true);
+    //m_skyShape->Draw(aEffect.get(), aInputLayout.Get(), false, true);
+    m_skyShape->Draw(aEffect.get(), aInputLayout.Get());
 }
 
 void Game::DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
@@ -1714,7 +1711,6 @@ void Game::DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, cons
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
     //m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f));
     m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::Colors::SkyBlue, nullptr, true);
-
 }
 
 void Game::DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
