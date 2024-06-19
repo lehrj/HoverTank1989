@@ -431,8 +431,15 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         gridLineOffSetY = 0.3f;
     }
     
+    /*
     gridLineOffSetY = 0.22f;
     const float gridLineOffSetY2 = 1.1f;
+    //const float gridLineOffSetY2 = 0.1f;
+    const float verticalOffsetHeight = 5.0f;
+    */
+
+    gridLineOffSetY = 0.22f;
+    const float gridLineOffSetY2 = 1.5f;
     //const float gridLineOffSetY2 = 0.1f;
     const float verticalOffsetHeight = 5.0f;
 
@@ -944,7 +951,7 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
  
@@ -1026,6 +1033,9 @@ void Game::Render()
     m_batch2->End();
 
 
+    //context->RSSetState(m_states->CullNone());
+    context->RSSetState(m_raster.Get());
+
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
     context->IASetInputLayout(m_inputLayout3.Get());
@@ -1033,10 +1043,19 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect3, m_inputLayout3);
- 
         DrawDebugLinesVector();
         //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect3, m_inputLayout3);
+
+
+        /*
+        Draw(m_batch.get(), frustum, Colors::Blue); // BoundingFrustum
+        Draw(m_batch.get(), box, Colors::Blue); // BoundingBox
+        Draw(m_batch.get(), orientedBox, Colors::Blue); // BoundingOrientedBox
+        Draw(m_batch.get(), sphere, Colors::Blue); // BoundingSphere
+        */
+
+        
+
     }
     m_batch3->End();
 
@@ -1710,7 +1729,8 @@ void Game::DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, cons
 
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
     //m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f));
-    m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::Colors::SkyBlue, nullptr, true);
+    //m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::Colors::SkyBlue, nullptr, true);
+    m_skyShape->Draw(worldMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::Colors::SkyBlue);
 }
 
 void Game::DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)

@@ -14632,6 +14632,55 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
         m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
 
+
+        // x 1
+        updateMat = DirectX::SimpleMath::Matrix::Identity;
+        updateMat *= m_ammoMissile.modelData.localWingFinMatrix;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-wingFinDeployAngle + Utility::ToRadians(180.0f));
+        updateMat *= m_ammoMissile.modelData.wingTranslation;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(45.0f));
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
+        m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        // x 2
+        updateMat = DirectX::SimpleMath::Matrix::Identity;
+        updateMat *= m_ammoMissile.modelData.localWingFinMatrix;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-wingFinDeployAngle + Utility::ToRadians(180.0f));
+        updateMat *= m_ammoMissile.modelData.wingTranslation;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-45.0f));
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
+        m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        // x 3
+        updateMat = DirectX::SimpleMath::Matrix::Identity;
+        updateMat *= m_ammoMissile.modelData.localWingFinMatrix;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-wingFinDeployAngle + Utility::ToRadians(180.0f));
+        updateMat *= m_ammoMissile.modelData.wingTranslation;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(135.0f));
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
+        m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
+
+        // x 4
+        updateMat = DirectX::SimpleMath::Matrix::Identity;
+        updateMat *= m_ammoMissile.modelData.localWingFinMatrix;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationY(-wingFinDeployAngle + Utility::ToRadians(180.0f));
+        updateMat *= m_ammoMissile.modelData.wingTranslation;
+        updateMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-135.0f));
+        updateMat *= alignRotMat;
+        updateMat *= posTransMat;
+        aEffect->SetWorld(updateMat);
+        aEffect->SetColorAndAlpha(m_ammoMissile.modelData.finColor1);
+        m_ammoMissile.modelData.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
