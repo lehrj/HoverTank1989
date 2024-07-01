@@ -373,7 +373,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         if (baseColor.y > colorMax)
         {
             baseColor.y = colorMax;
-            //baseColor.y = 0.0f;
+            baseColor.y = 0.0f;
         }
         baseColor.z = colorVal;
         if (baseColor.z > colorMax)
@@ -382,6 +382,19 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         }
 
         lineColor = baseColor;
+
+        ////////////// Terrain Edit Start 
+ 
+        lineColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
+        baseColor.x = 0.0f;
+        baseColor.y = 0.0f;
+        baseColor.y = elevationPercentage * 0.292156899f;
+        //baseColor.y = elevationPercentage * 0.292156899f + 0.292156899f;
+        
+        baseColor.z = 0.0f;
+
+        ////////////// Terrain Edit End
+
         lineColor.y += 0.292156899f;
 
         if (elevationPercentage > 0.4f)
