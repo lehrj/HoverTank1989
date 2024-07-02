@@ -393,6 +393,26 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         
         baseColor.z = 0.0f;
 
+
+        DirectX::XMFLOAT4 baseColorMax(0.0f, 0.584313798f, 0.0f, 1.0f);
+
+        const float baseElevationTreeLine = 0.7f;
+
+        if (elevationPercentage > baseElevationTreeLine)
+        {
+            baseColor = baseColorMax;
+        }
+        else
+        {
+            baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+        }
+        /*
+        baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+        baseColor.y = 0.0f;
+        baseColor.y += 0.292156899f;
+        baseColor.y += 0.292156899f;
+        */
+
         ////////////// Terrain Edit End
 
         lineColor.y += 0.292156899f;
