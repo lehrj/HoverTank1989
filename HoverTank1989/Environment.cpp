@@ -836,8 +836,9 @@ bool Environment::LoadHeightMap(HeightMap& aMap)
     {
         //filename = "../HoverTank1989/Art/HeightMaps/HeightmapRoughTerrain.bmp";
         //filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest.bmp";
-        filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest6.bmp";
-        //filename = "../HoverTank1989/Art/HeightMaps/HeightmapWeaponTest.bmp";
+        //filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest6.bmp";
+        //filename = "../HoverTank1989/Art/HeightMaps/heightmapWeaponTest.bmp";
+        filename = "../HoverTank1989/Art/HeightMaps/heightmapMissileTest.bmp";
     }
     else
     {
