@@ -3119,11 +3119,41 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
         m_playerLaser.worldBodyMatrix *= updateMat;
 
-        DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
-        DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
-        DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
+        //DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
+        //DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
+        //DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
 
-        m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
+        DirectX::SimpleMath::Matrix lightMat = DirectX::SimpleMath::Matrix::Identity;
+        //lightMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+        lightMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+        lightMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+
+        DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3::UnitY;
+        defaultLightDir0 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir0, lightMat);
+
+        DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3::UnitY;
+        defaultLightDir1 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir1, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(120.0f)));
+        defaultLightDir1 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir1, lightMat);
+
+        DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3::UnitY;
+        defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(240.0f)));
+        defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
+
+
+        Utility::GetDispersedLightDirectionsRotation(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(90.0f), Utility::ToRadians(0.0f), defaultLightDir0, defaultLightDir1, defaultLightDir2);
+
+        defaultLightDir0 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir0, lightMat);
+        defaultLightDir1 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir1, lightMat);
+        defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
+
+        
+        m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir0, 5.0f, 0.0f, DirectX::Colors::White);
+        m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir1, 5.0f, 0.0f, DirectX::Colors::White);
+        m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir2, 5.0f, 0.0f, DirectX::Colors::White);
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->PushDebugLinePositionIndicator(m_playerVehicle->GetMuzzlePos(), 5.0f, 0.0f, DirectX::Colors::White);
+        m_debugData->ToggleDebugOff();
+        //m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
         DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
         DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
@@ -3151,16 +3181,21 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         aEffect->SetLightDirection(2, lightDir2);
         aEffect->SetWorld(m_playerLaser.worldBodyMatrix);
 
+        aEffect->EnableDefaultLighting();
+        aEffect->SetAmbientLightColor(DirectX::Colors::Red);
+
+        //aEffect->SetAmbientLightColor(DirectX::Colors::Red);
+        aEffect->SetColorAndAlpha(DirectX::Colors::White);
         if (m_playerLaser.isFlickerTrue == true)
         {
             m_playerLaser.isFlickerTrue = false;
-            aEffect->SetColorAndAlpha(laserColor);
+            //aEffect->SetColorAndAlpha(laserColor);
             m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
         }
         else
         {
             m_playerLaser.isFlickerTrue = true;
-            aEffect->SetColorAndAlpha(laserColor);
+            //aEffect->SetColorAndAlpha(laserColor);
             m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
         }
     }
@@ -3401,7 +3436,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 worldBodyMatrix *= updateMat6;
 
                 //////////////////////////////////////////////////////////////
-
+                aEffect->EnableDefaultLighting();
                 DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
                 DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
                 DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
@@ -3427,19 +3462,25 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 aEffect->SetLightDirection(0, lightDir0);
                 aEffect->SetLightDirection(1, lightDir1);
                 aEffect->SetLightDirection(2, lightDir2);
-                aEffect->EnableDefaultLighting();
+                //aEffect->EnableDefaultLighting();
                 aEffect->SetWorld(worldBodyMatrix);
 
                 aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
                 //aEffect->SetColorAndAlpha(DirectX::Colors::Purple);
-                //m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+
+
+                m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+                m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
 
                 /////////////////////////////
+
+                /*
                 if (m_isLaserFlickerTrue == true)
                 {
                     m_isLaserFlickerTrue = false;
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
+                    aEffect->SetColorAndAlpha(DirectX::Colors::White);
                     m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
                 }
                 else
@@ -3447,8 +3488,10 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                     m_isLaserFlickerTrue = true;
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
                     aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
+                    aEffect->SetColorAndAlpha(DirectX::Colors::White);
                     m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
                 }
+                */
             }
         }
     }
