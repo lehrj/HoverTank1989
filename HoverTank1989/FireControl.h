@@ -1209,6 +1209,8 @@ private:
     bool m_isLaserHitLastFrameTrue = false;
     bool m_isLaserLockToneOn = false;
     bool m_isLaserFlickerTrue = false;
+    float m_laserLightingRotation = 0.0f;
+    const float m_laserLightingRate = 17.0f;
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
