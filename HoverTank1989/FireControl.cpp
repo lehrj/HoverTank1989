@@ -3108,7 +3108,6 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
         m_playerLaser.worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
-        //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(testRot);
         m_playerLaser.worldBodyMatrix *= scaleMat;
         m_playerLaser.worldBodyMatrix *= scaleTransOffsetMat;
         m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
@@ -3119,12 +3118,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
         m_playerLaser.worldBodyMatrix *= updateMat;
 
-        //DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
-        //DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
-        //DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
-
         DirectX::SimpleMath::Matrix lightMat = DirectX::SimpleMath::Matrix::Identity;
-        //lightMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
         lightMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
         lightMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
 
@@ -3139,8 +3133,6 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(240.0f)));
         defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
 
-
-        //Utility::GetDispersedLightDirectionsRotation(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(90.0f), Utility::ToRadians(0.0f), defaultLightDir0, defaultLightDir1, defaultLightDir2);
         Utility::GetDispersedLightDirectionsRotation(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(90.0f), m_laserLightingRotation, defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
         defaultLightDir0 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir0, lightMat);
@@ -3157,7 +3149,6 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         m_debugData->DebugPushUILineDecimalNumber("m_laserLightingRotation = ", m_laserLightingRotation, "");
 
         m_debugData->ToggleDebugOff();
-        //m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
         DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
         DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
@@ -3185,11 +3176,9 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         aEffect->SetLightDirection(2, lightDir2);
         aEffect->SetWorld(m_playerLaser.worldBodyMatrix);
 
-        //aEffect->EnableDefaultLighting();
-        aEffect->SetAmbientLightColor(DirectX::Colors::Red);
+        aEffect->SetAmbientLightColor(laserColor);
+        aEffect->SetColorAndAlpha(laserColor);
 
-        //aEffect->SetAmbientLightColor(DirectX::Colors::Red);
-        aEffect->SetColorAndAlpha(DirectX::Colors::White);
         m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
 
         if (m_playerLaser.isFlickerTrue == true)
