@@ -3104,6 +3104,8 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
             diameterScale = 0.5f;
         }
 
+        diameterScale = m_laserLightingPulseScale;
+
         DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
         DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
@@ -3122,6 +3124,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         lightMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
         lightMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
 
+        /*
         DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3::UnitY;
         defaultLightDir0 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir0, lightMat);
 
@@ -3132,14 +3135,18 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3::UnitY;
         defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(240.0f)));
         defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
+        */
 
+        DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3::UnitY;
+        DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3::UnitY;
+        DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3::UnitY;
         Utility::GetDispersedLightDirectionsRotation(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(90.0f), m_laserLightingRotation, defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
         defaultLightDir0 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir0, lightMat);
         defaultLightDir1 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir1, lightMat);
         defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
 
-        //m_debugData->ToggleDebugOnOverRide();
+        m_debugData->ToggleDebugOnOverRide();
         m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir0, 5.0f, 0.0f, DirectX::Colors::White);
         m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir1, 5.0f, 0.0f, DirectX::Colors::White);
         m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir2, 5.0f, 0.0f, DirectX::Colors::White);
@@ -3147,6 +3154,8 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         m_debugData->PushDebugLinePositionIndicator(m_playerVehicle->GetMuzzlePos(), 5.0f, 0.0f, DirectX::Colors::White);
 
         m_debugData->DebugPushUILineDecimalNumber("m_laserLightingRotation = ", m_laserLightingRotation, "");
+        m_debugData->DebugPushUILineDecimalNumber("m_laserLightingPulseScale = ", m_laserLightingPulseScale, "");
+        
 
         m_debugData->ToggleDebugOff();
 
@@ -9453,6 +9462,25 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     {
         m_laserLightingRotation += aTimeDelta * m_laserLightingRate;
         Utility::WrapAngle(m_laserLightingRotation);
+
+        if (m_isTargetingLaserLockTrue == true)
+        {
+            //m_laserLightingPulseScale = cos(m_laserLightingPulseScale + static_cast<float>(aTimeDelta));
+            //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
+            //m_laserLightingPulseScale = cos(m_laserLightingPulseScale);
+
+            const float minPulse = 0.2f;
+            if (m_laserLightingPulseScale >= 1.0f)
+            {
+                m_laserLightingPulseScale = minPulse;
+            }
+            m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
+
+        }
+        else
+        {
+            m_laserLightingPulseScale = 1.0f;
+        }
 
         CastRayLaser();
     }
