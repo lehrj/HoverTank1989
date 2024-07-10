@@ -3109,13 +3109,27 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
         DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
+        DirectX::SimpleMath::Vector3 dirTestVec = m_playerVehicle->GetWeaponDirTest();
+        //DirectX::SimpleMath::Matrix dirTestMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, dirTestVec, DirectX::SimpleMath::Vector3::UnitY);
+
+        //DirectX::SimpleMath::Matrix dirTestMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, dirTestVec, DirectX::SimpleMath::Vector3::UnitY);
+        DirectX::SimpleMath::Matrix dirTestMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, dirTestVec, DirectX::SimpleMath::Vector3::UnitY);
+        
+        //dirTestMat.Invert();
+
+        //DirectX::SimpleMath::Matrix::Invert(dirTestMat);
+
         m_playerLaser.worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
         m_playerLaser.worldBodyMatrix *= scaleMat;
         m_playerLaser.worldBodyMatrix *= scaleTransOffsetMat;
         m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(posOffset);
-        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
-        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
-        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+        //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
+        //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
+        //m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
+
+        m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+        m_playerLaser.worldBodyMatrix *= dirTestMat;
+
 
         m_playerLaser.worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
         m_playerLaser.worldBodyMatrix *= updateMat;
@@ -3146,7 +3160,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         defaultLightDir1 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir1, lightMat);
         defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
 
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir0, 5.0f, 0.0f, DirectX::Colors::White);
         m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir1, 5.0f, 0.0f, DirectX::Colors::White);
         m_debugData->PushDebugLine(m_playerVehicle->GetMuzzlePos(), defaultLightDir2, 5.0f, 0.0f, DirectX::Colors::White);

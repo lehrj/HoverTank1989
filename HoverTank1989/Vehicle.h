@@ -385,6 +385,10 @@ public:
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
     //float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
     float GetWeaponPitch() const { return m_heli.stabilizedWeaponPitch; };
+
+    float GetTurretYawTest() const { return m_heli.controlInput.turretYaw; };
+    DirectX::SimpleMath::Vector3 GetWeaponDirTest() const { return m_modelController->GetWeaponDirLocal(); };
+
     DirectX::SimpleMath::Vector3 GetWeaponDirection() const { return m_heli.weaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalDirection() const { return m_heli.localWeaponDirection; };
     DirectX::SimpleMath::Vector3 GetWeaponLocalPos() const { return m_heli.localWeaponPos; };
