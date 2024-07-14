@@ -161,6 +161,8 @@ void Game::Initialize(HWND window, int width, int height)
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"Art/Audio/audioBank.xwb");
 
+    float wavLength = m_audioBank->GetSampleDurationMS(21);
+
     m_soundEffect = std::make_unique<SoundEffect>(m_audioEngine.get(), L"Art/Audio/RocketBoostEngineLoop.wav");
     //m_soundSource = m_soundEffect->CreateInstance();
     //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
@@ -386,13 +388,13 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         ////////////// Terrain Edit Start 
  
         lineColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
+        lineColor = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f);
         baseColor.x = 0.0f;
         baseColor.y = 0.0f;
         baseColor.y = elevationPercentage * 0.292156899f;
         //baseColor.y = elevationPercentage * 0.292156899f + 0.292156899f;
         
         baseColor.z = 0.0f;
-
 
         DirectX::XMFLOAT4 baseColorMax(0.0f, 0.584313798f, 0.0f, 1.0f);
 

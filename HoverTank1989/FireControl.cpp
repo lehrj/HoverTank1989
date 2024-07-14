@@ -9472,28 +9472,6 @@ void FireControl::UpdateFireControl(double aTimeDelta)
 {
     if (m_isTargetingLaserOn == true)
     {
-        m_laserLightingRotation += aTimeDelta * m_laserLightingRate;
-        Utility::WrapAngle(m_laserLightingRotation);
-
-        if (m_isTargetingLaserLockTrue == true)
-        {
-            //m_laserLightingPulseScale = cos(m_laserLightingPulseScale + static_cast<float>(aTimeDelta));
-            //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
-            //m_laserLightingPulseScale = cos(m_laserLightingPulseScale);
-
-            const float minPulse = 0.2f;
-            if (m_laserLightingPulseScale >= 1.0f)
-            {
-                m_laserLightingPulseScale = minPulse;
-            }
-            m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
-
-        }
-        else
-        {
-            m_laserLightingPulseScale = 1.0f;
-        }
-
         CastRayLaser();
     }
     if (m_isCoolDownActive == true)
@@ -9516,6 +9494,8 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     UpdateProjectileVec(aTimeDelta);
     UpdateMissileVec(aTimeDelta);
     UpdateExplosionVec(aTimeDelta);
+
+    UpdateLaserData(aTimeDelta);
 
     if (m_isManualInputDecayTrue == true && m_missileConsts.isManualControlTrue == true)
     {
@@ -9979,6 +9959,42 @@ void FireControl::UpdateLOSData2(MissileData& aMissile, const float aTimeDelta)
     m_debugData->ToggleDebugOff();
 
     //aMissile.guidance.headingLocalVecTest = lookPosLocal;
+}
+
+void FireControl::UpdateLaserData(const float aTimeDelta)
+{
+    m_laserLightingRotation += aTimeDelta * m_laserLightingRate;
+    Utility::WrapAngle(m_laserLightingRotation);
+
+    if (m_isTargetingLaserLockTrue == true)
+    {
+        //m_laserLightingPulseScale = cos(m_laserLightingPulseScale + static_cast<float>(aTimeDelta));
+        //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
+        //m_laserLightingPulseScale = cos(m_laserLightingPulseScale);
+
+        const float minPulse = 0.2f;
+        if (m_laserLightingPulseScale >= 1.0f)
+        {
+            m_laserLightingPulseScale = minPulse;
+        }
+        //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
+
+        m_laserLightingPulseScale = (cos(m_laserLightingPulseScale + static_cast<float>(aTimeDelta)));
+
+
+        m_laserLightingPulseTimer += aTimeDelta;
+
+        if (m_laserLightingPulseTimer > m_laserLightingPulseConst)
+        {
+            m_laserLightingPulseTimer = 0.0f;
+        }
+        m_laserLightingPulseScale = m_laserLightingPulseTimer / m_laserLightingPulseConst;
+
+    }
+    else
+    {
+        m_laserLightingPulseScale = 1.0f;
+    }
 }
 
 void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta)
