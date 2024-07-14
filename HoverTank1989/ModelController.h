@@ -136,6 +136,8 @@ public:
 
     DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_playerModel.targetingMatrix; };
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };
+    DirectX::SimpleMath::Vector3 GetWeaponPosLocal() const { return m_playerModel.weaponPosLocal; };
+
     DirectX::SimpleMath::Vector3 GetWeaponDirLocal() const { return m_playerModel.weaponDirLocal; };
     DirectX::SimpleMath::Vector3 GetWeaponDirWorld() const { return m_playerModel.weaponDirWorld; };
     DirectX::SimpleMath::Vector3 GetWeaponUpLocal() const { return m_playerModel.weaponUpLocal; };

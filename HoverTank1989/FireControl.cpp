@@ -3169,8 +3169,6 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
 
         m_debugData->DebugPushUILineDecimalNumber("m_laserLightingRotation = ", m_laserLightingRotation, "");
         m_debugData->DebugPushUILineDecimalNumber("m_laserLightingPulseScale = ", m_laserLightingPulseScale, "");
-        
-
         m_debugData->ToggleDebugOff();
 
         DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;

@@ -382,12 +382,14 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::UnitX;
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirLocal, muzzleMat);
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirLocal, turretMat);
+    
     aModel.weaponDirWorld = aModel.weaponDirLocal;
     aModel.weaponDirWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponDirWorld, aAlignment);
 
     aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::UnitY;
     aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpLocal, muzzleMat);
     aModel.weaponUpLocal = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpLocal, turretMat);
+
     aModel.weaponUpWorld = aModel.weaponUpLocal;
     aModel.weaponUpWorld = DirectX::SimpleMath::Vector3::Transform(aModel.weaponUpWorld, aAlignment);
 

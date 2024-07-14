@@ -369,7 +369,8 @@ public:
 
     DirectX::SimpleMath::Matrix GetMuzzleDirMat() const { return m_modelController->GetMuzzleDirMat(); };
     DirectX::SimpleMath::Vector3 GetMuzzlePos() const { return m_heli.muzzlePos; };
-    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_heli.localizedMuzzlePos; };
+    DirectX::SimpleMath::Vector3 GetLocalizedMuzzlePos() const { return m_modelController->GetLocalizedMuzzlePos(); };
+
     DirectX::SimpleMath::Vector3 GetPos() const { return m_heli.q.position; };
     float GetRPM() const { return m_heli.mainRotor.rpm; };
     DirectX::SimpleMath::Vector4 GetRearGlowColor();
