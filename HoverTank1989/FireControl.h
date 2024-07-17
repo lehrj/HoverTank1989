@@ -382,7 +382,7 @@ struct GuidanceSystem
     bool isVelocityForward = true;
 
     DirectX::SimpleMath::Quaternion angularStepQuat = DirectX::SimpleMath::Quaternion::Identity;
-    DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
+    //DirectX::SimpleMath::Matrix targetLaserAlignment = DirectX::SimpleMath::Matrix::Identity;
 
     float climbOutTimer = 0.0f;
 
@@ -441,6 +441,11 @@ struct GuidanceSystem
 
     DirectX::SimpleMath::Matrix seekerHousingMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix seekerLensMat = DirectX::SimpleMath::Matrix::Identity;
+
+
+    float laserPulseScale = 1.0f;
+    float laserPulseTimer = 0.0f;
+
 };
 
 struct AmmoStruct
