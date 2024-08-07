@@ -834,11 +834,8 @@ bool Environment::LoadHeightMap(HeightMap& aMap)
     }
     else if (aMap.mapType == EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY)
     {
-        //filename = "../HoverTank1989/Art/HeightMaps/HeightmapRoughTerrain.bmp";
-        //filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest.bmp";
-        //filename = "../HoverTank1989/Art/HeightMaps/HeightmapCleanTest6.bmp";
-        //filename = "../HoverTank1989/Art/HeightMaps/heightmapWeaponTest.bmp";
         filename = "../HoverTank1989/Art/HeightMaps/heightmapMissileTest.bmp";
+        //filename = "../HoverTank1989/Art/HeightMaps/heightmapFlat.bmp";
     }
     else
     {

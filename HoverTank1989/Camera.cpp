@@ -1159,7 +1159,8 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_STATIC)
 	{
-		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_staticCamPos, m_staticCamTarget, m_staticCamUp);
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_FOLLOWMISSILE)
 	{
@@ -1312,7 +1313,6 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 			camPos = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
 			camPos *= m_missileCamSide.z;
 			camPos += missilePosWorld;
-
 			camTargetPos = missilePosWorld;
 			camUp = DirectX::SimpleMath::Vector3::UnitY;
 		}
@@ -1330,7 +1330,6 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 		{
 			camPos = missilePosWorld;
 			camPos.y += m_missileCamTop.y;
-
 			camTargetPos = missilePosWorld;
 
 			camUp = missileTargetPosWorld - missilePosWorld;

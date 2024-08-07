@@ -2518,7 +2518,7 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.position += posUpdate; 
     q.angularVelocity += angularVelocityUpdateTest;
     q.angularMomentum += angularMomentumUpdateTest;
-
+    
     aHeli->q.velocity = q.velocity;
     aHeli->q.position = q.position;
 

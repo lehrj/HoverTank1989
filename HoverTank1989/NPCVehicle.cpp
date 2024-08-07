@@ -691,7 +691,6 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         ventColor = targetColorMissile;
         eyeColor = targetColorMissile;
     }
-
     // override default colors with individual npc color schemes
     /*
     eyeColor = m_vehicleStruct00.npcModel.color1;
@@ -3854,7 +3853,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
     }
 
     m_vehicleStruct00.npcModel.burnFlickerLegth = Utility::WrapAnglePositive(m_vehicleStruct00.npcModel.burnFlickerLegth + m_vehicleStruct00.npcModel.burnFlickerFrequencyMod);
-    baseBurnLength = baseBurnLength + (m_vehicleStruct00.npcModel.burnFlickerLegth * m_vehicleStruct00.npcModel.burnFlickerLengthMod);
+  baseBurnLength = baseBurnLength + (m_vehicleStruct00.npcModel.burnFlickerLegth * m_vehicleStruct00.npcModel.burnFlickerLengthMod);
 
     // counter body torque base jet length mod
     baseBurnLength += m_vehicleStruct00.npcModel.jetAntiTorqueLengthBase;

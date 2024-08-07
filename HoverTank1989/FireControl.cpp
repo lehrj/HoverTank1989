@@ -10553,7 +10553,7 @@ void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTim
 {
     aMissile.guidance.afterBurnFlickerRotation = Utility::WrapAngle(aMissile.guidance.afterBurnFlickerRotation + (m_ammoMissile.modelData.afterBurnFlickerRotationRate * aTimeDelta));
 
-    
+
     if (aMissile.guidance.flickerBool == true)
     {
         aMissile.guidance.flickerBool = false;

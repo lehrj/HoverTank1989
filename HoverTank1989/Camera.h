@@ -34,6 +34,7 @@ enum class CameraState
     CAMERASTATE_TRANSITIONFROMSPRINGCAM,
     CAMERASTATE_TRANSITIONTOSPRINGCAM,
     CAMERASTATE_SNAPCAM,
+    CAMERASTATE_POSE,
 };
 
 enum class MissileTrackState
@@ -378,6 +379,8 @@ private:
     int m_npcFocusID = 0;
 
     const DirectX::SimpleMath::Vector3 m_missileCamSide = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 3.0f);
+    const DirectX::SimpleMath::Vector3 m_missileCamSideOffset = DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 2.0f);
+
     const DirectX::SimpleMath::Vector3 m_missileCamTop = DirectX::SimpleMath::Vector3(0.0f, 18.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_missileCamToTarget = DirectX::SimpleMath::Vector3(-3.0f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_missileCamToTarget3Qrt = DirectX::SimpleMath::Vector3(-3.0f, 1.0f, 0.0f);
@@ -409,5 +412,9 @@ private:
     DirectX::SimpleMath::Vector3 m_snapTargPrev = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Quaternion m_snapQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    DirectX::SimpleMath::Vector3 m_staticCamPos = DirectX::SimpleMath::Vector3(137.0f, 40.0f, 600.0f);
+    DirectX::SimpleMath::Vector3 m_staticCamTarget = DirectX::SimpleMath::Vector3(137.0f, 30.0f, 455.0f);
+    DirectX::SimpleMath::Vector3 m_staticCamUp = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
 };
 

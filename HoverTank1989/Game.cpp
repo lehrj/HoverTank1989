@@ -407,7 +407,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         else
         {
             baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-        }
+        }   
         /*
         baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
         baseColor.y = 0.0f;
@@ -428,6 +428,11 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         {
             lineColor.y += 0.15f;
         }
+
+        /* for treenline / snowcap effect at higher elevations
+        lineColor = DirectX::XMFLOAT4(0.0f, 0.584313798f, 0.0f, 0.0f);
+        baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);;
+        */
 
         aTerrain.terrainVertexArray[i].color = lineColor;
         aTerrain.terrainVertexArrayBase[i].position = vertexPC[i].position;
@@ -477,7 +482,6 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     const float gridLineOffSetY2 = 1.5f;
     //const float gridLineOffSetY2 = 0.1f;
     const float verticalOffsetHeight = 5.0f;
-
 
     for (int i = 0; i < aTerrain.terrainVertexCount; ++i)
     {
@@ -1003,11 +1007,7 @@ void Game::Render()
 
     m_effect->EnableDefaultLighting();
     m_effect->SetWorld(m_world);
-
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     //context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
     //context->OMSetDepthStencilState(m_states->DepthNone(), 0);
     //context->RSSetState(m_states->CullNone());
@@ -1056,7 +1056,6 @@ void Game::Render()
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     m_effect2->SetWorld(m_world);
     m_effect2->Apply(context);
     context->IASetInputLayout(m_inputLayout2.Get());
@@ -1067,8 +1066,6 @@ void Game::Render()
         DrawTerrainNew(m_terrainGamePlay);
     }
     m_batch2->End();
-
-
     //context->RSSetState(m_states->CullNone());
     context->RSSetState(m_raster.Get());
 
@@ -1082,16 +1079,12 @@ void Game::Render()
         DrawDebugLinesVector();
         //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect3, m_inputLayout3);
 
-
         /*
         Draw(m_batch.get(), frustum, Colors::Blue); // BoundingFrustum
         Draw(m_batch.get(), box, Colors::Blue); // BoundingBox
         Draw(m_batch.get(), orientedBox, Colors::Blue); // BoundingOrientedBox
         Draw(m_batch.get(), sphere, Colors::Blue); // BoundingSphere
         */
-
-        
-
     }
     m_batch3->End();
 
@@ -1139,7 +1132,6 @@ void Game::Clear()
     // multisampling
     auto renderTarget = m_offscreenRenderTargetSRV.Get();
     auto depthStencil = m_depthStencilSRV.Get();
-
     context->ClearRenderTargetView(renderTarget, Colors::Black);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
@@ -2287,6 +2279,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
         }
         else if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+        {
+            m_camera->SetCameraState(CameraState::CAMERASTATE_STATIC);
+        }
+        else if (m_camera->GetCameraState() == CameraState::CAMERASTATE_STATIC)
         {
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }

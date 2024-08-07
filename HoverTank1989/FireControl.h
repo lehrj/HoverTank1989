@@ -99,6 +99,7 @@ enum class FlightState
     FLIGHTSTATE_EXPLODING,
     FLIGHTSTATE_LAUNCH,
     FLIGHTSTATE_OVERSHOOT,
+    FLIGHTSTATE_POSE,
 };
 
 struct Seeker
@@ -486,7 +487,9 @@ struct MissileModel
     // contrails
     const float contrailColorMax = 0.9f; 
     const float contrailColorMin = 0.35f;
-    const unsigned int contrailDrawCountMax = 30;
+    //const unsigned int contrailDrawCountMax = 30;
+    const unsigned int contrailDrawCountMax = 1;
+
     // afterburn flicker
     const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
     const float afterBurnFlickerRateScale = 100.1f;
@@ -643,13 +646,6 @@ struct MissileConsts
     const float rocketFireFullTime = 0.5f;
     */    
 
-    const float finDeployDelay = 0.2f;
-    const float rocketFireDelay = 0.6f;
-    const float finDeployTime = 0.4f;
-    const float rocketFireFullTime = 0.3f;
-    const float rocketOverBoostTime = 0.3f;
-    const float rocketOverBoostMax = 2.0f;
-
     /*
     const float finDeployDelay = 0.1f;
     const float rocketFireDelay = 0.05f;
@@ -659,6 +655,27 @@ struct MissileConsts
     //const float rocketFireFullTime = 0.01f;
     const float rocketFireFullTime = 1.01f;
     */
+
+    
+    const float finDeployDelay = 0.2f;
+    const float rocketFireDelay = 0.6f;
+    const float finDeployTime = 0.4f;
+    const float rocketFireFullTime = 0.3f;
+    const float rocketOverBoostTime = 0.3f;
+    const float rocketOverBoostMax = 2.0f;
+    
+
+
+    /*
+    const float finDeployDelay = 5.2f;
+    const float rocketFireDelay = 5.6f;
+    const float finDeployTime = 0.4f;
+    const float rocketFireFullTime = 0.3f;
+    const float rocketOverBoostTime = 0.3f;
+    const float rocketOverBoostMax = 2.0f;
+    */
+
+
 
     const float wingArea = 0.3f;
 
@@ -699,13 +716,17 @@ struct MissileConsts
     const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
 
     // flight modeling
-    const float climbOutAngle = Utility::ToRadians(45.0f);
-    const float climbOutDuration = 0.5f;
-    const float climbOutAltMin = 50.0f;
+    const float climbOutAngle = Utility::ToRadians(75.0f);
+    //const float climbOutDuration = 0.5f;
+    const float climbOutDuration = 2.5f;
+    //const float climbOutAltMin = 50.0f;
+    const float climbOutAltMin = 100.0f;
 
-    const float cruiseAltMin = 100.0f;
+    //const float cruiseAltMin = 100.0f;
+    const float cruiseAltMin = 200.0f;
     const float maxAlt = 200.0f;
-    const float terminalRange = 100.0f;
+    //const float terminalRange = 100.0f;
+    const float terminalRange = 25.0f;
 
     const float launchVelocity = 20.0f;
 
@@ -746,7 +767,7 @@ struct MissileConsts
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
-    const bool isMissleTargetingLaserTrue = true;
+    const bool isMissleTargetingLaserTrue = false;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = false;
@@ -1352,8 +1373,9 @@ private:
     //void AudioExplosionUpdate(const float aTimeDelta);
 
     bool m_isTubeRippleFireTrue = true;
-    bool m_isTubeDualFireTrue = true;
-    MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
+    bool m_isTubeDualFireTrue = false;
+    //MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
+    MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
     bool m_isDualFireCoolDownOverRideTrue = false;
 
 public:

@@ -110,7 +110,8 @@ private:
 
     const bool m_isNpcAiOn = true;
 
-    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(300.0f, 11.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(300.0f, 11.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(400.0f, 11.0f, 150.0f);
     const DirectX::SimpleMath::Vector3 m_startHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
     float m_spawnerCooldown = 5.0f;
