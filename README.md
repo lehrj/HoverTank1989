@@ -7,7 +7,28 @@ A retro themed hover tank game in development using C++, DirectX 11, and DirectX
 
 YouTube trailer of weapons demo here : https://youtu.be/TSxC-AU32E0
 
+On display are 3 kinetic ammo types: cannon, machine gun, and shotgun, as well as 2 explosive ammo types. 
+The kinetic ammo is “non-lethal” in that it does not apply damage to a target’s health, instead it applies Newton’s second law of motion (F = m * a) to play billiards with the NPC hover tanks. 
+
+There are two explosive ammo types; the first is a standard shell with a single an explosive area of effect charge that detonates on impact. The second is a MIRV style mid-air deployed cluster munition, to saturate a large area in physics inducing explosive fun. Any NPC hit with an explosive round or caught within its explosive radius will detonate in a secondary explosion, which in turn can detonate other nearby NPCs in a chain reaction
+
 YouTube trailer of NPC prototypes here : https://youtu.be/8a0KPadDvUc
+
+Autonomous figure 8 track racing with NPC hovercrafts shows off their ability to navigate the track via waypoints while attempting to avoid other NPCs. The center crossover point ensures that this is not always possible to demonstrate the vehicle collision physics. The NPC hovercrafts have the ability to jump with their thrusters which is unlocked midway through the video. The NPCs will use the jump boost to avoid or pass other vehicles
+
+## Work in progress: Guided Missiles
+
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Deploy.gif">
+</p>
+
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Launch.png">
+</p>
+
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/ImpactReverseAngle.gif">
+</p>
 
 ## Game Controls
 
