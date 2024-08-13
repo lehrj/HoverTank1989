@@ -440,11 +440,16 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
     std::unique_ptr<DirectX::GeometricPrimitive> m_testShape3;
 
-    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerOuterShape;
-    DirectX::SimpleMath::Matrix                  m_spawnerOuterMat;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
     DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;
+    DirectX::SimpleMath::Matrix                  m_spawnerInnerMat2;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerOuterShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerOuterMat;
+    DirectX::SimpleMath::Matrix                  m_spawnerOuterMat2;
+
     DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(375.0f, 0.0f, -900.0f);
 
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;
