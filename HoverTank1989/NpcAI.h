@@ -48,7 +48,8 @@ public:
     float GetThrottleInput();
     DirectX::SimpleMath::Vector3 GetVecToDestination();
 
-    void InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicle> aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController);
+    //void InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicle> aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController);
+    void InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicle> aPlayer, std::shared_ptr<DebugData> aDebugPtr, std::shared_ptr<NPCController> aNpcController, const bool aUseAltAiTrue);
 
     void PushAiAvoidanceTarget(DirectX::SimpleMath::Vector3 aAvoidancePos, NPCVehicle const* aVehicle);
     void SetCurrentWayPoint(const Utility::Waypoint aWayPoint) { m_currentWaypoint = aWayPoint; }
@@ -95,6 +96,7 @@ private:
     void AdjustHeadingForVelocity();
     void AvoidPosCurrent();
     void CreateWayPath();
+    void CreateWayPathAlt();
     void CreateWayPathTestFireRange();
     void CreateWayPathTestMissileRange();
     void InitializeControlOutput();

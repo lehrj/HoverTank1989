@@ -2320,7 +2320,7 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     m_environment = aEnvironment;
     m_npcController = aNpcController;
     m_vehicleStruct00.vehicleData.id = aID;
-
+    
     const float low = -1.0f;
     const float high = 1.0f;
     m_testHoverFlutter = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
@@ -2329,7 +2329,18 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
 
-    m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController);
+    /*
+    if (this->GetNPCType() == NPCType::NPCTYPE_SPAWNEDALT)
+    {
+        m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, true);
+    }
+    else
+    {
+        m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, false);
+    }
+    */
+
+    m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, false);
 }
 
 void NPCVehicle::PushImpactTorque(Utility::Torque aTorque)

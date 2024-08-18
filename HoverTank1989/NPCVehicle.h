@@ -75,6 +75,7 @@ enum class NPCType
     NPCTYPE_NPC01,
     NPCTYPE_NPC02,
     NPCTYPE_SPAWNED,
+    NPCTYPE_SPAWNEDALT,
 };
 
 struct NPCModel
@@ -563,6 +564,8 @@ public:
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment);
 
     int GetNodesHit() const { return m_npcAI->GetNodesReachCount(); };
+
+    NPCType GetNPCType() const { return m_vehicleStruct00.vehicleData.npcType; };
 
     DirectX::SimpleMath::Vector3 GetPos() const { return m_vehicleStruct00.vehicleData.q.position; };
     DirectX::SimpleMath::Vector3 GetRight() const { return m_vehicleStruct00.vehicleData.right; };
