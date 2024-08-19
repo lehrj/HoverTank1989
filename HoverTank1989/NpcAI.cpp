@@ -218,14 +218,14 @@ void NpcAI::CreateWayPathAlt()
     pos = DirectX::SimpleMath::Vector3(75.0f + xOffset, 3.0f, 300.0f + zOffset);
     wp8 = Utility::CreateWaypoint(pos, radius);
 
-    Utility::PushWaypointToPath(m_currentWayPath, wp7);
-    Utility::PushWaypointToPath(m_currentWayPath, wp2);
-    Utility::PushWaypointToPath(m_currentWayPath, wp4);
-    Utility::PushWaypointToPath(m_currentWayPath, wp5);
     Utility::PushWaypointToPath(m_currentWayPath, wp6);
     Utility::PushWaypointToPath(m_currentWayPath, wp1);
     Utility::PushWaypointToPath(m_currentWayPath, wp3);
     Utility::PushWaypointToPath(m_currentWayPath, wp8);
+    Utility::PushWaypointToPath(m_currentWayPath, wp7);
+    Utility::PushWaypointToPath(m_currentWayPath, wp2);
+    Utility::PushWaypointToPath(m_currentWayPath, wp4);
+    Utility::PushWaypointToPath(m_currentWayPath, wp5);
 
     m_currentWayPath.targetNode = 0;
 }
@@ -255,7 +255,6 @@ void NpcAI::CreateWayPathTestMissileRange()
     Utility::Waypoint wp1;
     DirectX::SimpleMath::Vector3 pos = m_missileRangeWP1;
     wp1 = Utility::CreateWaypoint(pos, radius);
-
 
     Utility::Waypoint wp2;
     pos = m_missileRangeWP2;
@@ -354,9 +353,6 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicl
 
     Utility::ClearWayPath(m_currentWayPath);
 
-    CreateWayPath();
-
-    /*
     if (aUseAltAiTrue == false)
     {
         CreateWayPath();
@@ -365,11 +361,7 @@ void NpcAI::InitializeAI(Environment const* aEnvironment, std::shared_ptr<Vehicl
     {
         CreateWayPathAlt();
     }
-    */
-
-    //CreateWayPathTestFireRange();
-    //CreateWayPathTestMissileRange();
-
+    
     m_currentDestination = DirectX::SimpleMath::Vector3::Zero;
 
     m_destinationSmoothing.clear();

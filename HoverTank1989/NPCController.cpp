@@ -34,13 +34,12 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     newNPC->SetDebugData(m_debugData);
     newNPC->SetNpcType(aNPCType);
     newNPC->InitializeNPCVehicle(aContext, aHeading, aPosition, m_environment, aNpcController, m_player, GetUniqueID());
-    //newNPC->SetNpcType(aNPCType);
     newNPC->InitializeTextureMaps(m_textureDataBlank.textureMapType, m_textureDataBlank.textureMap, m_textureDataBlank.normalMap, m_textureDataBlank.specularMap);
     newNPC->InitializeTextureMaps(m_textureDataFlame.textureMapType, m_textureDataFlame.textureMap, m_textureDataFlame.normalMap, m_textureDataFlame.specularMap);
     newNPC->InitializeTextureMaps(m_textureDataTest1.textureMapType, m_textureDataTest1.textureMap, m_textureDataTest1.normalMap, m_textureDataTest1.specularMap);
     newNPC->InitializeTextureMaps(m_textureDataTest2.textureMapType, m_textureDataTest2.textureMap, m_textureDataTest2.normalMap, m_textureDataTest2.specularMap);
     
-    if (aNPCType == NPCType::NPCTYPE_SPAWNED)
+    if (aNPCType == NPCType::NPCTYPE_SPAWNED || aNPCType == NPCType::NPCTYPE_SPAWNEDALT)
     {
         newNPC->DebugToggleAI();
     }
@@ -1370,7 +1369,6 @@ void NPCController::UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
     if (m_loadQueue.size() > 0)
     {
         const unsigned int i = static_cast<unsigned int>(m_loadQueue.size() - 1);
-       // m_loadQueue[i].deployOrientation;
         this->AddNPC(aContext, m_loadQueue[i].deployType, m_loadQueue[i].deployOrientation, m_loadQueue[i].deployPosition, aNpcController);
         m_loadQueue.pop_back();
     }
@@ -1520,18 +1518,16 @@ void NPCController::UpdateSpawner(const double aTimeDelta)
     }
 }
 
-
 void NPCController::SpawnToQueue()
 {
     LoadQueue loadData;
     
-
     if (m_isAltSpawnLocTrue == true)
     {
         loadData.deployType = NPCType::NPCTYPE_SPAWNEDALT;
         loadData.deployOrientation = m_spawnerHeadingAlt;
         loadData.deployPosition = m_spawnerPosAlt;
-        loadData.isAltTrue = false;
+        loadData.isAltTrue = true;
         m_isAltSpawnLocTrue = false;
     }
     else
@@ -1539,7 +1535,7 @@ void NPCController::SpawnToQueue()
         loadData.deployType = NPCType::NPCTYPE_SPAWNED;
         loadData.deployOrientation = m_spawnerHeading;
         loadData.deployPosition = m_spawnerPos;
-        loadData.isAltTrue = true;
+        loadData.isAltTrue = false;
         m_isAltSpawnLocTrue = true;
     }
 

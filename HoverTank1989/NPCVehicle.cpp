@@ -2193,8 +2193,6 @@ void NPCVehicle::InitializeNPCStruct(VehicleStruct& aVehicleStruct,
     aVehicleStruct.vehicleData.frontalArea = aVehicleStruct.vehicleData.dimensions.z * aVehicleStruct.vehicleData.dimensions.y;
     aVehicleStruct.vehicleData.hitPoints = 100.0f;
 
-    //aVehicleStruct.vehicleData.mass = 700.0f;
-    aVehicleStruct.vehicleData.npcType = NPCType::NPCTYPE_NPC00;
     aVehicleStruct.vehicleData.terrainHightAtPos = 0.0f;
     aVehicleStruct.vehicleData.altitude = 0.0f;
     aVehicleStruct.vehicleData.terrainNormal = DirectX::SimpleMath::Vector3::UnitY;
@@ -2325,11 +2323,10 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     const float high = 1.0f;
     m_testHoverFlutter = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
 
-    InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, NPCType::NPCTYPE_NPC00, aEnvironment);
+    InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, this->GetNPCType(), aEnvironment);
     CalculateTopSpeed();
     InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
 
-    /*
     if (this->GetNPCType() == NPCType::NPCTYPE_SPAWNEDALT)
     {
         m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, true);
@@ -2338,9 +2335,6 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     {
         m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, false);
     }
-    */
-
-    m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, false);
 }
 
 void NPCVehicle::PushImpactTorque(Utility::Torque aTorque)

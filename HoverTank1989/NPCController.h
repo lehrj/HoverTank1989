@@ -117,7 +117,7 @@ private:
 
     float m_spawnerCooldown = 5.0f;
     const float m_spawnerCooldownTime = 5.0f;
-    
+
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
 
