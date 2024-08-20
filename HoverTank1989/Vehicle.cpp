@@ -1094,7 +1094,6 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
         aRocketFx->forward = launchDirWorld;
         aRocketFx->fx->Play(true);
 
-        
         if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         {
             m_fireControl->FireSelectedWithAudio(posWorld, launchDirWorld, velocity, up, aRocketFx, false);
@@ -1119,9 +1118,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_
             recoil.torqueArm = m_modelController->GetLocalizedTubeLeftPos();
         }
 
-
-        // Turned off for testing
-        //m_heli.impulseForceVec.push_back(recoil);
+        m_heli.impulseForceVec.push_back(recoil);
     }
 }
 
