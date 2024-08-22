@@ -511,6 +511,21 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.turretShadowMatrix *= shadowScaleMat;
     aModel.turretShadowMatrix *= updateMat;
     aModel.turretShadowMatrix *= shadowMat;
+
+
+    m_debugData->ToggleDebugOnOverRide();
+    auto leftTubePos = m_playerModel.localizedTubeLeftPos;
+    leftTubePos = DirectX::SimpleMath::Vector3::Transform(leftTubePos, aAlignment);
+    leftTubePos += aPos;
+
+    auto rightTubePos = m_playerModel.localizedTubeRightPos;
+    rightTubePos = DirectX::SimpleMath::Vector3::Transform(rightTubePos, aAlignment);
+    rightTubePos += aPos;
+
+    m_debugData->PushDebugLinePositionIndicator(leftTubePos, 4.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLinePositionIndicator(rightTubePos, 4.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->ToggleDebugOff();
 }
 
 void ModelController::UpdatePlayerModel(const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane)
