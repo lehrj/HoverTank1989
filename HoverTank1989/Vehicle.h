@@ -538,6 +538,12 @@ private:
     const float m_inertiaModelZ = 3.0f;
 
     /*
+    const float m_inertiaModelX = 3.4f;
+    const float m_inertiaModelY = 1.0f;
+    const float m_inertiaModelZ = 1.8f;
+    */
+
+    /*
     const float m_testMass = 800.1f;
     const float m_driveTorqueForceMax = 300.0f;
     const float m_stabilityTorqueForceMax = 33000.0f;

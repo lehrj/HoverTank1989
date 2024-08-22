@@ -2718,8 +2718,8 @@ DirectX::SimpleMath::Vector3 Vehicle::UpdateBodyTorqueLocalNew(DirectX::SimpleMa
 
     DirectX::SimpleMath::Vector3 windVanVec = m_heli.windVaningTorueForce;
     DirectX::SimpleMath::Vector3 torqueVec = driveVec + tailVec;
-    //torqueVec = tailVec + driveVec + weaponVec + terrainVec;
-    torqueVec = tailVec + weaponVec + terrainVec;
+    torqueVec = tailVec + driveVec + weaponVec + terrainVec;
+    //torqueVec = tailVec + weaponVec + terrainVec;
     //torqueVec = tailVec + driveVec + weaponVec + gravVec;
     //torqueVec = tailVec + weaponVec + gravVec;
 
@@ -4234,9 +4234,43 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeLeftUp(), 10.0f, 0.0f, DirectX::Colors::Lime);
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeRightUp(), 10.0f, 0.0f, DirectX::Colors::Red);
 
+    m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeTurretLocalLeftDir(), 10.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeTurretLocalRightDir(), 10.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeTurretLocalRightDir(), 10.0f, 0.0f, DirectX::Colors::Yellow);
     
+
+    auto front = DirectX::SimpleMath::Vector3(m_inertiaModelX, 0.0f, 0.0f);
+    front = DirectX::SimpleMath::Vector3::Transform(front, m_heli.alignment);
+    front += m_heli.q.position;
+
+    auto back = DirectX::SimpleMath::Vector3(-m_inertiaModelX, 0.0f, 0.0f);
+    back = DirectX::SimpleMath::Vector3::Transform(back, m_heli.alignment);
+    back += m_heli.q.position;
+
+    auto right = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_inertiaModelZ);
+    right = DirectX::SimpleMath::Vector3::Transform(right, m_heli.alignment);
+    right += m_heli.q.position;
+
+    auto left = DirectX::SimpleMath::Vector3(0.0f, 0.0f, - m_inertiaModelZ);
+    left = DirectX::SimpleMath::Vector3::Transform(left, m_heli.alignment);
+    left += m_heli.q.position;
+
+    auto top = DirectX::SimpleMath::Vector3(0.0f, m_inertiaModelY, 0.0f);
+    top = DirectX::SimpleMath::Vector3::Transform(top, m_heli.alignment);
+    top += m_heli.q.position;
+
+    auto bottom = DirectX::SimpleMath::Vector3(0.0f, - m_inertiaModelY, 0.0f);
+    bottom = DirectX::SimpleMath::Vector3::Transform(bottom, m_heli.alignment);
+    bottom += m_heli.q.position;
+
+    m_debugData->PushDebugLinePositionIndicator(front, 3.0f, 0.0f, DirectX::Colors::White);
+    m_debugData->PushDebugLinePositionIndicator(right, 3.0f, 0.0f, DirectX::Colors::White);
+    m_debugData->PushDebugLinePositionIndicator(top, 3.0f, 0.0f, DirectX::Colors::White);
+
+    m_debugData->PushDebugLinePositionIndicator(back, 3.0f, 0.0f, DirectX::Colors::White);
+    m_debugData->PushDebugLinePositionIndicator(left, 3.0f, 0.0f, DirectX::Colors::White);
+    m_debugData->PushDebugLinePositionIndicator(bottom, 3.0f, 0.0f, DirectX::Colors::White);
+
     m_debugData->ToggleDebugOff();
 }
 
