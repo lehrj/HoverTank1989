@@ -1371,6 +1371,62 @@ void Vehicle::InitializeFlightControls(ControlInput& aInput)
     aInput.turretYaw = 0.0f;
 }
 
+void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
+{
+    float xExtent = m_inertiaModelX;
+    float yExtent = m_inertiaModelY;
+    float zExtent = m_inertiaModelZ;
+    float mass = m_testMass;
+    m_heli.inertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
+    // cuboid
+
+    m_heli.inertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    m_heli.inertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    m_heli.inertiaMatrixTest._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+
+    //sphere
+
+    /*
+    float radius = 4.0f;
+    m_heli.inertiaMatrixTest._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
+    m_heli.inertiaMatrixTest._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
+    m_heli.inertiaMatrixTest._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
+    */
+    /*
+    m_heli.inertiaMatrixTest._11 = m_testMOI;
+    m_heli.inertiaMatrixTest._22 = m_testMOI;
+    m_heli.inertiaMatrixTest._33 = m_testMOI;
+    */
+    DirectX::SimpleMath::Matrix ballastInteria = DirectX::SimpleMath::Matrix::Identity;
+    float ballastRadius = 1.0f;
+    float ballastMass = m_heli.ballastMass;
+    ballastInteria._11 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
+    ballastInteria._22 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
+    ballastInteria._33 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
+    DirectX::SimpleMath::Vector3 ballastTranslation = m_heli.ballastInertiaTranslation;
+    //ballastInteria *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
+
+    m_heli.localBallastInertiaMatrix = ballastInteria;
+    m_heli.localInverseBallastInertiaMatrix = m_heli.localBallastInertiaMatrix;
+    m_heli.localInverseBallastInertiaMatrix = m_heli.localInverseBallastInertiaMatrix.Invert();
+    m_heli.ballastInertiaTranslation = ballastTranslation;
+    //m_heli.inertiaMatrixTest += ballastInteria;
+    m_heli.ballastInertiaMatrix = m_heli.localBallastInertiaMatrix;
+    m_heli.ballastInertiaMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
+    m_heli.inverseBallastInertiaMatrix = m_heli.ballastInertiaMatrix;
+    m_heli.inverseBallastInertiaMatrix = m_heli.inverseBallastInertiaMatrix.Invert();
+
+    //m_testInertiaTensorLocal = m_heli.inertiaMatrixTest;
+    //m_testInverseInertiaTensorLocal = m_testInertiaTensorLocal;
+    //m_testInverseInertiaTensorLocal = m_testInverseInertiaTensorLocal.Invert();
+
+    m_heli.inverseInertiaMatrixTest = m_heli.inertiaMatrixTest;
+    m_heli.inverseInertiaMatrixTest = m_heli.inverseInertiaMatrixTest.Invert();
+
+    m_heli.localInertiaMatrixTest = m_heli.inertiaMatrixTest;
+    m_heli.localInverseInertiaMatrixTest = m_heli.inverseInertiaMatrixTest;
+}
+
 void Vehicle::InitializeRotorBlades(HeliData& aHeliData)
 {
     // set values for main rotor blade
@@ -1587,58 +1643,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.localPhysicsPointRight.z += 1.0f;
     m_heli.physicsPointRight = m_heli.localPhysicsPointRight;
 
-    float xExtent = m_inertiaModelX;
-    float yExtent = m_inertiaModelY;
-    float zExtent = m_inertiaModelZ;
-    float mass = m_testMass;
-    m_heli.inertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
-    // cuboid
-    
-    m_heli.inertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
-    m_heli.inertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
-    m_heli.inertiaMatrixTest._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
-    
-    //sphere
-    
-    /*
-    float radius = 4.0f;
-    m_heli.inertiaMatrixTest._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    m_heli.inertiaMatrixTest._22 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    m_heli.inertiaMatrixTest._33 = (2.0f / 3.0f) * (mass) * (radius * radius);
-    */
-    /*
-    m_heli.inertiaMatrixTest._11 = m_testMOI;
-    m_heli.inertiaMatrixTest._22 = m_testMOI;
-    m_heli.inertiaMatrixTest._33 = m_testMOI;
-    */
-    DirectX::SimpleMath::Matrix ballastInteria = DirectX::SimpleMath::Matrix::Identity;
-    float ballastRadius = 1.0f;
-    float ballastMass = m_heli.ballastMass;
-    ballastInteria._11 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
-    ballastInteria._22 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
-    ballastInteria._33 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
-    DirectX::SimpleMath::Vector3 ballastTranslation = m_heli.ballastInertiaTranslation;
-    //ballastInteria *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
-
-    m_heli.localBallastInertiaMatrix = ballastInteria;
-    m_heli.localInverseBallastInertiaMatrix = m_heli.localBallastInertiaMatrix;
-    m_heli.localInverseBallastInertiaMatrix = m_heli.localInverseBallastInertiaMatrix.Invert();
-    m_heli.ballastInertiaTranslation = ballastTranslation;
-    //m_heli.inertiaMatrixTest += ballastInteria;
-    m_heli.ballastInertiaMatrix = m_heli.localBallastInertiaMatrix;
-    m_heli.ballastInertiaMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
-    m_heli.inverseBallastInertiaMatrix = m_heli.ballastInertiaMatrix;
-    m_heli.inverseBallastInertiaMatrix = m_heli.inverseBallastInertiaMatrix.Invert();
-
-    //m_testInertiaTensorLocal = m_heli.inertiaMatrixTest;
-    //m_testInverseInertiaTensorLocal = m_testInertiaTensorLocal;
-    //m_testInverseInertiaTensorLocal = m_testInverseInertiaTensorLocal.Invert();
-
-    m_heli.inverseInertiaMatrixTest = m_heli.inertiaMatrixTest;
-    m_heli.inverseInertiaMatrixTest = m_heli.inverseInertiaMatrixTest.Invert();
-
-    m_heli.localInertiaMatrixTest = m_heli.inertiaMatrixTest;
-    m_heli.localInverseInertiaMatrixTest = m_heli.inverseInertiaMatrixTest;
+    InitializeInertiaTensor(m_heli);
 
     m_heli.localLandingGearPos = DirectX::SimpleMath::Vector3::Zero;
     m_heli.localLandingGearPos.y -= 1.0f;

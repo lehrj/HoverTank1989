@@ -455,6 +455,7 @@ private:
     DirectX::SimpleMath::Vector3 GetThrusterLiftMagnitude(const DirectX::SimpleMath::Vector3 aLiftForce, const DirectX::SimpleMath::Vector3 aPos);
 
     void InitializeFlightControls(ControlInput& aInput);
+    void InitializeInertiaTensor(HeliData& aHeliData);
     void InitializeRotorBlades(HeliData& aHeliData);
 
     void LandVehicle();
