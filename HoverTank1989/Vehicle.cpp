@@ -1384,8 +1384,16 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
     m_heli.inertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_heli.inertiaMatrixTest._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
 
-    //sphere
+    m_heli.localTurretInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
+    xExtent = m_heli.turretTensorDimensions.x;
+    yExtent = m_heli.turretTensorDimensions.y;
+    zExtent = m_heli.turretTensorDimensions.z;
+    mass = m_heli.turretTensorMass;
+    m_heli.localTurretInertiaMatrix._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    m_heli.localTurretInertiaMatrix._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    m_heli.localTurretInertiaMatrix._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
 
+    //sphere
     /*
     float radius = 4.0f;
     m_heli.inertiaMatrixTest._11 = (2.0f / 3.0f) * (mass) * (radius * radius);
@@ -3260,22 +3268,14 @@ float Vehicle::UpdateGroundEffectForce(const float aLiftForce)
 
 void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep)
 {
-    //DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, -aVehicle.right, aVehicle.up);
-
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputPitch", m_heli.controlInput.cyclicInputPitch, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.controlInput.cyclicInputRoll", m_heli.controlInput.cyclicInputRoll, "");
     const float pitchMax = Utility::ToRadians(30.0f);
     const float rollMax = Utility::ToRadians(30.0f);
     float pitchVal = aVehicle.controlInput.cyclicInputPitch * pitchMax;
     float rollVal = aVehicle.controlInput.cyclicInputRoll * rollMax;
     DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, rollVal, pitchVal);
-    //rotQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, rollVal);
-    //DirectX::SimpleMath::Vector3 ballastTranslation = aVehicle.ballastInertiaTranslation;
     DirectX::SimpleMath::Vector3 ballastTranslation = aVehicle.ballastInertiaTranslationBase;
-    //ballastTranslation = DirectX::SimpleMath::Vector3::Transform(ballastTranslation, aVehicle.alignmentQuat);
     ballastTranslation = DirectX::SimpleMath::Vector3::Transform(ballastTranslation, rotQuat);
 
-    //ballastTranslation = DirectX::SimpleMath::Vector3(0.0f, 0.0f, aVehicle.controlInput.cyclicInputRoll);
     DirectX::SimpleMath::Matrix ballastMat = aVehicle.localBallastInertiaMatrix;
     ballastMat *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
 
@@ -3288,16 +3288,14 @@ void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeSt
 
     DirectX::SimpleMath::Matrix updateTensor = aVehicle.localInertiaMatrixTest;
     updateTensor += ballastMat;
-    //updateTensor = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix updateInverseTensor = updateTensor;
     updateInverseTensor = updateInverseTensor.Invert();
     aVehicle.inertiaMatrixTest = updateTensor;
     aVehicle.inverseInertiaMatrixTest = updateInverseTensor;
     
-    //m_debugData->PushDebugLinePositionIndicator(ballastTranslation + aVehicle.q.position, 10.0f, 0.0f, DirectX::Colors::Red);
-    //m_debugData->PushDebugLine(m_heli.q.position, m_heli.q.angularMomentum, 10.0f, 0.0f, DirectX::Colors::Yellow);
-    //m_debugData->PushDebugLine(m_heli.q.position, m_heli.q.angularVelocity, 10.0f, 0.0f, DirectX::Colors::Blue);
-    
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLinePositionIndicator(ballastTranslation + aVehicle.q.position, 10.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->ToggleDebugOff();
 }
 
 void Vehicle::UpdateInertiaTensorOld(struct HeliData& aVehicle, const float aTimeStep)

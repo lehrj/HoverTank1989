@@ -262,10 +262,17 @@ struct HeliData
     float   testAccel = 0.0;
     DirectX::SimpleMath::Vector3 testAccelVec = DirectX::SimpleMath::Vector3::Zero;
 
+    // inertia tensors
     DirectX::SimpleMath::Matrix inertiaMatrixTest;
     DirectX::SimpleMath::Matrix inverseInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInverseInertiaMatrixTest;
+
+    DirectX::SimpleMath::Matrix localTurretInertiaMatrix;
+    DirectX::SimpleMath::Matrix localTurretInverseInertiaMatrix;
+    const DirectX::SimpleMath::Vector3 turretTensorDimensions = DirectX::SimpleMath::Vector3(1.0f, 0.5f, 0.5f);
+    const DirectX::SimpleMath::Vector3 turretTensorOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
+    const float turretTensorMass = 1.0f;
 
     DirectX::SimpleMath::Matrix ballastInertiaMatrix;
     DirectX::SimpleMath::Matrix inverseBallastInertiaMatrix;
@@ -273,7 +280,7 @@ struct HeliData
     DirectX::SimpleMath::Matrix localInverseBallastInertiaMatrix;
     const DirectX::SimpleMath::Vector3 ballastInertiaTranslationBase = DirectX::SimpleMath::Vector3(0.0f, -5.0f, 0.0f);
     DirectX::SimpleMath::Vector3 ballastInertiaTranslation = DirectX::SimpleMath::Vector3(0.0f, -5.0f, 0.0f);
-    float ballastMass = 1.0f;
+    const float ballastMass = 1.0f;
 
     DirectX::SimpleMath::Vector3 vehicleLinearForcesSum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
