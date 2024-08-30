@@ -1379,7 +1379,6 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
     float mass = m_testMass;
     m_heli.inertiaMatrixTest = DirectX::SimpleMath::Matrix::Identity;
     // cuboid
-
     m_heli.inertiaMatrixTest._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
     m_heli.inertiaMatrixTest._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_heli.inertiaMatrixTest._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
@@ -1433,6 +1432,11 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
 
     m_heli.localInertiaMatrixTest = m_heli.inertiaMatrixTest;
     m_heli.localInverseInertiaMatrixTest = m_heli.inverseInertiaMatrixTest;
+
+
+    m_heli.inertiaTensor = m_heli.inertiaMatrixTest;
+    m_heli.inertiaTensorInverse = m_heli.inverseInertiaMatrixTest;
+
 }
 
 void Vehicle::InitializeRotorBlades(HeliData& aHeliData)
@@ -2368,7 +2372,8 @@ void Vehicle::RightHandSide(struct HeliData* aHeli, Motion* aQ, Motion* aDeltaQ,
     DirectX::SimpleMath::Vector3 torqueAccum = aHeli->vehicleAngularForcesSum;
     //torqueAccum = DirectX::SimpleMath::Vector3::UnitX * m_testTorque;
     torqueAccum += newQ.angularVelocity;
-    torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, aHeli->inverseInertiaMatrixTest);
+    //torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, aHeli->inverseInertiaMatrixTest);
+    torqueAccum = DirectX::SimpleMath::Vector3::Transform(torqueAccum, aHeli->inertiaTensorInverse);
 
     //torqueAccum += newQ.angularVelocity;
     torqueAccum += (m_heli.angularDrag);
@@ -3293,7 +3298,7 @@ void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeSt
     aVehicle.inertiaMatrixTest = updateTensor;
     aVehicle.inverseInertiaMatrixTest = updateInverseTensor;
     
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLinePositionIndicator(ballastTranslation + aVehicle.q.position, 10.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->ToggleDebugOff();
 }

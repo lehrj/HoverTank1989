@@ -263,6 +263,8 @@ struct HeliData
     DirectX::SimpleMath::Vector3 testAccelVec = DirectX::SimpleMath::Vector3::Zero;
 
     // inertia tensors
+    DirectX::SimpleMath::Matrix inertiaTensor;
+    DirectX::SimpleMath::Matrix inertiaTensorInverse;
     DirectX::SimpleMath::Matrix inertiaMatrixTest;
     DirectX::SimpleMath::Matrix inverseInertiaMatrixTest;
     DirectX::SimpleMath::Matrix localInertiaMatrixTest;
