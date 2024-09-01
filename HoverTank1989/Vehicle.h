@@ -273,7 +273,7 @@ struct HeliData
     DirectX::SimpleMath::Matrix localTurretInertiaMatrix;
     DirectX::SimpleMath::Matrix localTurretInverseInertiaMatrix;
     const DirectX::SimpleMath::Vector3 turretTensorDimensions = DirectX::SimpleMath::Vector3(1.0f, 0.5f, 0.5f);
-    const DirectX::SimpleMath::Vector3 turretTensorOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
+    const DirectX::SimpleMath::Vector3 turretTensorOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     const float turretTensorMass = 1.0f;
 
     DirectX::SimpleMath::Matrix ballastInertiaMatrix;

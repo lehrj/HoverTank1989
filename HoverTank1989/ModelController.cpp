@@ -189,11 +189,9 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     // turret
     aModel.turretLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
-    //DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.5f);
-    DirectX::SimpleMath::Vector3 turretOffSet = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-
+    const DirectX::SimpleMath::Vector3 turretOffSet = m_turretPosOffset;
     aModel.turretOffSetMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(turretOffSet);
-    DirectX::SimpleMath::Vector3 turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0f);
+    const DirectX::SimpleMath::Vector3 turretTrans = m_turretTrans;
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(cogOffset);
     aModel.turretLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(turretTrans);
     aModel.turretWorldMatrix = aModel.turretLocalMatrix;
@@ -201,12 +199,12 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     // barrel
     aModel.barrelLocalMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.barrelTransMatrix = aModel.turretLocalMatrix;
-    DirectX::SimpleMath::Vector3 barrelTrans = DirectX::SimpleMath::Vector3(0.0f, -0.2f, -1.85f);
+    const DirectX::SimpleMath::Vector3 barrelTrans = m_barrelTrans;
     aModel.barrelLocalMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(barrelTrans);
     aModel.barrelLocalMatrix *= aModel.turretOffSetMatrix;
     aModel.barrelWorldMatrix = aModel.barrelLocalMatrix;
     
-    aModel.weaponPosLocal = DirectX::SimpleMath::Vector3(0.0, 0.0, -0.9);
+    aModel.weaponPosLocal = m_barrelPosOffset;
     aModel.weaponPosWorld = aModel.weaponPosLocal;
 
     aModel.weaponDirLocal = DirectX::SimpleMath::Vector3::UnitX;
@@ -513,7 +511,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     aModel.turretShadowMatrix *= shadowMat;
 
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     auto leftTubePos = m_playerModel.localizedTubeLeftPos;
     leftTubePos = DirectX::SimpleMath::Vector3::Transform(leftTubePos, aAlignment);
     leftTubePos += aPos;

@@ -3276,6 +3276,41 @@ float Vehicle::UpdateGroundEffectForce(const float aLiftForce)
 
 void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep)
 {
+    // init
+    m_heli.localTurretInertiaMatrix = DirectX::SimpleMath::Matrix::Identity;
+    float xExtent = m_heli.turretTensorDimensions.x;
+    float yExtent = m_heli.turretTensorDimensions.y;
+    float zExtent = m_heli.turretTensorDimensions.z;
+    float mass = m_heli.turretTensorMass;
+    m_heli.localTurretInertiaMatrix._11 = (1.0f / 12.0f) * (mass) * ((yExtent * yExtent) + (zExtent * zExtent));
+    m_heli.localTurretInertiaMatrix._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
+    m_heli.localTurretInertiaMatrix._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
+
+    m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInertiaMatrix;
+    m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInverseInertiaMatrix.Invert();
+    // end init
+    auto frontLocal = DirectX::SimpleMath::Vector3(xExtent, 0.0f, 0.0f);
+    auto upLocal = DirectX::SimpleMath::Vector3(0.0f, yExtent, 0.0f);
+    auto rightLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0f, zExtent);
+    auto originLocal = m_modelController->GetTurretTransLocal();
+    frontLocal += m_modelController->GetTurretTransLocal();
+    rightLocal += m_modelController->GetTurretTransLocal();
+    upLocal += m_modelController->GetTurretTransLocal();
+
+    auto frontWorld = frontLocal;
+    frontWorld = DirectX::SimpleMath::Vector3::Transform(frontWorld, aVehicle.alignment);
+    frontWorld += aVehicle.q.position;
+    auto rightWorld = rightLocal;
+    rightWorld = DirectX::SimpleMath::Vector3::Transform(rightWorld, aVehicle.alignment);
+    rightWorld += aVehicle.q.position;
+    auto upWorld = upLocal;
+    upWorld = DirectX::SimpleMath::Vector3::Transform(upWorld, aVehicle.alignment);
+    upWorld += aVehicle.q.position;
+
+    auto originWorld = originLocal;
+    originWorld = DirectX::SimpleMath::Vector3::Transform(originWorld, aVehicle.alignment);
+    originWorld += aVehicle.q.position;
+
     const float turretRotation = aVehicle.controlInput.turretYaw;
 
     auto turretMat = DirectX::SimpleMath::Matrix::Identity;
@@ -3291,7 +3326,14 @@ void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeSt
     aVehicle.inertiaTensorInverse = aVehicle.inverseInertiaMatrixTest;
     aVehicle.inertiaTensorInverse = updateMat;
 
-    //m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->DebugClearUI();
+
+    m_debugData->PushDebugLinePositionIndicator(frontWorld, 3.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(rightWorld, 3.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLinePositionIndicator(upWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLinePositionIndicator(originWorld, 3.0f, 0.0f, DirectX::Colors::White);
     m_debugData->ToggleDebugOff();
 }
 
@@ -4277,11 +4319,13 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeLeftUp(), 10.0f, 0.0f, DirectX::Colors::Lime);
     //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeRightUp(), 10.0f, 0.0f, DirectX::Colors::Red);
 
-    m_debugData->ToggleDebugOnOverRide();
+
+
+
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeTurretLocalLeftDir(), 10.0f, 0.0f, DirectX::Colors::Lime);
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeTurretLocalRightDir(), 10.0f, 0.0f, DirectX::Colors::Yellow);
     
-
     auto front = DirectX::SimpleMath::Vector3(m_inertiaModelX, 0.0f, 0.0f);
     front = DirectX::SimpleMath::Vector3::Transform(front, m_heli.alignment);
     front += m_heli.q.position;

@@ -135,6 +135,10 @@ public:
     DirectX::SimpleMath::Vector3 GetMissileTubeTurretLocalRightDir() const { return m_playerModel.turretLocalMissileTubeRightDir; };
 
     DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_playerModel.targetingMatrix; };
+
+    DirectX::SimpleMath::Vector3 GetTurretTransLocal() const { return m_turretTrans + m_centerOfMassOffset; };
+    
+
     DirectX::SimpleMath::Vector3 GetWeaponPos() const { return m_playerModel.weaponPosWorld; };
     DirectX::SimpleMath::Vector3 GetWeaponPosLocal() const { return m_playerModel.weaponPosLocal; };
 
@@ -156,6 +160,11 @@ private:
     void UpdateModel(TankModel& aModel, const DirectX::SimpleMath::Matrix aAlignment, const float aAltitude, const DirectX::SimpleMath::Vector3 aPos, const float aBarrelPitch, const float aTurretRotation, const DirectX::SimpleMath::Plane aPlane);
 
     const DirectX::SimpleMath::Vector3 m_centerOfMassOffset = DirectX::SimpleMath::Vector3(0.0f, -0.5f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_turretPosOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_turretTrans = DirectX::SimpleMath::Vector3(0.250f, 1.52f, 0.0f);
+
+    const DirectX::SimpleMath::Vector3 m_barrelTrans = DirectX::SimpleMath::Vector3(0.0f, -0.2f, -1.85f);
+    const DirectX::SimpleMath::Vector3 m_barrelPosOffset = DirectX::SimpleMath::Vector3(0.0, 0.0, -0.9);
 
     TankModel m_playerModel;
     std::shared_ptr<DebugData> m_debugData;
