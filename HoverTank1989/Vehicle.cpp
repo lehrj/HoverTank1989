@@ -1392,6 +1392,9 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
     m_heli.localTurretInertiaMatrix._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_heli.localTurretInertiaMatrix._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
 
+    m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInertiaMatrix;
+    m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInverseInertiaMatrix.Invert();
+
     //sphere
     /*
     float radius = 4.0f;
@@ -3273,33 +3276,22 @@ float Vehicle::UpdateGroundEffectForce(const float aLiftForce)
 
 void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep)
 {
-    const float pitchMax = Utility::ToRadians(30.0f);
-    const float rollMax = Utility::ToRadians(30.0f);
-    float pitchVal = aVehicle.controlInput.cyclicInputPitch * pitchMax;
-    float rollVal = aVehicle.controlInput.cyclicInputRoll * rollMax;
-    DirectX::SimpleMath::Quaternion rotQuat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, rollVal, pitchVal);
-    DirectX::SimpleMath::Vector3 ballastTranslation = aVehicle.ballastInertiaTranslationBase;
-    ballastTranslation = DirectX::SimpleMath::Vector3::Transform(ballastTranslation, rotQuat);
+    const float turretRotation = aVehicle.controlInput.turretYaw;
 
-    DirectX::SimpleMath::Matrix ballastMat = aVehicle.localBallastInertiaMatrix;
-    ballastMat *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
+    auto turretMat = DirectX::SimpleMath::Matrix::Identity;
+    turretMat = aVehicle.localTurretInertiaMatrix;
+    //turretMat *= DirectX::SimpleMath::Matrix::CreateRotationY(turretRotation);
+    //turretMat = turretMat.Invert();
 
-    aVehicle.testLocalCenterOfMass = aVehicle.ballastInertiaTranslationBase;
-    aVehicle.testLocalCenterOfMass.y *= 0.5f;
-    aVehicle.testLocalCenterOfMass = DirectX::SimpleMath::Vector3::Transform(aVehicle.testLocalCenterOfMass, rotQuat);
-    aVehicle.testCenterOfMass = aVehicle.testLocalCenterOfMass;
-    DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateWorld(aVehicle.q.position, -aVehicle.right, aVehicle.up);
-    aVehicle.testCenterOfMass = DirectX::SimpleMath::Vector3::Transform(aVehicle.testCenterOfMass, updateMat);
+    auto updateMat = DirectX::SimpleMath::Matrix::Identity;
+    //updateMat = turretMat * aVehicle.inverseInertiaMatrixTest;
+    updateMat = turretMat * aVehicle.inertiaMatrixTest;
+    updateMat = updateMat.Invert();
 
-    DirectX::SimpleMath::Matrix updateTensor = aVehicle.localInertiaMatrixTest;
-    updateTensor += ballastMat;
-    DirectX::SimpleMath::Matrix updateInverseTensor = updateTensor;
-    updateInverseTensor = updateInverseTensor.Invert();
-    aVehicle.inertiaMatrixTest = updateTensor;
-    aVehicle.inverseInertiaMatrixTest = updateInverseTensor;
-    
+    aVehicle.inertiaTensorInverse = aVehicle.inverseInertiaMatrixTest;
+    aVehicle.inertiaTensorInverse = updateMat;
+
     //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLinePositionIndicator(ballastTranslation + aVehicle.q.position, 10.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->ToggleDebugOff();
 }
 
