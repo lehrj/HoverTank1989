@@ -3286,6 +3286,9 @@ void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeSt
     m_heli.localTurretInertiaMatrix._22 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (zExtent * zExtent));
     m_heli.localTurretInertiaMatrix._33 = (1.0f / 12.0f) * (mass) * ((xExtent * xExtent) + (yExtent * yExtent));
 
+    //m_heli.localTurretInertiaMatrix.Translation(DirectX::SimpleMath::Vector3(-1.0f, 0.0f, 0.0f));
+
+
     m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInertiaMatrix;
     m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInverseInertiaMatrix.Invert();
     // end init
@@ -3315,7 +3318,7 @@ void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeSt
 
     auto turretMat = DirectX::SimpleMath::Matrix::Identity;
     turretMat = aVehicle.localTurretInertiaMatrix;
-    //turretMat *= DirectX::SimpleMath::Matrix::CreateRotationY(turretRotation);
+    turretMat *= DirectX::SimpleMath::Matrix::CreateRotationY(turretRotation);
     //turretMat = turretMat.Invert();
 
     auto updateMat = DirectX::SimpleMath::Matrix::Identity;
@@ -3334,6 +3337,7 @@ void Vehicle::UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeSt
     m_debugData->PushDebugLinePositionIndicator(rightWorld, 3.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLinePositionIndicator(upWorld, 3.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->PushDebugLinePositionIndicator(originWorld, 3.0f, 0.0f, DirectX::Colors::White);
+    //m_debugData->PushDebugLinePositionIndicator(aVehicle.q.position, 3.0f, 0.0f, DirectX::Colors::White);
     m_debugData->ToggleDebugOff();
 }
 
