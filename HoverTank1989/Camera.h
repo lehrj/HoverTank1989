@@ -320,6 +320,7 @@ private:
     void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCamera(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapCameraMissile(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta);
 
     // SpinCamera
@@ -416,5 +417,18 @@ private:
     DirectX::SimpleMath::Vector3 m_staticCamPos = DirectX::SimpleMath::Vector3(137.0f, 40.0f, 600.0f);
     DirectX::SimpleMath::Vector3 m_staticCamTarget = DirectX::SimpleMath::Vector3(137.0f, 30.0f, 455.0f);
     DirectX::SimpleMath::Vector3 m_staticCamUp = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
+
+    const float m_smoothStepToMissile = 0.2f;
+    const float m_smoothStepToVehicle = 0.2f;
+    float m_camStateTimer = 0.0f;
+    const float m_camStateTimerDelta = 0.1f;
+    const float m_camStateTimerMaxTime = 5.0f;
+    const float m_camStateTimerMaxValMax = 0.9f;
+    const float m_camStateTimerMaxValMin = 0.1f;
+    float m_smoothStepVal = 0.9f;
+
+    void UpdateSmoothStepVal(const float aTimeStep);
+    void ResetSmoothStepVal();
+
 };
 

@@ -487,8 +487,7 @@ struct MissileModel
     // contrails
     const float contrailColorMax = 0.9f; 
     const float contrailColorMin = 0.35f;
-    //const unsigned int contrailDrawCountMax = 30;
-    const unsigned int contrailDrawCountMax = 1;
+    const unsigned int contrailDrawCountMax = 30;
 
     // afterburn flicker
     const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
@@ -710,7 +709,7 @@ struct MissileConsts
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(40.0f);
 
-    const float mass = 11.0f;
+    const float mass = 12.0f;
     const float rocketBoostForceMax = mass * 11.0f; // Use desired thrust to weight ratio for boost value
 
     const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;

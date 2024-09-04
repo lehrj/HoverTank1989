@@ -65,6 +65,7 @@ void Camera::ActivateMissleTrackCamera()
 {
 	if (m_fireControl->GetIsMissileActiveTrue() == true)
 	{
+		ResetSmoothStepVal();
 		m_cameraState = CameraState::CAMERASTATE_FOLLOWMISSILE;
 	}
 }
@@ -1035,6 +1036,7 @@ void Camera::UpdateBoundingFrustum()
 void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 {
 	UpdateTimer(aTimer);
+	UpdateSmoothStepVal(aTimer.GetElapsedSeconds());
 
 	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
 	{
@@ -1266,6 +1268,7 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 	if (m_fireControl->GetIsMissileActiveTrue() == false)
 	{
 		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+		ResetSmoothStepVal();
 	}
 	else
 	{
@@ -1764,7 +1767,9 @@ void Camera::UpdateFollowMissile2(DX::StepTimer const& aTimer)
 		targPos += missilePos;
 		testTarg += missilePos;
 
-		const float t = 0.9f;
+		//const float t = m_smoothStepToMissile;
+		const float t = m_smoothStepVal;
+
 		camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
 
 		//targPos = m_snapTargBase;
@@ -1786,6 +1791,7 @@ void Camera::UpdateFollowMissile2(DX::StepTimer const& aTimer)
 	else
 	{
 		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+		ResetSmoothStepVal();
 	}
 }
 
@@ -2161,10 +2167,73 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	camPos += m_vehicleFocus->GetPos();
 	targPos += m_vehicleFocus->GetPos();
 	testTarg += m_vehicleFocus->GetPos();
+
+	const float t = m_smoothStepToVehicle;
+
+	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
+
+	targPos = m_snapTargBase;
+	//targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
+	//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent), targPos, t);
+	//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, m_snapTargBase, t);
+
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
+
+	targPos += m_vehicleFocus->GetPos();
+
+	DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
+	m_viewMatrix = camMat;
+
+	m_snapPosPrev = camPos;
+	m_snapTargPrev = targPos;
+
+	m_position = camPos;
+	m_target = targPos;
+}
+
+void Camera::UpdateSnapCameraMissile(DX::StepTimer const& aTimeDelta)
+{
+	//DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
+	//DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
+	//DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
+
+	DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::Identity;
+	DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::Identity;
+	DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
+
+	DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+	DirectX::SimpleMath::Vector3 targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
+	targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
+	targPos.x = 4.14f;
+	targPos.y = 0.82f;
+	targPos.z = 0.0f;
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
+
+	//DirectX::SimpleMath::Vector3 testTarg = m_vehicleFocus->GetLocalizedMuzzlePos();
+
+	DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
+	currentQuat *= turretPitchQuat;
+	currentQuat *= turretYawQuat;
+	currentQuat *= vehicleQuat;
+	DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
+	m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
+
+	DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
+	currentTargetQuat *= vehicleQuat;
+	DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
+	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+
+	camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
+
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, vehicleQuat);
+	camPos += m_vehicleFocus->GetPos();
+	targPos += m_vehicleFocus->GetPos();
+
 	const float t = 0.9f;
 	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
 
-	//targPos = m_snapTargBase;
 	targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);;
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
@@ -2686,4 +2755,40 @@ void Camera::TurnEndPosAroundPoint(float aTurn, DirectX::SimpleMath::Vector3 aCe
 
 	m_targetEndPos = updateTarget;
 	m_cameraEndPos = updateCamPos;
+}
+
+
+
+
+void Camera::UpdateSmoothStepVal(const float aTimeStep)
+{
+	m_debugData->ToggleDebugOnOverRide();
+	float updateTime = m_camStateTimer + aTimeStep;
+	if (updateTime >= m_camStateTimerMaxTime)
+	{
+		//updateTime = m_camStateTimerMaxTime;
+		m_camStateTimer = m_camStateTimerMaxTime;
+		m_smoothStepVal = m_camStateTimerMaxValMax;
+	}
+	else
+	{
+		float percentComplete = updateTime / m_camStateTimerMaxTime;
+		float valDelta = m_camStateTimerMaxValMax - m_camStateTimerMaxValMin;
+		m_smoothStepVal = m_camStateTimerMaxValMin + (valDelta * percentComplete);
+		m_camStateTimer = updateTime;
+
+		m_debugData->DebugPushUILineDecimalNumber("percentComplete ", percentComplete, "");
+		m_debugData->DebugPushUILineDecimalNumber("valDelta ", valDelta, "");
+	}
+
+
+	m_debugData->DebugPushUILineDecimalNumber("m_camStateTimer ", m_camStateTimer, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_smoothStepVal ", m_smoothStepVal, "");
+	m_debugData->ToggleDebugOff();
+}
+
+void Camera::ResetSmoothStepVal()
+{
+	m_smoothStepVal = m_camStateTimerMaxValMin;
+	m_camStateTimer = 0.0f;
 }
