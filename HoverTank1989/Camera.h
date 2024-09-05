@@ -203,6 +203,7 @@ private:
     DirectX::SimpleMath::Vector3    m_position;
     DirectX::SimpleMath::Vector3    m_homePosition;
     DirectX::SimpleMath::Vector3    m_target;
+    DirectX::SimpleMath::Vector3    m_targetLocal = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3    m_up;
     DirectX::SimpleMath::Vector3    m_forwardAudio = DirectX::SimpleMath::Vector3::UnitX;
     DirectX::SimpleMath::Vector3    m_upAudio = DirectX::SimpleMath::Vector3::UnitY;

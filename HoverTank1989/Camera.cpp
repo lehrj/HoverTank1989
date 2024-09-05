@@ -1776,6 +1776,7 @@ void Camera::UpdateFollowMissile2(DX::StepTimer const& aTimer)
 		targPos = snapTargBaseMissle;
 		//targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
 		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
+		m_targetLocal = targPos;
 		//targPos += m_vehicleFocus->GetPos();
 		targPos += missilePos;
 
@@ -1787,6 +1788,8 @@ void Camera::UpdateFollowMissile2(DX::StepTimer const& aTimer)
 
 		m_position = camPos;
 		m_target = targPos;
+
+		
 	}
 	else
 	{
