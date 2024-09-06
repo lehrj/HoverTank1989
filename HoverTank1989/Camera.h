@@ -35,6 +35,7 @@ enum class CameraState
     CAMERASTATE_TRANSITIONTOSPRINGCAM,
     CAMERASTATE_SNAPCAM,
     CAMERASTATE_POSE,
+    CAMERASTATE_RETURN,
 };
 
 enum class MissileTrackState
@@ -185,6 +186,7 @@ private:
     void UpdateFollowMissile2(DX::StepTimer const& aTimer);
     void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
     void UpdateMissileSteadyCam(DX::StepTimer const& aTimer);
+    void UpdateMissileReturnCam(DX::StepTimer const& aTimer);
     void UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer);
     void UpdateMissileTrackFromVehicleCam(DX::StepTimer const& aTimer);
 
