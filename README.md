@@ -22,13 +22,19 @@ Autonomous figure 8 track racing with NPC hovercrafts shows off their ability to
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Deploy.gif">
 </p>
 
+The laser targeted self-guided missile system emulates the javelin anti-tank missile in both form & function. It utilizes a dual stage soft launch system, with the rocket ignition and wing deployment occurring after the missile is a safe distance. 
+
 <p align="center">
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Launch.png">
 </p>
 
+Once fully deployed, the missile attempts to gain altitude to engage in a top-down attack. One feature that the javelin missile does not have though is thrust vectoring on the rocket, which was added because it is cool.
+
 <p align="center">
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/ImpactReverseAngle.gif">
 </p>
+
+Target acquisition is attained through a laser and target lock is indicated visibly and audibly by change in laser color from green to red and an audio tone. The missile is fire and forget, so once launched the user is able to acquire the next target immediately. 
 
 ## Game Controls
 
