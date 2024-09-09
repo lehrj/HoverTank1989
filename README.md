@@ -34,7 +34,7 @@ Once fully deployed the missile accelerates past stall speed, at which point it 
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/ImpactReverseAngle.gif">
 </p>
 
-Target acquisition is attained through a laser and target lock is indicated visibly and audibly by change in laser color from green to red and an audio tone. The missile is fire and forget, so once launched the user is able to acquire the next target immediately. 
+Targeting is achieved with a vehicle mounted laser designator that changes color when a target is locked, along with an audio lock tone.  The missile is fire and forget, so once launched the user is able to acquire the next target immediately.
 
 ## Game Controls
 
