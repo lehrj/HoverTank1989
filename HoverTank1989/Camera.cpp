@@ -1186,6 +1186,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
 		UpdateSnapCamera(aTimer);
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_RETURN)
+	{
+		UpdateMissileReturnCam(aTimer);
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 	else
@@ -1354,7 +1358,81 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 
 void Camera::UpdateMissileReturnCam(DX::StepTimer const& aTimer)
 {
+	if (1 == 1)
+	{
+		DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
+		DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
+		DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
+		//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
+		DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+		//DirectX::SimpleMath::Vector3 targPos = m_snapTargBase;
+		DirectX::SimpleMath::Vector3 targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
+		targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
+		targPos.x = 4.14f;
+		targPos.y = 0.82f;
+		targPos.z = 0.0f;
 
+		//const float t = m_smoothStepToVehicle;
+
+		//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_targetLocal, targPos, m_smoothStepToVehicle);
+		targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_targetLocal, targPos, 0.1f);
+
+
+
+
+		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
+		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
+
+		DirectX::SimpleMath::Vector3 testTarg = m_vehicleFocus->GetLocalizedMuzzlePos();
+
+		DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
+		currentQuat *= turretPitchQuat;
+		currentQuat *= turretYawQuat;
+		currentQuat *= vehicleQuat;
+		DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
+		m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
+
+		DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
+		currentTargetQuat *= vehicleQuat;
+		DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
+	//	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+
+		camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
+
+		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, vehicleQuat);
+		testTarg = DirectX::SimpleMath::Vector3::Transform(testTarg, vehicleQuat);
+		camPos += m_vehicleFocus->GetPos();
+		targPos += m_vehicleFocus->GetPos();
+		testTarg += m_vehicleFocus->GetPos();
+
+		const float t = m_smoothStepToVehicle;
+
+		camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
+
+		targPos = m_snapTargBase;
+		//targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
+		//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent), targPos, t);
+		//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, m_snapTargBase, t);
+
+		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
+		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
+
+		targPos += m_vehicleFocus->GetPos();
+
+		DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
+		m_viewMatrix = camMat;
+
+		m_snapPosPrev = camPos;
+		m_snapTargPrev = targPos;
+
+		m_position = camPos;
+		//m_target = targPos;
+	}
+	else
+	{
+		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+		ResetSmoothStepVal();
+	}
 }
 
 void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
@@ -1799,7 +1877,8 @@ void Camera::UpdateFollowMissile2(DX::StepTimer const& aTimer)
 	}
 	else
 	{
-		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+		//m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+		m_cameraState = CameraState::CAMERASTATE_RETURN;
 		ResetSmoothStepVal();
 	}
 }
