@@ -1360,31 +1360,10 @@ void Camera::UpdateMissileReturnCam(DX::StepTimer const& aTimer)
 {
 	if (1 == 1)
 	{
+		// start get camera end posistion
 		DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
 		DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
 		DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
-		//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
-		DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
-		//DirectX::SimpleMath::Vector3 targPos = m_snapTargBase;
-		DirectX::SimpleMath::Vector3 targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
-		targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
-		targPos.x = 4.14f;
-		targPos.y = 0.82f;
-		targPos.z = 0.0f;
-
-		//const float t = m_smoothStepToVehicle;
-
-		//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_targetLocal, targPos, m_smoothStepToVehicle);
-		targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_targetLocal, targPos, 0.1f);
-
-
-
-
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
-
-		DirectX::SimpleMath::Vector3 testTarg = m_vehicleFocus->GetLocalizedMuzzlePos();
-
 		DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
 		currentQuat *= turretPitchQuat;
 		currentQuat *= turretYawQuat;
@@ -1392,41 +1371,84 @@ void Camera::UpdateMissileReturnCam(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
 		m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
 
-		DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
-		currentTargetQuat *= vehicleQuat;
-		DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
-	//	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+		DirectX::SimpleMath::Vector3 camPosEnd = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+		camPosEnd = DirectX::SimpleMath::Vector3::Transform(camPosEnd, m_snapQuat);
 
-		camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
+		camPosEnd += m_vehicleFocus->GetPos();
+		//const float t = m_smoothStepToVehicle;
+		//camPosEnd = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPosEnd, t);
 
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, vehicleQuat);
-		testTarg = DirectX::SimpleMath::Vector3::Transform(testTarg, vehicleQuat);
-		camPos += m_vehicleFocus->GetPos();
-		targPos += m_vehicleFocus->GetPos();
-		testTarg += m_vehicleFocus->GetPos();
+		//DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPosEnd, targPos, DirectX::SimpleMath::Vector3::UnitY);
+		//m_viewMatrix = camMat;
 
-		const float t = m_smoothStepToVehicle;
+		//m_position = camPosEnd;
+		// end get camera end postion
 
-		camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
 
-		targPos = m_snapTargBase;
-		//targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
-		//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent), targPos, t);
-		//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, m_snapTargBase, t);
+		DirectX::SimpleMath::Vector3 cameraStartPos = m_position;
+		//DirectX::SimpleMath::Vector3 cameraEndPos = m_cameraEndPos;
+		DirectX::SimpleMath::Vector3 cameraEndPos = camPosEnd;
 
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
+		float cameraDistance = DirectX::SimpleMath::Vector3::Distance(cameraStartPos, cameraEndPos);
+		DirectX::SimpleMath::Vector3 cameraDirection = cameraEndPos - cameraStartPos;
 
-		targPos += m_vehicleFocus->GetPos();
+		cameraDirection.Normalize();
 
-		DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
-		m_viewMatrix = camMat;
+		//DirectX::SimpleMath::Vector3 targetStartPos = m_targetStartPos;
+		DirectX::SimpleMath::Vector3 targetStartPos = m_target;
+		//DirectX::SimpleMath::Vector3 targetEndPos = m_targetEndPos;
+		DirectX::SimpleMath::Vector3 targetEndPos = m_target;
 
-		m_snapPosPrev = camPos;
-		m_snapTargPrev = targPos;
 
-		m_position = camPos;
-		//m_target = targPos;
+		float targetDistance = DirectX::SimpleMath::Vector3::Distance(targetStartPos, targetEndPos);
+		DirectX::SimpleMath::Vector3 targetDirection = targetEndPos - targetStartPos;
+		targetDirection.Normalize();
+
+		double elapsedTime = double(aTimer.GetElapsedSeconds());
+		float cameraSpeed = m_cameraTransitionSpeedMissileReturn;
+
+		float targetSpeed;
+		if (abs(cameraDistance > 0.0f)) // prevent divide by zero if camera position doesn't change
+		{
+			targetSpeed = cameraSpeed * (targetDistance / cameraDistance);
+		}
+		else
+		{
+			targetSpeed = cameraSpeed;
+		}
+
+		m_position += cameraDirection * cameraSpeed * static_cast<float>(elapsedTime);
+
+		if (targetDistance > 0.0f)
+		{
+			m_target += targetDirection * targetSpeed * static_cast<float>(elapsedTime);
+		}
+
+		m_up = DirectX::SimpleMath::Vector3::UnitY;
+
+		/*
+		if (DirectX::SimpleMath::Vector3::Distance(cameraStartPos, m_position) >= cameraDistance 
+			&& DirectX::SimpleMath::Vector3::Distance(targetStartPos, m_target) >= targetDistance)
+		{
+			m_position = cameraEndPos;
+			m_isCameraAtDestination = true;
+		}
+		else
+		{
+			m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+		}
+		*/
+
+
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+
+		if (cameraDistance < 1.0f)
+		{
+			m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+			m_position = cameraEndPos;
+			m_isCameraAtDestination = true;
+		}
+
 	}
 	else
 	{

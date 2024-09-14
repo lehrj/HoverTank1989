@@ -272,6 +272,7 @@ private:
     DirectX::SimpleMath::Vector3    m_targetEndPos;
 
     float                           m_cameraTransitionSpeed = 5.9f;
+    float                           m_cameraTransitionSpeedMissileReturn = 55.9f;
     DX::StepTimer                   m_cameraTimer;
 
     bool                            m_isFpYaxisInverted = true; // toggle of turning on/off inverting the firstperson camera y axis control, set to true because I am weirdo that likes an inverted y axis
