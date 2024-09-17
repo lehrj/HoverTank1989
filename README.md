@@ -36,6 +36,10 @@ Once fully deployed the missile accelerates past stall speed, at which point it 
 
 Targeting is achieved with a vehicle mounted laser designator that changes color when a target is locked, along with an audio lock tone.  The missile is fire and forget, so once launched the user is able to acquire the next target immediately.
 
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Blueprint.png">
+</p>
+
 ## Game Controls
 
 Most controls are also gamepad supported but the mapping is in flux as new features are implemented and gameplay elements tuned
