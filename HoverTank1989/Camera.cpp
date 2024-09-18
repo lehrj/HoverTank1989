@@ -1442,11 +1442,16 @@ void Camera::UpdateMissileReturnCam(DX::StepTimer const& aTimer)
 
 		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 
-		if (cameraDistance < 1.0f)
+		if (cameraDistance < 0.5f)
 		{
 			m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 			m_position = cameraEndPos;
 			m_isCameraAtDestination = true;
+
+			m_snapPosPrev = m_position;
+			m_snapTargPrev = m_target;
+			m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
+			m_snapQuat = DirectX::SimpleMath::Quaternion::Identity;
 		}
 
 	}
