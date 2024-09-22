@@ -1445,6 +1445,53 @@ void Camera::UpdateMissileReturnCam(DX::StepTimer const& aTimer)
 		if (cameraDistance < 0.5f)
 		{
 			m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+			DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+			DirectX::SimpleMath::Vector3 targPos =  m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
+			targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
+			targPos.x = 4.14f;
+			targPos.y = 0.82f;
+			targPos.z = 0.0f;
+			targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_targetLocal, targPos, 0.1f);
+
+			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
+			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
+
+
+			DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
+			m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
+			
+			DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
+			currentTargetQuat *= vehicleQuat;
+			DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
+			m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+
+
+			camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
+
+			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, vehicleQuat);
+			camPos += m_vehicleFocus->GetPos();
+			targPos += m_vehicleFocus->GetPos();
+		
+			const float t = m_smoothStepToVehicle;
+			camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
+
+			targPos = m_snapTargBase;
+			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
+			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
+			targPos += m_vehicleFocus->GetPos();
+
+			DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
+			m_viewMatrix = camMat;
+
+
+			//m_snapPosPrev = camPos;
+			//m_snapTargPrev = targPos;
+
+			m_position = camPos;
+			m_target = targPos;
+
+
+			////////////////////////////////////////
 			m_position = cameraEndPos;
 			m_isCameraAtDestination = true;
 
