@@ -187,6 +187,8 @@ private:
     void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
     void UpdateMissileSteadyCam(DX::StepTimer const& aTimer);
     void UpdateMissileReturnCam(DX::StepTimer const& aTimer);
+    void UpdateMissileReturnCam2(DX::StepTimer const& aTimer);
+
     void UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer);
     void UpdateMissileTrackFromVehicleCam(DX::StepTimer const& aTimer);
 
@@ -324,6 +326,7 @@ private:
     void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCamera(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapCamera2(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraMissile(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta);
 
@@ -423,13 +426,19 @@ private:
     DirectX::SimpleMath::Vector3 m_staticCamUp = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
 
     const float m_smoothStepToMissile = 0.2f;
-    const float m_smoothStepToVehicle = 0.2f;
+    //const float m_smoothStepToVehicle = 0.2f;
+    const float m_smoothStepToVehicle = 0.1f;
+
+
     float m_camStateTimer = 0.0f;
     const float m_camStateTimerDelta = 0.1f;
     const float m_camStateTimerMaxTime = 5.0f;
     const float m_camStateTimerMaxValMax = 0.9f;
     const float m_camStateTimerMaxValMin = 0.1f;
     float m_smoothStepVal = 0.9f;
+
+    const float m_missileReturnPauseDelay = 1.0f;
+    float m_missileReturnPauseTimer = 0.0f;
 
     void UpdateSmoothStepVal(const float aTimeStep);
     void ResetSmoothStepVal();
