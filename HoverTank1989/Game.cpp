@@ -396,7 +396,11 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         
         baseColor.z = 0.0f;
 
-        DirectX::XMFLOAT4 baseColorMax(0.0f, 0.584313798f, 0.0f, 1.0f);
+        // cap color
+        //DirectX::XMFLOAT4 baseColorMax(0.0f, 0.584313798f, 0.0f, 1.0f); 
+        //DirectX::XMFLOAT4 baseColorMax(0.0f, 0.0f, 0.6f, 1.0f);
+        DirectX::XMFLOAT4 baseColorMax(0.4f, 0.4f, 0.4f, 1.0f);
+        //DirectX::XMFLOAT4 baseColorMax(0.8f, 0.8f, 0.8f, 1.0f);
 
         const float baseElevationTreeLine = 0.7f;
 
@@ -431,7 +435,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
         /* for treenline / snowcap effect at higher elevations
         lineColor = DirectX::XMFLOAT4(0.0f, 0.584313798f, 0.0f, 0.0f);
-        baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);;
+        baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
         */
 
         aTerrain.terrainVertexArray[i].color = lineColor;

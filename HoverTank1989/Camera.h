@@ -184,6 +184,8 @@ private:
     
     void UpdateFollowMissile(DX::StepTimer const& aTimer);
     void UpdateFollowMissile2(DX::StepTimer const& aTimer);
+    void UpdateFollowMissile3(DX::StepTimer const& aTimer);
+
     void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
     void UpdateMissileSteadyCam(DX::StepTimer const& aTimer);
     void UpdateMissileReturnCam(DX::StepTimer const& aTimer);
@@ -425,10 +427,10 @@ private:
     DirectX::SimpleMath::Vector3 m_staticCamTarget = DirectX::SimpleMath::Vector3(137.0f, 30.0f, 455.0f);
     DirectX::SimpleMath::Vector3 m_staticCamUp = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
 
-    const float m_smoothStepToMissile = 0.2f;
+    const float m_smoothStepToMissile = 0.1f;
     //const float m_smoothStepToVehicle = 0.2f;
     const float m_smoothStepToVehicle = 0.1f;
-
+    const float m_smoothStepTarget = 0.1f;
 
     float m_camStateTimer = 0.0f;
     const float m_camStateTimerDelta = 0.1f;
