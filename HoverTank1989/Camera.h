@@ -429,8 +429,9 @@ private:
 
     const float m_smoothStepToMissile = 0.1f;
     //const float m_smoothStepToVehicle = 0.2f;
-    const float m_smoothStepToVehicle = 0.1f;
+    const float m_smoothStepToVehicle = 0.2f;
     const float m_smoothStepTarget = 0.1f;
+    const float m_smoothStepSnapCamPos = 0.1f;
 
     float m_camStateTimer = 0.0f;
     const float m_camStateTimerDelta = 0.1f;
@@ -438,6 +439,8 @@ private:
     const float m_camStateTimerMaxValMax = 0.9f;
     const float m_camStateTimerMaxValMin = 0.1f;
     float m_smoothStepVal = 0.9f;
+    float m_smoothStepValTarget = 0.9f;
+    float m_smoothStepValPosition = 0.9f;
 
     const float m_missileReturnPauseDelay = 1.0f;
     float m_missileReturnPauseTimer = 0.0f;

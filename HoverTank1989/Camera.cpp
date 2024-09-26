@@ -2055,8 +2055,8 @@ void Camera::UpdateFollowMissile3(DX::StepTimer const& aTimer)
 		const float t = m_smoothStepToMissile;
 		//const float t = m_smoothStepVal;
 		//const float t = 0.1f;
-
-		camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
+		//camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
+		camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_smoothStepToMissile);
 
 		targPos = snapTargBaseMissle;
 		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
@@ -2450,14 +2450,9 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
 
 	camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
-
 	camPos += m_vehicleFocus->GetPos();
+	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_smoothStepSnapCamPos);
 
-	const float t = m_smoothStepToVehicle;
-	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
-	//camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, 0.1f);
-
-	//targPos = m_snapTargBase;
 	auto targPos = m_snapTargBase;
 
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
