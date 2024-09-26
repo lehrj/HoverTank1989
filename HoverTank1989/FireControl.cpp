@@ -10864,7 +10864,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //m_debugData->DebugPushUILineDecimalNumber("finYaw   = ", Utility::ToDegrees(m_missileVec[i].guidance.conDat.finYaw), "");
         //m_debugData->DebugPushUILineDecimalNumber("guidance.throttlePercentage   = ", m_missileVec[i].guidance.throttlePercentage, "");
 
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         m_debugData->DebugPushUILineDecimalNumber("altitude   = ", m_missileVec[i].guidance.altitude, "");
         m_debugData->ToggleDebugOff();
 

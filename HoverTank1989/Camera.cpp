@@ -1209,7 +1209,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	//DrawUI();
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	m_debugData->PushDebugLinePositionIndicator(m_target, 5.0f, 0.0f, DirectX::Colors::Orange);
 	m_debugData->ToggleDebugOff();
 }
@@ -1311,6 +1311,7 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 
 			DirectX::SimpleMath::Vector3 vecToTargetRight = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
 			camUp = vecToTarget.Cross(-vecToTargetRight);
+			camUp.Normalize();
 		}
 		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
 		{
@@ -1348,6 +1349,9 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 			camPos = DirectX::SimpleMath::Vector3::Transform(-DirectX::SimpleMath::Vector3::UnitX, missileAlignQuat) + missilePosWorld;
 			camUp = DirectX::SimpleMath::Vector3::UnitY;
 		}
+
+		m_snapPosPrev = camPos;
+		m_snapTargPrev = camTargetPos;
 
 		m_position = camPos;
 		m_target = camTargetPos;
@@ -2010,62 +2014,38 @@ void Camera::UpdateFollowMissile3(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 targetPos = DirectX::SimpleMath::Vector3::Zero;
 		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos);
 
-		DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
-		DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
-		turretPitchQuat = DirectX::SimpleMath::Quaternion::Identity;
-		turretYawQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-		DirectX::SimpleMath::Quaternion vehicleQuat = missileAlignQuat;
-
-		const DirectX::SimpleMath::Vector3 snapPosBaseMissile = m_missileSnapPos;
-		const DirectX::SimpleMath::Vector3 snapTargBaseMissle = m_missileSnapTarg;
-
-		DirectX::SimpleMath::Vector3 camPos = snapPosBaseMissile;
-		DirectX::SimpleMath::Vector3 targPos = snapTargBaseMissle;
-		targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
-		targPos.x = 4.14f;
-		targPos.y = 0.82f;
-		targPos.z = 0.0f;
-		targPos = DirectX::SimpleMath::Vector3::UnitX;
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
-
-		DirectX::SimpleMath::Vector3 testTarg = m_vehicleFocus->GetLocalizedMuzzlePos();
-
 		DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
-		currentQuat *= turretPitchQuat;
-		currentQuat *= turretYawQuat;
-		currentQuat *= vehicleQuat;
+
+		currentQuat *= missileAlignQuat;
 		DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
-		m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
+		m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, m_slerpSnapCam);
 
 		DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
-		currentTargetQuat *= vehicleQuat;
+		currentTargetQuat *= missileAlignQuat;
 		DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
-		m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+		m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, m_slerpSnapTarg);
 
+		DirectX::SimpleMath::Vector3 camPos = m_missileSnapPos;
 		camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
-		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, vehicleQuat);
-		testTarg = DirectX::SimpleMath::Vector3::Transform(testTarg, vehicleQuat);
-
 		camPos += missilePos;
-		targPos += missilePos;
-		testTarg += missilePos;
-
-		const float t = m_smoothStepToMissile;
-		//const float t = m_smoothStepVal;
-		//const float t = 0.1f;
-		//camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
 		camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_smoothStepToMissile);
 
-		targPos = snapTargBaseMissle;
+		/// //
+		DirectX::SimpleMath::Vector3 targPos = m_missileSnapTarg;
 		targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
 		m_targetLocal = targPos;
 		targPos += missilePos;
-
 		targPos = DirectX::SimpleMath::Vector3::SmoothStep(targetPosPrev, targPos, m_smoothStepTarget);
 
-		DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
+		// right
+		DirectX::SimpleMath::Vector3 vecToTarget = targPos - camPos;
+		vecToTarget.Normalize();
+		DirectX::SimpleMath::Vector3 vecToTargetRight = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
+		auto camUp = vecToTarget.Cross(-vecToTargetRight);
+		camUp.Normalize();
+
+		//DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
+		DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, camUp);
 		m_viewMatrix = camMat;
 
 		m_snapPosPrev = camPos;
@@ -2080,7 +2060,7 @@ void Camera::UpdateFollowMissile3(DX::StepTimer const& aTimer)
 
 		m_targetLocal = DirectX::SimpleMath::Vector3::Transform(m_targetLocal, alignInverse);
 
-		m_debugData->ToggleDebugOnOverRide();
+		//m_debugData->ToggleDebugOnOverRide();
 		m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.x ", m_targetLocal.x, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.y ", m_targetLocal.y, "");
 		m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.z ", m_targetLocal.z, "");
@@ -2088,7 +2068,6 @@ void Camera::UpdateFollowMissile3(DX::StepTimer const& aTimer)
 	}
 	else
 	{
-		//m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 		m_cameraState = CameraState::CAMERASTATE_RETURN;
 		ResetSmoothStepVal();
 	}

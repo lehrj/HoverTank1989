@@ -428,10 +428,12 @@ private:
     DirectX::SimpleMath::Vector3 m_staticCamUp = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
 
     const float m_smoothStepToMissile = 0.1f;
-    //const float m_smoothStepToVehicle = 0.2f;
     const float m_smoothStepToVehicle = 0.2f;
     const float m_smoothStepTarget = 0.1f;
     const float m_smoothStepSnapCamPos = 0.1f;
+
+    const float m_slerpSnapCam = 0.1f;
+    const float m_slerpSnapTarg = 0.1f;
 
     float m_camStateTimer = 0.0f;
     const float m_camStateTimerDelta = 0.1f;
