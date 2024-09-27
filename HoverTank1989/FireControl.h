@@ -764,7 +764,7 @@ struct MissileConsts
 
     const bool useAdvancedMoiTensorTrue = false;
     const bool isMissileFreezeTrue = false;
-    const bool isMissleTargetingLaserTrue = false;
+    const bool isMissleTargetingLaserTrue = true;
     const bool isUseDebugRG4True = false;
     const bool isUseConstFinClTrue = false;
     const bool isManualControlTrue = false;

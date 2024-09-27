@@ -398,8 +398,8 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
         // cap color
         //DirectX::XMFLOAT4 baseColorMax(0.0f, 0.584313798f, 0.0f, 1.0f); 
-        //DirectX::XMFLOAT4 baseColorMax(0.0f, 0.0f, 0.6f, 1.0f);
-        DirectX::XMFLOAT4 baseColorMax(0.4f, 0.4f, 0.4f, 1.0f);
+        DirectX::XMFLOAT4 baseColorMax(0.0f, 0.0f, 0.6f, 1.0f);
+        //DirectX::XMFLOAT4 baseColorMax(0.4f, 0.4f, 0.4f, 1.0f);
         //DirectX::XMFLOAT4 baseColorMax(0.8f, 0.8f, 0.8f, 1.0f);
 
         const float baseElevationTreeLine = 0.7f;
@@ -411,6 +411,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         else
         {
             baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+            //baseColor = DirectX::XMFLOAT4(0.0f, 0.35f, 0.0f, 1.0f);
         }   
         /*
         baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -432,7 +433,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         {
             lineColor.y += 0.15f;
         }
-
+     
         /* for treenline / snowcap effect at higher elevations
         lineColor = DirectX::XMFLOAT4(0.0f, 0.584313798f, 0.0f, 0.0f);
         baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -994,7 +995,7 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
@@ -1222,8 +1223,9 @@ void Game::CreateDeviceDependentResources()
     device;
 
     // sky texture
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
 
     // metal tests
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest1.ReleaseAndGetAddressOf()));
@@ -1716,9 +1718,10 @@ void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::Simp
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
+    rotMat = DirectX::SimpleMath::Matrix::Identity;
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
-    //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
-
+    //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
+    m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
     aEffect->EnableDefaultLighting();
 
     //DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
@@ -1732,7 +1735,7 @@ void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::Simp
     worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(skyBoxTransVec);
     aEffect->SetWorld(worldMat);
     //m_skyShape->Draw(aEffect.get(), aInputLayout.Get(), false, true);
-    m_skyShape->Draw(aEffect.get(), aInputLayout.Get());
+    //m_skyShape->Draw(aEffect.get(), aInputLayout.Get());
 }
 
 void Game::DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
@@ -1898,6 +1901,23 @@ void Game::DrawTestTrack()
     posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-angle));
     posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
+
+    // Extentions
+    pos1 = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
+    pos1 = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 450.0f);
+    pos1 = DirectX::SimpleMath::Vector3(600.0f, yOffset - rodOffset, 575.0f);
+    pos1 = DirectX::SimpleMath::Vector3(600.0f, yOffset - rodOffset, 600.0f);
+    posMat = DirectX::SimpleMath::Matrix::Identity;
+    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(2.4f, 1.0f, 1.0f));
+
+    posMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    m_testShape2->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+
+    pos1 = DirectX::SimpleMath::Vector3(600.0f, yOffset - rodOffset, -600.0f);
+    posMat = DirectX::SimpleMath::Matrix::Identity;
+    posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(2.4f, 1.0f, 1.0f));
+    posMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    m_testShape2->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
 }
 
 void Game::DrawTerrainNew(Terrain& aTerrain)

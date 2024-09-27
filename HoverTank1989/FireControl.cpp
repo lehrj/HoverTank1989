@@ -3323,8 +3323,12 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
                 DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
 
-                DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColor;
+                //DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColor;
+                //DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+
+                DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColorLockTrue;
                 DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+
                 //color1 = color2;
                 aEffect->SetEmissiveColor(color2);
                 aEffect->SetLightSpecularColor(0, color2);
@@ -3341,7 +3345,8 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 //aEffect->EnableDefaultLighting();
                 aEffect->SetWorld(worldBodyMatrix);
 
-                aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+                //aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
+                aEffect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
                 //aEffect->SetColorAndAlpha(DirectX::Colors::Purple);
 
                // m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());

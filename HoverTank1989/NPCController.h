@@ -124,11 +124,9 @@ private:
     const int m_spawnCountMax = 6;
     int m_spawnCount;
     const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
-    //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_spawnerHeading = - DirectX::SimpleMath::Vector3::UnitZ;
+    const DirectX::SimpleMath::Vector3 m_spawnerHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
-    //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -900.0f);
-    const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -500.0f);
-    const DirectX::SimpleMath::Vector3 m_spawnerHeadingAlt = - DirectX::SimpleMath::Vector3::UnitZ;
+    const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -900.0f);
+    const DirectX::SimpleMath::Vector3 m_spawnerHeadingAlt = DirectX::SimpleMath::Vector3::UnitZ;
 };
 

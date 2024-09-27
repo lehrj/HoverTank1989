@@ -449,7 +449,7 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat2;
 
     DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
-    DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(375.0f, 0.0f, -900.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(600.0f, 0.0f, -900.0f);
 
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;
