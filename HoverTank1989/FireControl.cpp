@@ -3176,10 +3176,13 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
 
         DirectX::SimpleMath::Vector4 laserColor = m_playerLaser.laserColor;
+    
         if (m_isTargetingLaserLockTrue == true)
         {
             laserColor = m_playerLaser.laserColorLockTrue;
         }
+
+        laserColor = m_playerLaser.laserColorToUse;
 
         DirectX::SimpleMath::Vector4 color1 = laserColor;
         DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -5936,7 +5939,7 @@ void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
     aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 0.9f;
+    aAmmo.ammoData.cooldown = 1.9f;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;
@@ -6259,6 +6262,8 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
     InitializeFinLibrary(m_finLib);
     InitializeProjectileModelMissile(aContext, m_ammoMissile);
     InitializeMissileInertiaTensor();   
+
+    InitializeTargetControl();
 }
 
 void FireControl::InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection)
@@ -6773,6 +6778,11 @@ void FireControl::InitializeProjectileModelShotgun(Microsoft::WRL::ComPtr<ID3D11
     //aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 9.0f, 1.0f));
     aAmmo.ammoModel.projectileMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-90.0f));
     aAmmo.ammoModel.localProjectileMatrix = aAmmo.ammoModel.projectileMatrix;
+}
+
+void FireControl::InitializeTargetControl()
+{
+    m_targetControl.targetList.clear();
 }
 
 void FireControl::InitializeTextureMapsExplosion(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap)
@@ -8741,6 +8751,18 @@ void FireControl::ToggleDebug3()
     }
 }
 
+void FireControl::ToggleAutoFire()
+{
+    if (m_isAutoFireOn == true)
+    {
+        m_isAutoFireOn = false;
+    }
+    else
+    {
+        m_isAutoFireOn = true;
+    }
+}
+
 void FireControl::ToggleTargetingLaser()
 {
     if (m_isTargetingLaserOn == false)
@@ -9482,6 +9504,7 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     {
         CastRayLaser();
     }
+
     if (m_isCoolDownActive == true)
     {
         m_coolDownTimer -= static_cast<float>(aTimeDelta);
@@ -9489,6 +9512,11 @@ void FireControl::UpdateFireControl(double aTimeDelta)
         {
             m_coolDownTimer = 0.0f;
             m_isCoolDownActive = false;
+        }
+
+        if (m_isAutoFireOn == true && m_targetControl.isTargetOnDeckTrue == true)
+        {
+
         }
     }
 
@@ -9518,6 +9546,8 @@ void FireControl::UpdateFireControl(double aTimeDelta)
 
         ManualInputDecayVector(static_cast<float>(aTimeDelta));
     }
+
+    UpdateTargetControl(static_cast<float>(aTimeDelta));
 }
 
 void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta)
@@ -9971,10 +10001,12 @@ void FireControl::UpdateLOSData2(MissileData& aMissile, const float aTimeDelta)
 
 void FireControl::UpdateLaserData(const float aTimeDelta)
 {
+    UpdateLaserColor(aTimeDelta);
+
     m_laserLightingRotation += aTimeDelta * m_laserLightingRate;
     Utility::WrapAngle(m_laserLightingRotation);
 
-    if (m_isTargetingLaserLockTrue == true)
+    if (m_isTargetingLaserLockTrue == true || 1 == 0)
     {
         //m_laserLightingPulseScale = cos(m_laserLightingPulseScale + static_cast<float>(aTimeDelta));
         //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
@@ -10050,7 +10082,44 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
 
         }
     }
+}
 
+void FireControl::UpdateLaserColor(const float aTimeDelta)
+{
+    float colorVal = m_playerLaser.colorVal;
+    float colorValInverse = 0.0f;
+    if (m_isTargetingLaserLockTrue == true)
+    {
+        colorVal += aTimeDelta * m_playerLaser.colorValDelta;
+        if (colorVal >= 1.0f)
+        {
+            colorVal = 1.0f;
+            colorValInverse = 0.0f;
+        }
+        else
+        {
+            colorValInverse = 1.0f - colorVal;
+        }
+
+        m_playerLaser.laserColorToUse = DirectX::SimpleMath::Vector4(colorVal, colorValInverse, 0.0f, 1.0f);
+    }
+    else
+    {
+        colorVal -= aTimeDelta * m_playerLaser.colorValDelta;
+        if (colorVal <= 0.0f)
+        {
+            colorVal = 0.0f;
+            colorValInverse = 1.0f;
+        }
+        else
+        {
+            colorValInverse = 1.0f - colorVal;
+        }
+
+        m_playerLaser.laserColorToUse = DirectX::SimpleMath::Vector4(colorVal, colorValInverse, 0.0f, 1.0f);
+    }
+
+    m_playerLaser.colorVal = colorVal;
 }
 
 void FireControl::UpdateMirv(ProjectileData& aProjectile, const double aTimeDelta)
@@ -15010,5 +15079,28 @@ void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTim
         aMissile.audioFx->up = aMissile.projectileData.up;
         aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
         aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
+    }
+}
+
+void FireControl::UpdateTargetControl(const float aTimeDelta)
+{
+    std::vector<unsigned int> updateList;
+    updateList.clear();
+
+    bool isUpdatedTrue = m_npcController->GetFreeTargetsData(updateList);
+
+    if (updateList.size() > 0)
+    {
+        m_targetControl.isTargetOnDeckTrue = true;
+    }
+    else
+    {
+        m_targetControl.isTargetOnDeckTrue = false;
+    }
+    m_targetControl.targetList = updateList;
+
+    if (m_isAutoFireOn == true && m_targetControl.isTargetOnDeckTrue == true)
+    {
+        m_currentTargetID = m_targetControl.targetList[0];
     }
 }

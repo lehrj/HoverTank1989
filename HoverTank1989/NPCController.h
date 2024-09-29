@@ -49,6 +49,8 @@ public:
     void InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, 
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
+    bool GetFreeTargetsData(std::vector<unsigned int>& aTargetList);
+
     bool GetIsDebugPauseToggleTrue();
 
     DirectX::SimpleMath::Vector3 GetNpcAccelVecTest(const unsigned int aId);

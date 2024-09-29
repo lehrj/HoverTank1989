@@ -1033,6 +1033,22 @@ void NPCController::DrawNPCs(const DirectX::SimpleMath::Matrix aView, const Dire
     }
 }
 
+bool NPCController::GetFreeTargetsData(std::vector<unsigned int>& aTargetList)
+{
+    bool isListUpdatedTrue = false;
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+
+        if (m_npcVec[i]->GetIsMissileTargetingMe() == false)
+        {
+            aTargetList.push_back(m_npcVec[i]->GetID());
+        }
+    }
+
+    return isListUpdatedTrue;
+}
+
 bool NPCController::GetIsDebugPauseToggleTrue()
 {
     bool isDebugPauseTrue = false;
@@ -1541,3 +1557,4 @@ void NPCController::SpawnToQueue()
 
     m_loadQueue.push_back(loadData);
 }
+

@@ -198,7 +198,6 @@ struct FinDataDynamic
     DirectX::SimpleMath::Vector3 prevFinDir = DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 prevChordLine = DirectX::SimpleMath::Vector3::UnitX;
 
-
     DirectX::SimpleMath::Vector3 resultantForce = DirectX::SimpleMath::Vector3::Zero;
 };
 
@@ -901,6 +900,9 @@ struct MuzzleFlashModel
 struct LaserModel
 {
     // colors
+    float colorVal = 0.0f;
+    const float colorValDelta = 5.0f;
+    DirectX::SimpleMath::Vector4 laserColorToUse = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 laserColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 laserColorLockTrue = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 1.0f, 1.0f);
@@ -916,6 +918,15 @@ struct LaserModel
     DirectX::SimpleMath::Matrix worldBodyMatrix;
     DirectX::SimpleMath::Matrix translationMatrix;
 };
+
+struct TargetControl
+{
+    bool isTargetOnDeckTrue = false;
+    std::vector<unsigned int> targetList;
+
+    unsigned int targetId = 0;
+};
+
 
 class FireControl
 {
@@ -952,6 +963,9 @@ public:
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
     
     void GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod);
+
+    bool GetIsAutoFireOn() { return m_isAutoFireOn; };
+    bool GetIsAutoFireTargetReadyTrue() { return m_targetControl.isTargetOnDeckTrue; };
     bool GetIsFireCooldownTrue() { return m_isCoolDownActive; };
     
     bool GetIsTargetingLaserOn() { return m_isTargetingLaserOn; };
@@ -964,6 +978,7 @@ public:
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
 
+    void ToggleAutoFire();
     void ToggleTargetingLaser();
     void TriggerMirvDeploy();
     void ToggleDebug1();
@@ -1075,6 +1090,8 @@ private:
     void InitializeLauncherData(LauncherData& aLauncher, const DirectX::SimpleMath::Vector3 aPosition, const DirectX::SimpleMath::Vector3 aDirection);
     void InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, LaserModel& aLazerModel);
 
+    void InitializeTargetControl();
+
     void InputNavData(MissileData& aMissile, DirectX::SimpleMath::Quaternion aQuatToTarg, const DirectX::SimpleMath::Vector3 aTargPosLocalized, const DirectX::SimpleMath::Vector3 aVecToTargLocal);
 
     void IRSeekerTest(MissileData& aMissile, const float aTimeDelta);
@@ -1158,6 +1175,7 @@ private:
     Utility::ForceAccum FinAccumSum(const MissileData& aMissile);
     Utility::ForceAccum FinAccumSumTest(const MissileData& aMissile);
 
+    void UpdateLaserColor(const float aTimeDelta);
     void UpdateLaserData(const float aTimeDelta);
     void UpdateMissileForces(MissileData& aMissile, const float aTimeDelta);
 
@@ -1177,6 +1195,8 @@ private:
     void UpdateSteeringDirNormOld(MissileData& aMissile, const float aTimeDelta);
     void UpdateSteeringDirNormOld2(MissileData& aMissile, const float aTimeDelta);
     void UpdateThrustVector(MissileData& aMissile);
+
+    void UpdateTargetControl(const float aTimeDelta);
 
     Environment const* m_environment;
     std::shared_ptr<DebugData> m_debugData;
@@ -1199,6 +1219,8 @@ private:
     MissileConsts m_missileConsts;
 
     LaserModel m_playerLaser;
+    
+    TargetControl m_targetControl;
 
     const float m_projectileLifeTimeMax = 10.0f;
     const float m_missileLifeTimeMax = 151.0f;
@@ -1374,6 +1396,8 @@ private:
     //MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
     MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
     bool m_isDualFireCoolDownOverRideTrue = false;
+
+    bool m_isAutoFireOn = false;
 
 public:
 

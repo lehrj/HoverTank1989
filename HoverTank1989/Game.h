@@ -105,6 +105,7 @@ private:
     void Update(DX::StepTimer const& aTimer);
     void UpdateAudioFx(DX::StepTimer const& aTimer);
     void UpdateInput(DX::StepTimer const& aTimer);
+    void UpdateAutoFire();
 
     // Device resources.
     std::unique_ptr<DX::DeviceResources>    m_deviceResources;

@@ -856,6 +856,8 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_debugData->DebugClearUI();
         m_testTimer1 += static_cast<float>(aTimer.GetElapsedSeconds());
 
+        UpdateAutoFire();
+
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw(), m_vehicle->GetGroundPlane());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
@@ -1224,7 +1226,6 @@ void Game::CreateDeviceDependentResources()
 
     // sky texture
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
-
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
 
     // metal tests
@@ -2479,7 +2480,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->Jump();
+            //m_vehicle->Jump();
+            m_fireControl->ToggleAutoFire();
         }
     }
     if (m_kbStateTracker.pressed.B)
@@ -2970,4 +2972,13 @@ unsigned int Game::GetRandomNonRepeatingFxIndex(unsigned int aCurrentIndex, Util
     }
     return randomInt; 
 }
+
+void Game::UpdateAutoFire()
+{
+    if (m_fireControl->GetIsAutoFireOn() == true && m_fireControl->GetIsAutoFireTargetReadyTrue() == true && m_fireControl->GetIsFireCooldownTrue() == false)
+    {
+        TriggerFireWithAudio();
+    }
+}
+
 #pragma endregion
