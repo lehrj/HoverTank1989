@@ -759,6 +759,8 @@ struct MissileConsts
     //const float tailThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
     const float tailThickness = tailChord * 0.11f;
 
+    const float cooldown = 3.0f;
+
     const int selectFirePattern = 2;
 
     const bool useAdvancedMoiTensorTrue = false;

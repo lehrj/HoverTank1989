@@ -1287,6 +1287,9 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 camPos = -DirectX::SimpleMath::Vector3::UnitX;
 		DirectX::SimpleMath::Vector3 camUp = DirectX::SimpleMath::Vector3::UnitY;
 
+		auto targPosPrev = m_target;
+		auto camPosPrev = m_position;
+
 		if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET)
 		{
 			DirectX::SimpleMath::Vector3 vecToTarget = missileTargetPosWorld - missilePosWorld;
@@ -1307,7 +1310,12 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 			camPos += missilePosWorld;
 			camPos.y += m_missileCamToTarget3Qrt.y;
 
+			//camPos = DirectX::SimpleMath::Vector3::SmoothStep(camPosPrev, camPos, m_smoothStepToMissile);
+			//camPos = DirectX::SimpleMath::Vector3::SmoothStep(camPosPrev, camPos, m_smoothStepToMissile);
+
 			camTargetPos = missilePosWorld;
+			//camTargetPos = DirectX::SimpleMath::Vector3::SmoothStep(targPosPrev, camTargetPos, m_smoothStepTarget);
+			//camTargetPos = DirectX::SimpleMath::Vector3::SmoothStep(targPosPrev, camTargetPos, 0.5f);
 
 			DirectX::SimpleMath::Vector3 vecToTargetRight = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
 			camUp = vecToTarget.Cross(-vecToTargetRight);
@@ -2059,12 +2067,6 @@ void Camera::UpdateFollowMissile3(DX::StepTimer const& aTimer)
 		alignInverse = alignInverse.Invert();
 
 		m_targetLocal = DirectX::SimpleMath::Vector3::Transform(m_targetLocal, alignInverse);
-
-		//m_debugData->ToggleDebugOnOverRide();
-		m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.x ", m_targetLocal.x, "");
-		m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.y ", m_targetLocal.y, "");
-		m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.z ", m_targetLocal.z, "");
-		m_debugData->ToggleDebugOff();
 	}
 	else
 	{

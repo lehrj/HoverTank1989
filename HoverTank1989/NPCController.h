@@ -118,12 +118,12 @@ private:
     const DirectX::SimpleMath::Vector3 m_startHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
     float m_spawnerCooldown = 5.0f;
-    const float m_spawnerCooldownTime = 5.0f;
+    const float m_spawnerCooldownTime = 3.0f;
 
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
 
-    const int m_spawnCountMax = 6;
+    const int m_spawnCountMax = 10;
     int m_spawnCount;
     const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeading = -DirectX::SimpleMath::Vector3::UnitZ;

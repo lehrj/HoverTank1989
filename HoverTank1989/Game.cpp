@@ -398,9 +398,9 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
 
         // cap color
         //DirectX::XMFLOAT4 baseColorMax(0.0f, 0.584313798f, 0.0f, 1.0f); 
-        DirectX::XMFLOAT4 baseColorMax(0.0f, 0.0f, 0.6f, 1.0f);
+        //DirectX::XMFLOAT4 baseColorMax(0.2f, 0.2f, 0.3f, 1.0f);
         //DirectX::XMFLOAT4 baseColorMax(0.4f, 0.4f, 0.4f, 1.0f);
-        //DirectX::XMFLOAT4 baseColorMax(0.8f, 0.8f, 0.8f, 1.0f);
+        DirectX::XMFLOAT4 baseColorMax(0.2f, 0.2f, 0.5f, 1.0f);
 
         const float baseElevationTreeLine = 0.7f;
 
@@ -438,6 +438,8 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         lineColor = DirectX::XMFLOAT4(0.0f, 0.584313798f, 0.0f, 0.0f);
         baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
         */
+
+        lineColor = DirectX::XMFLOAT4(0.02352941f, 0.0f, 0.99215686f, 1.0f);
 
         aTerrain.terrainVertexArray[i].color = lineColor;
         aTerrain.terrainVertexArrayBase[i].position = vertexPC[i].position;
@@ -1228,6 +1230,12 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
 
+    // sky normal
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/skyNormal.png", nullptr, m_normalMapSky.ReleaseAndGetAddressOf()));
+
+    // sky specular
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/skySpecular.png", nullptr, m_specularSky.ReleaseAndGetAddressOf()));
+
     // metal tests
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest1.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapMetalTest1.ReleaseAndGetAddressOf()));
@@ -1715,18 +1723,32 @@ void Game::DrawSky()
 
 void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
+    //m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
     m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
-    rotMat = DirectX::SimpleMath::Matrix::Identity;
+
+
+    //rotMat = DirectX::SimpleMath::Matrix::Identity;
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
-    m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
+    m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 0.9f), m_textureSky.Get());
     aEffect->EnableDefaultLighting();
+    aEffect->SetNormalTexture(m_normalMapSky.Get());
+    aEffect->SetSpecularTexture(m_specularSky.Get());
+    aEffect->SetTexture(m_textureSky.Get());
+    aEffect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+    aEffect->SetWorld(rotMat);
+
+    //m_skyShape->Draw(aEffect.get(), aInputLayout.Get());
+
+    aEffect->SetNormalTexture(m_normalMap.Get());
+    aEffect->SetSpecularTexture(m_specular.Get());
+    aEffect->SetTexture(m_texture.Get());
 
     //DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.f, 0.749019623f, 1.f, 1.f);
-    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.1f, 0.1f, 0.3f, 1.f);
+    DirectX::SimpleMath::Vector4 skyColor = DirectX::SimpleMath::Vector4(0.1f, 0.1f, 0.3f, 1.0f);
     aEffect->SetColorAndAlpha(skyColor);
     DirectX::SimpleMath::Vector3 skyBoxTransVec = DirectX::SimpleMath::Vector3::Zero;
     skyBoxTransVec.y -= m_skyBoxSize * 0.17f;
@@ -1990,6 +2012,9 @@ void Game::OnDeviceLost()
     m_texture.Reset();
     m_specular.Reset();
     m_textureSky.Reset();
+    m_normalMapSky.Reset();
+    m_specularSky.Reset();
+
     m_normalMapTest.Reset();
     m_textureTest.Reset();
     m_specularTest.Reset();

@@ -5939,7 +5939,7 @@ void FireControl::InitializeAmmoMissile(MissileStruct& aAmmo)
 {
     aAmmo.ammoData.ammoType = AmmoType::AMMOTYPE_GUIDEDMISSILE;
     aAmmo.ammoData.baseDamage = 1.0f;
-    aAmmo.ammoData.cooldown = 1.9f;
+    aAmmo.ammoData.cooldown = m_missileConsts.cooldown;
     aAmmo.ammoData.dragCoefficient = 0.3f;
     aAmmo.ammoData.impactDurration = 0.4f;
     aAmmo.ammoData.impactModifier = 1.0f;

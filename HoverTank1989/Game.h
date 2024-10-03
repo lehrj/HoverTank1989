@@ -155,6 +155,8 @@ private:
     std::unique_ptr<DirectX::PrimitiveBatch<VertexType3>> m_batch3;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureSky;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapSky;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularSky;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
