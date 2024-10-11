@@ -1542,11 +1542,13 @@ void Game::DrawDebugDataUI()
     textLinePos.y += 30;
     */
 
+    /*
     std::string textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
+    */
 }
 
 void Game::DrawEndUI()
@@ -3000,7 +3002,15 @@ unsigned int Game::GetRandomNonRepeatingFxIndex(unsigned int aCurrentIndex, Util
 
 void Game::UpdateAutoFire()
 {
-    if (m_fireControl->GetIsAutoFireOn() == true && m_fireControl->GetIsAutoFireTargetReadyTrue() == true && m_fireControl->GetIsFireCooldownTrue() == false)
+    int targetControlID = m_fireControl->GetTargetControlID();
+    int targetCurrentID = m_fireControl->GetTargetCurrentID();
+
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("targetControlID", targetControlID, "");
+    m_debugData->DebugPushUILineWholeNumber("targetCurrentID", targetCurrentID, "");
+    m_debugData->ToggleDebugOff();
+
+    if (m_fireControl->GetIsAutoFireOn() == true && m_fireControl->GetIsAutoFireTargetReadyTrue() == true && m_fireControl->GetIsFireCooldownTrue() == false && m_fireControl->GetIsAutoFireTargetValidTrue() == true)
     {
         TriggerFireWithAudio();
     }

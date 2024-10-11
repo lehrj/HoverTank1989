@@ -1039,10 +1039,10 @@ bool NPCController::GetFreeTargetsData(std::vector<unsigned int>& aTargetList)
 
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
     {
-
         if (m_npcVec[i]->GetIsMissileTargetingMe() == false)
         {
             aTargetList.push_back(m_npcVec[i]->GetID());
+            isListUpdatedTrue = true;
         }
     }
 
@@ -1060,6 +1060,61 @@ bool NPCController::GetIsDebugPauseToggleTrue()
         }
     }
     return isDebugPauseTrue;
+}
+
+bool NPCController::GetIsNpcAliveTrue(int aId)
+{
+    bool isAliveTrue = false;
+    unsigned int index = 0;
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            if (m_npcVec[i]->GetIsDead() == false && m_npcVec[i]->GetIsExploding() == false)
+            {
+                isAliveTrue = true;
+                index = i;
+            }
+        }
+    }
+
+    if (isAliveTrue == false)
+    {
+        bool isDead = m_npcVec[index]->GetIsDead();
+        bool isExploding = m_npcVec[index]->GetIsExploding();
+        int testBreak = 0;
+        testBreak++;
+    }
+    return isAliveTrue;
+}
+
+bool NPCController::GetIsNpcUntargetedTrue(int aId)
+{
+    bool isUntargetedTrue = true;
+    unsigned int index = 0;
+
+    for (unsigned int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            if (m_npcVec[i]->GetIsMissileTargetingMe() == true && m_npcVec[i]->GetIsExploding() == false && m_npcVec[i]->GetIsDead() == false)
+            {
+                isUntargetedTrue = false;
+                index = i;
+            }
+        }
+    }
+
+    if (isUntargetedTrue == false)
+    {
+        bool isDead = m_npcVec[index]->GetIsDead();
+        bool isExploding = m_npcVec[index]->GetIsExploding();
+        bool isTargeted = m_npcVec[index]->GetIsMissileTargetingMe();
+        int testBreak = 0;
+        testBreak++;
+    }
+    return isUntargetedTrue;
 }
 
 DirectX::SimpleMath::Vector3 NPCController::GetNpcAccelVecTest(const unsigned int aId)
@@ -1179,7 +1234,7 @@ void NPCController::LoadNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aConte
     float baseHeight = 10.0f;
     //const int rows = 6;
     //const int columns = 4;
-    const int rows = 1;
+    const int rows = 0;
     //const int columns = 12;
     const int columns = 1;
     //const float xOrgVal = -500.0f;

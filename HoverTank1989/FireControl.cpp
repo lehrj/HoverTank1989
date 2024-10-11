@@ -2079,14 +2079,6 @@ void FireControl::CheckCollisionsMissile()
             }
             else if (isHitTrue == true)
             {
-                /*
-                m_missileVec[i].projectileData.isCollisionTrue = true;
-                m_missileVec[i].projectileData.liveTimeTick--;
-                if (m_missileVec[i].projectileData.liveTimeTick <= 0)
-                {
-                    m_missileVec[i].projectileData.isDeleteTrue = true;
-                }
-                */
                 CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
                 m_missileVec[i].projectileData.isDeleteTrue = true;
             }
@@ -2094,24 +2086,10 @@ void FireControl::CheckCollisionsMissile()
             {
                 m_missileVec[i].projectileData.isDeleteTrue = true;
             }
-            /*
-            else if (m_environment->GetIsPosInPlay(m_missileVec[i].projectileData.q.position) == false)
-            {
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
-            }
-            */
             else if (m_missileVec[i].guidance.isSelfDestructTrue == true)
             {
-                /*
                 CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
-
-                m_missileVec[i].guidance.isExplodingTrue = true;
-                m_missileVec[i].guidance.isRocketFired = false;
-                m_missileVec[i].guidance.forwardThrust = 0.0f;
-                m_missileVec[i].guidance.throttlePercentage = 0.0f;
-                */
-                m_missileVec[i].guidance.isRocketFired = false;
+                m_missileVec[i].projectileData.isDeleteTrue = true;
             }
         }
 
@@ -9550,6 +9528,11 @@ void FireControl::UpdateFireControl(double aTimeDelta)
     }
 
     UpdateTargetControl(static_cast<float>(aTimeDelta));
+
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_currentTargetID = ", m_currentTargetID, "");
+    m_debugData->DebugPushUILineWholeNumber("targetList.size() = ", m_targetControl.targetList.size(), "");
+    m_debugData->ToggleDebugOff();
 }
 
 void FireControl::UpdateFlightStateData(MissileData& aMissile, const double aTimeDelta)
@@ -10838,10 +10821,6 @@ void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTim
 
 void FireControl::UpdateMissileVec(double aTimeDelta)
 {
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_missileVec.size() = ", m_missileVec.size(), "");
-    m_debugData->ToggleDebugOff();
-
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
         auto prevThrustVecNorm = m_missileVec[i].guidance.conDat.thrustVecNorm;
@@ -10948,6 +10927,18 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //m_debugData->DebugPushUILineDecimalNumber("altitude   = ", m_missileVec[i].guidance.altitude, "");
         m_debugData->ToggleDebugOff();
 
+        int targId = m_missileVec[i].guidance.targetID;
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineWholeNumber("targId   = ", targId, "");
+        m_debugData->ToggleDebugOff();
+        bool isKeepAliveTrue = m_npcController->GetIsNpcAliveTrue(targId);
+        if (isKeepAliveTrue == false)
+        {
+            //m_missileVec[i].guidance.isSelfDestructTrue = true;
+
+            //CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+            //m_missileVec[i].projectileData.isDeleteTrue = true;
+        }
         DebugDrawUpdate(m_missileVec[i]);
 
         m_debugDrawVec.clear();
@@ -15616,7 +15607,8 @@ void FireControl::UpdateTargetControl(const float aTimeDelta)
 
     bool isUpdatedTrue = m_npcController->GetFreeTargetsData(updateList);
 
-    if (updateList.size() > 0)
+    //if (updateList.size() > 0)
+    if (isUpdatedTrue == true)
     {
         m_targetControl.isTargetOnDeckTrue = true;
     }
@@ -15624,10 +15616,29 @@ void FireControl::UpdateTargetControl(const float aTimeDelta)
     {
         m_targetControl.isTargetOnDeckTrue = false;
     }
+
     m_targetControl.targetList = updateList;
 
     if (m_isAutoFireOn == true && m_targetControl.isTargetOnDeckTrue == true)
     {
-        m_currentTargetID = m_targetControl.targetList[0];
+        //m_currentTargetID = m_targetControl.targetList[0];
+        //m_targetControl.targetId = m_targetControl.targetList[0];
+
+        m_currentTargetID = m_targetControl.targetList[m_targetControl.targetList.size() - 1];
+        m_targetControl.targetId = m_targetControl.targetList[m_targetControl.targetList.size() - 1];
+    }
+}
+
+
+
+bool FireControl::GetIsAutoFireTargetValidTrue()
+{
+    if (m_npcController->GetIsNpcUntargetedTrue(m_currentTargetID) == true)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }

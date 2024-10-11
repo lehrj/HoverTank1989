@@ -673,6 +673,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 
     DirectX::SimpleMath::Vector4 targetColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 targetColorMissile = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    targetColorMissile = targetColor;
 
     if (m_vehicleStruct00.vehicleData.isPlayerTargetedTrue == true)
     {

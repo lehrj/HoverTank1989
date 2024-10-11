@@ -964,10 +964,15 @@ public:
     void GetCameraTrackAllData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget, DirectX::SimpleMath::Vector3& aUp) const;
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
     
+    int GetTargetControlID() const { return m_targetControl.targetId; };
+    int GetTargetCurrentID() const { return m_currentTargetID; };
+    
+
     void GetUIData(DirectX::SimpleMath::Vector3& aPosRaw, DirectX::SimpleMath::Vector3& aPosMod);
 
     bool GetIsAutoFireOn() { return m_isAutoFireOn; };
     bool GetIsAutoFireTargetReadyTrue() { return m_targetControl.isTargetOnDeckTrue; };
+    bool GetIsAutoFireTargetValidTrue();
     bool GetIsFireCooldownTrue() { return m_isCoolDownActive; };
     
     bool GetIsTargetingLaserOn() { return m_isTargetingLaserOn; };
