@@ -862,9 +862,9 @@ void Game::Update(DX::StepTimer const& aTimer)
 
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw(), m_vehicle->GetGroundPlane());
-        m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
+        
         m_npcController->UpdateNPCController(m_camera->GetCameraFrustum() , aTimer.GetElapsedSeconds());
-
+        m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
         auto context = m_deviceResources->GetD3DDeviceContext();
         m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());
     }
@@ -2715,27 +2715,45 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal);
         }
+        /*
         if (pad.thumbSticks.rightY > m_gamePadInputDeadZone || pad.thumbSticks.rightY < -m_gamePadInputDeadZone)
         {
             const float pitchMod = m_gamePadInputRateTurretVerticle;
             m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * pitchMod);
         }
-
+        */
+        if (pad.thumbSticks.rightY > m_gamePadInputDeadZone)
+        {
+            //m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_camera->FovDown(static_cast<float>(pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
+        }
+        if (pad.thumbSticks.rightY < -m_gamePadInputDeadZone)
+        {
+            //m_camera->FovUp(static_cast<float>(aTimer.GetElapsedSeconds()));
+            m_camera->FovUp(static_cast<float>(-pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
+        }
         if (pad.IsRightShoulderPressed() == true)
         {
-            m_vehicle->FireWeapon();
+            //m_vehicle->FireWeapon();
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                if (m_fireControl->GetIsMissileFireAvailable() == true)
+                {
+                    if (m_fireControl->GetIsMissileDualFireTrue() == true)
+                    {
+                        TriggerFireWithAudio();
+                        TriggerFireWithAudio();
+                    }
+                    else
+                    {
+                        TriggerFireWithAudio();
+                    }
+                }
+            }
         }
         if (pad.IsLeftStickPressed() == true)
         {
             m_vehicle->DebugInputVelocityZero();
-        }
-        if (m_buttons.y == GamePad::ButtonStateTracker::PRESSED)
-        {
-            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-            {
-                m_vehicle->CycleFireControlAmmo();
-                SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
-            }
         }
         if (m_buttons.leftShoulder == GamePad::ButtonStateTracker::PRESSED)
         {
@@ -2744,29 +2762,18 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 m_fireControl->TriggerMirvDeploy();
             }
         }
-        if (m_buttons.b == GamePad::ButtonStateTracker::PRESSED)
+        if (m_buttons.a == GamePad::ButtonStateTracker::HELD)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                const unsigned int columnCount = 8;
-                const unsigned int rowCount = 2;
-                //const float columSpaceing = 15.0f;
-                //const float rowSpacing = 20.0f;
-                const float columSpaceing = 20.0f;
-                const float rowSpacing = 25.0f;
-
-                const DirectX::SimpleMath::Vector2 spacing = DirectX::SimpleMath::Vector2(columSpaceing, rowSpacing);
-                DirectX::SimpleMath::Vector3 dropDirection = m_vehicle->GetForward();
-                const float dropDistance = 250.0f;
-                dropDirection *= dropDistance;
-                DirectX::SimpleMath::Vector3 dropPosition = m_vehicle->GetPos();
-                dropPosition.y += 145.0f;
-                dropPosition += dropDirection;
-
-                const DirectX::SimpleMath::Vector3 orientation = -m_vehicle->GetForward();
-                const DirectX::SimpleMath::Quaternion alignQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicle->GetAlignment());
-
-                m_npcController->LoadToQueue(dropPosition, orientation, columnCount, rowCount, spacing, alignQuat);
+                m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
+            }
+        }
+        if (m_buttons.b == GamePad::ButtonStateTracker::HELD)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                m_camera->FovUp(static_cast<float>(aTimer.GetElapsedSeconds()));
             }
         }
         if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
@@ -2774,6 +2781,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
                 m_npcController->SetAllNpcsToDead();
+            }
+        }
+        if (m_buttons.y == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                //m_vehicle->CycleFireControlAmmo();
+                //SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
+                m_vehicle->ToggleFireControlLaser();
             }
         }
         if (m_buttons.dpadDown == GamePad::ButtonStateTracker::PRESSED)

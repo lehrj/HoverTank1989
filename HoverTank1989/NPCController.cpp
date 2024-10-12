@@ -831,6 +831,7 @@ bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aPr
             {
                 isCollisionTrue = true;
                 isProximityTrue = true;
+                m_npcVec[i]->SetIsMissileDetonationTrue();
             }
         }
         else if (DirectX::SimpleMath::Vector3::Distance(aProjectile.collisionSphere.Center, m_npcVec[i]->GetPos()) < m_npcVec[i]->GetCollisionDetectionRange())
@@ -1098,7 +1099,7 @@ bool NPCController::GetIsNpcUntargetedTrue(int aId)
     {
         if (m_npcVec[i]->GetID() == aId)
         {
-            if (m_npcVec[i]->GetIsMissileTargetingMe() == true && m_npcVec[i]->GetIsExploding() == false && m_npcVec[i]->GetIsDead() == false)
+            if (m_npcVec[i]->GetIsMissileTargetingMe() == true && m_npcVec[i]->GetIsExploding() == false && m_npcVec[i]->GetIsDead() == false && m_npcVec[i]->GetIsMissileDetonationTrue() == false)
             {
                 isUntargetedTrue = false;
                 index = i;

@@ -6212,6 +6212,7 @@ void FireControl::InitializeFireControl(Microsoft::WRL::ComPtr<ID3D11DeviceConte
 {
     m_debugDrawVec.clear();
     m_muzzleFlashVec.clear();
+    m_fireList.clear();
 
     m_playerVehicle = aVehicle;
     m_explosionStruct.explosionToPushVec.clear();
@@ -15587,6 +15588,9 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
 
     InitializeContrails(firedMissile);
     m_missileVec.push_back(firedMissile);
+
+
+    m_fireList.push_back(m_currentTargetID);
 }
 
 void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTimeDelta)
@@ -15633,6 +15637,14 @@ void FireControl::UpdateTargetControl(const float aTimeDelta)
 
 bool FireControl::GetIsAutoFireTargetValidTrue()
 {
+    for (unsigned int i = 0; i < m_fireList.size(); ++i)
+    {
+        if (m_currentTargetID == m_fireList[i])
+        {
+            return false;
+        }
+    }
+
     if (m_npcController->GetIsNpcUntargetedTrue(m_currentTargetID) == true)
     {
         return true;

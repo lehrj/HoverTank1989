@@ -692,6 +692,17 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         ventColor = targetColorMissile;
         eyeColor = targetColorMissile;
     }
+
+   /*
+    targetColor = DirectX::SimpleMath::Vector4(1.0f, 0.270588249f, 0.0f, 1.0f);
+    ventColorAlt = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    color = targetColor;
+    mainBodyColor = targetColor;
+    jetHousingColor = targetColor;
+    ventColor = targetColor;
+    eyeColor = targetColor;
+    */
+
     // override default colors with individual npc color schemes
     /*
     eyeColor = m_vehicleStruct00.npcModel.color1;

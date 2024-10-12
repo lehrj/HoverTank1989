@@ -1409,6 +1409,8 @@ private:
 
     bool m_isAutoFireOn = false;
 
+    std::vector<int> m_fireList;
+
 public:
 
     unsigned int GetCreateAudioCount() const { return m_fxExplosionVec.size(); };

@@ -465,13 +465,14 @@ private:
     float m_lightRotation = 0.0f;
     float m_shapeRotation = 0.0f;
 
-    const float m_gamePadInputRateTurretHorizontal = 0.035f;
+    //const float m_gamePadInputRateTurretHorizontal = 0.035f;
+    const float m_gamePadInputRateTurretHorizontal = 0.03f;
     const float m_gamePadInputRateTurretVerticle = 0.015f;
     const float m_gamePadInputRateBodyTurn = 1.0f;
     const float m_gamePadInputRateBodyAccel = 1.0f;
     //const float m_gamePadInputRateBodySideStrafe = 0.2f;
     const float m_gamePadInputRateBodySideStrafe = 1.0f;
-    const float m_gamePadInputDeadZone = 0.1f;
+    const float m_gamePadInputDeadZone = 0.005f;
 
     // variables for place holder skybox and ground box, less visually abtrusive to aid in tunning missiles in flight
     const DirectX::SimpleMath::Vector3 m_skyBoxTerrainBaseOffset = DirectX::SimpleMath::Vector3(0.0f, 1000.0f, 0.0f);

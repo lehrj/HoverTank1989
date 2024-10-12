@@ -452,6 +452,7 @@ struct VehicleData
     //bool                        isTargetedTrue = false;
     bool                        isPlayerTargetedTrue = false;
     bool                        isMissileTargetedTrue = false;
+    bool                        isMissileDetonationTrue = false;
 
     float                       deleteCountDownTimer = 1.0f;
     Utility::ImpactForce        impactForce;
@@ -560,6 +561,7 @@ public:
     float GetMaxTurnRate() const { return m_vehicleStruct00.vehicleData.hoverData.turnRateMax; };
 
     bool GetIsMissileTargetingMe() const { return m_vehicleStruct00.vehicleData.isMissileTargetedTrue; };
+    bool GetIsMissileDetonationTrue() const { return m_vehicleStruct00.vehicleData.isMissileDetonationTrue; };
 
     static VehicleData GetNewNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
         const DirectX::SimpleMath::Vector3 aHeading,
@@ -591,6 +593,7 @@ public:
     //void SetIsTargetedTrue() { m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; };
     void SetIsPlayerTargetedTrue() { m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; };
     void SetIsMissileTargetedTrue() { m_vehicleStruct00.vehicleData.isMissileTargetedTrue = true; };
+    void SetIsMissileDetonationTrue() { m_vehicleStruct00.vehicleData.isMissileDetonationTrue = true; };
 
     void SetPos(const DirectX::SimpleMath::Vector3 aPos) { m_vehicleStruct00.vehicleData.q.position = aPos; };
     void SetVelocity(const DirectX::SimpleMath::Vector3 aVelocity) { m_vehicleStruct00.vehicleData.q.velocity = aVelocity; };
