@@ -2762,11 +2762,12 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 m_fireControl->TriggerMirvDeploy();
             }
         }
-        if (m_buttons.a == GamePad::ButtonStateTracker::HELD)
+        if (m_buttons.a == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
+                //m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
+                m_camera->CycleMissileTrackState();
             }
         }
         if (m_buttons.b == GamePad::ButtonStateTracker::HELD)
@@ -2780,7 +2781,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                m_npcController->SetAllNpcsToDead();
+                //m_npcController->SetAllNpcsToDead();
+                m_camera->ActivateMissleTrackCamera();
             }
         }
         if (m_buttons.y == GamePad::ButtonStateTracker::PRESSED)

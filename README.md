@@ -1,5 +1,5 @@
 # HoverTank1989
-A retro themed hover tank game in development using C++, DirectX 11, and DirectXTK
+A retro themed physics-based hover tank game. Demo videos @[BaltimoreMagicWerks](https://www.youtube.com/playlist?list=PLKMR2Ppf1A4jEboMkoUcWpha-Y7QUaZ_o)
 
 <p align="center">
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Trailer01.png">
