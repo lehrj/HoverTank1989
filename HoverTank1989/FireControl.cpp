@@ -3063,6 +3063,7 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
     
     DrawLaser(aView, aProj, aEffect, aInputLayout);
     DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
+    //DrawMissilesWithLightingOld(aView, aProj, aEffect, aInputLayout);
 }
 
 void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
@@ -8737,10 +8738,12 @@ void FireControl::ToggleAutoFire()
     if (m_isAutoFireOn == true)
     {
         m_isAutoFireOn = false;
+        m_isTubeDualFireTrue = true;
     }
     else
     {
         m_isAutoFireOn = true;
+        m_isTubeDualFireTrue = false;
     }
 }
 
@@ -10612,7 +10615,6 @@ void FireControl::UpdateMissileGuidance(MissileData& aMissile, const float aTime
 void FireControl::UpdateMissileModelData(MissileData& aMissile, const float aTimeDelta)
 {
     aMissile.guidance.afterBurnFlickerRotation = Utility::WrapAngle(aMissile.guidance.afterBurnFlickerRotation + (m_ammoMissile.modelData.afterBurnFlickerRotationRate * aTimeDelta));
-
 
     if (aMissile.guidance.flickerBool == true)
     {
@@ -14705,6 +14707,7 @@ void FireControl::DrawMissilesWithLightingOld(const DirectX::SimpleMath::Matrix 
         //auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, alignRotMat);
         //auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, thrustVecRotMat);
         auto jetDirectionBase = DirectX::SimpleMath::Vector3::TransformNormal(-DirectX::SimpleMath::Vector3::UnitX, thrustVecRotMat);
+        jetDirectionBase = DirectX::SimpleMath::Vector3::Transform(jetDirectionBase, m_missileVec[i].projectileData.alignmentQuat);
 
         //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, jetDirectionBase, DirectX::Colors::Yellow, false, false);
         Utility::GetDispersedLightDirections(jetDirectionBase, Utility::ToRadians(baseAngleDegrees), lightDirection0, lightDirection1, lightDirection2);
@@ -14713,6 +14716,12 @@ void FireControl::DrawMissilesWithLightingOld(const DirectX::SimpleMath::Matrix 
         //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, lightDirection0, DirectX::Colors::Yellow, false, false);
         //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, lightDirection1, DirectX::Colors::Orange, false, false);
         //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, lightDirection2, DirectX::Colors::Red, false, false);
+
+        /*
+        lightDirection0 = DirectX::SimpleMath::Vector3::UnitY;
+        lightDirection1 = DirectX::SimpleMath::Vector3::UnitY;
+        lightDirection2 = DirectX::SimpleMath::Vector3::UnitY;
+        */
 
         aEffect->SetLightDirection(0, lightDirection0);
         aEffect->SetLightDirection(1, lightDirection1);

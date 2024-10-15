@@ -489,7 +489,8 @@ struct MissileModel
     const unsigned int contrailDrawCountMax = 30;
 
     // afterburn flicker
-    const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
+    //const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
+    const float afterBurnFlickerRotationRate = Utility::ToRadians(1700.1f);
     const float afterBurnFlickerRateScale = 100.1f;
     const float plumeflickerScaleLength = 0.5f;
     const float plumeflickerScaleWidth = 0.7f;
@@ -1297,7 +1298,7 @@ private:
     bool m_isDebugToggleTrue2 = false;
     bool m_isDebugToggleTrue3 = false;
 
-    bool m_isRocketOnDebug = true;
+    //bool m_isRocketOnDebug = true;
     bool m_isDebugMissilePosToTankTrue = false;
 
     const bool m_isDebugToggleTrueTestConst = false;
@@ -1399,11 +1400,9 @@ private:
 
     // audio and explosions
     std::vector<std::shared_ptr<Utility::SoundFx>> m_fxExplosionVec;
-    //void AudioExplosionUpdate(const float aTimeDelta);
 
     bool m_isTubeRippleFireTrue = true;
-    bool m_isTubeDualFireTrue = false;
-    //MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_LEFT;
+    bool m_isTubeDualFireTrue = true;
     MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
     bool m_isDualFireCoolDownOverRideTrue = false;
 
