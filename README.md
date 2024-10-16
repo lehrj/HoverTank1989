@@ -25,7 +25,7 @@ Autonomous figure 8 track racing with NPC hovercrafts shows off their ability to
 The laser targeted self-guided missile system attempts to emulate the javelin anti-tank missile in both form & function. It utilizes a dual stage soft launch system, with the rocket ignition and wing deployment occurring after the missile is a safe distance from the launch vehicle.
 
 <p align="center">
-  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Launch.png">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/FlightPath.png">
 </p>
 
 Once fully deployed the missile accelerates past stall speed, at which point it can safely gain altitude for a top-down attack.  
