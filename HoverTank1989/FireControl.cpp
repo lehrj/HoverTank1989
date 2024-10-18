@@ -10931,7 +10931,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugData->ToggleDebugOff();
 
         int targId = m_missileVec[i].guidance.targetID;
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         m_debugData->DebugPushUILineWholeNumber("targId   = ", targId, "");
         m_debugData->ToggleDebugOff();
         bool isKeepAliveTrue = m_npcController->GetIsNpcAliveTrue(targId);
@@ -15637,8 +15637,11 @@ void FireControl::UpdateTargetControl(const float aTimeDelta)
         //m_currentTargetID = m_targetControl.targetList[0];
         //m_targetControl.targetId = m_targetControl.targetList[0];
 
-        m_currentTargetID = m_targetControl.targetList[m_targetControl.targetList.size() - 1];
-        m_targetControl.targetId = m_targetControl.targetList[m_targetControl.targetList.size() - 1];
+        //m_currentTargetID = m_targetControl.targetList[m_targetControl.targetList.size() - 1];
+        //m_targetControl.targetId = m_targetControl.targetList[m_targetControl.targetList.size() - 1];
+
+        m_currentTargetID = m_targetControl.targetList[0];
+        m_targetControl.targetId = m_targetControl.targetList[0];
     }
 }
 

@@ -999,7 +999,7 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
@@ -2694,16 +2694,29 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (pad.thumbSticks.leftY > m_gamePadInputDeadZone || pad.thumbSticks.leftY < -m_gamePadInputDeadZone)
         {
             const float inputMod = m_gamePadInputRateBodyAccel;
-            m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
+            //m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
+
+            if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+            {
+                //m_camera->UpdatePos(0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
+                m_camera->UpdatePos(0.0f, 0.0f, 0.0f + static_cast<float>(pad.thumbSticks.leftY * inputMod * aTimer.GetElapsedSeconds()));
+            }
+            else
+            {
+                m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
+            }
         }
         if (pad.thumbSticks.leftX > m_gamePadInputDeadZone || pad.thumbSticks.leftX < -m_gamePadInputDeadZone)
         {
-            //m_vehicle->InputCyclicRoll(static_cast<float>(aTimer.GetElapsedSeconds()));
             const float inputMod = m_gamePadInputRateBodySideStrafe;
-            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * inputMod);
-            //m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX * static_cast<float>(aTimer.GetElapsedSeconds()));
-            m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
-            //m_vehicle->InputGamePadTurn(pad.thumbSticks.leftX);
+            if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+            {
+                m_camera->UpdatePos(0.0f + static_cast<float>(pad.thumbSticks.leftX * inputMod * aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
+            }
+            else
+            {
+                m_vehicle->InputGamePadStrafe(-pad.thumbSticks.leftX);
+            }
         }
         if (pad.triggers.left > m_gamePadInputDeadZone || pad.triggers.right > m_gamePadInputDeadZone)
         {
@@ -2713,24 +2726,39 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (pad.thumbSticks.rightX > m_gamePadInputDeadZone || pad.thumbSticks.rightX < -m_gamePadInputDeadZone)
         {
-            m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal);
+            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+            {
+                m_camera->UpdatePitchYaw(0.0f, -static_cast<float>(pad.thumbSticks.rightX * inputMod * aTimer.GetElapsedSeconds()));
+            }
+            else
+            {
+                m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal);
+            }
         }
-        /*
-        if (pad.thumbSticks.rightY > m_gamePadInputDeadZone || pad.thumbSticks.rightY < -m_gamePadInputDeadZone)
-        {
-            const float pitchMod = m_gamePadInputRateTurretVerticle;
-            m_vehicle->InputWeaponPitch(-pad.thumbSticks.rightY * pitchMod);
-        }
-        */
         if (pad.thumbSticks.rightY > m_gamePadInputDeadZone)
         {
-            //m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
-            m_camera->FovDown(static_cast<float>(pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
+            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+            {
+                m_camera->UpdatePitchYaw(static_cast<float>(pad.thumbSticks.rightY * inputMod * aTimer.GetElapsedSeconds()), 0.0f);
+            }
+            else
+            {
+                m_camera->FovDown(static_cast<float>(pad.thumbSticks.rightY* aTimer.GetElapsedSeconds()));
+            }
         }
         if (pad.thumbSticks.rightY < -m_gamePadInputDeadZone)
         {
-            //m_camera->FovUp(static_cast<float>(aTimer.GetElapsedSeconds()));
-            m_camera->FovUp(static_cast<float>(-pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
+            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+            {
+                m_camera->UpdatePitchYaw(static_cast<float>(pad.thumbSticks.rightY * inputMod * aTimer.GetElapsedSeconds()), 0.0f);
+            }
+            else
+            {
+                m_camera->FovUp(static_cast<float>(-pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
+            }  
         }
         if (pad.IsRightShoulderPressed() == true)
         {
