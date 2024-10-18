@@ -2693,12 +2693,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
         if (pad.thumbSticks.leftY > m_gamePadInputDeadZone || pad.thumbSticks.leftY < -m_gamePadInputDeadZone)
         {
-            const float inputMod = m_gamePadInputRateBodyAccel;
-            //m_vehicle->InputGamePadForward(pad.thumbSticks.leftY * inputMod);
-
+            const float inputMod = m_gamePadInputCamStrafe;
             if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
             {
-                //m_camera->UpdatePos(0.0f - static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
                 m_camera->UpdatePos(0.0f, 0.0f, 0.0f + static_cast<float>(pad.thumbSticks.leftY * inputMod * aTimer.GetElapsedSeconds()));
             }
             else
@@ -2708,7 +2705,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (pad.thumbSticks.leftX > m_gamePadInputDeadZone || pad.thumbSticks.leftX < -m_gamePadInputDeadZone)
         {
-            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            const float inputMod = m_gamePadInputCamStrafe;
             if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
             {
                 m_camera->UpdatePos(0.0f + static_cast<float>(pad.thumbSticks.leftX * inputMod * aTimer.GetElapsedSeconds()), 0.0f, 0.0f);
@@ -2721,12 +2718,23 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (pad.triggers.left > m_gamePadInputDeadZone || pad.triggers.right > m_gamePadInputDeadZone)
         {
             const float turnMod = m_gamePadInputRateBodyTurn;
-            m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right) * turnMod);
+            
             //m_vehicle->InputGamePadStrafe((pad.triggers.left - pad.triggers.right)* turnMod);
+
+            const float inputMod = m_gamePadInputCamHeight;
+            if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+            {
+                m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>((-pad.triggers.left + pad.triggers.right) * inputMod * aTimer.GetElapsedSeconds()), 0.0f);
+            }
+            else
+            {
+                m_vehicle->InputGamePadTurn((-pad.triggers.left + pad.triggers.right) * turnMod);
+            }
+
         }
         if (pad.thumbSticks.rightX > m_gamePadInputDeadZone || pad.thumbSticks.rightX < -m_gamePadInputDeadZone)
         {
-            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            const float inputMod = m_gamePadInputCamRotate;
             if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
             {
                 m_camera->UpdatePitchYaw(0.0f, -static_cast<float>(pad.thumbSticks.rightX * inputMod * aTimer.GetElapsedSeconds()));
@@ -2738,7 +2746,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         }
         if (pad.thumbSticks.rightY > m_gamePadInputDeadZone)
         {
-            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            const float inputMod = m_gamePadInputCamRotate;
             if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
             {
                 m_camera->UpdatePitchYaw(static_cast<float>(pad.thumbSticks.rightY * inputMod * aTimer.GetElapsedSeconds()), 0.0f);

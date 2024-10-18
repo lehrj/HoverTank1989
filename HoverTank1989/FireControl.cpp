@@ -3223,9 +3223,8 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                     //diameterScale *= 0.5f;
                 }
 
-                //diameterScale = m_laserLightingPulseScale;
                 diameterScale = m_missileVec[i].guidance.laserPulseScale;
-
+                
                 DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
                 DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
@@ -3294,11 +3293,8 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, defaultLightDir0, 5.0f, 0.0f, DirectX::Colors::White);
                 m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, defaultLightDir1, 5.0f, 0.0f, DirectX::Colors::White);
                 m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, defaultLightDir2, 5.0f, 0.0f, DirectX::Colors::White);
-
                 m_debugData->PushDebugLinePositionIndicator(m_missileVec[i].projectileData.q.position, 5.0f, 0.0f, DirectX::Colors::White);
-
                 m_debugData->DebugPushUILineDecimalNumber("m_laserLightingRotation = ", m_laserLightingRotation, "");
-
                 m_debugData->ToggleDebugOff();
 
                 //////////////////////////////////////////////////////////////////////
@@ -9995,22 +9991,15 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
     m_laserLightingRotation += aTimeDelta * m_laserLightingRate;
     Utility::WrapAngle(m_laserLightingRotation);
 
-    if (m_isTargetingLaserLockTrue == true || 1 == 0)
+    if (m_isTargetingLaserLockTrue == true)
     {
-        //m_laserLightingPulseScale = cos(m_laserLightingPulseScale + static_cast<float>(aTimeDelta));
-        //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
-        //m_laserLightingPulseScale = cos(m_laserLightingPulseScale);
-
         const float minPulse = 0.2f;
         if (m_laserLightingPulseScale >= 1.0f)
         {
             m_laserLightingPulseScale = minPulse;
         }
-        //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
 
         m_laserLightingPulseScale = (cos(m_laserLightingPulseScale + static_cast<float>(aTimeDelta)));
-
-
         m_laserLightingPulseTimer += aTimeDelta;
 
         if (m_laserLightingPulseTimer > m_laserLightingPulseConst)
@@ -10018,10 +10007,7 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
             m_laserLightingPulseTimer = 0.0f;
             float timer = m_laserLightingPulseTimer;
             float pulse = m_laserLightingPulseConst;
-            //m_laserLightingPulseTimer = timer % pulse;
             float value = remainder(timer, pulse);
-
-            //m_laserLightingPulseScale = 0.0f + value;
         }
         else
         {
@@ -10033,42 +10019,34 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
         m_laserLightingPulseScale = 1.0f;
     }
 
-
     /// Missile lasers
     if (m_missileConsts.isMissleTargetingLaserTrue == true)
     {
         for (unsigned int i = 0; i < m_missileVec.size(); ++i)
         {
-            // m_missileVec[i].guidance.laserPulseScale
-            // m_missileVec[i].guidance.laserPulseTimer
-
-            const float minPulse = 0.2f;
-            if (m_missileVec[i].guidance.laserPulseScale >= 1.0f)
+            if (m_missileVec[i].guidance.isTargetingLaserOn == true)
             {
-                m_missileVec[i].guidance.laserPulseScale = minPulse;
+                const float minPulse = 0.2f;
+                if (m_missileVec[i].guidance.laserPulseScale >= 1.0f)
+                {
+                    m_missileVec[i].guidance.laserPulseScale = minPulse;
+                }
+   
+                m_missileVec[i].guidance.laserPulseScale = (cos(m_missileVec[i].guidance.laserPulseScale + static_cast<float>(aTimeDelta)));
+                m_missileVec[i].guidance.laserPulseTimer += aTimeDelta;
+
+                if (m_missileVec[i].guidance.laserPulseTimer > m_laserLightingPulseConst)
+                {
+                    m_missileVec[i].guidance.laserPulseTimer = 0.0f;
+                    float timer = m_missileVec[i].guidance.laserPulseTimer;
+                    float pulse = m_laserLightingPulseConst;
+                    float value = remainder(timer, pulse);
+                }
+                else
+                {
+                    m_missileVec[i].guidance.laserPulseScale = m_missileVec[i].guidance.laserPulseTimer / m_laserLightingPulseConst;
+                }
             }
-            //m_laserLightingPulseScale += static_cast<float>(aTimeDelta);
-
-            m_missileVec[i].guidance.laserPulseScale = (cos(m_missileVec[i].guidance.laserPulseScale + static_cast<float>(aTimeDelta)));
-
-
-            m_missileVec[i].guidance.laserPulseTimer += aTimeDelta;
-
-            if (m_missileVec[i].guidance.laserPulseTimer > m_laserLightingPulseConst)
-            {
-                m_missileVec[i].guidance.laserPulseTimer = 0.0f;
-                float timer = m_missileVec[i].guidance.laserPulseTimer;
-                float pulse = m_laserLightingPulseConst;
-                //m_laserLightingPulseTimer = timer % pulse;
-                float value = remainder(timer, pulse);
-
-                //m_laserLightingPulseScale = 0.0f + value;
-            }
-            else
-            {
-                m_missileVec[i].guidance.laserPulseScale = m_missileVec[i].guidance.laserPulseTimer / m_laserLightingPulseConst;
-            }
-
         }
     }
 }
@@ -10916,7 +10894,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ResetMissileForceAccumulators(m_missileVec[i]);
 
-        //m_debugData->ToggleDebugOnOverRide();
+        m_debugData->ToggleDebugOnOverRide();
         float speed = m_missileVec[i].projectileData.q.velocity.Length();
         float mph = speed * 2.237f;
         m_debugData->DebugPushUILineWholeNumber("mph = ", static_cast<int>(mph), "");
@@ -10932,8 +10910,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
         int targId = m_missileVec[i].guidance.targetID;
         //m_debugData->ToggleDebugOnOverRide();
-        m_debugData->DebugPushUILineWholeNumber("targId   = ", targId, "");
-        m_debugData->ToggleDebugOff();
+        //m_debugData->DebugPushUILineWholeNumber("targId   = ", targId, "");
+        //m_debugData->ToggleDebugOff();
+
         bool isKeepAliveTrue = m_npcController->GetIsNpcAliveTrue(targId);
         if (isKeepAliveTrue == false)
         {
@@ -11040,12 +11019,6 @@ void FireControl::UpdateMuzzleFlash(MuzzleFlash& aMuzzleFlash, const double aTim
 
         m_muzzleFlashVec[i].worldMuzzleFlashConeMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(m_playerVehicle->GetLocalizedMuzzlePos());
         m_muzzleFlashVec[i].worldMuzzleFlashConeMatrix *= updateMat;
-        
-    }
-
-    for (unsigned int i = 0; i < m_muzzleFlashVec.size(); ++i)
-    {
-
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

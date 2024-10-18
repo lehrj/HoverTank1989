@@ -297,7 +297,6 @@ struct GuidanceSystem
     float estimatedCrossArea = 0.0f;
 
     float altitude = 0.0f;
-    float detonationRadius = 5.0f;
     
     bool isFinsDeployStarted = false;
     bool isFinsDeployEnd = false;
@@ -308,7 +307,7 @@ struct GuidanceSystem
     bool isRocketPlumeFlickerTrue = false;
     bool isSelfDestructTrue = false;
     bool isExplodingTrue = false;
-    bool isTargetingLaserOn = true;
+    bool isTargetingLaserOn = false;
 
     float postExplosionDrawCountDown = 2.0f;
 
@@ -442,10 +441,8 @@ struct GuidanceSystem
     DirectX::SimpleMath::Matrix seekerHousingMat = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix seekerLensMat = DirectX::SimpleMath::Matrix::Identity;
 
-
     float laserPulseScale = 1.0f;
     float laserPulseTimer = 0.0f;
-
 };
 
 struct AmmoStruct
@@ -655,7 +652,6 @@ struct MissileConsts
     const float rocketFireFullTime = 1.01f;
     */
 
-    
     const float finDeployDelay = 0.2f;
     const float rocketFireDelay = 0.6f;
     const float finDeployTime = 0.4f;
@@ -663,7 +659,8 @@ struct MissileConsts
     const float rocketOverBoostTime = 0.3f;
     const float rocketOverBoostMax = 2.0f;
     
-
+    //const float laserDepoyDelay = 3.9f;
+    const float laserDepoyDelay = finDeployTime + finDeployDelay;
 
     /*
     const float finDeployDelay = 5.2f;
@@ -673,8 +670,6 @@ struct MissileConsts
     const float rocketOverBoostTime = 0.3f;
     const float rocketOverBoostMax = 2.0f;
     */
-
-
 
     const float wingArea = 0.3f;
 
@@ -687,8 +682,6 @@ struct MissileConsts
     const float postExplosionDragCoefficient = 0.5f;
     const float explosionDragCoefficientBase = 0.1f;
     const float explosionDragCoefficientAddMax = 0.1f;
-
-    const float laserDepoyDelay = 3.9f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
     //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.65f, 0.0, 0.0f);
