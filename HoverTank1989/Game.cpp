@@ -2810,7 +2810,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                m_camera->FovUp(static_cast<float>(aTimer.GetElapsedSeconds()));
+                //m_camera->FovUp(static_cast<float>(aTimer.GetElapsedSeconds()));
+                m_vehicle->ToggleFireControlLaser();
             }
         }
         if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
@@ -2827,7 +2828,19 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             {
                 //m_vehicle->CycleFireControlAmmo();
                 //SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
-                m_vehicle->ToggleFireControlLaser();
+                //m_vehicle->ToggleFireControlLaser();
+                if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SNAPCAM)
+                {
+                    m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
+                }
+                else if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
+                {
+                    m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+                }
+                else
+                {
+                    m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
+                }
             }
         }
         if (m_buttons.dpadDown == GamePad::ButtonStateTracker::PRESSED)

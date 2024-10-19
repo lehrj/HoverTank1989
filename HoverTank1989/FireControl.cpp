@@ -8553,7 +8553,7 @@ void FireControl::RightHandSideMissile(struct MissileData* aProjectile, Projecti
     newQ.angularMomentum = aQ->angularMomentum + static_cast<float>(aQScale) * aDeltaQ->angularMomentum;
 
     Utility::ForceAccum aeroAccum = RHSAeroForceAccumulator(aProjectile, newQ.velocity);
-
+    
     ////////////////////////////////////////
     //float airSurfaceArea = 1.0f;
     float airSurfaceArea = m_missileConsts.dragAreaDebug;
