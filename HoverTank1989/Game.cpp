@@ -2687,6 +2687,27 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
     auto pad = m_gamePad->GetState(0);
 
+    /*
+    Y		SetCameraState
+    X       ActivateMissleTrackCamera();
+    A		CycleMissileTrackState();
+    B       ToggleFireControlLaser();
+
+    LB
+    RB		TriggerFireWithAudio
+
+    LT		Strafe
+    RT		Strafe
+
+    dpad up
+    dpad right
+    dpad down
+    dpad left
+
+    R press		InputWeaponPitchToZero
+    L press		DebugInputVelocityZero
+    */
+
     if (pad.IsConnected())
     {
         m_buttons.Update(pad);
@@ -2795,14 +2816,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                m_fireControl->TriggerMirvDeploy();
+                m_vehicle->ToggleFireControlLaser();
             }
         }
         if (m_buttons.a == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                //m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
                 m_camera->CycleMissileTrackState();
             }
         }
@@ -2810,15 +2830,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                //m_camera->FovUp(static_cast<float>(aTimer.GetElapsedSeconds()));
-                m_vehicle->ToggleFireControlLaser();
+                
             }
         }
         if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                //m_npcController->SetAllNpcsToDead();
                 m_camera->ActivateMissleTrackCamera();
             }
         }
@@ -2826,9 +2844,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                //m_vehicle->CycleFireControlAmmo();
-                //SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
-                //m_vehicle->ToggleFireControlLaser();
                 if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SNAPCAM)
                 {
                     m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
@@ -2847,17 +2862,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                ToggleMusicFadeOut();
+      
             }
         }
         if (m_buttons.dpadUp == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_ROCKETBOOSTENGINELOOP);
-                //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_SOUNDS_KNIGHTRIDERMUSIC);
-                //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
-                //AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK::XACT_WAVEBANK_AUDIOBANK_COINSFX);
+
             }
         }
         if (m_buttons.rightStick == GamePad::ButtonStateTracker::HELD)
