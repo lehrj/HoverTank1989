@@ -1036,7 +1036,7 @@ void Camera::UpdateBoundingFrustum()
 void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 {
 	UpdateTimer(aTimer);
-	UpdateSmoothStepVal(aTimer.GetElapsedSeconds());
+	UpdateSmoothStepVal(static_cast<float>(aTimer.GetElapsedSeconds()));
 
 	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
 	{
@@ -1369,7 +1369,7 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 
 void Camera::UpdateMissileReturnCam(DX::StepTimer const& aTimer)
 {
-	m_missileReturnPauseTimer += aTimer.GetElapsedSeconds();
+	m_missileReturnPauseTimer += static_cast<float>(aTimer.GetElapsedSeconds());
 	if (m_missileReturnPauseTimer < m_missileReturnPauseDelay)
 	{
 		// ToDo: add some panning or something to Michael Bay it up a bit
@@ -1379,184 +1379,6 @@ void Camera::UpdateMissileReturnCam(DX::StepTimer const& aTimer)
 		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 		ResetSmoothStepVal();
 		m_missileReturnPauseTimer = 0.0f;
-	}
-}
-
-void Camera::UpdateMissileReturnCam2(DX::StepTimer const& aTimer)
-{
-	if (1 == 1)
-	{
-		const DirectX::SimpleMath::Vector3 targetStart = m_target;
-
-		// start get camera end posistion
-		DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
-		DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
-		DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
-		DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
-		currentQuat *= turretPitchQuat;
-		currentQuat *= turretYawQuat;
-		currentQuat *= vehicleQuat;
-		DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
-		m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
-
-		DirectX::SimpleMath::Vector3 camPosEnd = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
-		camPosEnd = DirectX::SimpleMath::Vector3::Transform(camPosEnd, m_snapQuat);
-
-		camPosEnd += m_vehicleFocus->GetPos();
-		//const float t = m_smoothStepToVehicle;
-		//camPosEnd = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPosEnd, t);
-
-		//DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPosEnd, targPos, DirectX::SimpleMath::Vector3::UnitY);
-		//m_viewMatrix = camMat;
-
-		//m_position = camPosEnd;
-		// end get camera end postion
-
-
-		DirectX::SimpleMath::Vector3 cameraStartPos = m_position;
-		//DirectX::SimpleMath::Vector3 cameraEndPos = m_cameraEndPos;
-		DirectX::SimpleMath::Vector3 cameraEndPos = camPosEnd;
-
-		float cameraDistance = DirectX::SimpleMath::Vector3::Distance(cameraStartPos, cameraEndPos);
-		DirectX::SimpleMath::Vector3 cameraDirection = cameraEndPos - cameraStartPos;
-
-		cameraDirection.Normalize();
-
-		//DirectX::SimpleMath::Vector3 targetStartPos = m_targetStartPos;
-		DirectX::SimpleMath::Vector3 targetStartPos = m_target;
-		//DirectX::SimpleMath::Vector3 targetEndPos = m_targetEndPos;
-		DirectX::SimpleMath::Vector3 targetEndPos = m_target;
-
-
-		float targetDistance = DirectX::SimpleMath::Vector3::Distance(targetStartPos, targetEndPos);
-		DirectX::SimpleMath::Vector3 targetDirection = targetEndPos - targetStartPos;
-		targetDirection.Normalize();
-
-		double elapsedTime = double(aTimer.GetElapsedSeconds());
-		float cameraSpeed = m_cameraTransitionSpeedMissileReturn;
-
-		float targetSpeed;
-		if (abs(cameraDistance > 0.0f)) // prevent divide by zero if camera position doesn't change
-		{
-			targetSpeed = cameraSpeed * (targetDistance / cameraDistance);
-		}
-		else
-		{
-			targetSpeed = cameraSpeed;
-		}
-
-		m_position += cameraDirection * cameraSpeed * static_cast<float>(elapsedTime);
-
-		if (targetDistance > 0.0f)
-		{
-			m_target += targetDirection * targetSpeed * static_cast<float>(elapsedTime);
-		}
-
-		//auto toTargetNorm = m_position - m_target;
-		auto toTargetNorm = m_target - m_position;
-		toTargetNorm.Normalize();
-
-		auto right = toTargetNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
-		right.Normalize();
-		auto up = right.Cross(toTargetNorm);
-
-		//m_debugData->ToggleDebugOnOverRide();
-		m_debugData->PushDebugLine(m_position, toTargetNorm, 10.0f, 0.5f, DirectX::Colors::Red);
-		m_debugData->DebugPushUILineDecimalNumber("right.x = ", right.x, "");
-		m_debugData->DebugPushUILineDecimalNumber("right.y = ", right.y, "");
-		m_debugData->DebugPushUILineDecimalNumber("right.z = ", right.z, "");
-
-		m_debugData->DebugPushUILineDecimalNumber("up.x = ", up.x, "");
-		m_debugData->DebugPushUILineDecimalNumber("up.y = ", up.y, "");
-		m_debugData->DebugPushUILineDecimalNumber("up.z = ", up.z, "");
-
-		m_debugData->ToggleDebugOff();
-
-
-		//m_up = DirectX::SimpleMath::Vector3::UnitY;
-		m_up = up;
-
-		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
-
-		m_targetLocal = m_target - m_position;
-		auto alignInverse = DirectX::SimpleMath::Matrix::CreateFromQuaternion(currentQuat);
-		alignInverse = alignInverse.Invert();
-		m_targetLocal = DirectX::SimpleMath::Vector3::Transform(m_targetLocal, alignInverse);
-
-		if (cameraDistance < 0.5f)
-		{
-			m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
-			DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
-			DirectX::SimpleMath::Vector3 targPos = m_snapTargBase + (m_snapZoomModTarget * m_fovZoomPercent);
-			targPos = m_vehicleFocus->GetLocalizedMuzzlePos();
-			targPos.x = 4.14f;
-			targPos.y = 0.82f;
-			targPos.z = 0.0f;
-			targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_targetLocal, targPos, 0.001f);
-
-			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretPitchQuat);
-			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, turretYawQuat);
-
-
-			DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
-			m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
-
-			DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
-			currentTargetQuat *= vehicleQuat;
-			DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
-			m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
-
-
-			camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
-
-			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, vehicleQuat);
-			camPos += m_vehicleFocus->GetPos();
-			targPos += m_vehicleFocus->GetPos();
-
-			const float t = m_smoothStepToVehicle;
-			camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, t);
-
-			targPos = m_snapTargBase;
-			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
-			targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
-			targPos += m_vehicleFocus->GetPos();
-
-			DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
-			m_viewMatrix = camMat;
-
-
-			//m_snapPosPrev = camPos;
-			//m_snapTargPrev = targPos;
-
-			m_position = camPos;
-			//m_target = targPos;
-			m_target = targetStart;
-
-			////////////////////////////////////////
-			//m_position = cameraEndPos;
-			m_isCameraAtDestination = true;
-
-			m_snapPosPrev = m_position;
-			m_snapTargPrev = m_target;
-			//m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
-			//m_snapQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-			auto lookRot = DirectX::SimpleMath::Quaternion::LookRotation(toTargetNorm, up);
-			m_snapQuat = lookRot;
-			m_snapTargetQuat = lookRot;
-
-
-			m_targetLocal = m_target - m_position;
-			auto alignInverse = DirectX::SimpleMath::Matrix::CreateFromQuaternion(currentQuat);
-			alignInverse = alignInverse.Invert();
-
-			m_targetLocal = DirectX::SimpleMath::Vector3::Transform(m_targetLocal, alignInverse);
-		}
-	}
-	else
-	{
-		m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
-		ResetSmoothStepVal();
 	}
 }
 

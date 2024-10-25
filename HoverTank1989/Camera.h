@@ -103,6 +103,8 @@ public:
     int GetWindowWidth() const { return m_clientWidth; };
     float GetYaw() const { return m_yaw; };
 
+    float GetZoom() const { return m_fovZoomPercent; };
+
     void InintializePreSwingCamera(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
     bool IsCameraAtDestination();
     void OnResize(uint32_t aWidth, uint32_t aHeight);
@@ -189,7 +191,6 @@ private:
     void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
     void UpdateMissileSteadyCam(DX::StepTimer const& aTimer);
     void UpdateMissileReturnCam(DX::StepTimer const& aTimer);
-    void UpdateMissileReturnCam2(DX::StepTimer const& aTimer);
 
     void UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer);
     void UpdateMissileTrackFromVehicleCam(DX::StepTimer const& aTimer);
