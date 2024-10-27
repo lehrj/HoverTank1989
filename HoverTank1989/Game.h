@@ -476,6 +476,8 @@ private:
     const float m_gamePadInputCamRotate = 0.35f;
     const float m_gamePadInputCamHeight = 0.4f;
 
+    const float m_gamePadZoomSpeedMod = 0.6f;
+
     // variables for place holder skybox and ground box, less visually abtrusive to aid in tunning missiles in flight
     const DirectX::SimpleMath::Vector3 m_skyBoxTerrainBaseOffset = DirectX::SimpleMath::Vector3(0.0f, 1000.0f, 0.0f);
     const float m_skyBoxSize = 200000.0f;

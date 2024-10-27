@@ -2762,7 +2762,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             }
             else
             {
-                m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal);
+                const float zoom = m_camera->GetZoom();
+                const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
+                m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal * zoomMod);
             }
         }
         if (pad.thumbSticks.rightY > m_gamePadInputDeadZone)
