@@ -2359,7 +2359,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
+            const float zoom = m_camera->GetZoom();
+            const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
+            m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()) * zoomMod);
         }
     }
     if (kb.NumPad2)
@@ -2373,7 +2375,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            const float zoom = m_camera->GetZoom();
+            const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
+            m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()) * zoomMod);
         }
     }
     if (kb.NumPad4)
