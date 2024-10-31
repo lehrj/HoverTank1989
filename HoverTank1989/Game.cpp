@@ -2368,7 +2368,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
+            const float zoom = m_camera->GetZoom();
+            const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
+            m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds())* zoomMod);
         }
     }
     if (kb.NumPad3)
@@ -2426,7 +2428,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            const float zoom = m_camera->GetZoom();
+            const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
+            m_vehicle->InputWeaponPitch(static_cast<float>(-aTimer.GetElapsedSeconds()) * zoomMod);
         }
     }
 
