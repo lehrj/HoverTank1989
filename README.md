@@ -74,3 +74,10 @@ Toggle Targeting Laser On/Off : ‘K’ key
 
 Fire Selected Weapon : Spacebar
 
+### Gamepad Controls
+
+Cycle Missile Track State : A Button
+
+Toggle Targeting Laser On/Off : B Button
+
+Fire Missile : Right Bumper
