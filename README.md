@@ -81,3 +81,9 @@ Cycle Missile Track State : A Button
 Toggle Targeting Laser On/Off : B Button
 
 Fire Missile : Right Bumper
+
+Forward/Reverse/Strafe : Left Thumbstick
+
+Turret/Zoom : Right Thumbstick
+
+Rotate Tank : L/R Triggers
