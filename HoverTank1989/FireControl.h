@@ -481,8 +481,10 @@ struct MissileModel
 {
     // consts & colors
     // contrails
-    const float contrailColorMax = 0.9f; 
-    const float contrailColorMin = 0.35f;
+    //const float contrailColorMax = 0.9f; 
+    //const float contrailColorMin = 0.35f;
+    const float contrailColorMax = 0.98f;
+    const float contrailColorMin = 0.45f;
     const unsigned int contrailDrawCountMax = 30;
 
     // afterburn flicker
