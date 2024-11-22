@@ -465,7 +465,8 @@ private:
     float m_lightRotation = 0.0f;
     float m_shapeRotation = 0.0f;
 
-    const float m_gamePadInputRateTurretHorizontal = 0.03f;
+    //const float m_gamePadInputRateTurretHorizontal = 0.03f;
+    const float m_gamePadInputRateTurretHorizontal = 0.09f;
     const float m_gamePadInputRateTurretVerticle = 0.015f;
     const float m_gamePadInputRateBodyTurn = 1.0f;
     const float m_gamePadInputRateBodyAccel = 1.0f;
