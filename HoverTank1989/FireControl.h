@@ -654,9 +654,18 @@ struct MissileConsts
     const float rocketFireFullTime = 1.01f;
     */
 
+    /* latest
     const float finDeployDelay = 0.2f;
     const float rocketFireDelay = 0.6f;
     const float finDeployTime = 0.4f;
+    const float rocketFireFullTime = 0.3f;
+    const float rocketOverBoostTime = 0.3f;
+    const float rocketOverBoostMax = 2.0f;
+    */
+
+    const float finDeployDelay = 0.2f;
+    const float rocketFireDelay = 0.9f;
+    const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 0.3f;
     const float rocketOverBoostTime = 0.3f;
     const float rocketOverBoostMax = 2.0f;
