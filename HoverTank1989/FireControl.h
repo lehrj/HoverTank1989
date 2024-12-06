@@ -663,13 +663,16 @@ struct MissileConsts
     const float rocketOverBoostMax = 2.0f;
     */
 
-    const float finDeployDelay = 0.2f;
+    const float finDeployDelay = 0.15f;
+    const float finDeployTime = 0.5f;
+
     const float rocketFireDelay = 0.9f;
-    const float finDeployTime = 0.7f;
     const float rocketFireFullTime = 0.3f;
     const float rocketOverBoostTime = 0.3f;
     const float rocketOverBoostMax = 2.0f;
-    
+  
+    const float launchVelocity = 19.0f;
+
     //const float laserDepoyDelay = 3.9f;
     const float laserDepoyDelay = finDeployTime + finDeployDelay;
 
@@ -715,7 +718,6 @@ struct MissileConsts
 
     const float mass = 12.0f;
     const float rocketBoostForceMax = mass * 11.0f; // Use desired thrust to weight ratio for boost value
-
     const float velMaxEst = (rocketBoostForceMax / mass) * 30.0f;
 
     // flight modeling
@@ -730,8 +732,6 @@ struct MissileConsts
     const float maxAlt = 200.0f;
     //const float terminalRange = 100.0f;
     const float terminalRange = 25.0f;
-
-    const float launchVelocity = 20.0f;
 
     const float navigationGain = 3.0f;
 
