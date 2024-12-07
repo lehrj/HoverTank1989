@@ -35,7 +35,6 @@ struct ContrailData
 {
     std::vector<DirectX::SimpleMath::Vector3> posVec;
     DirectX::SimpleMath::Vector3 posLocal;
-    
 };
 
 struct ContrailPackage
@@ -45,6 +44,7 @@ struct ContrailPackage
     ContrailData starboard;
     ContrailData bottom;
     unsigned int iterator;
+    bool isContrailOn = false;
 };
 
 struct LauncherData
@@ -298,6 +298,8 @@ struct GuidanceSystem
 
     float altitude = 0.0f;
     
+    bool isContrailOn = false;
+
     bool isFinsDeployStarted = false;
     bool isFinsDeployEnd = false;
     bool isFinDeployAudioTriggered = false;
@@ -1119,6 +1121,8 @@ private:
     void PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile);
     void PrintFlightStateData(MissileData& aMissile);
     void PrintMissileData(MissileData& aMissile, const float aTimeDelta);
+
+    void ResetContrailData(MissileData& aMissile);
 
     void ResetMissileForceAccumulators(MissileData& aMissile);
 

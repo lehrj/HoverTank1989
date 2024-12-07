@@ -2881,7 +2881,8 @@ void FireControl::DrawContrails(MissileData& aMissile)
             conColor.f[3] = ratio;
         }
 
-        if (i == 0)
+        //if (i == 0)
+        if (aMissile.guidance.isContrailOn == false)
         {
             // do nothing
         }
@@ -11593,6 +11594,23 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
     }
 }
 
+void FireControl::ResetContrailData(MissileData& aMissile)
+{
+    //aMissile.contrails.bottom.posVec[aMissile.contrails.iterator] = conPos;
+    //aMissile.contrails.starboard.posVec[aMissile.contrails.iterator]
+    auto starboard = aMissile.contrails.starboard.posVec[aMissile.contrails.iterator];
+    auto port = aMissile.contrails.port.posVec[aMissile.contrails.iterator];
+    auto top = aMissile.contrails.top.posVec[aMissile.contrails.iterator];
+    auto bottom = aMissile.contrails.bottom.posVec[aMissile.contrails.iterator];
+    for (unsigned int i = 0; i < m_ammoMissile.modelData.contrailDrawCountMax; ++i)
+    {
+        aMissile.contrails.starboard.posVec[i] = starboard;
+        aMissile.contrails.bottom.posVec[i] = bottom;
+        aMissile.contrails.port.posVec[i] = port;
+        aMissile.contrails.top.posVec[i] = top;
+    }
+}
+
 void FireControl::UpdateContrails(MissileData& aMissile)
 {
     ++aMissile.contrails.iterator;
@@ -13237,6 +13255,9 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
     if (aMissile.guidance.isRocketFired == false && aMissile.projectileData.time >= m_missileConsts.rocketFireDelay)
     {
         aMissile.guidance.isRocketFired = true;
+        aMissile.guidance.isContrailOn = true;
+
+        ResetContrailData(aMissile);
     }
     // rocket center of thrust
     aMissile.guidance.centerOfThrustLocalPos = m_missileConsts.thrustPosLocal;
