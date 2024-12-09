@@ -299,6 +299,7 @@ struct GuidanceSystem
     float altitude = 0.0f;
     
     bool isContrailOn = false;
+    int contrailLength = 0;
 
     bool isFinsDeployStarted = false;
     bool isFinsDeployEnd = false;

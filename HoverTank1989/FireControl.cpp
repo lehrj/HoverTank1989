@@ -2835,7 +2835,8 @@ void FireControl::DrawContrails(MissileData& aMissile)
     m_debugData->ToggleDebugOnOverRide();
     unsigned int itt = aMissile.contrails.iterator;
     unsigned int nextItt = itt + 1;
-    for (unsigned int i = 0; i < m_ammoMissile.modelData.contrailDrawCountMax; ++i)
+    //for (unsigned int i = 0; i < m_ammoMissile.modelData.contrailDrawCountMax; ++i)
+    for (unsigned int i = 0; i < aMissile.guidance.contrailLength; ++i)
     {
         if (itt >= m_ammoMissile.modelData.contrailDrawCountMax)
         {
@@ -2896,6 +2897,9 @@ void FireControl::DrawContrails(MissileData& aMissile)
         ++itt;
         ++nextItt;
     }
+
+    m_debugData->DebugPushUILineWholeNumber("contrailLength = ", aMissile.guidance.contrailLength, "");
+
     m_debugData->ToggleDebugOff();
 }
 
@@ -13266,6 +13270,11 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
         {
             aMissile.guidance.isContrailOn = true;
             ResetContrailData(aMissile);
+        }
+
+        if (aMissile.guidance.contrailLength < m_ammoMissile.modelData.contrailDrawCountMax)
+        {
+            aMissile.guidance.contrailLength++;
         }
     }
     else if (aMissile.projectileData.time < m_missileConsts.rocketFireDelay)
