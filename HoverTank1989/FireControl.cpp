@@ -2796,11 +2796,16 @@ void FireControl::DetonateAllMissiles()
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
+        /*
         m_missileVec[i].guidance.isSelfDestructTrue = true;
         m_missileVec[i].projectileData.isDeleteTrue = true; // placeholder till detonation pipeline is built
 
         m_missileVec[i].audioFx->isDestroyTrue = true;
         //m_missileVec[i].explosionFx->isDestroyTrue = true;
+
+        */
+
+        m_missileVec[i].guidance.contrailLength = 0;
     }
 }
 
@@ -2835,8 +2840,8 @@ void FireControl::DrawContrails(MissileData& aMissile)
     m_debugData->ToggleDebugOnOverRide();
     unsigned int itt = aMissile.contrails.iterator;
     unsigned int nextItt = itt + 1;
-    //for (unsigned int i = 0; i < m_ammoMissile.modelData.contrailDrawCountMax; ++i)
-    for (unsigned int i = 0; i < aMissile.guidance.contrailLength; ++i)
+    for (unsigned int i = 0; i < m_ammoMissile.modelData.contrailDrawCountMax; ++i)
+    //for (unsigned int i = 0; i < aMissile.guidance.contrailLength; ++i)
     {
         if (itt >= m_ammoMissile.modelData.contrailDrawCountMax)
         {
@@ -2857,6 +2862,8 @@ void FireControl::DrawContrails(MissileData& aMissile)
             ratio = static_cast<float>(i) / static_cast<float>(m_ammoMissile.modelData.contrailDrawCountMax);
             ratio *= 2.0f;
         }
+
+        //ratio = 1.0f;
 
         auto conColor = DirectX::Colors::White;
         // To prevent the contrails color going all the way to black, this cuts off color change at set value
@@ -11600,6 +11607,9 @@ void FireControl::UpdateControlData(MissileData& aMissile, const float aTimeDelt
 
 void FireControl::ResetContrailData(MissileData& aMissile)
 {
+    //aMissile.contrails.iterator = 0;
+    //aMissile.contrails.iterator = m_ammoMissile.modelData.contrailDrawCountMax - 1;
+
     auto starboard = aMissile.contrails.starboard.posVec[aMissile.contrails.iterator];
     auto port = aMissile.contrails.port.posVec[aMissile.contrails.iterator];
     auto top = aMissile.contrails.top.posVec[aMissile.contrails.iterator];
@@ -13269,7 +13279,7 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
         if (aMissile.guidance.isContrailOn == false)
         {
             aMissile.guidance.isContrailOn = true;
-            ResetContrailData(aMissile);
+           // ResetContrailData(aMissile);
         }
 
         if (aMissile.guidance.contrailLength < m_ammoMissile.modelData.contrailDrawCountMax)
