@@ -300,6 +300,7 @@ struct GuidanceSystem
     
     bool isContrailOn = false;
     int contrailLength = 0;
+    bool contrailToggle = false;
 
     bool isFinsDeployStarted = false;
     bool isFinsDeployEnd = false;
@@ -675,6 +676,9 @@ struct MissileConsts
     const float rocketOverBoostMax = 2.0f;
   
     const float launchVelocity = 19.0f;
+
+    const float contrailVelocityMin = 25.0f;
+    const float contrailVelocityMax = 60.0f;
 
     //const float laserDepoyDelay = 3.9f;
     const float laserDepoyDelay = finDeployTime + finDeployDelay;
@@ -1057,6 +1061,7 @@ private:
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
 
+    void DrawContrailsTemp(MissileData& aMissile);
     void DrawContrails(MissileData& aMissile);
 
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
