@@ -491,6 +491,14 @@ struct MissileModel
     const float contrailColorMin = 0.45f;
     const unsigned int contrailDrawCountMax = 30;
 
+    //const float afterBurnPlumeLength = 1.925f;
+    const float afterBurnPlumeLength = 2.5f;
+
+    DirectX::SimpleMath::Vector3 afterBurnPlumeBasePos;
+    DirectX::SimpleMath::Vector3 afterBurnPlumeThrottleModPos;
+    float afterBurnBaseSize;
+    float afterBurnConeBaseLength;
+
     // afterburn flicker
     //const float afterBurnFlickerRotationRate = Utility::ToRadians(700.1f);
     const float afterBurnFlickerRotationRate = Utility::ToRadians(1700.1f);
@@ -558,7 +566,6 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    thrustRodShape;
     DirectX::SimpleMath::Vector3 thustRodLocalPos;
 
-
     std::unique_ptr<DirectX::GeometricPrimitive>    tailEndCapShape;
     DirectX::SimpleMath::Matrix localTailEndCapMatrix;
     DirectX::SimpleMath::Matrix worldTailEndCapMatrix;
@@ -596,11 +603,6 @@ struct MissileModel
 
     std::unique_ptr<DirectX::GeometricPrimitive>    finAxelShape;
     DirectX::SimpleMath::Vector3 finAxelTranslation;
-
-    DirectX::SimpleMath::Vector3 afterBurnPlumeBasePos;
-    DirectX::SimpleMath::Vector3 afterBurnPlumeThrottleModPos;
-    float afterBurnBaseSize;
-    float afterBurnConeBaseLength;
 
     DirectX::SimpleMath::Matrix testWingMat;
     DirectX::SimpleMath::Matrix testWingTrans;
@@ -671,17 +673,19 @@ struct MissileConsts
     const float finDeployTime = 0.5f;
 
     const float rocketFireDelay = 0.9f;
+    //const float rocketFireFullTime = 0.3f;
     const float rocketFireFullTime = 0.3f;
     const float rocketOverBoostTime = 0.3f;
     const float rocketOverBoostMax = 2.0f;
   
     const float launchVelocity = 19.0f;
 
-    const float contrailVelocityMin = 25.0f;
-    const float contrailVelocityMax = 60.0f;
+    const float contrailVelocityMin = 19.0f;
+    const float contrailVelocityMax = 27.0f;
 
     //const float laserDepoyDelay = 3.9f;
-    const float laserDepoyDelay = finDeployTime + finDeployDelay;
+    //const float laserDepoyDelay = finDeployTime + finDeployDelay;
+    const float laserDepoyDelay = rocketFireDelay + rocketFireFullTime + 1.0f;
 
     /*
     const float finDeployDelay = 5.2f;
@@ -1061,7 +1065,6 @@ private:
     void DeleteProjectileFromVec(const unsigned int aIndex);
     void DeployMirv(ProjectileData& aProjectile);
 
-    void DrawContrailsTemp(MissileData& aMissile);
     void DrawContrails(MissileData& aMissile);
 
     void DrawExplosions(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);

@@ -3094,11 +3094,11 @@ void Game::UpdateAutoFire()
     int targetControlID = m_fireControl->GetTargetControlID();
     int targetCurrentID = m_fireControl->GetTargetCurrentID();
     
-    m_debugData->DebugPushUILineWholeNumber("targetControlID", targetControlID, "");
-    m_debugData->DebugPushUILineWholeNumber("targetCurrentID", targetCurrentID, "");
+    //m_debugData->DebugPushUILineWholeNumber("targetControlID", targetControlID, "");
+    //m_debugData->DebugPushUILineWholeNumber("targetCurrentID", targetCurrentID, "");
 
     float zoom = m_camera->GetZoom();
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("zoom = ", zoom, "");
 
     m_debugData->ToggleDebugOff();

@@ -2859,29 +2859,6 @@ void FireControl::DrawContrails(MissileData& aMissile)
     //for (unsigned int i = aMissile.guidance.contrailLength; i > 0; --i)
     for (unsigned int i = loopMax; i > 0; --i)
     {
-        /*
-        if (itt >= m_ammoMissile.modelData.contrailDrawCountMax)
-        {
-            itt = 0;
-        }
-        if (nextItt >= m_ammoMissile.modelData.contrailDrawCountMax)
-        {
-            nextItt = 0;
-        }
-        */
-
-        /*
-        if (itt <= 0)
-        {
-            itt = m_ammoMissile.modelData.contrailDrawCountMax - 1;
-        }
-        if (nextItt <= 0)
-        {
-            nextItt = m_ammoMissile.modelData.contrailDrawCountMax - 1;
-        }
-        */
-
-
         float ratio = static_cast<float>(i) / static_cast<float>(m_ammoMissile.modelData.contrailDrawCountMax);
         if (ratio > 0.5f)
         {
@@ -2918,20 +2895,8 @@ void FireControl::DrawContrails(MissileData& aMissile)
             conColor.f[2] = m_ammoMissile.modelData.contrailColorMin;
             conColor.f[3] = ratio;
         }
-        
-        bool testBool = false;
-        //if (static_cast<float>(i) > static_cast<float>(aMissile.guidance.contrailLength * 0.5f))
-        if (static_cast<float>(i) > static_cast<float>(aMissile.guidance.contrailLength * 0.5f))
-        {
-            testBool = true;
-        }
 
-        //if (i == 0)
-        //if (aMissile.guidance.isContrailOn == false)
-        //if (aMissile.guidance.isContrailOn == false || i == 0)
-        //if (aMissile.guidance.isContrailOn == false || i == itt || i == 0 || i == nextItt)
         if (aMissile.guidance.isContrailOn == false)
-        //if (aMissile.guidance.isContrailOn == false || i == nextItt)
         {
             // do nothing
         }
@@ -2943,22 +2908,6 @@ void FireControl::DrawContrails(MissileData& aMissile)
             m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.port.posVec[itt], aMissile.contrails.port.posVec[nextItt], conColor);
             m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.top.posVec[itt], aMissile.contrails.top.posVec[nextItt], conColor);
         }
-        //++itt;
-        //++nextItt;
-
-        /*
-        --itt;
-        --nextItt;
-
-        if (itt <= 0)
-        {
-            itt = m_ammoMissile.modelData.contrailDrawCountMax - 1;
-        }
-        if (nextItt <= 0)
-        {
-            nextItt = m_ammoMissile.modelData.contrailDrawCountMax - 1;
-        }
-        */
 
         if (itt == 0)
         {
@@ -2980,10 +2929,6 @@ void FireControl::DrawContrails(MissileData& aMissile)
 
     }
 
-    //m_debugData->DebugPushUILineWholeNumber("drawCount ", drawCount, "");
-    m_debugData->DebugPushUILineWholeNumber(" aMissile.guidance.contrailLength ", aMissile.guidance.contrailLength, "");
-   
-    
     ++aMissile.contrails.iterator;
     if (aMissile.contrails.iterator >= m_ammoMissile.modelData.contrailDrawCountMax)
     {
@@ -2991,80 +2936,6 @@ void FireControl::DrawContrails(MissileData& aMissile)
     }
     
 
-    m_debugData->ToggleDebugOff();
-}
-
-void FireControl::DrawContrailsTemp(MissileData& aMissile)
-{
-    m_debugData->ToggleDebugOnOverRide();
-    unsigned int itt = aMissile.contrails.iterator;
-    unsigned int nextItt = itt + 1;
-    for (unsigned int i = 0; i < m_ammoMissile.modelData.contrailDrawCountMax; ++i)
-    //for (unsigned int i = 0; i < aMissile.guidance.contrailLength; ++i)
-    {
-        if (itt >= m_ammoMissile.modelData.contrailDrawCountMax)
-        {
-            itt = 0;
-        }
-        if (nextItt >= m_ammoMissile.modelData.contrailDrawCountMax)
-        {
-            nextItt = 0;
-        }
-
-        float ratio = static_cast<float>(i) / static_cast<float>(m_ammoMissile.modelData.contrailDrawCountMax);
-        if (ratio > 0.5f)
-        {
-            ratio = m_ammoMissile.modelData.contrailColorMax;
-        }
-        else
-        {
-            ratio = static_cast<float>(i) / static_cast<float>(m_ammoMissile.modelData.contrailDrawCountMax);
-            ratio *= 2.0f;
-        }
-
-        //ratio = 1.0f;
-
-        auto conColor = DirectX::Colors::White;
-        // To prevent the contrails color going all the way to black, this cuts off color change at set value
-        if (ratio >= m_ammoMissile.modelData.contrailColorMax)
-        {
-            conColor.f[0] = m_ammoMissile.modelData.contrailColorMax;
-            conColor.f[1] = m_ammoMissile.modelData.contrailColorMax;
-            conColor.f[2] = m_ammoMissile.modelData.contrailColorMax;
-            conColor.f[3] = ratio;
-        }
-        else if (ratio >= m_ammoMissile.modelData.contrailColorMin)
-        {
-            conColor.f[0] = ratio;
-            conColor.f[1] = ratio;
-            conColor.f[2] = ratio;
-            conColor.f[3] = ratio;
-        }
-        else
-        {
-            conColor.f[0] = m_ammoMissile.modelData.contrailColorMin;
-            conColor.f[1] = m_ammoMissile.modelData.contrailColorMin;
-            conColor.f[2] = m_ammoMissile.modelData.contrailColorMin;
-            conColor.f[3] = ratio;
-        }
-
-        //if (i == 0)
-        if (aMissile.guidance.isContrailOn == false)
-        {
-            // do nothing
-        }
-        else
-        {
-            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.starboard.posVec[itt], aMissile.contrails.starboard.posVec[nextItt], conColor);
-            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.bottom.posVec[itt], aMissile.contrails.bottom.posVec[nextItt], conColor);
-            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.port.posVec[itt], aMissile.contrails.port.posVec[nextItt], conColor);
-            m_debugData->PushTestDebugBetweenPoints(aMissile.contrails.top.posVec[itt], aMissile.contrails.top.posVec[nextItt], conColor);
-        }
-        ++itt;
-        ++nextItt;
-    }
-
-    m_debugData->DebugPushUILineWholeNumber("contrailLength = ", aMissile.guidance.contrailLength, "");
     m_debugData->ToggleDebugOff();
 }
 
@@ -6694,7 +6565,9 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
 
     // rocket plume
     //const float plumeLength = aAmmo.ammoData.length * 0.5f;
-    const float plumeLength = aAmmo.ammoData.length * 1.75f;
+    //const float plumeLength = aAmmo.ammoData.length * 1.75f;
+    const float plumeLength = m_ammoMissile.modelData.afterBurnPlumeLength;
+
     aAmmo.modelData.afterBurnConeBaseLength = plumeLength;
     aAmmo.modelData.rocketPlumeShape = DirectX::GeometricPrimitive::CreateCone(aContext.Get(), ammoDiameter, plumeLength, 64);
     DirectX::SimpleMath::Vector3 plumeTranslation = DirectX::SimpleMath::Vector3(-ammoLength, 0.0f, 0.0f);
@@ -13472,7 +13345,7 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
         {
             const float ratio = m_missileConsts.contrailVelocityMax - m_missileConsts.contrailVelocityMin;
             const float speedMod = speed - m_missileConsts.contrailVelocityMin;
-            m_debugData->DebugPushUILineDecimalNumber("speedMod/ratio ", speedMod / ratio, "");
+            //m_debugData->DebugPushUILineDecimalNumber("speedMod/ratio ", speedMod / ratio, "");
             aMissile.guidance.contrailLength = static_cast<int>((speedMod/ratio) * m_ammoMissile.modelData.contrailDrawCountMax);
 
         }
