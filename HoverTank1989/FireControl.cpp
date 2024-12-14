@@ -13450,15 +13450,16 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
             //ResetContrailData(aMissile);
         }
 
+        /*
         if (aMissile.guidance.contrailLength < m_ammoMissile.modelData.contrailDrawCountMax)
         {
             aMissile.guidance.contrailLength++;
         }
-
+        */
         m_debugData->ToggleDebugOnOverRide();
 
         const float speed = aMissile.projectileData.q.velocity.Length();
-        /*
+        
         if (speed < m_missileConsts.contrailVelocityMin)
         {
             aMissile.guidance.contrailLength = 0;
@@ -13475,7 +13476,7 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
             aMissile.guidance.contrailLength = static_cast<int>((speedMod/ratio) * m_ammoMissile.modelData.contrailDrawCountMax);
 
         }
-        */
+        
         
         m_debugData->DebugPushUILineDecimalNumber("speed ", speed, "");
         m_debugData->DebugPushUILineWholeNumber("contrailLength ", aMissile.guidance.contrailLength, "");

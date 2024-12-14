@@ -3093,7 +3093,6 @@ void Game::UpdateAutoFire()
 {
     int targetControlID = m_fireControl->GetTargetControlID();
     int targetCurrentID = m_fireControl->GetTargetCurrentID();
-
     
     m_debugData->DebugPushUILineWholeNumber("targetControlID", targetControlID, "");
     m_debugData->DebugPushUILineWholeNumber("targetCurrentID", targetCurrentID, "");
