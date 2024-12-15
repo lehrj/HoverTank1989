@@ -685,7 +685,7 @@ struct MissileConsts
 
     //const float laserDepoyDelay = 3.9f;
     //const float laserDepoyDelay = finDeployTime + finDeployDelay;
-    const float laserDepoyDelay = rocketFireDelay + rocketFireFullTime + 1.0f;
+    const float laserDepoyDelay = rocketFireDelay + rocketFireFullTime + 2.0f;
 
     /*
     const float finDeployDelay = 5.2f;
