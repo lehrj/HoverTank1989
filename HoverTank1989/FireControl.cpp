@@ -2050,7 +2050,7 @@ void FireControl::CheckCollisions()
     }
 }
 
-void FireControl::CheckCollisionsMissile()
+void FireControl::CheckCollisionsMissile(const double aTimeDelta)
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
@@ -2095,7 +2095,13 @@ void FireControl::CheckCollisionsMissile()
 
         if (m_missileVec[i].projectileData.isDeleteTrue == true)
         {
-            m_missileVec[i].audioFx->isDestroyTrue = true;
+            m_missileVec[i].guidance.isExplodingTrue = true;
+
+            m_missileVec[i].projectileData.liveTimeCountDown += static_cast<float>(aTimeDelta);
+            if (m_missileVec[i].projectileData.liveTimeCountDown >= m_missileConsts.detonationDrawDelay)
+            {
+                m_missileVec[i].audioFx->isDestroyTrue = true;
+            }
         }
     }
 }
@@ -6053,7 +6059,8 @@ void FireControl::InitializeExplosionData(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aExplosionData.color6 = aExplosionData.explosionStartColor;
     aExplosionData.color7 = aExplosionData.explosionStartColor;
     aExplosionData.color8 = aExplosionData.explosionStartColor;
-    aExplosionData.initialRadius = m_ammoExplosive.ammoData.radius;
+    //aExplosionData.initialRadius = m_ammoExplosive.ammoData.radius;
+    aExplosionData.initialRadius = m_missileConsts.explosionRadiusInitial;
     aExplosionData.currentRadius = aExplosionData.initialRadius;
     aExplosionData.currentDuration = 0.0f;
     aExplosionData.totalDuration = 3.0f;
@@ -10804,7 +10811,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         m_debugDrawVec.clear();
     }
 
-    CheckCollisionsMissile();
+    CheckCollisionsMissile(aTimeDelta);
 
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)

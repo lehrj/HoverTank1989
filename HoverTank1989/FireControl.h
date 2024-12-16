@@ -59,8 +59,6 @@ struct ProjectileMotion
 {
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
-    //DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
-    //DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularMomentum;
     DirectX::SimpleMath::Vector3 angularVelocity;
 };
@@ -464,6 +462,7 @@ struct ProjectileData
     bool isDeleteTrue;
     float time;
     int liveTimeTick;
+    float liveTimeCountDown = 0.0f;
     bool isMidAirDeployAvailable = false;
     bool isFuseTriggered = false;
     float fuseTimer = 0.0f;
@@ -642,6 +641,10 @@ struct MissileConsts
     const float angularDragMod = 0.8f;
 
     const float detonationRange = 10.0f;
+    const float detonationDrawDelay = 1.0f;
+    const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
+
+    const float explosionRadiusInitial = dimensions.z * 2.0f;
 
     /*
     const float finDeployDelay = 0.2f;
@@ -747,8 +750,6 @@ struct MissileConsts
     const float navigationGain = 3.0f;
 
     const float hardBurnRadPerSec = Utility::ToRadians(25.0f);
-
-    const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
 
     const DirectX::SimpleMath::Vector3 canardPosLocal = DirectX::SimpleMath::Vector3(0.4f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 tailPosLocal = DirectX::SimpleMath::Vector3(-dimensions.x * 0.45f, 0.0f, 0.0f);
@@ -1052,8 +1053,9 @@ private:
     void ControllerUpdate(MissileData& aMissile, const float aTimeDelta);
     void CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aVelocity, ExplosionType aExplosionType, const int aVehicleId);
     void CheckCollisions();
-    void CheckCollisionsMissile();
-    
+    //void CheckCollisionsMissile();
+    void CheckCollisionsMissile(const double aTimeDelta);
+
     void CycleMissileTubeSelected();
 
     void DebugMissileFunc(MissileData* aMissile);
