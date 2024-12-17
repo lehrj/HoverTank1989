@@ -460,6 +460,8 @@ struct ProjectileData
     Utility::CollisionData  collisionData;
     bool isCollisionTrue;
     bool isDeleteTrue;
+    bool isDeleteTestingDebug = false;
+
     float time;
     int liveTimeTick;
     float liveTimeCountDown = 0.0f;

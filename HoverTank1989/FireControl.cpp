@@ -2085,11 +2085,14 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
             else if (m_missileVec[i].projectileData.time > m_missileLifeTimeMax)
             {
                 m_missileVec[i].projectileData.isDeleteTrue = true;
+                m_missileVec[i].projectileData.isDeleteTestingDebug = true;
             }
             else if (m_missileVec[i].guidance.isSelfDestructTrue == true)
             {
                 CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
                 m_missileVec[i].projectileData.isDeleteTrue = true;
+
+                m_missileVec[i].projectileData.isDeleteTestingDebug = true;
             }
         }
 
@@ -2101,6 +2104,7 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
             if (m_missileVec[i].projectileData.liveTimeCountDown >= m_missileConsts.detonationDrawDelay)
             {
                 m_missileVec[i].audioFx->isDestroyTrue = true;
+                m_missileVec[i].projectileData.isDeleteTestingDebug = true;
             }
         }
     }
@@ -10816,7 +10820,7 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
     int deleteCount = 0;
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        if (m_missileVec[i].projectileData.isDeleteTrue == true)
+        if (m_missileVec[i].projectileData.isDeleteTrue == true && m_missileVec[i].projectileData.isDeleteTestingDebug == true)
         {
             float timer = m_missileVec[i].projectileData.time;
             deleteCount++;
