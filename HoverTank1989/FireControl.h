@@ -674,6 +674,7 @@ struct MissileConsts
     const float rocketOverBoostMax = 2.0f;
     */
 
+    //const float finDeployDelay = 0.15f;
     const float finDeployDelay = 0.15f;
     const float finDeployTime = 0.5f;
 
@@ -714,7 +715,7 @@ struct MissileConsts
     const float explosionDragCoefficientAddMax = 0.1f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
-    //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.65f, 0.0, 0.0f);
+    //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 thrustPosLocalOffset = DirectX::SimpleMath::Vector3(0.01f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);

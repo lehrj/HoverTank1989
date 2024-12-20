@@ -2111,6 +2111,8 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
             {
                 m_missileVec[i].audioFx->isDestroyTrue = true;
                 m_missileVec[i].projectileData.isDeleteTestingDebug = true;
+                m_missileVec[i].projectileData.isDeleteTrue = true;
+
             }
         }
     }

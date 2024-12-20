@@ -106,6 +106,10 @@ void Camera::CycleMissileTrackState()
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
 	{
+		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
+	}
+	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
+	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC;
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC)
@@ -1330,6 +1334,39 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 			camPos += missilePosWorld;
 			camTargetPos = missilePosWorld;
 			camUp = DirectX::SimpleMath::Vector3::UnitY;
+		}
+		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
+		{
+			DirectX::SimpleMath::Vector3 testVec = missilePosWorld;
+
+			DirectX::SimpleMath::Vector3 vecToTarget = missileTargetPosWorld - missilePosWorld;
+			vecToTarget.Normalize();
+			camPos = vecToTarget.Cross(DirectX::SimpleMath::Vector3::UnitY);
+			camPos *= m_missileCamSide.z;
+			camPos += missilePosWorld;
+			camTargetPos = missilePosWorld;
+			camUp = DirectX::SimpleMath::Vector3::UnitY;
+
+			auto camBase = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.6f);
+			auto targBase = DirectX::SimpleMath::Vector3(1.5f, 0.0f, 0.0f);
+			auto upBase =  DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
+
+			auto camWorld = camBase;
+			camWorld = DirectX::SimpleMath::Vector3::Transform(camWorld, missileAlignQuat);
+			camWorld += missilePos;
+
+			auto targWorld = targBase;
+			targWorld = DirectX::SimpleMath::Vector3::Transform(targWorld, missileAlignQuat);
+			targWorld = missilePosWorld;
+
+			auto upWorld = upBase;
+			upWorld = DirectX::SimpleMath::Vector3::Transform(upWorld, missileAlignQuat);
+			//upWorld += missilePos;
+
+			camUp = upWorld;
+			camTargetPos = targWorld;
+			camPos = camWorld;
+
 		}
 		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWN)
 		{
