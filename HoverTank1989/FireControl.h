@@ -589,7 +589,7 @@ struct MissileModel
     std::unique_ptr<DirectX::GeometricPrimitive>    thrustConnectingRodShape;
     DirectX::SimpleMath::Matrix localThrustConnectingRodMatrix2;
     DirectX::SimpleMath::Matrix thrustConnectingRodTrans2;
-
+    
     DirectX::SimpleMath::Matrix localThrustConnectingRodMatrix3;
     DirectX::SimpleMath::Matrix thrustConnectingRodTrans3;
 
@@ -675,7 +675,7 @@ struct MissileConsts
     */
 
     //const float finDeployDelay = 0.15f;
-    const float finDeployDelay = 0.15f;
+    const float finDeployDelay = 0.35f;
     const float finDeployTime = 0.5f;
 
     const float rocketFireDelay = 0.9f;
@@ -936,6 +936,7 @@ struct LaserModel
 
     std::unique_ptr<DirectX::GeometricPrimitive>    laserShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    laserShape2;
+    std::unique_ptr<DirectX::GeometricPrimitive>    laserShapeMissile;
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix worldBodyMatrix;
     DirectX::SimpleMath::Matrix translationMatrix;
@@ -1011,6 +1012,9 @@ public:
     void ToggleDebug1();
     void ToggleDebug2();
     void ToggleDebug3();
+
+    void LaserMissileToggleOn();
+    void LaserMissileToggleOff();
 
     void UpdateFireControl(double aTimeDelta);
 
@@ -1292,6 +1296,8 @@ private:
     float m_laserLightingPulseScale = 1.0f;
     float m_laserLightingPulseTimer = 0.0f;
     const float m_laserLightingPulseConst = 0.657f;
+    const float m_laserMissileSize = 0.2f;
+    bool m_isLaserMissileTrue = true;
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;

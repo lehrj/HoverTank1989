@@ -107,10 +107,12 @@ void Camera::CycleMissileTrackState()
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
+		m_fireControl->LaserMissileToggleOff();
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC;
+		m_fireControl->LaserMissileToggleOn();
 	}
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC)
 	{

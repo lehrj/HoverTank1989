@@ -2112,7 +2112,7 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
                 m_missileVec[i].audioFx->isDestroyTrue = true;
                 m_missileVec[i].projectileData.isDeleteTestingDebug = true;
                 m_missileVec[i].projectileData.isDeleteTrue = true;
-
+                
             }
         }
     }
@@ -3236,7 +3236,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         }
     }
 
-    if (m_missileConsts.isMissleTargetingLaserTrue == true)
+    if (m_missileConsts.isMissleTargetingLaserTrue == true && m_isLaserMissileTrue == true)
     {
         DirectX::SimpleMath::Vector3 localTargPos = DirectX::SimpleMath::Vector3::Zero;
         for (unsigned int i = 0; i < m_missileVec.size(); ++i)
@@ -3366,7 +3366,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 //aEffect->SetColorAndAlpha(DirectX::Colors::Purple);
 
                // m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
-                m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
+                m_playerLaser.laserShapeMissile->Draw(aEffect.get(), aInputLayout.Get());
 
                 /////////////////////////////
 
@@ -6776,6 +6776,7 @@ void FireControl::InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContex
     const float diameter = 0.2f;
     aLazerModel.laserShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), length, diameter);
     aLazerModel.laserShape2 = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), -length, -diameter);
+    aLazerModel.laserShapeMissile = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), length, m_laserMissileSize);
     aLazerModel.localBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Vector3 transMat = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     aLazerModel.translationMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -6824,6 +6825,16 @@ void FireControl::IRSeekerTest(MissileData& aMissile, const float aTimeDelta)
     auto irPosWorld = irPosLocal;
     irPosWorld = DirectX::SimpleMath::Vector3::Transform(irPosWorld, aMissile.projectileData.alignmentQuat);
     irPosWorld += aMissile.projectileData.q.position;
+}
+
+void FireControl::LaserMissileToggleOn()
+{
+    m_isLaserMissileTrue = true;
+}
+
+void FireControl::LaserMissileToggleOff()
+{
+    m_isLaserMissileTrue = false;
 }
 
 void FireControl::ManualControlInput(FinType aFinType, const float aInput)
@@ -10066,7 +10077,8 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
             if (m_missileVec[i].guidance.isTargetingLaserOn == true)
             {
                 const float minPulse = 0.2f;
-                if (m_missileVec[i].guidance.laserPulseScale >= 1.0f)
+                const float maxPulse = 0.5f;
+                if (m_missileVec[i].guidance.laserPulseScale >= maxPulse)
                 {
                     m_missileVec[i].guidance.laserPulseScale = minPulse;
                 }
@@ -10080,10 +10092,12 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
                     float timer = m_missileVec[i].guidance.laserPulseTimer;
                     float pulse = m_laserLightingPulseConst;
                     float value = remainder(timer, pulse);
+
+                    m_missileVec[i].guidance.laserPulseScale = 0.0f;
                 }
                 else
                 {
-                    m_missileVec[i].guidance.laserPulseScale = m_missileVec[i].guidance.laserPulseTimer / m_laserLightingPulseConst;
+                    m_missileVec[i].guidance.laserPulseScale =  0.4f * (m_missileVec[i].guidance.laserPulseTimer / m_laserLightingPulseConst);
                 }
             }
         }
