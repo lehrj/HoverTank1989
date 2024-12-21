@@ -2505,12 +2505,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 {
                     TriggerFireWithAudio();             
                     TriggerFireWithAudio();
-                    m_camera->ActivateMissleTrackCamera();
+
+                    if (m_isQuckCameraToggleTrue == true)
+                    {
+                        m_camera->ActivateMissleTrackCamera();
+                    }
                 }
                 else
                 {
                     TriggerFireWithAudio();
-                    m_camera->ActivateMissleTrackCamera();
+
+                    if (m_isQuckCameraToggleTrue == true)
+                    {
+                        m_camera->ActivateMissleTrackCamera();
+                    }
                 }  
             }
         }
@@ -2632,7 +2640,16 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->ToggleFireControlLaser();
+            //m_vehicle->ToggleFireControlLaser();
+
+            if (m_isQuckCameraToggleTrue == true)
+            {
+                m_isQuckCameraToggleTrue = false;
+            }
+            else
+            {
+                m_isQuckCameraToggleTrue = true;
+            }
         }
     }
     if (kb.OemOpenBrackets)

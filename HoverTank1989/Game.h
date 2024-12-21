@@ -457,6 +457,8 @@ private:
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;
 
+    bool  m_isQuckCameraToggleTrue = false;
+
     const int m_sideCount = 64;
     float m_shape3Diameter = 5.89f;
     float m_shape3Height = 1.1f;
