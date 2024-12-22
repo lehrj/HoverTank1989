@@ -2112,7 +2112,6 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
                 m_missileVec[i].audioFx->isDestroyTrue = true;
                 m_missileVec[i].projectileData.isDeleteTestingDebug = true;
                 m_missileVec[i].projectileData.isDeleteTrue = true;
-                
             }
         }
     }
@@ -3116,13 +3115,17 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
         DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
 
         float diameterScale = 1.0f;
+        diameterScale = m_laserLightingPulseScale;
         if (m_playerLaser.isFlickerTrue == false)
         {
-            diameterScale = 0.5f;
+            diameterScale = 0.3f;
         }
-
-        diameterScale = m_laserLightingPulseScale;
-
+        else
+        {
+            //diameterScale = 2.5f;
+            diameterScale = 1.0f;
+        }
+        
         DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
         DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
@@ -3260,7 +3263,20 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 }
 
                 diameterScale = m_missileVec[i].guidance.laserPulseScale;
-                
+                if (m_missileVec[i].guidance.isLaserFlickerTrue == false)
+                {
+                    diameterScale = 0.5f;
+                }
+                else
+                {
+                    diameterScale = 1.0f;
+                }
+
+                if (m_isLaserSizeModTrue == true)
+                {
+                    diameterScale *= 5.0f;
+                }
+
                 DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
                 DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
@@ -3272,7 +3288,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 DirectX::SimpleMath::Vector3 toUseWorldMuzzlePos = toUseLocalMuzzlePos;
                 toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
                 toUseWorldMuzzlePos.x = 2.0f;
-                toUseWorldMuzzlePos.x = m_missileConsts.dimensions.x * 0.5f;
+                toUseWorldMuzzlePos.x = m_missileConsts.dimensions.x * 0.5f + 0.00635000039f;
                 toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseWorldMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
 
                 DirectX::SimpleMath::Vector3 forwardToTargNorm = m_npcController->GetNpcPos(m_missileVec[i].guidance.targetID) - (m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos);
@@ -3369,6 +3385,15 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 m_playerLaser.laserShapeMissile->Draw(aEffect.get(), aInputLayout.Get());
 
                 /////////////////////////////
+
+                if (m_missileVec[i].guidance.isLaserFlickerTrue == true)
+                {
+                    m_missileVec[i].guidance.isLaserFlickerTrue = false;
+                }
+                else
+                {
+                    m_missileVec[i].guidance.isLaserFlickerTrue = true;
+                }
 
                 /*
                 if (m_isLaserFlickerTrue == true)
@@ -6512,7 +6537,9 @@ void FireControl::InitializeProjectileModelMissile(Microsoft::WRL::ComPtr<ID3D11
     //const float seekerLensHeight = seekerHousingDiameter * 0.95f;
     //const float seekerLensHeight = seekerHousingDiameter * 0.25f;
     const float seekerLensHeight = 0.007f;
-    const float seekerLensDiameter = seekerHousingHeight * 0.8f;
+    //const float seekerLensDiameter = seekerHousingHeight * 0.8f;
+    const float seekerLensDiameter = m_playerLaser.missileLaserLensDiameter;
+
     aAmmo.modelData.seekerLensShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), seekerLensHeight, seekerLensDiameter);
     aAmmo.modelData.localSeekerLensMatrix = DirectX::SimpleMath::Matrix::Identity;
     aAmmo.modelData.localSeekerLensMatrix *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
@@ -6776,7 +6803,9 @@ void FireControl::InitializeLaserModel(Microsoft::WRL::ComPtr<ID3D11DeviceContex
     const float diameter = 0.2f;
     aLazerModel.laserShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), length, diameter);
     aLazerModel.laserShape2 = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), -length, -diameter);
-    aLazerModel.laserShapeMissile = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), length, m_laserMissileSize);
+    //aLazerModel.laserShapeMissile = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), length, m_laserMissileSize);
+    aLazerModel.laserShapeMissile = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), length, 0.0304800030f);
+    
     aLazerModel.localBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Vector3 transMat = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     aLazerModel.translationMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -6825,6 +6854,16 @@ void FireControl::IRSeekerTest(MissileData& aMissile, const float aTimeDelta)
     auto irPosWorld = irPosLocal;
     irPosWorld = DirectX::SimpleMath::Vector3::Transform(irPosWorld, aMissile.projectileData.alignmentQuat);
     irPosWorld += aMissile.projectileData.q.position;
+}
+
+void FireControl::LaserMissileSizeModOn()
+{
+    m_isLaserSizeModTrue = true;
+}
+
+void FireControl::LaserMissileSizeModOff()
+{
+    m_isLaserSizeModTrue = false;
 }
 
 void FireControl::LaserMissileToggleOn()
@@ -10077,7 +10116,7 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
             if (m_missileVec[i].guidance.isTargetingLaserOn == true)
             {
                 const float minPulse = 0.2f;
-                const float maxPulse = 0.5f;
+                const float maxPulse = 1.0f;
                 if (m_missileVec[i].guidance.laserPulseScale >= maxPulse)
                 {
                     m_missileVec[i].guidance.laserPulseScale = minPulse;
@@ -10097,7 +10136,8 @@ void FireControl::UpdateLaserData(const float aTimeDelta)
                 }
                 else
                 {
-                    m_missileVec[i].guidance.laserPulseScale =  0.4f * (m_missileVec[i].guidance.laserPulseTimer / m_laserLightingPulseConst);
+                    //m_missileVec[i].guidance.laserPulseScale =  0.4f * (m_missileVec[i].guidance.laserPulseTimer / m_laserLightingPulseConst);
+                    m_missileVec[i].guidance.laserPulseScale = (m_missileVec[i].guidance.laserPulseTimer / m_laserLightingPulseConst);
                 }
             }
         }

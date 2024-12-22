@@ -445,6 +445,7 @@ struct GuidanceSystem
 
     float laserPulseScale = 1.0f;
     float laserPulseTimer = 0.0f;
+    bool isLaserFlickerTrue = true;
 };
 
 struct AmmoStruct
@@ -643,7 +644,7 @@ struct MissileConsts
     const float angularDragMod = 0.8f;
 
     const float detonationRange = 10.0f;
-    const float detonationDrawDelay = 1.0f;
+    const float detonationDrawDelay = 0.25f;
     const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
 
     const float explosionRadiusInitial = dimensions.z * 2.0f;
@@ -680,7 +681,7 @@ struct MissileConsts
 
     const float rocketFireDelay = 0.9f;
     //const float rocketFireFullTime = 0.3f;
-    const float rocketFireFullTime = 0.3f;
+    const float rocketFireFullTime = 0.6f;
     const float rocketOverBoostTime = 0.3f;
     const float rocketOverBoostMax = 2.0f;
   
@@ -715,7 +716,6 @@ struct MissileConsts
     const float explosionDragCoefficientAddMax = 0.1f;
 
     const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(-0.5f, 0.0, 0.0f);
-    //const DirectX::SimpleMath::Vector3 thrustPosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 thrustPosLocalOffset = DirectX::SimpleMath::Vector3(0.01f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureBasePosLocal = DirectX::SimpleMath::Vector3(0.0f, 0.0, 0.0f);
     const DirectX::SimpleMath::Vector3 centerOfPressureFullFinDeployOffset = DirectX::SimpleMath::Vector3(-0.3f, 0.0, 0.0f);
@@ -727,11 +727,13 @@ struct MissileConsts
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(50.0f);
 
     const float tailFinAngMax = Utility::ToRadians(15.0f);
-    const float tailFinAngPerSecDeltaMax = Utility::ToRadians(90.0f);
+    //const float tailFinAngPerSecDeltaMax = Utility::ToRadians(90.0f);
+    const float tailFinAngPerSecDeltaMax = Utility::ToRadians(65.0f);
 
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
-    const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(40.0f);
+    //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(40.0f);
+    const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(15.0f);
 
     const float mass = 12.0f;
     const float rocketBoostForceMax = mass * 11.0f; // Use desired thrust to weight ratio for boost value
@@ -739,15 +741,14 @@ struct MissileConsts
 
     // flight modeling
     const float climbOutAngle = Utility::ToRadians(75.0f);
-    //const float climbOutDuration = 0.5f;
     const float climbOutDuration = 2.5f;
-    //const float climbOutAltMin = 50.0f;
     const float climbOutAltMin = 100.0f;
 
     //const float cruiseAltMin = 100.0f;
     const float cruiseAltMin = 200.0f;
     const float maxAlt = 200.0f;
     //const float terminalRange = 100.0f;
+    //const float terminalRange = 25.0f;
     const float terminalRange = 25.0f;
 
     const float navigationGain = 3.0f;
@@ -937,9 +938,12 @@ struct LaserModel
     std::unique_ptr<DirectX::GeometricPrimitive>    laserShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    laserShape2;
     std::unique_ptr<DirectX::GeometricPrimitive>    laserShapeMissile;
+
     DirectX::SimpleMath::Matrix localBodyMatrix;
     DirectX::SimpleMath::Matrix worldBodyMatrix;
     DirectX::SimpleMath::Matrix translationMatrix;
+
+    const float missileLaserLensDiameter = 0.0304800030f;
 };
 
 struct TargetControl
@@ -1015,6 +1019,8 @@ public:
 
     void LaserMissileToggleOn();
     void LaserMissileToggleOff();
+    void LaserMissileSizeModOn();
+    void LaserMissileSizeModOff();
 
     void UpdateFireControl(double aTimeDelta);
 
@@ -1298,6 +1304,7 @@ private:
     const float m_laserLightingPulseConst = 0.657f;
     const float m_laserMissileSize = 0.2f;
     bool m_isLaserMissileTrue = true;
+    bool m_isLaserSizeModTrue = true;
 
     DirectX::SimpleMath::Matrix m_missileInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix m_missileInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
