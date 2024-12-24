@@ -4997,6 +4997,18 @@ bool FireControl::GetIsMissileFireAvailable() const
     }
 }
 
+bool FireControl::GetIsMissileExplodingTrue() const
+{
+    if (m_missileVec[m_currentTargetID].guidance.isExplodingTrue == false)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const
 {
     if (m_missileVec.size() > 0)

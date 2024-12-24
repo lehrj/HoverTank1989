@@ -51,6 +51,7 @@ enum class MissileTrackState
     MISSILETRACKSTATE_TRACKALLCAM,
     MISSILETRACKSTATE_TRACKFROMVEHICLE,
     MISSILETRACKSTATE_REARVIEW,
+    MISSILETRACKSTATE_EXPLOSION,
 };
 
 // spring camera target
@@ -189,6 +190,7 @@ private:
     void UpdateFollowMissile2(DX::StepTimer const& aTimer);
     void UpdateFollowMissile3(DX::StepTimer const& aTimer);
 
+    void UpdateMissileExplodingCam(DX::StepTimer const& aTimer);
     void UpdateMissileTrackCam(DX::StepTimer const& aTimer);
     void UpdateMissileSteadyCam(DX::StepTimer const& aTimer);
     void UpdateMissileReturnCam(DX::StepTimer const& aTimer);
@@ -334,6 +336,9 @@ private:
     void UpdateSnapCameraMissile(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta);
 
+    void UpdateSmoothStepVal(const float aTimeStep);
+    void ResetSmoothStepVal();
+
     // SpinCamera
     float m_cameraSpin = 0.0;
     float m_cameraSpinPitch = 0.0;
@@ -451,8 +456,9 @@ private:
     const float m_missileReturnPauseDelay = 1.0f;
     float m_missileReturnPauseTimer = 0.0f;
 
-    void UpdateSmoothStepVal(const float aTimeStep);
-    void ResetSmoothStepVal();
+
+    const float m_missileExplosionTimeMax = 2.0f;
+    float m_missileExplosionTimer = 0.0f;
 
 };
 

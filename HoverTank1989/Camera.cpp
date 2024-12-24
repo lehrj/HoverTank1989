@@ -1624,6 +1624,13 @@ void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 	}
 }
 
+void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
+{
+
+	m_missileExplosionTimer += aTimer.GetElapsedSeconds();
+
+}
+
 void Camera::UpdateMissileTrackFromVehicleCam(DX::StepTimer const& aTimer)
 {
 	if (m_fireControl->GetIsMissileActiveTrue() == true)
