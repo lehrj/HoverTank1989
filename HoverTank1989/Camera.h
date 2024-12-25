@@ -257,6 +257,7 @@ private:
 
     CameraState                     m_cameraState;
     MissileTrackState               m_missileTrackState;
+    MissileTrackState               m_missileTrackStatePrevious;
 
     DirectX::SimpleMath::Matrix     m_rotationMatrix;
 
