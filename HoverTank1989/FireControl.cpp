@@ -5000,7 +5000,8 @@ bool FireControl::GetIsMissileFireAvailable() const
 bool FireControl::GetIsMissileExplodingTrue() const
 {
     //if (m_missileVec[m_currentTargetID].guidance.isExplodingTrue == false)
-    if (m_missileVec[m_missileVec.size()-1].guidance.isExplodingTrue == false)
+    //if (m_missileVec[m_missileVec.size()-1].guidance.isExplodingTrue == false)
+    if (m_missileVec[m_missileVec.size() - 1].guidance.targetDistance > 100.0f)
     {
         return false;
     }

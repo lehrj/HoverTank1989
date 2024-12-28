@@ -1677,7 +1677,7 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		targWorld = missilePosWorld;
 
 		auto upWorld = upBase;
-		upWorld = DirectX::SimpleMath::Vector3::Transform(upWorld, missileAlignQuat);
+		//upWorld = DirectX::SimpleMath::Vector3::Transform(upWorld, missileAlignQuat);
 
 		camUp = upWorld;
 		camTargetPos = targWorld;
@@ -1685,7 +1685,7 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 
 		camPos = m_position;
 
-		camTargetPos = DirectX::SimpleMath::Vector3::SmoothStep(targPosPrev, missileTargetPos, 0.9f);
+		camTargetPos = DirectX::SimpleMath::Vector3::SmoothStep(targPosPrev, missileTargetPos, 0.025f);
 
 
 		m_snapPosPrev = camPos;
