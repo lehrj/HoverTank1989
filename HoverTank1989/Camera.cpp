@@ -1177,6 +1177,12 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 			ResetSmoothStepVal();
 			m_missileTrackState = m_missileTrackStatePrevious;
 			m_missileTrackStatePrevious = m_missileTrackState;
+
+			m_missileExplosionCampPosTime = 0.0f;
+			m_missileExplosionTimer = 0.0f;
+			//m_cameraState = CameraState::CAMERASTATE_RETURN;
+			m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
+			//m_missileTrackState = m_missileTrackStatePrevious;
 		}
 		else if (m_fireControl->GetIsMissileExplodingTrue() == true)
 		{
@@ -1636,15 +1642,23 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 {
 	m_missileExplosionTimer += aTimer.GetElapsedSeconds();
 
+	m_missileExplosionCampPosTime += aTimer.GetElapsedSeconds();
+	if (m_missileExplosionCampPosTime >= m_missileExplosionCamPosTimeMax)
+	{
+		m_missileExplosionCampPosTime = m_missileExplosionCamPosTimeMax;
+	}
+
 	if (m_missileExplosionTimer >= m_missileExplosionTimeMax)
 	{
 		m_missileExplosionTimer = 0.0f;
 		m_cameraState = CameraState::CAMERASTATE_RETURN;
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
-		m_missileTrackState = m_missileTrackStatePrevious;
+		//m_missileTrackState = m_missileTrackStatePrevious;
 	}
 	else
 	{
+		const float ratio = m_missileExplosionCampPosTime / m_missileExplosionCamPosTimeMax;
+		const float invRatio = 1.0f - ratio;
 
 		DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
@@ -1660,8 +1674,6 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 
 		auto targPosPrev = m_target;
 		auto camPosPrev = m_position;
-
-
 
 
 		auto camBase = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.6f);
@@ -1683,10 +1695,15 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		camTargetPos = targWorld;
 		camPos = camWorld;
 
-		camPos = m_position;
 
-		camTargetPos = DirectX::SimpleMath::Vector3::SmoothStep(targPosPrev, missileTargetPos, 0.025f);
 
+		auto testPos = (m_position * ratio) + (camPos * invRatio);
+		camPos = testPos;
+		//camPos = m_position;
+
+		//camTargetPos = DirectX::SimpleMath::Vector3::SmoothStep(targPosPrev, missileTargetPos, 0.025f);
+
+		//camTargetPos = missileTargetPos;
 
 		m_snapPosPrev = camPos;
 		m_snapTargPrev = camTargetPos;
@@ -1694,6 +1711,11 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		m_position = camPos;
 		m_target = camTargetPos;
 		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, camTargetPos, camUp);
+
+		m_debugData->ToggleDebugOnOverRide();
+		m_debugData->DebugPushUILineDecimalNumber("ratio = ", ratio, "");
+		m_debugData->DebugPushUILineDecimalNumber("invRatio = ", invRatio, "");
+		m_debugData->ToggleDebugOff();
 	}
 
 }

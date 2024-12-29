@@ -461,5 +461,8 @@ private:
     const float m_missileExplosionTimeMax = 2.0f;
     float m_missileExplosionTimer = 0.0f;
 
+    const float m_missileExplosionCamPosTimeMax = 0.5f;
+    float m_missileExplosionCampPosTime = 0.0f;
+
 };
 
