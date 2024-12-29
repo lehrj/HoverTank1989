@@ -2529,6 +2529,22 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_fireControl->ToggleAutoFire();
         }
     }
+    if (m_kbStateTracker.pressed.K)
+    {
+        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+        {
+            //m_vehicle->ToggleFireControlLaser();
+
+            if (m_isQuckCameraToggleTrue == true)
+            {
+                m_isQuckCameraToggleTrue = false;
+            }
+            else
+            {
+                m_isQuckCameraToggleTrue = true;
+            }
+        }
+    }
     if (m_kbStateTracker.pressed.B)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -2632,22 +2648,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             m_fireControl->ZeroMissileVelocities();
-        }
-    }
-    if (m_kbStateTracker.pressed.K)
-    {
-        if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-        {
-            //m_vehicle->ToggleFireControlLaser();
-
-            if (m_isQuckCameraToggleTrue == true)
-            {
-                m_isQuckCameraToggleTrue = false;
-            }
-            else
-            {
-                m_isQuckCameraToggleTrue = true;
-            }
         }
     }
     if (kb.OemOpenBrackets)
@@ -2829,10 +2829,20 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                     {
                         TriggerFireWithAudio();
                         TriggerFireWithAudio();
+
+                        if (m_isQuckCameraToggleTrue == true)
+                        {
+                            m_camera->ActivateMissleTrackCamera();
+                        }
                     }
                     else
                     {
                         TriggerFireWithAudio();
+
+                        if (m_isQuckCameraToggleTrue == true)
+                        {
+                            m_camera->ActivateMissleTrackCamera();
+                        }
                     }
                 }
             }
@@ -2891,7 +2901,21 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-      
+                if (m_isQuckCameraToggleTrue == true)
+                {
+                    m_isQuckCameraToggleTrue = false;
+                }
+                else
+                {
+                    m_isQuckCameraToggleTrue = true;
+                }
+            }
+        }
+        if (m_buttons.dpadRight == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                m_camera->CycleMissileTrackState();
             }
         }
         if (m_buttons.dpadUp == GamePad::ButtonStateTracker::PRESSED)
