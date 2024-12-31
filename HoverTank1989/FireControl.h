@@ -694,6 +694,10 @@ struct MissileConsts
     //const float laserDepoyDelay = finDeployTime + finDeployDelay;
     const float laserDepoyDelay = rocketFireDelay + rocketFireFullTime + 2.0f;
 
+    const float laserDiameterModMax = 20.0f;
+    const float laserModRangeMin = 200.0f;
+    const float laserModRangeMax = 500.0f;
+
     /*
     const float finDeployDelay = 5.2f;
     const float rocketFireDelay = 5.6f;
@@ -1447,6 +1451,8 @@ private:
 
     std::vector<int> m_fireList;
 
+    DirectX::SimpleMath::Vector3 m_currentCameraPos = DirectX::SimpleMath::Vector3::Zero;
+
 public:
 
     unsigned int GetCreateAudioCount() const { return m_fxExplosionVec.size(); };
@@ -1474,5 +1480,7 @@ public:
 
     void ManualControlInput(FinType aFinType, const float aInput);
     void ManualInputReset(FinType aFinType, const bool aIsResetAllTrue);
+
+    void SetCurrentCameraPos(DirectX::SimpleMath::Vector3 aPos){m_currentCameraPos = aPos;};
 };
 

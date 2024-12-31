@@ -1234,6 +1234,8 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	//m_debugData->ToggleDebugOnOverRide();
 	m_debugData->PushDebugLinePositionIndicator(m_target, 5.0f, 0.0f, DirectX::Colors::Orange);
 	m_debugData->ToggleDebugOff();
+
+	m_fireControl->SetCurrentCameraPos(m_position);
 }
 
 void Camera::UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer)
@@ -1717,7 +1719,6 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		m_debugData->DebugPushUILineDecimalNumber("invRatio = ", invRatio, "");
 		m_debugData->ToggleDebugOff();
 	}
-
 }
 
 void Camera::UpdateMissileTrackFromVehicleCam(DX::StepTimer const& aTimer)

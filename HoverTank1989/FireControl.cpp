@@ -3277,6 +3277,31 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                     diameterScale *= 5.0f;
                 }
 
+                const float distanceToCamera = (m_missileVec[i].projectileData.q.position - m_currentCameraPos).Length();
+                //const float distanceToCamera = (m_missileVec[i].projectileData.q.position - m_playerVehicle->GetPos()).Length();
+                //const float distanceToCamera = (m_currentCameraPos - m_playerVehicle->GetPos()).Length();
+
+                m_debugData->ToggleDebugOnOverRide();
+                m_debugData->DebugPushUILineDecimalNumber("distanceToCamera = ", distanceToCamera, "");
+               
+
+                if (distanceToCamera > m_missileConsts.laserModRangeMax)
+                {
+                    diameterScale = m_missileConsts.laserDiameterModMax;
+                }
+                else if (distanceToCamera > m_missileConsts.laserModRangeMin)
+                {
+                    diameterScale = m_missileConsts.laserDiameterModMax * ((distanceToCamera - m_missileConsts.laserModRangeMin) / (m_missileConsts.laserModRangeMax - m_missileConsts.laserModRangeMin));
+                }
+
+                if (diameterScale < 5.0f)
+                {
+                    diameterScale = 5.0f;
+                }
+
+                m_debugData->DebugPushUILineDecimalNumber("diameterScale = ", diameterScale, "");
+                m_debugData->ToggleDebugOff();
+
                 DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
                 DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
