@@ -695,6 +695,7 @@ struct MissileConsts
     const float laserDepoyDelay = rocketFireDelay + rocketFireFullTime + 2.0f;
 
     const float laserDiameterModMax = 20.0f;
+    const float laserDiameterModMin = 5.0f;
     const float laserModRangeMin = 200.0f;
     const float laserModRangeMax = 500.0f;
 

@@ -3294,9 +3294,9 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                     diameterScale = m_missileConsts.laserDiameterModMax * ((distanceToCamera - m_missileConsts.laserModRangeMin) / (m_missileConsts.laserModRangeMax - m_missileConsts.laserModRangeMin));
                 }
 
-                if (diameterScale < 5.0f)
+                if (diameterScale < m_missileConsts.laserDiameterModMin)
                 {
-                    diameterScale = 5.0f;
+                    diameterScale = m_missileConsts.laserDiameterModMin;
                 }
 
                 m_debugData->DebugPushUILineDecimalNumber("diameterScale = ", diameterScale, "");
