@@ -931,7 +931,7 @@ struct LaserModel
     float colorVal = 0.0f;
     const float colorValDelta = 5.0f;
     DirectX::SimpleMath::Vector4 laserColorToUse = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-    const DirectX::SimpleMath::Vector4 laserColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    const DirectX::SimpleMath::Vector4 laserColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 laserColorLockTrue = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 1.0f, 1.0f);
     float distance = 0.0f;

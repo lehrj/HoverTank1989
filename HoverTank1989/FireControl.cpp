@@ -3250,19 +3250,10 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
                 updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
 
-                const float testRot = Utility::WrapAngle(m_playerLaser.flickerRot + m_playerLaser.flickerRate);
-                //m_playerLaser.flickerRot = testRot;
-                //const float scaleTransOffset = (m_playerLaser.distance) * 0.5f;
                 const float scaleTransOffset = (m_missileVec[i].guidance.targetDistance) * 0.5f;
                 DirectX::SimpleMath::Matrix scaleTransOffsetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -scaleTransOffset, 0.0f));
 
-                float diameterScale = (m_missileConsts.dimensions.z * 1.0f) * 4.0f;
-                if (m_isLaserFlickerTrue == false)
-                {
-                    //diameterScale *= 0.5f;
-                }
-
-                diameterScale = m_missileVec[i].guidance.laserPulseScale;
+                float diameterScale = m_missileVec[i].guidance.laserPulseScale;
                 if (m_missileVec[i].guidance.isLaserFlickerTrue == false)
                 {
                     diameterScale = 0.5f;
@@ -3274,34 +3265,21 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
 
                 if (m_isLaserSizeModTrue == true)
                 {
-                    diameterScale *= 5.0f;
+                    const float distanceToCamera = (m_missileVec[i].projectileData.q.position - m_currentCameraPos).Length();
+                    if (distanceToCamera > m_missileConsts.laserModRangeMax)
+                    {
+                        diameterScale = m_missileConsts.laserDiameterModMax;
+                    }
+                    else if (distanceToCamera > m_missileConsts.laserModRangeMin)
+                    {
+                        diameterScale = m_missileConsts.laserDiameterModMax * ((distanceToCamera - m_missileConsts.laserModRangeMin) / (m_missileConsts.laserModRangeMax - m_missileConsts.laserModRangeMin));
+                    }
+                    else if (diameterScale < m_missileConsts.laserDiameterModMin)
+                    {
+                        diameterScale = m_missileConsts.laserDiameterModMin;
+                    }
                 }
-
-                const float distanceToCamera = (m_missileVec[i].projectileData.q.position - m_currentCameraPos).Length();
-                //const float distanceToCamera = (m_missileVec[i].projectileData.q.position - m_playerVehicle->GetPos()).Length();
-                //const float distanceToCamera = (m_currentCameraPos - m_playerVehicle->GetPos()).Length();
-
-                m_debugData->ToggleDebugOnOverRide();
-                m_debugData->DebugPushUILineDecimalNumber("distanceToCamera = ", distanceToCamera, "");
-               
-
-                if (distanceToCamera > m_missileConsts.laserModRangeMax)
-                {
-                    diameterScale = m_missileConsts.laserDiameterModMax;
-                }
-                else if (distanceToCamera > m_missileConsts.laserModRangeMin)
-                {
-                    diameterScale = m_missileConsts.laserDiameterModMax * ((distanceToCamera - m_missileConsts.laserModRangeMin) / (m_missileConsts.laserModRangeMax - m_missileConsts.laserModRangeMin));
-                }
-
-                if (diameterScale < m_missileConsts.laserDiameterModMin)
-                {
-                    diameterScale = m_missileConsts.laserDiameterModMin;
-                }
-
-                m_debugData->DebugPushUILineDecimalNumber("diameterScale = ", diameterScale, "");
-                m_debugData->ToggleDebugOff();
-
+  
                 DirectX::SimpleMath::Matrix scaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(diameterScale, scale, diameterScale));
                 DirectX::SimpleMath::Vector3 posOffset = DirectX::SimpleMath::Vector3(0.0f, 0.5f, 0.0f);
 
@@ -3309,10 +3287,8 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 // From tank prototype
                 DirectX::SimpleMath::Vector3 toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
                 toUseLocalMuzzlePos.z = -2.0f;
-                //toUseLocalMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseLocalMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
                 DirectX::SimpleMath::Vector3 toUseWorldMuzzlePos = toUseLocalMuzzlePos;
                 toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Zero;
-                toUseWorldMuzzlePos.x = 2.0f;
                 toUseWorldMuzzlePos.x = m_missileConsts.dimensions.x * 0.5f + 0.00635000039f;
                 toUseWorldMuzzlePos = DirectX::SimpleMath::Vector3::Transform(toUseWorldMuzzlePos, m_missileVec[i].projectileData.alignmentQuat);
 
@@ -3322,9 +3298,6 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 DirectX::SimpleMath::Vector3 rightCross = forwardToTargNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
                 DirectX::SimpleMath::Vector3 testUp = rightCross.Cross(forwardToTargNorm);
 
-                DirectX::SimpleMath::Matrix updateMatTest = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos, forwardToTargNorm, testUp);
-
-                posOffset = DirectX::SimpleMath::Vector3(0.0f, -2.0f, 4.0f);
                 posOffset = DirectX::SimpleMath::Vector3(0.0f, 2.0f, 0.0f);
                 
                 DirectX::SimpleMath::Matrix worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
@@ -3336,14 +3309,12 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 worldBodyMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(toUseLocalMuzzlePos);
 
                 DirectX::SimpleMath::Matrix updateMatToUse = DirectX::SimpleMath::Matrix::CreateWorld(m_missileVec[i].projectileData.q.position + toUseWorldMuzzlePos, forwardToTargNorm, testUp);
-                //worldBodyMatrix *= updateMat6;
                 worldBodyMatrix *= updateMatToUse;
                 //////////////////////////////////////////////////////////////
                 aEffect->EnableDefaultLighting();
                 
                 ////////////////////////////////////////////////////////////////////////////////
                 DirectX::SimpleMath::Matrix lightMat = DirectX::SimpleMath::Matrix::Identity;
-                //lightMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(90.0f));
                 lightMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_playerVehicle->GetWeaponPitch());
                 lightMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_playerVehicle->GetTurretYaw());
                 lightMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
@@ -3359,29 +3330,17 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(240.0f)));
                 defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
 
-                //Utility::GetDispersedLightDirectionsRotation(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(90.0f), Utility::ToRadians(0.0f), defaultLightDir0, defaultLightDir1, defaultLightDir2);
                 Utility::GetDispersedLightDirectionsRotation(DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(90.0f), m_laserLightingRotation, defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
                 defaultLightDir0 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir0, lightMat);
                 defaultLightDir1 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir1, lightMat);
                 defaultLightDir2 = DirectX::SimpleMath::Vector3::Transform(defaultLightDir2, lightMat);
 
-                //m_debugData->ToggleDebugOnOverRide();
-                m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, defaultLightDir0, 5.0f, 0.0f, DirectX::Colors::White);
-                m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, defaultLightDir1, 5.0f, 0.0f, DirectX::Colors::White);
-                m_debugData->PushDebugLine(m_missileVec[i].projectileData.q.position, defaultLightDir2, 5.0f, 0.0f, DirectX::Colors::White);
-                m_debugData->PushDebugLinePositionIndicator(m_missileVec[i].projectileData.q.position, 5.0f, 0.0f, DirectX::Colors::White);
-                m_debugData->DebugPushUILineDecimalNumber("m_laserLightingRotation = ", m_laserLightingRotation, "");
-                m_debugData->ToggleDebugOff();
-
                 //////////////////////////////////////////////////////////////////////
 
                 DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
                 DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
                 DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
-
-                //DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColor;
-                //DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
                 DirectX::SimpleMath::Vector4 color1 = m_playerLaser.laserColorLockTrue;
                 DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -3399,14 +3358,9 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 aEffect->SetLightDirection(0, lightDir0);
                 aEffect->SetLightDirection(1, lightDir1);
                 aEffect->SetLightDirection(2, lightDir2);
-                //aEffect->EnableDefaultLighting();
                 aEffect->SetWorld(worldBodyMatrix);
 
-                //aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
-                aEffect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-                //aEffect->SetColorAndAlpha(DirectX::Colors::Purple);
-
-               // m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
+                aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
                 m_playerLaser.laserShapeMissile->Draw(aEffect.get(), aInputLayout.Get());
 
                 /////////////////////////////
@@ -3419,25 +3373,6 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 {
                     m_missileVec[i].guidance.isLaserFlickerTrue = true;
                 }
-
-                /*
-                if (m_isLaserFlickerTrue == true)
-                {
-                    m_isLaserFlickerTrue = false;
-                    aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
-                    aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
-                    aEffect->SetColorAndAlpha(DirectX::Colors::White);
-                    m_playerLaser.laserShape->Draw(aEffect.get(), aInputLayout.Get());
-                }
-                else
-                {
-                    m_isLaserFlickerTrue = true;
-                    aEffect->SetColorAndAlpha(m_playerLaser.laserColor);
-                    aEffect->SetColorAndAlpha(m_playerLaser.laserColorLockTrue);
-                    aEffect->SetColorAndAlpha(DirectX::Colors::White);
-                    m_playerLaser.laserShape2->Draw(aEffect.get(), aInputLayout.Get());
-                }
-                */
             }
         }
     }
