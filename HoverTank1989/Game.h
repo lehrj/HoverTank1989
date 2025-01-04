@@ -72,7 +72,8 @@ private:
 
     void DrawDebugLinesVector();
     void DrawDebugDataUI();
-    void DrawEndUI();   
+    void DrawEndUI();
+    void DrawIntroScene();
     void DrawSky();
     void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -86,7 +87,7 @@ private:
     void DrawUnlockUI();
 
     void FadeOutMusic();
-
+  
     unsigned int GetRandomNonRepeatingFxIndex(unsigned int aCurrentIndex, Utility::SoundFxType aFxType);
 
     bool InitializeTerrainArray();
@@ -95,6 +96,11 @@ private:
     bool InitializeTerrainArrayStartScreen(Terrain& aTerrain);
 
     void Render();
+
+    void SetFogVals(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+
     void SetUiAmmoDisplay(AmmoType aAmmoType);
     void SetUiDisplay(std::string aString);
     
@@ -203,8 +209,6 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive>    m_skyShape;
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_raster;
-
-
 
     std::unique_ptr<DirectX::Keyboard>              m_keyboard;
     std::unique_ptr<DirectX::Mouse>                 m_mouse;
