@@ -74,12 +74,14 @@ private:
     void DrawDebugDataUI();
     void DrawEndUI();
     void DrawIntroScene();
+    void DrawLogoScreen();
     void DrawSky();
     void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     
     void DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSpawner();
+    void DrawStartScreen();
     void DrawTerrainNew(Terrain& aTerrain);
     void DrawTestRangeMissile();
     void DrawTestTrack();

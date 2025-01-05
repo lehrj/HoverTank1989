@@ -76,6 +76,7 @@ Game::Game() noexcept(false)
 
     m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     //m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
+
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
 
@@ -984,6 +985,9 @@ void Game::Render()
     context->PSSetSamplers(0, 1, &sampler);
     context->IASetInputLayout(m_inputLayout.Get());
 
+
+
+
     m_effect->SetProjection(m_proj);
     m_effect->SetView(m_camera->GetViewMatrix());
     m_effect->SetWorld(m_world);
@@ -1027,8 +1031,17 @@ void Game::Render()
 
     context->IASetInputLayout(m_inputLayout.Get());
 
-    //m_batch->Begin();
+   // m_batch->Begin();
     
+    m_batch->Begin();
+    //m_batch->End();
+   // DrawIntroScene();
+    if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
+    {
+        // DrawIntroScene();
+    }
+    m_batch->End();
+
     /*
     DirectX::SimpleMath::Vector3 xaxis(2.f, 0.f, 0.f);
     DirectX::SimpleMath::Vector3 yaxis(0.f, 0.f, 2.f);
@@ -1060,8 +1073,6 @@ void Game::Render()
         //m_batch->DrawLine(v1, v2);
     }
     */
-
-    //m_batch->End();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1863,6 +1874,8 @@ void Game::DrawIntroScene()
 
     }
 
+    DrawLogoScreen();
+    DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         //DrawLogoScreen();
@@ -2008,6 +2021,34 @@ void Game::DrawDebugLinesVector()
     }
 }
 
+void Game::DrawLogoScreen()
+{
+    const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+    const DirectX::SimpleMath::Vector3 vertexColor(1.000000000f, 1.000000000f, 1.000000000f);// = DirectX::Colors::White;
+    const float height = .5f;
+    const float width = .888888888f;
+    const float distance = 1.1f;
+
+    DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
+    DirectX::SimpleMath::Vector3 topRight(distance, height, width);
+    DirectX::SimpleMath::Vector3 bottomRight(distance, -height, width);
+    DirectX::SimpleMath::Vector3 bottomLeft(distance, -height, -width);
+
+    VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 0));
+    VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 0));
+    VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
+    VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
+
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+
+    m_debugData->ToggleDebugOnOverRide();
+    
+    m_debugData->PushDebugLinePositionIndicator(topLeft, 50.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->ToggleDebugOff();
+
+}
+
 void Game::DrawSky()
 {
     m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
@@ -2109,6 +2150,293 @@ void Game::DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::
     worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(baseTransVec);
     aEffect->SetWorld(worldMat);
     m_testShape3->Draw(aEffect.get(), aInputLayout.Get());
+}
+
+void Game::DrawStartScreen()
+{
+    auto context = m_deviceResources->GetD3DDeviceContext();
+
+    const float timeStamp = static_cast<float>(m_testTimer);
+    m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
+
+    m_effect->SetTexture(m_textureAutoGame.Get());
+    m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
+    m_effect->SetSpecularTexture(m_specularAutoGame.Get());
+
+    const DirectX::SimpleMath::Vector3 vertexColor(1.000000000f, 1.000000000f, 1.000000000f);// = DirectX::Colors::White;
+    DirectX::SimpleMath::Vector3 testNorm(0.0, 0.0, 1.0);
+    testNorm.Normalize();
+
+    auto time = static_cast<float>(m_timer.GetTotalSeconds());
+    float yaw = time * 0.4f;
+    float pitch = time * 0.7f;
+    float roll = time * 1.1f;
+    auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+
+    auto norm01 = XMVector3Rotate(m_lightPos0, quat0);
+    testNorm = norm01;
+
+    DirectX::SimpleMath::Vector3 vertexNormal = DirectX::SimpleMath::Vector3::UnitX;
+
+    // start background drawing
+    const float distance = 1.1f;
+    const float height = 1.5f;
+    const float width = 1.77777777;
+    const float heightBase = 0.0f;
+    DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
+    DirectX::SimpleMath::Vector3 topRight(distance, height, width);
+    DirectX::SimpleMath::Vector3 bottomRight(distance, heightBase, width);
+    DirectX::SimpleMath::Vector3 bottomLeft(distance, heightBase, -width);
+
+    float uStart = 0.0;
+    float uStop = 1.0;
+    float vStart = 0.25;
+    float vStop = 1.0;
+    /////////////////////////////
+
+    vertexNormal = -m_lightPos0 + testNorm;
+
+    vertexNormal = -m_lightPos0;
+
+    vertexNormal.Normalize();
+
+    vertexNormal = m_testNorm + m_lightPos0;
+    vertexNormal.Normalize();
+    vertexNormal += m_lightPos0;
+    vertexNormal.Normalize();
+    vertexNormal = -vertexNormal;
+
+    /////////////////////////////
+
+    //vertexNormal = testNorm;
+    vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+
+    VertexPositionNormalColorTexture vertTopLeft(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    VertexPositionNormalColorTexture vertTopRight(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
+
+    // Start moon drawing
+    const float moonHeight = 0.2;
+    const float moonWidth = 0.2;
+    const float moonSize = 0.2;
+    const float moonOriginY = 0.7;
+    const float moonOriginZ = -1.1;
+    const float moonDepth = -0.01;
+    DirectX::SimpleMath::Vector3 moonOrigin(distance, moonOriginY, moonOriginZ);
+    topLeft = DirectX::SimpleMath::Vector3(moonDepth + distance, moonOriginY, moonOriginZ);
+    topRight = DirectX::SimpleMath::Vector3(moonDepth, 0.0, moonSize);
+    bottomRight = DirectX::SimpleMath::Vector3(moonDepth, -moonSize, moonSize);
+    bottomLeft = DirectX::SimpleMath::Vector3(moonDepth, -moonSize, 0.0);
+
+    topRight += moonOrigin;
+    bottomRight += moonOrigin;
+    bottomLeft += moonOrigin;
+
+    uStart = 0.0;
+    uStop = 0.1588541666666667;
+    vStart = 0.0;
+    vStop = 0.2824074074074074;
+
+    vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+
+    vertTopLeft = VertexPositionNormalColorTexture(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    vertTopRight = VertexPositionNormalColorTexture(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    vertBottomRight = VertexPositionNormalColorTexture(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    vertBottomLeft = VertexPositionNormalColorTexture(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
+
+    // testing moon lighting    
+    auto moonLight = dynamic_cast<IEffectLights*>(m_effect.get());
+    if (moonLight)
+    {
+        moonLight->SetLightEnabled(0, true);
+        moonLight->SetLightEnabled(1, true);
+        moonLight->SetLightEnabled(2, true);
+
+        roll = time * 1.1f;
+
+        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-roll, 0.0, 0.0);
+        DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
+
+        DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(axis, quat);
+        DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(axis, quat);
+        DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(axis, quat);
+
+        float val = 0.1;
+        DirectX::SimpleMath::Vector4 test(val, val, val, 1.0);
+        m_effect->SetAmbientLightColor(test);
+
+        moonLight->SetLightDirection(0, light0);
+        moonLight->SetLightDirection(1, light1);
+        moonLight->SetLightDirection(2, light2);
+    }
+
+    //m_effect->Apply(m_d3dContext.Get());
+    m_effect->Apply(context);
+    // end moon lighting
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+
+    m_batch->End();
+    m_batch->Begin();
+
+    ////////////////////////////////
+    // Start Text drawing
+    const float titleWidth = 0.6;
+    const float titleHeight = titleWidth * 0.111864406779661;
+    const float titleSize = 0.2;
+    const float titleOriginY = 0.5;
+    const float titleOriginZ = 0.0;
+    const float titleDepth = distance - 0.01;
+    DirectX::SimpleMath::Vector3 titleOrigin(0.0, titleOriginY, titleOriginZ);
+    topLeft = DirectX::SimpleMath::Vector3(titleDepth, titleHeight, -titleWidth);
+    topRight = DirectX::SimpleMath::Vector3(titleDepth, titleHeight, titleWidth);
+    bottomRight = DirectX::SimpleMath::Vector3(titleDepth, -titleHeight, titleWidth);
+    bottomLeft = DirectX::SimpleMath::Vector3(titleDepth, -titleHeight, -titleWidth);
+
+    topLeft += titleOrigin;
+    topRight += titleOrigin;
+    bottomRight += titleOrigin;
+    bottomLeft += titleOrigin;
+
+    uStart = 0.6927083333333333;
+    uStop = 0.989;
+    vStart = 0.0;
+    vStop = 0.0611111111111111;
+
+    vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+    vertTopLeft = VertexPositionNormalColorTexture(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    vertTopRight = VertexPositionNormalColorTexture(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    vertBottomRight = VertexPositionNormalColorTexture(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    vertBottomLeft = VertexPositionNormalColorTexture(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
+
+    DirectX::SimpleMath::Vector3 testLight0 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testLight1 = DirectX::SimpleMath::Vector3::Zero;
+    DirectX::SimpleMath::Vector3 testLight2 = DirectX::SimpleMath::Vector3::Zero;
+    ////////////////////////
+        // BMW effect
+        // text effect
+    auto ilights = dynamic_cast<IEffectLights*>(m_effect.get());
+    if (ilights)
+    {
+        ilights->SetLightEnabled(0, true);
+        ilights->SetLightEnabled(1, true);
+        ilights->SetLightEnabled(2, true);
+
+        yaw = time * 0.4f;
+        pitch = time * 0.7f;
+        roll = time * 1.1f;
+
+        quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+        auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+        auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll, 0.0);
+
+        auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, -roll, 0.0);
+
+        DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
+
+        DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(axis, quat0);
+        DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(axis, quat1);
+        DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(axis, quat2);
+
+        light0.x += 1.0;
+        light0.Normalize();
+        light1.x += 1.0;
+        light1.Normalize();
+        light2.x += 1.0;
+        light2.Normalize();
+
+        m_testNorm = XMVector3Rotate(light0, quat0);
+        m_testNorm.Normalize();
+        DirectX::SimpleMath::Vector3 light = XMVector3Rotate(axis, quat);
+        light.x += 1.0;
+        light.Normalize();
+
+        float val = 0.1;
+        DirectX::SimpleMath::Vector4 test(val, val, val, 1.0);
+        m_effect->SetAmbientLightColor(test);
+
+        ilights->SetLightDirection(0, light0);
+        ilights->SetLightDirection(1, light1);
+        ilights->SetLightDirection(2, light2);
+
+        testLight0 = light0;
+        testLight1 = light1;
+        testLight2 = light2;
+    }
+    //m_effect->Apply(m_d3dContext.Get());
+    m_effect->Apply(context);
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+
+    m_batch->End();
+    m_batch->Begin();
+
+    ///////////////////////
+    /// Background
+    ///////////////////////
+
+    topLeft = DirectX::SimpleMath::Vector3(distance, height, -width);
+    topRight = DirectX::SimpleMath::Vector3(distance, height, width);
+    bottomRight = DirectX::SimpleMath::Vector3(distance, heightBase, width);
+    bottomLeft = DirectX::SimpleMath::Vector3(distance, heightBase, -width);
+
+    uStart = 0.0;
+    uStop = 1.0;
+    vStart = 0.0;
+    vStop = 1.0;
+    /////////////////////////////
+    vertexNormal = -m_lightPos0 + testNorm;
+
+    vertexNormal = -m_lightPos0;
+    vertexNormal.Normalize();
+
+    vertexNormal = m_testNorm + m_lightPos0;
+    vertexNormal.Normalize();
+    vertexNormal += m_lightPos0;
+    vertexNormal.Normalize();
+    vertexNormal = -vertexNormal;
+
+    /////////////////////////////
+
+    vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
+
+    vertTopLeft = VertexPositionNormalColorTexture(topLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStart));
+    vertTopRight = VertexPositionNormalColorTexture(topRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStart));
+    vertBottomRight = VertexPositionNormalColorTexture(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStop, vStop));
+    vertBottomLeft = VertexPositionNormalColorTexture(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(uStart, vStop));
+
+    /////////////////////////
+
+    if (ilights)
+    {
+        //testing start
+
+        float offset = -1.0;
+        float intesity = 15.;
+        testLight0.x += offset;
+        testLight0.Normalize();
+        testLight0 *= intesity;
+        testLight1.x += offset;
+        testLight1.Normalize();
+        testLight1 *= intesity;
+        testLight2.x += offset;
+        testLight2.Normalize();
+        testLight2 *= intesity;
+
+        //testing end
+
+        ilights->SetLightDirection(0, testLight0);
+        ilights->SetLightDirection(1, testLight1);
+        ilights->SetLightDirection(2, testLight2);
+
+    }
+    //m_effect->Apply(m_d3dContext.Get());
+    m_effect->Apply(context);
+
+    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+
+    m_batch->End();
+    m_batch->Begin();
+
 }
 
 void Game::DrawTestRangeMissile()
