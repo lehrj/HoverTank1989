@@ -1001,6 +1001,7 @@ void Game::Render()
         ilights->SetLightEnabled(2, true);
     }
 
+
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -1012,6 +1013,13 @@ void Game::Render()
 
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+
+        m_effect->SetTexture(m_textureBMW.Get());
+        m_effect->SetNormalTexture(m_normalMapBMW2.Get());
+        m_effect->SetSpecularTexture(m_specularBMW.Get());
+
+        m_effect->Apply(context);
+
         DrawTestTrack();
         //DrawTestRangeMissile();
         DrawSpawner();
@@ -1030,17 +1038,41 @@ void Game::Render()
     //m_effect->Apply(context);
 
     context->IASetInputLayout(m_inputLayout.Get());
+   
+    m_effect->SetTexture(m_textureBMW.Get());
+    m_effect->SetNormalTexture(m_normalMapBMW2.Get());
+    m_effect->SetSpecularTexture(m_specularBMW.Get());
 
-   // m_batch->Begin();
-    
+    m_effect->Apply(context);
+    sampler = m_states->LinearClamp();
+    context->PSSetSamplers(0, 1, &sampler);
+
+    context->IASetInputLayout(m_inputLayout.Get());
+
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+
     m_batch->Begin();
-    //m_batch->End();
-   // DrawIntroScene();
+
+    m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+
+    DrawLogoScreen();
+
+
+    m_batch->End();
+    /*
+    m_batch->Begin();
+    //DrawIntroScene();
+
+    //DrawLogoScreen();
+
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         // DrawIntroScene();
     }
     m_batch->End();
+    */
+
 
     /*
     DirectX::SimpleMath::Vector3 xaxis(2.f, 0.f, 0.f);
@@ -1351,6 +1383,9 @@ void Game::CreateDeviceDependentResources()
     //m_skyShape = GeometricPrimitive::CreateSphere(context, -m_skyBoxSize, 32);
     m_skyShape->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
     //m_skyShape->CreateInputLayout(m_effect2.get(), m_inputLayout.ReleaseAndGetAddressOf());
+
+    m_billboardShape = GeometricPrimitive::CreateBox(context, m_billboardSize);
+    m_billboardShape->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
 
     m_font = std::make_unique<SpriteFont>(device, L"Art/Fonts/myfile.spritefont");
     m_titleFont = std::make_unique<SpriteFont>(device, L"Art/Fonts/titleFont.spritefont");
@@ -2025,9 +2060,15 @@ void Game::DrawLogoScreen()
 {
     const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
     const DirectX::SimpleMath::Vector3 vertexColor(1.000000000f, 1.000000000f, 1.000000000f);// = DirectX::Colors::White;
+    /*
     const float height = .5f;
     const float width = .888888888f;
     const float distance = 1.1f;
+    */
+
+    const float height = 25.5f;
+    const float width = 50.888888888f;
+    const float distance = 100.1f;
 
     DirectX::SimpleMath::Vector3 topLeft(distance, height, -width);
     DirectX::SimpleMath::Vector3 topRight(distance, height, width);
@@ -2571,7 +2612,7 @@ void Game::DrawTestTrack()
 
 void Game::DrawTerrainNew(Terrain& aTerrain)
 {
-    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
+    //m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
 
     // Create base to black out skydome under terrain
@@ -2590,7 +2631,7 @@ void Game::DrawTerrainNew(Terrain& aTerrain)
     DirectX::VertexPositionNormalColor vpn3(v3, vertNorm, vertColor);
     DirectX::VertexPositionNormalColor vpn4(v4, vertNorm, vertColor);
 
-    m_batch2->DrawQuad(vpn1, vpn2, vpn3, vpn4);
+    //m_batch2->DrawQuad(vpn1, vpn2, vpn3, vpn4);
 }
 
 void Game::FadeOutMusic()
@@ -2634,6 +2675,7 @@ void Game::OnDeviceLost()
     m_batch2.reset();
     m_batch3.reset();
     m_skyShape.reset();
+    m_billboardShape.reset();
     m_normalMap.Reset();
     m_texture.Reset();
     m_specular.Reset();
