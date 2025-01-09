@@ -1050,14 +1050,15 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout.Get());
 
     m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+    m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
     m_batch->Begin();
 
     m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
 
 
-    DrawLogoScreen();
-
+    //DrawLogoScreen();
+    //DrawIntroScene();
 
     m_batch->End();
     /*
@@ -1910,7 +1911,7 @@ void Game::DrawIntroScene()
     }
 
     DrawLogoScreen();
-    DrawStartScreen();
+    //DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         //DrawLogoScreen();
