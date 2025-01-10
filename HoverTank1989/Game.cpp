@@ -1052,15 +1052,19 @@ void Game::Render()
     m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
     m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
-    m_batch->Begin();
+    //m_batch->Begin();
 
-    m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
 
+
+    //DrawLogoScreen();
+    DrawIntroScene();
+
+    //m_batch->End();
 
     //DrawLogoScreen();
     //DrawIntroScene();
 
-    m_batch->End();
     /*
     m_batch->Begin();
     //DrawIntroScene();
@@ -1117,6 +1121,7 @@ void Game::Render()
     {
         //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect2, m_inputLayout2);
         DrawTerrainNew(m_terrainGamePlay);
+        DrawTerrainNew(m_terrainStartScreen);
     }
     m_batch2->End();
     //context->RSSetState(m_states->CullNone());
@@ -2081,12 +2086,30 @@ void Game::DrawLogoScreen()
     VertexPositionNormalColorTexture vertBottomRight(bottomRight, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(1, 1));
     VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
 
-    m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+    //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
+    DirectX::SimpleMath::Matrix camMat = m_camera->GetViewMatrix();
+    DirectX::SimpleMath::Vector3 camScale;
+    DirectX::SimpleMath::Quaternion camQuat;
+    DirectX::SimpleMath::Vector3 camTrans;
+    camMat.Decompose(camScale, camQuat, camTrans);
+
+    DirectX::SimpleMath::Vector3 billboardOffset = DirectX::SimpleMath::Vector3(-5.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Matrix billboardMat = DirectX::SimpleMath::Matrix::Identity;
+    billboardMat *= DirectX::SimpleMath::Matrix::CreateTranslation(billboardOffset);
+    //billboardMat *= camMat;
+
+    //->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+    m_effect->SetWorld(billboardMat);
+    m_effect->SetColorAndAlpha(DirectX::Colors::White);
+
+    //m_batch->Begin();
+
+    m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     m_debugData->ToggleDebugOnOverRide();
     
-    m_debugData->PushDebugLinePositionIndicator(topLeft, 50.0f, 0.0f, DirectX::Colors::Red);
-
+    //m_debugData->PushDebugLinePositionIndicator(topLeft, 50.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(camTrans, 50.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->ToggleDebugOff();
 
 }
