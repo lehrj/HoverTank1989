@@ -2096,9 +2096,9 @@ void Game::DrawLogoScreen()
     DirectX::SimpleMath::Vector3 billboardOffset = DirectX::SimpleMath::Vector3(-5.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Matrix billboardMat = DirectX::SimpleMath::Matrix::Identity;
     billboardMat *= DirectX::SimpleMath::Matrix::CreateTranslation(billboardOffset);
-    //billboardMat *= camMat;
+    billboardMat *= camMat;
 
-    //->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+    //m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
     m_effect->SetWorld(billboardMat);
     m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
