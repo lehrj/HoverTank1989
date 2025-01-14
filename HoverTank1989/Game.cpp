@@ -2109,7 +2109,9 @@ void Game::DrawLogoScreen()
     m_debugData->ToggleDebugOnOverRide();
     
     //m_debugData->PushDebugLinePositionIndicator(topLeft, 50.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLinePositionIndicator(camTrans, 50.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLinePositionIndicator(camTrans, 50.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLinePositionIndicator(m_camera->GetPos(), 50.0f, 0.0f, DirectX::Colors::Purple);
+    m_debugData->PushDebugLinePositionIndicator(m_camera->GetTargetPos(), 50.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
 
 }
