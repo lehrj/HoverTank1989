@@ -929,8 +929,8 @@ void Camera::SetPos(DirectX::SimpleMath::Vector3 aPos)
 		//std::cerr << "Error in Camera::UpdatePosition, updated position = current target position";
 		return;
 	}
-	m_position = aPos;
-	//m_followCamPos = aPos;
+	//m_position = aPos;
+	////m_followCamPos = aPos;
 }
 
 void Camera::SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos)
@@ -951,7 +951,7 @@ void Camera::SetTargetPos(const DirectX::SimpleMath::Vector3 aTarget)
 		//std::cerr << "Error in Camera::SetTargetPos, updated target position = current camera position";
 		return;
 	}
-	m_target = aTarget;
+	//m_target = aTarget;
 }
 
 void Camera::SetUpPos(const DirectX::SimpleMath::Vector3 aPos)
@@ -1237,7 +1237,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	m_debugData->PushDebugLinePositionIndicator(m_target, 50.0f, 0.0f, DirectX::Colors::Yellow);
 	m_debugData->PushDebugLinePositionIndicator(m_position, 50.0f, 0.0f, DirectX::Colors::Red);
 	m_debugData->ToggleDebugOff();

@@ -2093,11 +2093,28 @@ void Game::DrawLogoScreen()
     DirectX::SimpleMath::Vector3 camTrans;
     camMat.Decompose(camScale, camQuat, camTrans);
 
-    DirectX::SimpleMath::Vector3 billboardOffset = DirectX::SimpleMath::Vector3(-5.0f, 0.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 billboardOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 5.0f);
     DirectX::SimpleMath::Matrix billboardMat = DirectX::SimpleMath::Matrix::Identity;
-    billboardMat *= DirectX::SimpleMath::Matrix::CreateTranslation(billboardOffset);
-    billboardMat *= camMat;
+    //billboardMat *= DirectX::SimpleMath::Matrix::CreateTranslation(billboardOffset);
+    billboardMat *= DirectX::SimpleMath::Matrix::CreateTranslation(camTrans);
+    //billboardMat *= camMat;
 
+    DirectX::SimpleMath::Vector3 testPos = DirectX::SimpleMath::Vector3::Zero;
+    testPos = billboardOffset;
+    //camQuat.Inverse(camQuat);
+    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, camQuat);
+    testPos += m_camera->GetPos();
+
+    //////////////////////////////////////////////////////////
+    DirectX::SimpleMath::Vector3 camPos = m_camera->GetPos();
+    DirectX::SimpleMath::Vector3 targPos = m_camera->GetTargetPos();
+    
+    //testPos = camPos - targPos;
+    testPos = targPos - camPos;
+    testPos.Normalize();
+    testPos *= 10.0f;
+    testPos += camPos;
+    
     //m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
     m_effect->SetWorld(billboardMat);
     m_effect->SetColorAndAlpha(DirectX::Colors::White);
@@ -2110,8 +2127,9 @@ void Game::DrawLogoScreen()
     
     //m_debugData->PushDebugLinePositionIndicator(topLeft, 50.0f, 0.0f, DirectX::Colors::Yellow);
     //m_debugData->PushDebugLinePositionIndicator(camTrans, 50.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(testPos, 50.0f, 0.0f, DirectX::Colors::Red);
     //m_debugData->PushDebugLinePositionIndicator(m_camera->GetPos(), 50.0f, 0.0f, DirectX::Colors::Purple);
-    m_debugData->PushDebugLinePositionIndicator(m_camera->GetTargetPos(), 50.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->PushDebugLinePositionIndicator(m_camera->GetTargetPos(), 50.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
 
 }
