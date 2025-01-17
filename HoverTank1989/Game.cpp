@@ -1058,7 +1058,7 @@ void Game::Render()
 
 
     //DrawLogoScreen();
-    DrawIntroScene();
+    //DrawIntroScene();
 
     //m_batch->End();
 
@@ -2087,51 +2087,33 @@ void Game::DrawLogoScreen()
     VertexPositionNormalColorTexture vertBottomLeft(bottomLeft, vertexNormal, vertexColor, DirectX::SimpleMath::Vector2(0, 1));
 
     //m_batch->DrawQuad(vertTopLeft, vertTopRight, vertBottomRight, vertBottomLeft);
-    DirectX::SimpleMath::Matrix camMat = m_camera->GetViewMatrix();
-    DirectX::SimpleMath::Vector3 camScale;
-    DirectX::SimpleMath::Quaternion camQuat;
-    DirectX::SimpleMath::Vector3 camTrans;
-    camMat.Decompose(camScale, camQuat, camTrans);
-
-    DirectX::SimpleMath::Vector3 billboardOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 5.0f);
-    DirectX::SimpleMath::Matrix billboardMat = DirectX::SimpleMath::Matrix::Identity;
-    //billboardMat *= DirectX::SimpleMath::Matrix::CreateTranslation(billboardOffset);
-    billboardMat *= DirectX::SimpleMath::Matrix::CreateTranslation(camTrans);
-    //billboardMat *= camMat;
-
-    DirectX::SimpleMath::Vector3 testPos = DirectX::SimpleMath::Vector3::Zero;
-    testPos = billboardOffset;
-    //camQuat.Inverse(camQuat);
-    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, camQuat);
-    testPos += m_camera->GetPos();
-
+   
     //////////////////////////////////////////////////////////
     DirectX::SimpleMath::Vector3 camPos = m_camera->GetPos();
     DirectX::SimpleMath::Vector3 targPos = m_camera->GetTargetPos();
     
-    //testPos = camPos - targPos;
+    DirectX::SimpleMath::Vector3 testPos = DirectX::SimpleMath::Vector3::Zero;
     testPos = targPos - camPos;
     testPos.Normalize();
-    testPos *= 10.0f;
+    DirectX::SimpleMath::Vector3 wPos = testPos;
+
+    testPos *= 1.0f;
     testPos += camPos;
     
-    //m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
-    m_effect->SetWorld(billboardMat);
-    m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
-    //m_batch->Begin();
+    DirectX::SimpleMath::Matrix wMat = DirectX::SimpleMath::Matrix::CreateWorld(testPos, wPos, DirectX::SimpleMath::Vector3::UnitY);
+    //wMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(1.0f));
+    m_effect->EnableDefaultLighting();
+
+    //m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+    m_effect->SetWorld(wMat);
+    m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
     m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     m_debugData->ToggleDebugOnOverRide();
-    
-    //m_debugData->PushDebugLinePositionIndicator(topLeft, 50.0f, 0.0f, DirectX::Colors::Yellow);
-    //m_debugData->PushDebugLinePositionIndicator(camTrans, 50.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLinePositionIndicator(testPos, 50.0f, 0.0f, DirectX::Colors::Red);
-    //m_debugData->PushDebugLinePositionIndicator(m_camera->GetPos(), 50.0f, 0.0f, DirectX::Colors::Purple);
-    //m_debugData->PushDebugLinePositionIndicator(m_camera->GetTargetPos(), 50.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
-
 }
 
 void Game::DrawSky()
