@@ -46,6 +46,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
 
     aEffect->EnableDefaultLighting();
     
+    
 
     if (m_currentLightingState == LightingState::LIGHTINGSTATE_JI)
     {

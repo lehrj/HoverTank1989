@@ -26,7 +26,8 @@ Camera::Camera(int aWidth, int aHeight)
 	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_FOLLOW;
 	m_missileTrackStatePrevious = MissileTrackState::MISSILETRACKSTATE_FOLLOW;
 
-	m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+	//m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
+	m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
 
 	Target springTarget;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
@@ -929,7 +930,7 @@ void Camera::SetPos(DirectX::SimpleMath::Vector3 aPos)
 		//std::cerr << "Error in Camera::UpdatePosition, updated position = current target position";
 		return;
 	}
-	//m_position = aPos;
+	m_position = aPos;
 	////m_followCamPos = aPos;
 }
 
@@ -951,7 +952,7 @@ void Camera::SetTargetPos(const DirectX::SimpleMath::Vector3 aTarget)
 		//std::cerr << "Error in Camera::SetTargetPos, updated target position = current camera position";
 		return;
 	}
-	//m_target = aTarget;
+	m_target = aTarget;
 }
 
 void Camera::SetUpPos(const DirectX::SimpleMath::Vector3 aPos)

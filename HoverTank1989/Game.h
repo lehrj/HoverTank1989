@@ -382,9 +382,6 @@ private:
     float                               m_debugValue4 = 0.0;
     float                               m_debugValue5 = 0.0;
 
-    double                              m_testTimer = 0.0;
-    double                              m_testTimerOffset = 0.0;
-
     // start scene control variables
     const float                         m_fadeDuration = 4.0f;
     const float                         m_logoDisplayDuration = 11.5f;
@@ -434,6 +431,9 @@ private:
     const float m_gameTerrainMaxY = 396.0f;
 
     float m_skyRotation = 0.0f;
+
+    double m_testTimer = 0.0;
+    double m_testTimerOffset = 0.0;
     float m_testTimer1 = 0.0f;
     float m_testTimer2 = 0.0f; 
     float m_unlockTimer1 = 0.0f;
