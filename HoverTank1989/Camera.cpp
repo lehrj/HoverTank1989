@@ -30,13 +30,26 @@ Camera::Camera(int aWidth, int aHeight)
 	m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
 
 	Target springTarget;
+	//springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
+	//springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
+	//springTarget.forward = DirectX::SimpleMath::Vector3::Transform(springTarget.forward, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-89.0f)));
+
 	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
-	springTarget.position = DirectX::SimpleMath::Vector3(0.0, 0.0f, 0.0);
+	//springTarget.up = DirectX::SimpleMath::Vector3::Transform(springTarget.up, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(89.0f)));
+
+	//springTarget.position = DirectX::SimpleMath::Vector3(0.0, 0.0f, 0.0);
+	// Vehicle start m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 150.0f);
+	springTarget.position = DirectX::SimpleMath::Vector3(-500.0f, 18.0f, 150.0f);
+
+	//m_actualPosition = springTarget.position;
+
 	float springConst = m_springConstantSet;
 	float hDist = -m_springCamPos.x;
 	float vDist = m_springCamPos.y;
-
+	//springConst = 0.0f;
+	//vDist = 1.0f;
+	//hDist = 1.0f;
 	InitializeSpringCamera(springTarget, springConst, hDist, vDist);
 
 	Reset();
@@ -1238,9 +1251,33 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
-	//m_debugData->ToggleDebugOnOverRide();
-	m_debugData->PushDebugLinePositionIndicator(m_target, 50.0f, 0.0f, DirectX::Colors::Yellow);
-	m_debugData->PushDebugLinePositionIndicator(m_position, 50.0f, 0.0f, DirectX::Colors::Red);
+	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->PushDebugLinePositionIndicator(m_target, 50.0f, 0.0f, DirectX::Colors::Yellow);
+	//m_debugData->PushDebugLinePositionIndicator(m_position, 50.0f, 0.0f, DirectX::Colors::Red);
+
+	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_FIRSTPERSON ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SPRINGCAMERA ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_PRESWINGVIEW)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_PRESWINGVIEW ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_STARTSCREEN)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_STARTSCREEN ", 0, "");
+	}
+	else
+	{
+		int testBreak = 0;
+		testBreak++;
+	}
+
+
 	m_debugData->ToggleDebugOff();
 }
 

@@ -383,10 +383,17 @@ private:
     float                               m_debugValue5 = 0.0;
 
     // start scene control variables
+    /*
     const float                         m_fadeDuration = 4.0f;
     const float                         m_logoDisplayDuration = 11.5f;
     const float                         m_logoDisplayGap = 0.8f;
     const float                         m_startDelay = 5.2f;
+    */
+
+    const float                         m_fadeDuration = 1.0f;
+    const float                         m_logoDisplayDuration = 3.1f; // 5.1
+    const float                         m_logoDisplayGap = 0.1f;
+    const float                         m_startDelay = 1.5f;
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;

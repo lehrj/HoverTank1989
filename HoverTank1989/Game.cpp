@@ -1698,6 +1698,12 @@ void Game::DrawIntroScene()
 
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
+
+        m_effect->SetTexture(m_textureJI.Get());
+        m_effect->SetNormalTexture(m_normalMapJI.Get());
+        m_effect->SetSpecularTexture(m_specularJI.Get());
+
+        SetFogVals(testFogTarget1, 0.0f);
     }
     //////////////////////////////////////
     /// Render Jackson Industries Logo ///

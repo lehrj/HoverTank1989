@@ -297,7 +297,7 @@ private:
     float                       m_followCamDistance = 1.0;
     //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 7.0f, 20.0f);
     //DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 9.0f, 20.0f);
-    DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 6.5f, 20.0f);
+    const DirectX::SimpleMath::Vector3 m_springCamPos = DirectX::SimpleMath::Vector3(-25.0, 6.5f, 20.0f);
 
     Environment const* m_environment;
     std::shared_ptr<FireControl>    m_fireControl;
