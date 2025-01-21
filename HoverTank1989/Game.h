@@ -287,7 +287,8 @@ private:
         GAMESTATE_ENVIRONTMENTSELECT,
         GAMESTATE_GAMEPLAY,
         GAMESTATE_GAMEPLAYSTART,
-        GAMESTATE_TEASERSCREEN
+        GAMESTATE_TEASERSCREEN,
+        GAMESTATE_LOADSCREEN
     };
     GameState                                   m_currentGameState;
 
@@ -391,9 +392,9 @@ private:
     */
 
     const float                         m_fadeDuration = 1.0f;
-    const float                         m_logoDisplayDuration = 3.1f; // 5.1
+    const float                         m_logoDisplayDuration = 7.1f; // 5.1
     const float                         m_logoDisplayGap = 0.1f;
-    const float                         m_startDelay = 1.5f;
+    const float                         m_startDelay = 0.5f;
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;

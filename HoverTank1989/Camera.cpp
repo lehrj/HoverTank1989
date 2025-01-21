@@ -33,16 +33,20 @@ Camera::Camera(int aWidth, int aHeight)
 	//springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
 	//springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
 	springTarget.forward = DirectX::SimpleMath::Vector3::UnitX;
-	//springTarget.forward = DirectX::SimpleMath::Vector3::Transform(springTarget.forward, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-89.0f)));
+	springTarget.forward = DirectX::SimpleMath::Vector3::Transform(springTarget.forward, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-89.0f)));
 
 	springTarget.up = DirectX::SimpleMath::Vector3::UnitY;
-	//springTarget.up = DirectX::SimpleMath::Vector3::Transform(springTarget.up, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(89.0f)));
+	springTarget.up = DirectX::SimpleMath::Vector3::Transform(springTarget.up, DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(-89.0f)));
 
 	//springTarget.position = DirectX::SimpleMath::Vector3(0.0, 0.0f, 0.0);
 	// Vehicle start m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 150.0f);
-	springTarget.position = DirectX::SimpleMath::Vector3(-500.0f, 18.0f, 150.0f);
-
+	springTarget.position = DirectX::SimpleMath::Vector3(-500.0f, 18.0f, 50.0f);
+	springTarget.position = DirectX::SimpleMath::Vector3(-522.0f, 9.0f, 150.0f);
 	//m_actualPosition = springTarget.position;
+
+	m_snapPosPrev = springTarget.position;
+	m_snapTargPrev = springTarget.position;
+	m_snapTargPrev.y += 50.0f;
 
 	float springConst = m_springConstantSet;
 	float hDist = -m_springCamPos.x;
@@ -1222,6 +1226,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
 		UpdateSnapCamera(aTimer);
+		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_RETURN)
 	{
@@ -2415,6 +2420,9 @@ void Camera::UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta)
 
 void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 {
+	auto prePos = m_position;
+	auto preTarg = m_target;
+
 	DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
 	DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
 	DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
@@ -2453,6 +2461,12 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 
 	m_position = camPos;
 	m_target = targPos;
+
+	m_debugData->ToggleDebugOnOverRide();
+	m_debugData->DebugPushUILineDecimalNumber("m_position.x ", m_position.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.y ", m_position.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.z ", m_position.z, "");
+	m_debugData->ToggleDebugOff();
 
 	/*
 	m_targetLocal = m_target - m_position;

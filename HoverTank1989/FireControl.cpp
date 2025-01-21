@@ -14047,7 +14047,7 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::Identity;
         
         //aEffect->EnableDefaultLighting();
-        
+       
         // Afterburners and lighting
         // after burn plume sphere
         const DirectX::SimpleMath::Vector3 toUseSteeringVecLocal = m_missileVec[i].guidance.conDat.thrustVecNorm;

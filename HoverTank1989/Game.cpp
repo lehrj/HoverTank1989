@@ -74,9 +74,8 @@ Game::Game() noexcept(false)
 
     m_testVehicleHover = std::make_shared<VehicleHover>();
 
-    m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+    //m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     m_currentGameState = GameState::GAMESTATE_INTROSCREEN;
-    //m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
 
     m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     m_currentUiState = UiState::UISTATE_SWING;
@@ -992,14 +991,14 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout.Get());
 
 
+    m_effect->SetProjection(m_proj);
+    m_effect->SetView(m_camera->GetViewMatrix());
+    m_effect->SetWorld(m_world);
+
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         DrawIntroScene();
     }
-
-    m_effect->SetProjection(m_proj);
-    m_effect->SetView(m_camera->GetViewMatrix());
-    m_effect->SetWorld(m_world);
 
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
     if (ilights)
@@ -1037,8 +1036,11 @@ void Game::Render()
     }
 
 
-    m_effect->EnableDefaultLighting();
+    //m_effect->EnableDefaultLighting();
     m_effect->SetWorld(m_world);
+
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -1070,12 +1072,6 @@ void Game::Render()
     m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
 
-
-    //DrawLogoScreen();
-    //DrawIntroScene();
-
-
-
     const float timeStamp = static_cast<float>(m_testTimer + m_debugStartTime);
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("timeStamp ", timeStamp, "");
@@ -1098,7 +1094,6 @@ void Game::Render()
     {
         m_debugData->DebugPushUILineDecimalNumber("LIGHTINGSTATE_JI ", 0.0f, "");
     }
-
 
 
     if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
@@ -1141,7 +1136,7 @@ void Game::Render()
     {
         //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect2, m_inputLayout2);
         DrawTerrainNew(m_terrainGamePlay);
-        DrawTerrainNew(m_terrainStartScreen);
+        //DrawTerrainNew(m_terrainStartScreen);
     }
     m_batch2->End();
     //context->RSSetState(m_states->CullNone());
@@ -1188,6 +1183,12 @@ void Game::Render()
 
     // Show the new frame.
     m_deviceResources->Present();
+
+
+    if (m_currentGameState == GameState::GAMESTATE_LOADSCREEN)
+    {
+        m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+    }
 }
 
 // Helper method to clear the back buffers.
@@ -1291,10 +1292,8 @@ void Game::CreateDeviceDependentResources()
     // sky texture
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
-
     // sky normal
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/skyNormal.png", nullptr, m_normalMapSky.ReleaseAndGetAddressOf()));
-
     // sky specular
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/skySpecular.png", nullptr, m_specularSky.ReleaseAndGetAddressOf()));
 
@@ -1330,6 +1329,9 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoJI2.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normJI.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI2.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoBMW.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularBMW.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
     // BMW textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
@@ -1695,7 +1697,7 @@ void Game::DrawIntroScene()
         m_effect->SetFogStart(0.0);
         m_effect->SetFogEnd(1.0);
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
-
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
 
@@ -1711,6 +1713,7 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeOutEnd1)  // Render Jackson Industries Logo
     {
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_effect->SetTexture(m_textureJI.Get());
         m_effect->SetNormalTexture(m_normalMapJI.Get());
         m_effect->SetSpecularTexture(m_specularJI.Get());
@@ -1794,11 +1797,34 @@ void Game::DrawIntroScene()
             //m_effect->SetFogEnabled(false);
         }
     }
+
+    
+
     ///////////////////////////
     /// Render Start Screen ///
     /////////////////////////// 
     else if (timeStamp < fadeInStart3)
     {
+        m_currentGameState = GameState::GAMESTATE_LOADSCREEN;
+
+        m_effect->EnableDefaultLighting();
+        m_effect->SetFogEnabled(false);
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        m_effect->SetSpecularTexture(m_specular.Get());
+
+        //m_effect->SetTexture(m_textureJI.Get());
+        //m_effect->SetNormalTexture(m_normalMapJI.Get());
+        //m_effect->SetSpecularTexture(m_specularJI.Get());
+
+        //m_camera->SetPos(DirectX::SimpleMath::Vector3(0.0f, 50.0f, 10.0f));
+        //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(100.0f, 200.0f, 0.0f));
+
+        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+
+        //m_effect->EnableDefaultLighting();
+
+        /*
         // render nothing
         float colorIntensity = (fadeInEnd3 - timeStamp) / (fadeDuration);
         colorIntensity = 0.0;
@@ -1816,6 +1842,8 @@ void Game::DrawIntroScene()
 
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
         m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
+
+        */
     }
     else if (timeStamp < fadeOutEnd3) // Render Start Screen
     {
@@ -1894,6 +1922,14 @@ void Game::DrawIntroScene()
         m_effect2->SetFogEnabled(false);
         m_effect3->SetFogEnabled(false);
     }
+    else
+    {
+        m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
+        m_camera->SetPos(m_gamePlayStartCamPos1);
+        m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
+    }
+
+    /*
     else if (timeStamp < fadeOutEnd4)  // Render GamePlay Start Screen
     {
         if (timeStamp < fadeInEnd4)  // fade in
@@ -1933,9 +1969,9 @@ void Game::DrawIntroScene()
     {
 
     }
+    */
+    
 
-    //DrawLogoScreen();
-    //DrawStartScreen();
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         DrawLogoScreen();
@@ -1945,7 +1981,7 @@ void Game::DrawIntroScene()
         //DrawStartScreen();
         m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
 
-        m_effect->EnableDefaultLighting();
+        //m_effect->EnableDefaultLighting();
         m_effect->SetFogEnabled(false);
         m_effect->SetTexture(m_normalMap.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
