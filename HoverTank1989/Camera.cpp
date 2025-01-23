@@ -1256,7 +1256,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	//m_debugData->PushDebugLinePositionIndicator(m_target, 50.0f, 0.0f, DirectX::Colors::Yellow);
 	//m_debugData->PushDebugLinePositionIndicator(m_position, 50.0f, 0.0f, DirectX::Colors::Red);
 
@@ -2462,7 +2462,7 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	m_position = camPos;
 	m_target = targPos;
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	m_debugData->DebugPushUILineDecimalNumber("m_position.x ", m_position.x, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.y ", m_position.y, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.z ", m_position.z, "");

@@ -1073,7 +1073,7 @@ void Game::Render()
 
 
     const float timeStamp = static_cast<float>(m_testTimer + m_debugStartTime);
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("timeStamp ", timeStamp, "");
 
     Lighting::LightingState lightState = m_lighting->GetLightingState();
