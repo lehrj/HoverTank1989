@@ -243,6 +243,7 @@
     <Image Include="Art\NormalMaps\normBMW.png" />
     <Image Include="Art\NormalMaps\normBMW2.png" />
     <Image Include="Art\NormalMaps\normJI.png" />
+    <Image Include="Art\NormalMaps\normJI3.png" />
     <Image Include="Art\NormalMaps\TestOP.png" />
     <Image Include="Art\SpecularMaps\blankSpecular.jpg" />
     <Image Include="Art\SpecularMaps\specularBMW.png" />
