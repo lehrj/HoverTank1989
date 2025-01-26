@@ -244,10 +244,12 @@
     <Image Include="Art\NormalMaps\normBMW2.png" />
     <Image Include="Art\NormalMaps\normJI.png" />
     <Image Include="Art\NormalMaps\normJI3.png" />
+    <Image Include="Art\NormalMaps\normJI4.png" />
     <Image Include="Art\NormalMaps\TestOP.png" />
     <Image Include="Art\SpecularMaps\blankSpecular.jpg" />
     <Image Include="Art\SpecularMaps\specularBMW.png" />
     <Image Include="Art\SpecularMaps\specularJI2.png" />
+    <Image Include="Art\SpecularMaps\specularJI3.png" />
     <Image Include="Art\SpecularMaps\specularTeaser.png" />
     <Image Include="Art\SpecularMaps\specularTeaser1.png" />
     <Image Include="Art\SpecularMaps\specularUV.png" />
@@ -263,6 +265,7 @@
     <Image Include="Art\Textures\logoBMW.png" />
     <Image Include="Art\Textures\logoJI.png" />
     <Image Include="Art\Textures\logoJI2.png" />
+    <Image Include="Art\Textures\logoJI3.png" />
     <Image Include="Art\Textures\logoTeaser.png" />
     <Image Include="Art\Textures\skyTexture.jpg" />
     <Image Include="Art\Textures\TestOP.png" />
