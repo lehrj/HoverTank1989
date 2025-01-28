@@ -62,6 +62,8 @@ Game::Game() noexcept(false)
     m_camera->SetCameraEnvironment(m_environment);
     m_camera->SetDebugData(m_debugData);
 
+    m_lighting->SetDebugData(m_debugData);
+
     m_npcController = std::make_shared<NPCController>();
     m_npcController->SetNPCEnvironment(m_environment);
     m_npcController->SetDebugData(m_debugData);
@@ -874,9 +876,35 @@ void Game::Update(DX::StepTimer const& aTimer)
     m_camera->UpdateCamera(aTimer);
     m_environment->SetCameraPos(m_camera->GetPos());
 
+
+    ////////////////////////////////
+    //m_debugData->ToggleDebugOnOverRide();
+
+    m_debugData->DebugPushUILineWholeNumber("Not JI logo ", 0, "");
+    auto targPos = m_camera->GetTargetPos();
+    //targPos.x += 50.0f;
+    auto camPos = m_camera->GetPos();
+    auto testLine = DirectX::SimpleMath::Vector3::UnitX;
+    auto testQuat = DirectX::SimpleMath::Quaternion::Identity;
+
+    m_debugData->PushDebugLinePositionIndicatorAligned(targPos, 5.0f, 0.0f, testQuat, DirectX::Colors::Red);
+    m_debugData->PushTestDebugBetweenPoints(camPos, targPos, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(targPos, 4.0f, 0.0f, DirectX::Colors::Red);
+
+    m_debugData->DebugPushUILineDecimalNumber("camPos.x ", camPos.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("camPos.y ", camPos.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("camPos.z ", camPos.z, "");
+    m_debugData->DebugPushUILineDecimalNumber("targPos.x ", targPos.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("targPos.y ", targPos.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("targPos.z ", targPos.z, "");
+    m_debugData->ToggleDebugOff();
+
+    m_lighting->SetTargPos(m_camera->GetTargetPos());
+
     if (m_currentGameState != GameState::GAMESTATE_GAMEPLAY)
     {
-        m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
+        //m_lighting->UpdateLighting(m_effect, aTimer.GetTotalSeconds());
+        m_lighting->UpdateLighting(m_effect, aTimer.GetElapsedSeconds());
     }
 
     m_proj = m_camera->GetProjectionMatrix();
@@ -1147,7 +1175,7 @@ void Game::Render()
     context->IASetInputLayout(m_inputLayout3.Get());
     m_batch3->Begin();
 
-    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY || m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         DrawDebugLinesVector();
         //DrawSky2MultisampleTest(m_camera->GetViewMatrix(), m_proj, m_effect3, m_inputLayout3);
@@ -1329,9 +1357,6 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoJI3.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normJI4.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI3.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoBMW.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularBMW.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
     // BMW textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
