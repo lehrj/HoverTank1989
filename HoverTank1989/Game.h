@@ -212,7 +212,9 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive>    m_billboardShape;
     //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(50.0f, 50.0f, 50.0f);
     //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(0.01f, 0.5f, 0.8888f);
-    const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 0.5f, 0.8888f);
+    //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 0.5f, 0.8888f);
+    //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 0.75f, 0.8888f);
+    const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
     //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
     const DirectX::SimpleMath::Vector3              m_billboardPosition = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
 
