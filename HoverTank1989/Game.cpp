@@ -3171,12 +3171,22 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
         {
-            m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
+            //m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
         }
+
+        m_camera->ResetSmoothStepVal();
+
+        //m_camera->SetCameraState(CameraState::CAMERASTATE_RETURN);
+        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+        
+        //m_camera->CycleNpcFocus(m_fireControl->GetTargetCurrentID());
+        //m_camera->CycleNpcFocus(true);
+        //m_fireControl->GetTargetCurrentID()
     }
     if (m_kbStateTracker.pressed.P)
     {
-        m_npcController->DebugToggleAI();
+        //m_npcController->DebugToggleAI();
+        m_camera->TransitionToNpcSpringCamera();
     }
     if (m_kbStateTracker.pressed.Y)
     {
@@ -3430,28 +3440,36 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ToggleDebug1();
+            //m_fireControl->ToggleDebug1();
+            m_camera->CycleNpcFocus(true);
         }
     }
     if (m_kbStateTracker.pressed.D2)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ToggleDebug2();
+            //m_fireControl->ToggleDebug2();
+            m_camera->CycleNpcFocus(false);
         }
     }
     if (m_kbStateTracker.pressed.D3)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ToggleDebug3();
+            //m_fireControl->ToggleDebug3();
+            
+            m_camera->ResetSmoothStepVal();
+            m_camera->SetCameraState(CameraState::CAMERASTATE_TARGETPAN);
         }
     }
     if (m_kbStateTracker.pressed.D4)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle4();
+            //m_vehicle->DebugToggle4();
+
+            m_camera->ResetSmoothStepVal();
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
     if (m_kbStateTracker.pressed.D5)
@@ -3980,18 +3998,6 @@ unsigned int Game::GetRandomNonRepeatingFxIndex(unsigned int aCurrentIndex, Util
 
 void Game::UpdateAutoFire()
 {
-    int targetControlID = m_fireControl->GetTargetControlID();
-    int targetCurrentID = m_fireControl->GetTargetCurrentID();
-    
-    //m_debugData->DebugPushUILineWholeNumber("targetControlID", targetControlID, "");
-    //m_debugData->DebugPushUILineWholeNumber("targetCurrentID", targetCurrentID, "");
-
-    float zoom = m_camera->GetZoom();
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("zoom = ", zoom, "");
-
-    m_debugData->ToggleDebugOff();
-
     if (m_fireControl->GetIsAutoFireOn() == true && m_fireControl->GetIsAutoFireTargetReadyTrue() == true && m_fireControl->GetIsFireCooldownTrue() == false && m_fireControl->GetIsAutoFireTargetValidTrue() == true)
     {
         TriggerFireWithAudio();

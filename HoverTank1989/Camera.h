@@ -36,6 +36,7 @@ enum class CameraState
     CAMERASTATE_SNAPCAM,
     CAMERASTATE_POSE,
     CAMERASTATE_RETURN,
+    CAMERASTATE_TARGETPAN
 };
 
 enum class MissileTrackState
@@ -172,7 +173,7 @@ public:
     void YawSpin(float aTurn);
     void TurnAroundPoint(float aTurn, DirectX::SimpleMath::Vector3 aCenterPoint);
     void TurnEndPosAroundPoint(float aTurn, DirectX::SimpleMath::Vector3 aCenterPoint);
-
+    void ResetSmoothStepVal();
 private:
 
     void DrawUI();
@@ -324,9 +325,15 @@ private:
     DirectX::SimpleMath::Matrix m_springCameraMatrix;
     Target m_springTarget;
     void ComputeSpringMatrix();
-    DirectX::SimpleMath::Vector3 GetSpringCameraTarget();
+    DirectX::SimpleMath::Vector3 GetSpringCameraTargetNPC();
     void InitializeSpringCamera(Target aTarget, float aSpringConstant, float ahDist, float aVDist);
-    void UpdateSpringCamera(DX::StepTimer const& aTimeDelta);
+
+    void UpdateSpringPan(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapPan(DX::StepTimer const& aTimeDelta);
+
+
+    void UpdateSpringCameraNPC(DX::StepTimer const& aTimeDelta);
+    void UpdateSpringCameraNPCold(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer2(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayer3(DX::StepTimer const& aTimeDelta);
@@ -338,7 +345,7 @@ private:
     void UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta);
 
     void UpdateSmoothStepVal(const float aTimeStep);
-    void ResetSmoothStepVal();
+    //void ResetSmoothStepVal();
 
     // SpinCamera
     float m_cameraSpin = 0.0;
@@ -441,6 +448,8 @@ private:
     const float m_smoothStepToVehicle = 0.2f;
     const float m_smoothStepTarget = 0.1f;
     const float m_smoothStepSnapCamPos = 0.1f;
+    const float m_slerpSnapTargQuat = 0.01f;
+    const float m_slerSnapQuat = 0.01f;
 
     const float m_slerpSnapCam = 0.1f;
     const float m_slerpSnapTarg = 0.1f;
@@ -463,6 +472,8 @@ private:
 
     const float m_missileExplosionCamPosTimeMax = 0.5f;
     float m_missileExplosionCampPosTime = 0.0f;
+
+    DirectX::SimpleMath::Vector3 m_targetPanPos = DirectX::SimpleMath::Vector3(300.0f, 50.0f, -50.0f);
 
 };
 

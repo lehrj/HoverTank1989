@@ -531,7 +531,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
 
 
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     m_debugData->DebugPushUILineWholeNumber(" all JI logo ", 0, "");
     auto targPos = m_cameraFocusPos;
