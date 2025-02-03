@@ -1005,6 +1005,15 @@ void Camera::SetNpcController(std::shared_ptr<NPCController> aNpcController)
 	m_npcController = aNpcController;
 }
 
+void Camera::SetPanVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos)
+{
+	m_panSmoothStepCam = aCamStep;
+	m_panSmoothStepTarg = aTargStep;
+
+	m_panTargPos = aTargPos;
+	m_panCamPos = aCamPos;
+}
+
 void Camera::SetVehicleFocus(std::shared_ptr<Vehicle> aVehicle)
 {
 	m_vehicleFocus = aVehicle;
@@ -1264,7 +1273,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_debugData->ToggleDebugOnOverRide();
 	//m_debugData->PushDebugLinePositionIndicator(m_target, 50.0f, 0.0f, DirectX::Colors::Yellow);
-	m_debugData->PushDebugLinePositionIndicator(m_targetPanPos, 50.0f, 0.0f, DirectX::Colors::Red);
+	m_debugData->PushDebugLinePositionIndicator(m_panTargPos, 50.0f, 0.0f, DirectX::Colors::Red);
 	m_debugData->PushDebugLinePositionIndicator(m_target, 40.0f, 0.0f, DirectX::Colors::Yellow);
 
 	
@@ -1281,13 +1290,21 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	{
 		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_PRESWINGVIEW ", 0, "");
 	}
-	else if (m_cameraState == CameraState::CAMERASTATE_STARTSCREEN)
+	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
 	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_STARTSCREEN ", 0, "");
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SPRINGCAMERA ", 0, "");
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
 		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAM ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERANPC)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SPRINGCAMERANPC ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_TARGETPAN)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_TARGETPAN ", 0, "");
 	}
 	else
 	{
@@ -2553,17 +2570,26 @@ void Camera::UpdateSnapPan(DX::StepTimer const& aTimeDelta)
 	currentTargetQuat = m_snapTargetQuat;
 	currentTargetQuat = m_snapQuat;
 	currentTargetQuat *= vehicleQuat;
+
 	DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
 	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, m_slerpSnapTargQuat);
 
 	camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
 
-	camPos += m_vehicleFocus->GetPos();
+	camPos = DirectX::SimpleMath::Vector3(1000.0f, 200.0f, -900.0f);
+
+	camPos = m_panCamPos;
+
+	//camPos += m_vehicleFocus->GetPos();
+	//camPos.x += 50.0f;
+	//camPos.y += 20.0f;
+
 	//camPos += m_targetPanPos;
 
-	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_smoothStepSnapCamPos);
+	//camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_smoothStepSnapCamPos);
+	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_panSmoothStepCam);
 
-	camPos = prePos;
+	//camPos = prePos;
 
 	auto targPos = m_snapTargBase;
 
@@ -2574,9 +2600,13 @@ void Camera::UpdateSnapPan(DX::StepTimer const& aTimeDelta)
 	*/
 
 	//targPos += m_vehicleFocus->GetPos();
-	targPos += m_targetPanPos;
-	targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_smoothStepTarget);
-	
+	targPos = m_panTargPos;
+
+	//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_smoothStepTarget);
+	targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_panSmoothStepTarg);
+
+	//targPos = DirectX::SimpleMath::Vector3::SmoothStep(preTarg, targPos, m_panSmoothStepTarg);
+
 	//targPos = preTarg;
 
 	DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
@@ -2587,12 +2617,6 @@ void Camera::UpdateSnapPan(DX::StepTimer const& aTimeDelta)
 
 	m_position = camPos;
 	m_target = targPos;
-
-	m_debugData->ToggleDebugOnOverRide();
-	m_debugData->DebugPushUILineDecimalNumber("m_position.x ", m_position.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.y ", m_position.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.z ", m_position.z, "");
-	m_debugData->ToggleDebugOff();
 
 	/*
 	m_targetLocal = m_target - m_position;

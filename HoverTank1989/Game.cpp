@@ -3171,17 +3171,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
         {
-            //m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
+            m_camera->UpdatePos(0.0f, 0.0f + static_cast<float>(aTimer.GetElapsedSeconds()), 0.0f);
         }
 
-        m_camera->ResetSmoothStepVal();
 
-        //m_camera->SetCameraState(CameraState::CAMERASTATE_RETURN);
-        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-        
-        //m_camera->CycleNpcFocus(m_fireControl->GetTargetCurrentID());
-        //m_camera->CycleNpcFocus(true);
-        //m_fireControl->GetTargetCurrentID()
     }
     if (m_kbStateTracker.pressed.P)
     {
@@ -3476,21 +3469,26 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle5();
+            //m_vehicle->DebugToggle5();
+
+            m_camera->TransitionToNpcSpringCamera();
         }
     }
     if (m_kbStateTracker.pressed.D6)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle6();
+            //m_vehicle->DebugToggle6();
+            m_camera->SetPanVals(0.1f, 0.3f, DirectX::SimpleMath::Vector3(900.0f, 100.0f, 900.0f), DirectX::SimpleMath::Vector3(-700.0f, 50.0f, 90.0f));
+
         }
     }
     if (m_kbStateTracker.pressed.D7)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle7();
+            //m_vehicle->DebugToggle7();
+            m_camera->SetPanVals(0.2f, 0.3f, DirectX::SimpleMath::Vector3(1000.0f, 200.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 100.0f, 0.0f));
         }
     }
     if (m_kbStateTracker.pressed.D8)

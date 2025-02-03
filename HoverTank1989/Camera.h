@@ -143,6 +143,9 @@ public:
     void SetSpinCameraStart();
     void SetSpinCameraStartGamePlayStart(const float aTime);
     void SetSpinCameraTrailerStart(const float aTime);
+
+    void SetPanVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
+
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
     void SetTransitionSpeed(const float aSpeed);
@@ -174,6 +177,8 @@ public:
     void TurnAroundPoint(float aTurn, DirectX::SimpleMath::Vector3 aCenterPoint);
     void TurnEndPosAroundPoint(float aTurn, DirectX::SimpleMath::Vector3 aCenterPoint);
     void ResetSmoothStepVal();
+
+
 private:
 
     void DrawUI();
@@ -446,10 +451,19 @@ private:
 
     const float m_smoothStepToMissile = 0.1f;
     const float m_smoothStepToVehicle = 0.2f;
+
+    /*
     const float m_smoothStepTarget = 0.1f;
     const float m_smoothStepSnapCamPos = 0.1f;
     const float m_slerpSnapTargQuat = 0.01f;
     const float m_slerSnapQuat = 0.01f;
+    */
+    const float m_smoothStepTarget = 0.1f;
+    const float m_smoothStepSnapCamPos = 0.1f;
+    const float m_slerpSnapTargQuat = 0.01f;
+    const float m_slerSnapQuat = 0.01f;
+
+
 
     const float m_slerpSnapCam = 0.1f;
     const float m_slerpSnapTarg = 0.1f;
@@ -473,7 +487,11 @@ private:
     const float m_missileExplosionCamPosTimeMax = 0.5f;
     float m_missileExplosionCampPosTime = 0.0f;
 
-    DirectX::SimpleMath::Vector3 m_targetPanPos = DirectX::SimpleMath::Vector3(300.0f, 50.0f, -50.0f);
+    DirectX::SimpleMath::Vector3 m_panTargPos = DirectX::SimpleMath::Vector3(700.0f, 100.0f, 0.0f);
 
+    DirectX::SimpleMath::Vector3 m_panCamPos = DirectX::SimpleMath::Vector3(1000.0f, 200.0f, -900.0f);
+
+    float m_panSmoothStepCam = 0.4f;
+    float m_panSmoothStepTarg = 0.45f;
 };
 
