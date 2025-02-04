@@ -145,6 +145,7 @@ public:
     void SetSpinCameraTrailerStart(const float aTime);
 
     void SetPanVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
+    void SetSnapVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
 
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
@@ -424,7 +425,8 @@ private:
 
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-3.0f, 0.3f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f);
 
     //const DirectX::SimpleMath::Vector3 m_snapZoomModPos = DirectX::SimpleMath::Vector3(-14.0f, 3.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_snapZoomModPos = DirectX::SimpleMath::Vector3(7.0f, .5f, 0.0f);
@@ -434,7 +436,10 @@ private:
 
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 0.5f, -4.0f);
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 3.0f, -4.0f);
-    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 3.0f, -4.0f);
+    //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 3.0f, -4.0f);
+    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 85.0f, -4.0f);
+
+
 
     DirectX::SimpleMath::Vector3 m_snapPosNorm = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapTargNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
@@ -488,10 +493,20 @@ private:
     float m_missileExplosionCampPosTime = 0.0f;
 
     DirectX::SimpleMath::Vector3 m_panTargPos = DirectX::SimpleMath::Vector3(700.0f, 100.0f, 0.0f);
-
     DirectX::SimpleMath::Vector3 m_panCamPos = DirectX::SimpleMath::Vector3(1000.0f, 200.0f, -900.0f);
 
     float m_panSmoothStepCam = 0.4f;
     float m_panSmoothStepTarg = 0.45f;
+
+
+    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f,85.0f, -0.0f);
+    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f);
+
+    DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
+
+    float m_snapSmoothStepCam = 0.1f;
+    float m_snapSmoothStepTarg = 0.09f;
+
 };
 

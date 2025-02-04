@@ -42,6 +42,8 @@ Camera::Camera(int aWidth, int aHeight)
 	// Vehicle start m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 150.0f);
 	springTarget.position = DirectX::SimpleMath::Vector3(-500.0f, 18.0f, 50.0f);
 	springTarget.position = DirectX::SimpleMath::Vector3(-522.0f, 9.0f, 150.0f);
+	springTarget.position = DirectX::SimpleMath::Vector3(-522.0f, 309.0f, 150.0f);
+	springTarget.position = DirectX::SimpleMath::Vector3(-522.0f, 309.0f, 0.0f);
 	//m_actualPosition = springTarget.position;
 
 	m_snapPosPrev = springTarget.position;
@@ -1013,6 +1015,16 @@ void Camera::SetPanVals(const float aCamStep, const float aTargStep, const Direc
 	m_panTargPos = aTargPos;
 	m_panCamPos = aCamPos;
 }
+
+void Camera::SetSnapVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos)
+{
+	m_snapSmoothStepCam = aCamStep;
+	m_snapSmoothStepTarg = aTargStep;
+
+	m_snapTargPos = aTargPos;
+	m_snapCamPos = aCamPos;
+}
+
 
 void Camera::SetVehicleFocus(std::shared_ptr<Vehicle> aVehicle)
 {
@@ -2642,7 +2654,8 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
 	DirectX::SimpleMath::Quaternion vehicleQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(m_vehicleFocus->GetAlignment());
 	//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase;
-	DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+	//DirectX::SimpleMath::Vector3 camPos = m_snapPosBase + (m_snapZoomModPos * m_fovZoomPercent);
+	DirectX::SimpleMath::Vector3 camPos = m_snapCamPos + (m_snapZoomModPos * m_fovZoomPercent);
 
 	DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
 	currentQuat *= turretPitchQuat;
@@ -2658,15 +2671,18 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 
 	camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
 	camPos += m_vehicleFocus->GetPos();
-	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_smoothStepSnapCamPos);
+	//camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_smoothStepSnapCamPos);
+	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_snapSmoothStepCam);
 
-	auto targPos = m_snapTargBase;
+	//auto targPos = m_snapTargBase;
+	auto targPos = m_snapTargPos;
 
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
 
 	targPos += m_vehicleFocus->GetPos();
-	targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_smoothStepTarget);
+	//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_smoothStepTarget);
+	targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_snapSmoothStepTarg);
 
 	DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
 	m_viewMatrix = camMat;
@@ -2677,25 +2693,6 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	m_position = camPos;
 	m_target = targPos;
 
-	//m_debugData->ToggleDebugOnOverRide();
-	m_debugData->DebugPushUILineDecimalNumber("m_position.x ", m_position.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.y ", m_position.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.z ", m_position.z, "");
-	m_debugData->ToggleDebugOff();
-
-	/*
-	m_targetLocal = m_target - m_position;
-	auto alignInverse = DirectX::SimpleMath::Matrix::CreateFromQuaternion(currentQuat);
-	alignInverse = alignInverse.Invert();
-
-	m_targetLocal = DirectX::SimpleMath::Vector3::Transform(m_targetLocal, alignInverse);
-
-	//m_debugData->ToggleDebugOnOverRide();
-	m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.x ", m_targetLocal.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.y ", m_targetLocal.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_targetLocal.z ", m_targetLocal.z, "");
-	m_debugData->ToggleDebugOff();
-	*/
 }
 
 void Camera::UpdateSnapCamera2(DX::StepTimer const& aTimeDelta)

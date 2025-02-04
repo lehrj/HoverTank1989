@@ -162,14 +162,25 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(pitch, 0.0, -pitch);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(roll, 0.0, -roll);
 
-            DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
-            DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
-            DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+            quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0, 0.0);
+            quat1 = quat1;
+            quat2 = quat2;
 
-            const float lightMod = 0.8;
+            DirectX::SimpleMath::Vector3 light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitZ, quat0);
+            DirectX::SimpleMath::Vector3 light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitZ, quat1);
+            DirectX::SimpleMath::Vector3 light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitZ, quat2);
+
+            const float lightMod = 1.8;
             light0.x += lightMod;
             light1.x += lightMod;
             light2.x += lightMod;
+
+
+            const float lightMod2 = 0.5;
+            light0.y += lightMod2;
+            light1.y += lightMod2;
+            light2.y += lightMod2;
+
             light0.Normalize();
             light1.Normalize();
             light2.Normalize();
@@ -188,7 +199,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             m_lightPos1 = light1;
             m_lightPos2 = light2;
 
-            //ilights->EnableDefaultLighting();
+            ilights->EnableDefaultLighting();
         }
     }
     else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BMW)

@@ -1441,6 +1441,7 @@ void Game::CreateDeviceDependentResources()
     //m_skyShape->CreateInputLayout(m_effect2.get(), m_inputLayout.ReleaseAndGetAddressOf());
 
     m_billboardShape = GeometricPrimitive::CreateBox(context, m_billboardSize);
+    //m_billboardShape = GeometricPrimitive::CreateSphere(context, m_logoSize);
     m_billboardShape->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
 
     m_font = std::make_unique<SpriteFont>(device, L"Art/Fonts/myfile.spritefont");
@@ -2197,6 +2198,11 @@ void Game::DrawLogoScreen()
     //testPos *= 1.122f;
     //testPos *= 1.3f;
 
+    auto rotMat = DirectX::SimpleMath::Matrix::Identity;
+    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationX(m_timer.GetTotalSeconds());
+    testPos = DirectX::SimpleMath::Vector3::Transform(testPos, rotMat);
+
+
     if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_BMW)
     {
         testPos *= 1.6f;
@@ -2211,11 +2217,22 @@ void Game::DrawLogoScreen()
     testPos *= 1.0f;
     testPos += camPos;
     
-    DirectX::SimpleMath::Matrix wMat = DirectX::SimpleMath::Matrix::CreateWorld(testPos, wPos, DirectX::SimpleMath::Vector3::UnitY);
+    auto camOffsetPos = testPos - wPos;
+    camOffsetPos.Normalize();
+    camOffsetPos *= 20.0 * 1.0f;
+
+    //testPos.x += 5.0;
+
+    DirectX::SimpleMath::Matrix wMat = DirectX::SimpleMath::Matrix::Identity;
+    //wMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_timer.GetTotalSeconds());
+
+    wMat *= DirectX::SimpleMath::Matrix::CreateWorld(testPos, wPos, DirectX::SimpleMath::Vector3::UnitY);
     //wMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(1.0f));
     //m_effect->EnableDefaultLighting();
-
+    
     //m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+
+    //wMat = DirectX::SimpleMath::Matrix::Identity;
     m_effect->SetWorld(wMat);
     //m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
@@ -3495,21 +3512,30 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle8();
+            //m_vehicle->DebugToggle8();
+            //SetSnapVals(const float aCamStep, const float aTargStep, 
+                //const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
+            m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
+
         }
     }
     if (m_kbStateTracker.pressed.D9)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle9();
+            //m_vehicle->DebugToggle9();
+            //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 87.0f, 0.0f));
+            m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, 900.0f), DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
+
         }
     }
     if (m_kbStateTracker.pressed.D0)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ZeroMissileVelocities();
+            //m_fireControl->ZeroMissileVelocities();
+            m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 10.0f, 0.0f));
+
         }
     }
     if (kb.OemOpenBrackets)

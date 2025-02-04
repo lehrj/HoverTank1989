@@ -393,6 +393,7 @@ private:
     const float                         m_startDelay = 5.2f;
     */
 
+    const float                         m_logoSize = 1.0f;
     const float                         m_fadeDuration = 1.0f;
     const float                         m_logoDisplayDuration = 0.4f; // 5.1
     const float                         m_logoDisplayGap = 0.1f;
