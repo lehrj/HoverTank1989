@@ -3517,6 +3517,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 //const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
             m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, 900.0f), DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
         }
     }
     if (m_kbStateTracker.pressed.D9)
@@ -3527,6 +3528,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 87.0f, 0.0f));
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, 900.0f), DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
             m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 10.0f, 0.0f));
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
         }
     }
     if (m_kbStateTracker.pressed.D0)
@@ -3536,6 +3538,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //m_fireControl->ZeroMissileVelocities();
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 10.0f, 0.0f));
             m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
     if (kb.OemOpenBrackets)

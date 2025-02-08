@@ -34,6 +34,7 @@ enum class CameraState
     CAMERASTATE_TRANSITIONFROMSPRINGCAM,
     CAMERASTATE_TRANSITIONTOSPRINGCAM,
     CAMERASTATE_SNAPCAM,
+    CAMERASTATE_SNAPCAMDEMO,
     CAMERASTATE_POSE,
     CAMERASTATE_RETURN,
     CAMERASTATE_TARGETPAN
@@ -346,6 +347,7 @@ private:
     void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCamera(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapCameraDemo(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCamera2(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraMissile(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta);
