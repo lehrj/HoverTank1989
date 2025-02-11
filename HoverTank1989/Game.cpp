@@ -3516,7 +3516,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //SetSnapVals(const float aCamStep, const float aTargStep, 
                 //const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
-            m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 220.0f, 900.0f), DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
+            m_camera->SetSnapVals(0.1f, 0.01f, DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f), DirectX::SimpleMath::Vector3(40.0f, 10.0f, 0.0f));
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
         }
     }
@@ -3527,7 +3527,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //m_vehicle->DebugToggle9();
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 87.0f, 0.0f));
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, 900.0f), DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
-            m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 250.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 10.0f, 0.0f));
+            m_camera->SetSnapVals(0.05f, 0.09f, DirectX::SimpleMath::Vector3(1000.0f, 170.0f, -900.0f), DirectX::SimpleMath::Vector3(40.0f, 10.0f, 0.0f));
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
         }
     }
