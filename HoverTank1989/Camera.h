@@ -510,5 +510,7 @@ private:
     float m_snapSmoothStepCam = 0.1f;
     float m_snapSmoothStepTarg = 0.09f;
 
+    float m_snapSlerp = 0.1f;
+
 };
 

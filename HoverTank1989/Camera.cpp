@@ -2666,12 +2666,12 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 	currentQuat *= turretYawQuat;
 	currentQuat *= vehicleQuat;
 	DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
-	m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
+	m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, m_snapSlerp);
 
 	DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
 	currentTargetQuat *= vehicleQuat;
 	DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
-	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, m_snapSlerp);
 
 	camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
 	camPos += m_vehicleFocus->GetPos();
@@ -2708,12 +2708,12 @@ void Camera::UpdateSnapCameraDemo(DX::StepTimer const& aTimeDelta)
 
 	DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
 	DirectX::SimpleMath::Quaternion prevQuat = m_snapQuat;
-	m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, 0.1f);
+	m_snapQuat = DirectX::SimpleMath::Quaternion::Slerp(prevQuat, currentQuat, m_snapSlerp);
 
 	DirectX::SimpleMath::Quaternion currentTargetQuat = DirectX::SimpleMath::Quaternion::Identity;
 
 	DirectX::SimpleMath::Quaternion prevTargetQuat = m_snapTargetQuat;
-	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, 0.1f);
+	m_snapTargetQuat = DirectX::SimpleMath::Quaternion::Slerp(prevTargetQuat, currentTargetQuat, m_snapSlerp);
 
 	camPos = DirectX::SimpleMath::Vector3::Transform(camPos, m_snapQuat);
 	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_snapSmoothStepCam);
