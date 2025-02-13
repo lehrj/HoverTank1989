@@ -1016,7 +1016,7 @@ void Camera::SetPanVals(const float aCamStep, const float aTargStep, const Direc
 	m_panCamPos = aCamPos;
 }
 
-void Camera::SetSnapVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos)
+void Camera::SetSnapVals(const float aCamStep, const float aTargStep, const float aSlerpVal, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos)
 {
 	m_snapSmoothStepCam = aCamStep;
 	m_snapSmoothStepTarg = aTargStep;

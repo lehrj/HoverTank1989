@@ -147,6 +147,7 @@ public:
 
     void SetPanVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
     void SetSnapVals(const float aCamStep, const float aTargStep, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
+    void SetSnapVals(const float aCamStep, const float aTargStep, const float aSlerpVal, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
 
     void SetTargetEndPos(DirectX::SimpleMath::Vector3 aEndPos);
     void SetTargetStartPos(DirectX::SimpleMath::Vector3 aStartPos);
