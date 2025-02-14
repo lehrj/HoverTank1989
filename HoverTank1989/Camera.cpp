@@ -507,6 +507,30 @@ void Camera::PrepareTrailerStart()
 	m_trailerTimer = 0.0f;
 }
 
+void Camera::RampUpReset()
+{
+	m_rampUpVal = m_rampUpMin;
+	m_isRampUpOn = true;
+}
+
+void Camera::RampUpUpdate(DX::StepTimer const& aTimer)
+{
+	if (m_isRampUpOn == true)
+	{
+		m_rampUpVal += m_rampUpMod * aTimer.GetElapsedSeconds();
+
+		if (m_rampUpVal >= m_rampUpMax)
+		{
+			m_isRampUpOn = false;
+			m_rampUpVal = m_rampUpMax;
+		}
+	}
+
+	m_debugData->ToggleDebugOnOverRide();
+	m_debugData->DebugPushUILineDecimalNumber("m_rampUpVal", m_rampUpVal, "");
+	m_debugData->ToggleDebugOff();
+}
+
 void Camera::ReturnToOverwatchPosition()
 {
 	m_trailerCamStartPos2 = m_position;
@@ -1018,6 +1042,8 @@ void Camera::SetPanVals(const float aCamStep, const float aTargStep, const Direc
 
 void Camera::SetSnapVals(const float aCamStep, const float aTargStep, const float aSlerpVal, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos)
 {
+	RampUpReset();
+
 	m_snapSmoothStepCam = aCamStep;
 	m_snapSmoothStepTarg = aTargStep;
 
@@ -1081,6 +1107,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 {
 	UpdateTimer(aTimer);
 	UpdateSmoothStepVal(static_cast<float>(aTimer.GetElapsedSeconds()));
+	RampUpUpdate(aTimer);
 
 	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
 	{

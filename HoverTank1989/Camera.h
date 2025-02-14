@@ -513,5 +513,16 @@ private:
 
     float m_snapSlerp = 0.1f;
 
+    float m_rampUpVal = 0.0f;
+    const float m_rampUpMax = 1.0f;
+    const float m_rampUpMin = 0.0f;
+    const float m_rampUpMod = 1.0f;
+    bool m_isRampUpOn = false;
+
+
+    
+    void RampUpReset();
+    void RampUpUpdate(DX::StepTimer const& aTimer);
+
 };
 
