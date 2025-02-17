@@ -516,7 +516,7 @@ private:
     float m_rampUpVal = 1.0f;
     const float m_rampUpMax = 1.0f;
     const float m_rampUpMin = 0.0f;
-    const float m_rampUpMod = 1.0f;
+    const float m_rampUpMod = 1.3f;
     bool m_isRampUpOn = false;
 
 

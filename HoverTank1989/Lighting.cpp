@@ -185,12 +185,6 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             light1.Normalize();
             light2.Normalize();
 
-            /*
-            light0 *= .3;
-            light1 *= .3;
-            light2 *= .3;
-            */
-
             ilights->SetLightDirection(0, light0);
             ilights->SetLightDirection(1, light1);
             ilights->SetLightDirection(2, light2);

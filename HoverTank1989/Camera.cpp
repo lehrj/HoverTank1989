@@ -526,7 +526,7 @@ void Camera::RampUpUpdate(DX::StepTimer const& aTimer)
 		}
 	}
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	m_debugData->DebugPushUILineDecimalNumber("m_rampUpVal", m_rampUpVal, "");
 	m_debugData->ToggleDebugOff();
 }
@@ -1314,7 +1314,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	//m_debugData->PushDebugLinePositionIndicator(m_target, 50.0f, 0.0f, DirectX::Colors::Yellow);
 	m_debugData->PushDebugLinePositionIndicator(m_panTargPos, 50.0f, 0.0f, DirectX::Colors::Red);
 	m_debugData->PushDebugLinePositionIndicator(m_target, 40.0f, 0.0f, DirectX::Colors::Yellow);

@@ -5432,12 +5432,12 @@ void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta
     //m_debugData->ToggleDebugOnOverRide();
 
     auto velNormLocal = aMissile.guidance.selfVelLocalNorm;
-    //auto velNormLocal = DirectX::SimpleMath::Vector3::UnitX;
-
+    
     
     auto inversVelQuat = aMissile.guidance.selfLocalVelQuatInverse;
     //auto upLocal = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, aMissile.projectileData.inverseAlignmentQuat);
     auto upLocal = aMissile.guidance.selfUpLocal;
+
 
     auto right = velNormLocal.Cross(upLocal);
     auto testVelNorm = velNormLocal;
@@ -5485,7 +5485,9 @@ void FireControl::GuidanceClimbOut(MissileData& aMissile, const float aTimeDelta
     //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, right, DirectX::Colors::Orange, false, true);
     //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, testVelNorm, DirectX::Colors::Red, false, true);
 
+    //m_debugData->ToggleDebugOnOverRide();
 
+    //DebugPushDrawData(DirectX::SimpleMath::Vector3::Zero, targVecNorm, DirectX::Colors::Orange, false, true);
     aMissile.guidance.nav.vecToTargLocal = targVecNorm;
     aMissile.guidance.nav.quatToTarg = toTargQuat;
     aMissile.guidance.nav.targPosLocalized = targVecNorm;
