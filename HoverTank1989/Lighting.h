@@ -35,6 +35,11 @@ public:
     void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
 
     void SetCamPos(const DirectX::SimpleMath::Vector3 aCamPos);
+
+    void SetTimerVal(const float aVal);
+
+    void ResetTimer();
+
     void SetTargPos(const DirectX::SimpleMath::Vector3 aTargetPos);
 
     void UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect, const double aTimer);
@@ -43,6 +48,8 @@ public:
     void UpdateLightingColorVertex3(std::shared_ptr<DirectX::BasicEffect> aEffect, const double aTimer);
 
 private:
+
+    void UpdateTimer(const double aTimer);
 
     LightingState                               m_currentLightingState;
     LightingState                               m_currentLightingStateNormColorTextureVertex;
@@ -67,5 +74,10 @@ private:
     float m_testVal0 = 0.0f;
     float m_testVal1 = 0.0f;
     float m_testVal2 = 0.0f;
+
+    float m_lightTimer = 0.0f;
+    float m_lightTimerMax = 3.0f;
+    bool m_isTimerOn = false;
+
 };
 

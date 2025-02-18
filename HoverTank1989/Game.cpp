@@ -1751,6 +1751,9 @@ void Game::DrawIntroScene()
     //////////////////////////////////////
     else if (timeStamp < fadeOutEnd1)  // Render Jackson Industries Logo
     {
+        m_lighting->ResetTimer();
+        m_lighting->SetTimerVal(fadeOutEnd1 - fadeInStart1);
+
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_effect->SetTexture(m_textureJI.Get());

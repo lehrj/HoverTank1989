@@ -65,7 +65,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
     //m_testVal += 
     aEffect->EnableDefaultLighting();
     
-    
+    UpdateTimer(aTimer);
 
     if (m_currentLightingState == LightingState::LIGHTINGSTATE_JI_TEST)
     {
@@ -194,6 +194,25 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             m_lightPos2 = light2;
 
             ilights->EnableDefaultLighting();
+
+            ilights->SetLightEnabled(0, false);
+            ilights->SetLightEnabled(1, false);
+            ilights->SetLightEnabled(2, false);
+
+
+            if ((m_lightTimer / m_lightTimerMax) > 0.3f)
+            {
+                ilights->SetLightEnabled(0, true);
+            }
+            if ((m_lightTimer / m_lightTimerMax) > 0.5f)
+            {
+                ilights->SetLightEnabled(1, true);
+            }
+            if ((m_lightTimer / m_lightTimerMax) > 0.65f)
+            {
+                ilights->SetLightEnabled(2, true);
+            }
+
         }
     }
     else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BMW)
@@ -597,3 +616,41 @@ void Lighting::UpdateLightingColorVertex3(std::shared_ptr<DirectX::BasicEffect> 
     //aEffect->EnableDefaultLighting();
 }
 
+void Lighting::UpdateTimer(const double aTimer)
+{
+    //m_lightTimer += static_cast<float>(aTimer);
+
+    if (m_isTimerOn == true)
+    {
+        m_lightTimer += static_cast<float>(aTimer);
+
+        if (m_lightTimer >= m_lightTimerMax)
+        {
+            m_isTimerOn = false;
+        }
+    }
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("m_lightTimer ", m_lightTimer, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isTimerOn ", m_isTimerOn, "");
+    m_debugData->DebugPushUILineDecimalNumber("aTimer ", aTimer, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_lightTimerMax ", m_lightTimerMax, "");
+  
+    m_debugData->DebugPushUILineDecimalNumber("m_lightTimer / m_lightTimerMax ", m_lightTimer / m_lightTimerMax, "");
+    
+    m_debugData->ToggleDebugOff();
+}
+
+void Lighting::ResetTimer()
+{
+    if (m_isTimerOn == false)
+    {
+        m_lightTimer = 0.0f; 
+        m_isTimerOn = true;
+    }
+}
+
+void Lighting::SetTimerVal(const float aVal)
+{
+    m_lightTimerMax = aVal;
+}

@@ -395,7 +395,7 @@ private:
 
     const float                         m_logoSize = 1.0f;
     const float                         m_fadeDuration = 1.5f;
-    const float                         m_logoDisplayDuration = 3.4f; // 5.1
+    const float                         m_logoDisplayDuration = 7.4f; // 5.1
     const float                         m_logoDisplayGap = 0.1f;
     const float                         m_startDelay = 0.5f;
 
