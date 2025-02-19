@@ -1759,6 +1759,11 @@ void Game::DrawIntroScene()
         m_effect->SetTexture(m_textureJI.Get());
         m_effect->SetNormalTexture(m_normalMapJI.Get());
         m_effect->SetSpecularTexture(m_specularJI.Get());
+
+        m_debugData->ToggleDebugOnOverRide();
+
+        //m_debugData->DebugPushUILineDecimalNumber("", , "");
+
         if (timeStamp < fadeInEnd1)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
@@ -1770,6 +1775,9 @@ void Game::DrawIntroScene()
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
+
+            m_debugData->DebugPushUILineDecimalNumber("1 ", 1.0f, "");
+            //SetFogVals(testFogTarget1, 1.0f);
         }
         else if (timeStamp > fadeOutStart1) // fade out
         {
@@ -1782,11 +1790,22 @@ void Game::DrawIntroScene()
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
+
+            m_debugData->DebugPushUILineDecimalNumber("3 ", 3.0f, "");
+
         }
         else // display at full intesity
         {
-            //m_effect->SetFogEnabled(false);
+            m_effect->SetFogEnabled(false);
+
+            m_debugData->DebugPushUILineDecimalNumber("2 ", 2.0f, "");
+
+            SetFogVals(testFogTarget1, 1.0f);
         }
+
+        m_debugData->ToggleDebugOff();
+        
+
     }
     ///////////////////////////////
     ///    Render BMW Logo      /// 

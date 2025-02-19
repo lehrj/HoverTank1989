@@ -200,19 +200,114 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             ilights->SetLightEnabled(2, false);
 
 
+            float ang0 = Utility::ToRadians(2.0f);
+            float ang1 = Utility::ToRadians(45.0f);
+            float ang2 = Utility::ToRadians(-45.0f);
+
+            quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(ang0, Utility::ToRadians(-20.0f), 0.0f);
+            quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(ang1, Utility::ToRadians(20.0f), 0.0f);
+            quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(ang2, 0.0f, 0.0f);
+
+            auto liteDir0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
+            auto liteDir1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
+            auto liteDir2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+
+            ilights->SetLightDirection(0, liteDir0);
+            ilights->SetLightDirection(1, liteDir1);
+            ilights->SetLightDirection(2, liteDir2);
+
+            m_lightPos0 = liteDir0;
+            m_lightPos1 = liteDir1;
+            m_lightPos2 = liteDir2;
+            ilights->EnableDefaultLighting();
+            ilights->SetLightEnabled(0, false);
+            ilights->SetLightEnabled(1, false);
+            ilights->SetLightEnabled(2, false);
+
+  
+
+            /*
+            if ((m_lightTimer / m_lightTimerMax) < 0.3f)
+            {
+                float mod = (m_lightTimer / m_lightTimerMax) / 0.3f;
+
+                m_debugData->ToggleDebugOnOverRide();
+                m_debugData->DebugPushUILineDecimalNumber("mod = ", mod, "");
+                m_debugData->ToggleDebugOff();
+
+                ilights->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432)* mod);
+                ilights->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432)* mod);
+            }
+            */
+
             if ((m_lightTimer / m_lightTimerMax) > 0.3f)
             {
-                ilights->SetLightEnabled(0, true);
-            }
-            if ((m_lightTimer / m_lightTimerMax) > 0.5f)
-            {
-                ilights->SetLightEnabled(1, true);
-            }
-            if ((m_lightTimer / m_lightTimerMax) > 0.65f)
-            {
-                ilights->SetLightEnabled(2, true);
+               // ilights->SetLightEnabled(2, true);
+
+
             }
 
+            const float lower = 0.2f;
+            const float upper = 0.5f;
+
+            if ((m_lightTimer / m_lightTimerMax) > lower && (m_lightTimer / m_lightTimerMax) < upper)
+            {
+                ilights->SetLightEnabled(2, true);
+                ilights->SetLightEnabled(1, true);
+                ilights->SetLightEnabled(0, true);
+
+                float modTimerIn = (m_lightTimer / m_lightTimerMax);
+                modTimerIn -= lower;
+                modTimerIn /= (upper - lower);
+
+                float mod = (m_lightTimer / m_lightTimerMax) / (m_lightTimer - 0.3f);
+                mod = modTimerIn;
+
+                //m_debugData->ToggleDebugOnOverRide();
+                m_debugData->DebugPushUILineDecimalNumber("mod = ", mod, "");
+                m_debugData->ToggleDebugOff();
+
+                ilights->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432) * mod);
+                ilights->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432) * mod);
+
+                ilights->SetLightDiffuseColor(1, DirectX::SimpleMath::Vector3(0.9647059, 0.7607844, 0.4078432) * mod);
+                ilights->SetLightSpecularColor(1, DirectX::SimpleMath::Vector3(0, 0, 0) * mod);
+
+                ilights->SetLightDiffuseColor(2, DirectX::SimpleMath::Vector3(0.3231373, 0.3607844, 0.3937255) * mod);
+                ilights->SetLightSpecularColor(2, DirectX::SimpleMath::Vector3(0.3231373, 0.3607844, 0.3937255) * mod);
+
+            }
+            if ((m_lightTimer / m_lightTimerMax) > upper)
+            {
+                ilights->SetLightEnabled(0, true);
+                ilights->SetLightEnabled(2, true);
+                ilights->SetLightEnabled(1, true);
+            }
+
+            //ilights->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432));
+            //ilights->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432));
+
+
+
+            /*
+            ilights->SetLightEnabled(0, false);
+            ilights->SetLightEnabled(1, false);
+            ilights->SetLightEnabled(2, false);
+
+            ilights->EnableDefaultLighting();
+
+            ilights->SetLightEnabled(0, false);
+            ilights->SetLightEnabled(1, false);
+            ilights->SetLightEnabled(2, false);
+            */
+
+            //ilights->SetLightingEnabled(true);
+           // ilights->SetAmbientLightColor(DirectX::Colors::White);
+            //ilights->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.05333332, 0.09882354, 0.1819608));
+            auto testColor = DirectX::SimpleMath::Vector3(0.05333332, 0.09882354, 0.1819608);
+            testColor.Normalize();
+            testColor = DirectX::SimpleMath::Vector3(0.5, 0.55, 0.5);
+            //ilights->SetAmbientLightColor(testColor);
         }
     }
     else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BMW)
@@ -570,9 +665,11 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
     //m_debugData->PushDebugLinePositionIndicator(targPos, 4.0f, 0.0f, DirectX::Colors::Red);
     //m_debugData->PushDebugLine(targPos, targPos, 5.0f, 0.0f, DirectX::Colors::Blue);
 
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(targPos, m_lightPos0 + targPos, 5.0f, 0.01f, DirectX::Colors::Blue);
     m_debugData->PushDebugLine(targPos, m_lightPos1 + targPos, 3.0f, 0.01f, DirectX::Colors::Red);
     m_debugData->PushDebugLine(targPos, m_lightPos2 + targPos, 2.0f, 0.01f, DirectX::Colors::Yellow);
+    m_debugData->ToggleDebugOff();
 
     m_debugData->DebugPushUILineDecimalNumber("light0.x ", m_lightPos0.x, "");
     m_debugData->DebugPushUILineDecimalNumber("light0.y ", m_lightPos0.y, "");
@@ -630,7 +727,7 @@ void Lighting::UpdateTimer(const double aTimer)
         }
     }
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("m_lightTimer ", m_lightTimer, "");
     m_debugData->DebugPushUILineWholeNumber("m_isTimerOn ", m_isTimerOn, "");
     m_debugData->DebugPushUILineDecimalNumber("aTimer ", aTimer, "");
