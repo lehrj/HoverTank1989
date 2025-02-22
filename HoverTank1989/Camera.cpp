@@ -525,10 +525,6 @@ void Camera::RampUpUpdate(DX::StepTimer const& aTimer)
 			m_rampUpVal = m_rampUpMax;
 		}
 	}
-
-	//m_debugData->ToggleDebugOnOverRide();
-	m_debugData->DebugPushUILineDecimalNumber("m_rampUpVal", m_rampUpVal, "");
-	m_debugData->ToggleDebugOff();
 }
 
 void Camera::ReturnToOverwatchPosition()
@@ -1043,6 +1039,8 @@ void Camera::SetPanVals(const float aCamStep, const float aTargStep, const Direc
 void Camera::SetSnapVals(const float aCamStep, const float aTargStep, const float aSlerpVal, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos)
 {
 	RampUpReset();
+
+	m_snapSlerp = aSlerpVal;
 
 	m_snapSmoothStepCam = aCamStep;
 	m_snapSmoothStepTarg = aTargStep;
@@ -1835,10 +1833,12 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		m_target = camTargetPos;
 		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, camTargetPos, camUp);
 
+		/*
 		m_debugData->ToggleDebugOnOverRide();
 		m_debugData->DebugPushUILineDecimalNumber("ratio = ", ratio, "");
 		m_debugData->DebugPushUILineDecimalNumber("invRatio = ", invRatio, "");
 		m_debugData->ToggleDebugOff();
+		*/
 	}
 }
 

@@ -522,6 +522,20 @@ private:
     const DirectX::SimpleMath::Vector3 m_missileRangePos1 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, (m_missileRangeDistance * 0.5f));
     const DirectX::SimpleMath::Vector3 m_missileRangePos2 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, -(m_missileRangeDistance * 0.5f));
 
+    //DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f);
+    DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(800.0f, 120.0f, 1100.0f);
+    DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f);
+
+    DirectX::SimpleMath::Vector3 m_introTarg0 = DirectX::SimpleMath::Vector3(340.0f, 10.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
+
+    float m_introCamStep0 = 0.05f;
+    float m_introTargStep0 = 0.09f;
+    float m_introSlerp0 = 0.9f;
+
+    float m_introCamStep1 = 0.05f;
+    float m_introTargStep1 = 0.09f;
+    float m_introSlerp1 = 0.9f;
 
     // multisampling
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_offscreenRenderTarget;

@@ -1760,10 +1760,6 @@ void Game::DrawIntroScene()
         m_effect->SetNormalTexture(m_normalMapJI.Get());
         m_effect->SetSpecularTexture(m_specularJI.Get());
 
-        m_debugData->ToggleDebugOnOverRide();
-
-        //m_debugData->DebugPushUILineDecimalNumber("", , "");
-
         if (timeStamp < fadeInEnd1)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
@@ -1776,7 +1772,6 @@ void Game::DrawIntroScene()
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
 
-            m_debugData->DebugPushUILineDecimalNumber("1 ", 1.0f, "");
             //SetFogVals(testFogTarget1, 1.0f);
         }
         else if (timeStamp > fadeOutStart1) // fade out
@@ -1790,22 +1785,14 @@ void Game::DrawIntroScene()
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
-
-            m_debugData->DebugPushUILineDecimalNumber("3 ", 3.0f, "");
-
         }
         else // display at full intesity
         {
             m_effect->SetFogEnabled(false);
 
-            m_debugData->DebugPushUILineDecimalNumber("2 ", 2.0f, "");
-
+           
             SetFogVals(testFogTarget1, 1.0f);
         }
-
-        m_debugData->ToggleDebugOff();
-        
-
     }
     ///////////////////////////////
     ///    Render BMW Logo      /// 
@@ -3541,7 +3528,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //SetSnapVals(const float aCamStep, const float aTargStep, 
                 //const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargPos);
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
-            m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f), DirectX::SimpleMath::Vector3(340.0f, 10.0f, 0.0f));
+            //m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f), DirectX::SimpleMath::Vector3(340.0f, 10.0f, 0.0f));
+            //m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, m_introPos0, m_introTarg0);
+            m_camera->SetSnapVals(m_introCamStep0, m_introTargStep0, m_introSlerp0, m_introPos0, m_introTarg0);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
         }
     }
@@ -3552,7 +3541,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //m_vehicle->DebugToggle9();
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 87.0f, 0.0f));
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, 900.0f), DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
-            m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f), DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f));
+            //m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f), DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f));
+            //m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, m_introPos1, m_introTarg1);
+            m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
+
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
         }
     }
@@ -3562,6 +3554,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             //m_fireControl->ZeroMissileVelocities();
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 10.0f, 0.0f));
+            //m_camera->SetSnapVals(0.1f, 0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
             m_camera->SetSnapVals(0.1f, 0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
