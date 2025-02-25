@@ -524,10 +524,15 @@ private:
 
     //const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f);
     const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(800.0f, 120.0f, 1100.0f);
-    const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f);
-
     const DirectX::SimpleMath::Vector3 m_introTarg0 = DirectX::SimpleMath::Vector3(340.0f, 10.0f, 0.0f);
+
+    const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f);
     const DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(200.0f, 120.0f, 00.0f);
+    const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(640.0f, 10.0f, 0.0f);
+
+    const DirectX::SimpleMath::Vector3 m_introPos3 = DirectX::SimpleMath::Vector3(1200.0f, 170.0f, -500.0f);
+    const DirectX::SimpleMath::Vector3 m_introTarg3 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
 
     const float m_introCamStep0 = 0.05f;
     const float m_introTargStep0 = 0.09f;
