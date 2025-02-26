@@ -4053,7 +4053,7 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane = m_vehicleStruct00.vehicleData.groundPlane;
-    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.55f;
+    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * m_vehicleStruct00.npcModel.zOffsetShadowMod;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
     planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
     DirectX::SimpleMath::Matrix planeTrans2 = planeTrans;

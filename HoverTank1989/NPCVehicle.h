@@ -358,6 +358,8 @@ struct NPCModel
     bool isMainPlumeFlickerTrue = false;
     bool isRightPlumeFlickerTrue = false;
     const float plumeScale = 0.5f;
+
+    const float zOffsetShadowMod = 0.65f;
 };
 
 struct VehicleHardPoints
