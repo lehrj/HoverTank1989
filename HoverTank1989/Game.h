@@ -395,7 +395,7 @@ private:
 
     const float                         m_logoSize = 1.0f;
     const float                         m_fadeDuration = 1.5f;
-    const float                         m_logoDisplayDuration = 7.4f; // 5.1
+    const float                         m_logoDisplayDuration = 0.4f; // 7.4,5.1
     const float                         m_logoDisplayGap = 0.1f;
     const float                         m_startDelay = 0.5f;
 
@@ -523,16 +523,22 @@ private:
     const DirectX::SimpleMath::Vector3 m_missileRangePos2 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, -(m_missileRangeDistance * 0.5f));
 
     //const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f);
-    const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(800.0f, 120.0f, 1100.0f);
+    //const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(800.0f, 120.0f, 1100.0f);
+    const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(850.0f, 90.0f, 1000.0f);
     const DirectX::SimpleMath::Vector3 m_introTarg0 = DirectX::SimpleMath::Vector3(340.0f, 10.0f, 0.0f);
 
-    const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f);
-    const DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(200.0f, 120.0f, 00.0f);
-    const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(640.0f, 10.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f);
+    //const DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(0.0f, 130.0f, 00.0f);
+    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(200.0f, 350.0f, 00.0f);
+    //const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(640.0f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(475.0f, 10.0f, 0.0f);
 
     const DirectX::SimpleMath::Vector3 m_introPos3 = DirectX::SimpleMath::Vector3(1200.0f, 170.0f, -500.0f);
     const DirectX::SimpleMath::Vector3 m_introTarg3 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
+
+    const DirectX::SimpleMath::Vector3 m_introPos1 = m_introPos2;
+    const DirectX::SimpleMath::Vector3 m_introTarg1 = m_introTarg2;
 
     const float m_introCamStep0 = 0.05f;
     const float m_introTargStep0 = 0.09f;
