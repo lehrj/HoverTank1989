@@ -1854,6 +1854,10 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart3)
     {
         m_currentGameState = GameState::GAMESTATE_LOADSCREEN;
+       // m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+
+        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+        //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
 
         m_effect->EnableDefaultLighting();
         m_effect->SetFogEnabled(false);
@@ -1867,8 +1871,6 @@ void Game::DrawIntroScene()
 
         //m_camera->SetPos(DirectX::SimpleMath::Vector3(0.0f, 50.0f, 10.0f));
         //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(100.0f, 200.0f, 0.0f));
-
-        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
 
         //m_effect->EnableDefaultLighting();
 
