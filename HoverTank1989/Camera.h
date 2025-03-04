@@ -501,9 +501,12 @@ private:
     float m_panSmoothStepCam = 0.4f;
     float m_panSmoothStepTarg = 0.45f;
 
-
-    DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f,85.0f, -0.0f);
-    DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 85.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 10.0f, 0.0f);
 
     float m_snapSmoothStepCam = 0.1f;
     float m_snapSmoothStepTarg = 0.09f;

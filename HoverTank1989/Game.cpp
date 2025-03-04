@@ -1651,8 +1651,13 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
-
     */
+
+    std::string textLine = "Time   " + std::to_string(m_timer.GetTotalSeconds());
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
 }
 
 void Game::DrawEndUI()
@@ -1856,8 +1861,8 @@ void Game::DrawIntroScene()
         m_currentGameState = GameState::GAMESTATE_LOADSCREEN;
        // m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
 
-        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-        //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+        //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
 
         m_effect->EnableDefaultLighting();
         m_effect->SetFogEnabled(false);
