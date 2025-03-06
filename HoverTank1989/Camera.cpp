@@ -970,6 +970,9 @@ void Camera::SetPos(DirectX::SimpleMath::Vector3 aPos)
 		return;
 	}
 	m_position = aPos;
+
+	m_snapPosPrev = aPos;
+
 	////m_followCamPos = aPos;
 }
 
@@ -992,6 +995,8 @@ void Camera::SetTargetPos(const DirectX::SimpleMath::Vector3 aTarget)
 		return;
 	}
 	m_target = aTarget;
+
+	m_snapTargPrev = aTarget;
 }
 
 void Camera::SetUpPos(const DirectX::SimpleMath::Vector3 aPos)
@@ -1353,7 +1358,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		testBreak++;
 	}
 
-
+	m_debugData->ToggleDebugOnOverRide();
+	m_debugData->DebugPushUILineDecimalNumber("m_position.x = ", m_position.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.y = ", m_position.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
 	m_debugData->ToggleDebugOff();
 }
 

@@ -1864,6 +1864,12 @@ void Game::DrawIntroScene()
         //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
 
+        m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(100.0f, 9000.0f, 0.0f));
+        //m_camera->SetPos(DirectX::SimpleMath::Vector3(850.0f, 90.0f, 1000.0f));
+        m_camera->SetPos(DirectX::SimpleMath::Vector3(930.0f, 66.0f, 922.0f));
+
+
+
         m_effect->EnableDefaultLighting();
         m_effect->SetFogEnabled(false);
         m_effect->SetTexture(m_texture.Get());
@@ -3563,6 +3569,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 10.0f, 0.0f));
             //m_camera->SetSnapVals(0.1f, 0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
             m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+
+            m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
