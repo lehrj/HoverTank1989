@@ -1298,7 +1298,7 @@ private:
 
     bool m_isTestBoolTrue = false;
 
-    bool m_isTargetingLaserOn = true;
+    bool m_isTargetingLaserOn = false;
     int m_currentTargetID = -1;
     bool m_isTargetingLaserLockTrue = false;
     bool m_isLaserHitLastFrameTrue = false;

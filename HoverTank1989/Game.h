@@ -333,7 +333,8 @@ private:
     const float m_audioDistanceBeacon = 14.0f;
     const float m_audioDistanceExplosion = 140.0f;
     const float m_audioDistancePoof = 14.0f;
-    const float m_audioDistanceRocketLoopable = 14.0f;
+    //const float m_audioDistanceRocketLoopable = 14.0f;
+    const float m_audioDistanceRocketLoopable = 75.0f;
     const float m_audioLockToneFadeRate = 5.0f;
 
     float                                       m_musicFadeOutTimer = 0.0f;
@@ -395,9 +396,9 @@ private:
 
     const float                         m_logoSize = 1.0f;
     const float                         m_fadeDuration = 1.5f;
-    const float                         m_logoDisplayDuration = 0.4f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     const float                         m_logoDisplayGap = 0.1f;
-    const float                         m_startDelay = 0.5f;
+    const float                         m_startDelay = 5.5f;
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;

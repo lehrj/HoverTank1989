@@ -236,7 +236,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_vehicle->SetDebugData(m_debugData);
     m_vehicle->PassFireControl(m_fireControl);
 
-    m_npcController->LoadNPCs(context, m_npcController);
+    //m_npcController->LoadNPCs(context, m_npcController);
     //m_npcController->LoadNPCsTestFireRange(context, m_npcController);
 
 
@@ -1645,16 +1645,21 @@ void Game::DrawDebugDataUI()
     textLinePos.y += 30;
     */
 
-    /*
-    std::string textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
+    std::string textLine = "Time   " + std::to_string(m_timer.GetTotalSeconds());
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
-    */
 
-    std::string textLine = "Time   " + std::to_string(m_timer.GetTotalSeconds());
-    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    int npcCount = m_npcController->GetNpcCount();
+    textLine = "NPC count = " + std::to_string(npcCount);
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
+    textLinePos.x = textLineOrigin.x + 20;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
+    textLinePos.y += 30;
+
+    textLine = "FPS   " + std::to_string(m_timer.GetFramesPerSecond());
+    textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;

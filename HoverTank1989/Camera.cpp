@@ -1358,7 +1358,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		testBreak++;
 	}
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 	m_debugData->DebugPushUILineDecimalNumber("m_position.x = ", m_position.x, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.y = ", m_position.y, "");
 	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
@@ -2763,7 +2763,11 @@ void Camera::UpdateSnapCameraDemo(DX::StepTimer const& aTimeDelta)
 	//targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_smoothStepTarget);
 	targPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos, m_snapSmoothStepTarg * m_rampUpVal);
 
-	DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, DirectX::SimpleMath::Vector3::UnitY);
+	auto toTargNorm = targPos - camPos;
+	toTargNorm.Normalize();
+	auto right = DirectX::SimpleMath::Vector3::UnitY.Cross(toTargNorm);
+	auto up = toTargNorm.Cross(right);
+	DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, targPos, up);
 	m_viewMatrix = camMat;
 
 	m_snapPosPrev = camPos;
