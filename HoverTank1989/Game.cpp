@@ -845,7 +845,27 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
 
-    //UpdateInput(aTimer);
+
+    if (m_isStartTriggerTrue1 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger1)
+        {
+            m_isStartTriggerTrue1 = true;
+            m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+        }
+    }
+
+    if (m_isStartTriggerTrue2 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger2)
+        {
+            m_isStartTriggerTrue2 = true;
+            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+        }
+    }
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -1334,9 +1354,14 @@ void Game::CreateDeviceDependentResources()
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/metalRustNormal.jpg", nullptr, m_normalMapMetalTest1.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/metalRustSpecular.jpg", nullptr, m_specularMetalTest1.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest2.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapMetalTest2.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularMetalTest2.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/rust_texture.jpg", nullptr, m_textureMetalTest2.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapMetalTest2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/rust_normal.jpg", nullptr, m_normalMapMetalTest2.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularMetalTest2.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecText.png", nullptr, m_specularMetalTest2.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI4.jpg", nullptr, m_specularMetalTest2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/metalRustSpecular.jpg", nullptr, m_specularMetalTest1.ReleaseAndGetAddressOf()));
 
     // flame test
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureFlameTest.ReleaseAndGetAddressOf()));
@@ -1357,10 +1382,17 @@ void Game::CreateDeviceDependentResources()
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/test.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normJI4.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI3.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoJI3.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
+    
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoJI3.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/rust_texture.jpg", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normJI5.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI4.jpg", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/rust_normal.jpg", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI4.jpg", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecText.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecTextBlack.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
+
 
     // BMW textures
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
@@ -1750,9 +1782,12 @@ void Game::DrawIntroScene()
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
 
-        m_effect->SetTexture(m_textureJI.Get());
-        m_effect->SetNormalTexture(m_normalMapJI.Get());
-        m_effect->SetSpecularTexture(m_specularJI.Get());
+        //m_effect->SetTexture(m_textureJI.Get());
+        m_effect->SetTexture(m_textureMetalTest2.Get());
+        //m_effect->SetNormalTexture(m_normalMapJI.Get());
+        m_effect->SetNormalTexture(m_normalMapMetalTest2.Get());
+        //m_effect->SetSpecularTexture(m_specularJI.Get());
+        m_effect->SetSpecularTexture(m_specularMetalTest2.Get());
 
         SetFogVals(testFogTarget1, 0.0f);
     }
@@ -1766,9 +1801,56 @@ void Game::DrawIntroScene()
 
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-        m_effect->SetTexture(m_textureJI.Get());
-        m_effect->SetNormalTexture(m_normalMapJI.Get());
-        m_effect->SetSpecularTexture(m_specularJI.Get());
+        //m_effect->SetTexture(m_textureJI.Get());
+
+        if (m_timer.GetTotalSeconds() > m_jiNormalTrigger)
+        {         
+            if (m_isLogoAudioTriggerTrue1 == false)
+            {
+                m_isLogoAudioTriggerTrue1 = true;
+
+                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
+                //fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG;
+                //fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_POOF;
+                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+                
+                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+                //fireFx->fx = m_audioBank->CreateInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+                fireEmitter->SetOmnidirectional();
+                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+                fireEmitter->CurveDistanceScaler = 14.f;
+                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+                fireFx->SetEmitter(fireEmitter);
+                
+                
+
+                fireFx->fx->Play(true);
+                m_soundFxVecTest.push_back(fireFx);
+                
+            }
+
+
+            //m_effect->SetTexture(m_textureMetalTest2.Get());
+            //m_effect->SetNormalTexture(m_normalMapMetalTest2.Get());
+            //m_effect->SetSpecularTexture(m_specularMetalTest2.Get());
+
+            m_effect->SetTexture(m_textureJI.Get());        
+            m_effect->SetNormalTexture(m_normalMapJI.Get());
+            m_effect->SetSpecularTexture(m_specularJI.Get());
+        }
+        else
+        {
+            m_effect->SetTexture(m_textureMetalTest2.Get());
+            m_effect->SetNormalTexture(m_normalMapMetalTest2.Get());
+            //m_effect->SetNormalTexture(m_normalMapJI.Get());
+            m_effect->SetSpecularTexture(m_specularMetalTest2.Get());
+        }
+
+        //m_effect->SetSpecularTexture(m_specularJI.Get());
 
         if (timeStamp < fadeInEnd1)  // fade in
         {
@@ -3384,8 +3466,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->CycleFireControlAmmo();
-            SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
+            //m_vehicle->CycleFireControlAmmo();
+            //SetUiAmmoDisplay(m_fireControl->GetCurrentAmmoType());
+            m_vehicle->ToggleFireControlLaser();
         }
     }
     //if (kb.Space)
@@ -3557,12 +3640,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_vehicle->DebugToggle9();
-            //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 87.0f, 0.0f));
-            //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, 900.0f), DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
-            //m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f), DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f));
-            //m_camera->SetSnapVals(0.05f, 0.09f, 0.9f, m_introPos1, m_introTarg1);
             m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
-
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
         }
     }
@@ -3571,8 +3649,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_fireControl->ZeroMissileVelocities();
-            //m_camera->SetSnapVals(0.1f, 0.1f, DirectX::SimpleMath::Vector3(1000.0f, 20.0f, -900.0f), DirectX::SimpleMath::Vector3(700.0f, 10.0f, 0.0f));
-            //m_camera->SetSnapVals(0.1f, 0.1f, 0.1f, DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f), DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f));
             m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
 
             m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);

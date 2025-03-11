@@ -183,6 +183,18 @@
     <Image Include="Art\Textures\logoJI3.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\NormalMaps\rust_normal.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\JIspecText.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\JIspecTextBlack.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\rust_texture.jpg">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

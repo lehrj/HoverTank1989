@@ -212,14 +212,23 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             auto liteDir1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
             auto liteDir2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
 
+            quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(Utility::ToRadians(-45.0f), Utility::ToRadians(0.0f), 0.0f);
+            quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(Utility::ToRadians(45.0f), Utility::ToRadians(20.0f), 0.0f);
+            quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(Utility::ToRadians(0.0f), Utility::ToRadians(-20.0f), 0.0f);
+
+            liteDir0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
+            liteDir1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
+            liteDir2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+
+            /*
             ilights->SetLightDirection(0, liteDir0);
             ilights->SetLightDirection(1, liteDir1);
             ilights->SetLightDirection(2, liteDir2);
-
+            */
             m_lightPos0 = liteDir0;
             m_lightPos1 = liteDir1;
             m_lightPos2 = liteDir2;
-            ilights->EnableDefaultLighting();
+            //ilights->EnableDefaultLighting();
             ilights->SetLightEnabled(0, false);
             ilights->SetLightEnabled(1, false);
             ilights->SetLightEnabled(2, false);
@@ -282,6 +291,9 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
                 ilights->SetLightEnabled(0, true);
                 ilights->SetLightEnabled(2, true);
                 ilights->SetLightEnabled(1, true);
+
+                ilights->SetAmbientLightColor(DirectX::SimpleMath::Vector4(0.05333332, 0.09882354, 0.1819608, 1.0f));
+
             }
 
             //ilights->SetLightDiffuseColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432));
