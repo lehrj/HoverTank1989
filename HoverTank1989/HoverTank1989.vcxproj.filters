@@ -195,6 +195,24 @@
     <Image Include="Art\Textures\rust_texture.jpg">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\Textures\JIscratchLogoTexture1.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\JIscratchLogoTexture2.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec1.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec2.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm1.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm2.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">
