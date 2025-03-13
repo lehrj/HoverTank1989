@@ -213,6 +213,33 @@
     <Image Include="Art\NormalMaps\JIscratchLogoNorm2.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm0.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm3.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm4.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec0.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec3.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec4.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\JIscratchLogoTexture0.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\JIscratchLogoTexture3.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\JIscratchLogoTexture4.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

@@ -238,8 +238,11 @@
     <Image Include="Art\HeightMaps\heightmapStartScreen.bmp" />
     <Image Include="Art\Models\Cup\cup.jpg" />
     <Image Include="Art\NormalMaps\blankNormal.jpg" />
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm0.png" />
     <Image Include="Art\NormalMaps\JIscratchLogoNorm1.png" />
     <Image Include="Art\NormalMaps\JIscratchLogoNorm2.png" />
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm3.png" />
+    <Image Include="Art\NormalMaps\JIscratchLogoNorm4.png" />
     <Image Include="Art\NormalMaps\NormalMapTeaser.png" />
     <Image Include="Art\NormalMaps\normalUV.png" />
     <Image Include="Art\NormalMaps\normBMW.png" />
@@ -250,8 +253,11 @@
     <Image Include="Art\NormalMaps\rust_normal.jpg" />
     <Image Include="Art\NormalMaps\TestOP.png" />
     <Image Include="Art\SpecularMaps\blankSpecular.jpg" />
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec0.png" />
     <Image Include="Art\SpecularMaps\JIscratchLogoSpec1.png" />
     <Image Include="Art\SpecularMaps\JIscratchLogoSpec2.png" />
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec3.png" />
+    <Image Include="Art\SpecularMaps\JIscratchLogoSpec4.png" />
     <Image Include="Art\SpecularMaps\JIspecText.png" />
     <Image Include="Art\SpecularMaps\JIspecTextBlack.png" />
     <Image Include="Art\SpecularMaps\specularBMW.png" />
@@ -269,8 +275,11 @@
     <Image Include="Art\Textures\EnvironmentSelectAlien.jpg" />
     <Image Include="Art\Textures\EnvironmentSelectBreezy.png" />
     <Image Include="Art\Textures\EnvironmentSelectCalm.png" />
+    <Image Include="Art\Textures\JIscratchLogoTexture0.png" />
     <Image Include="Art\Textures\JIscratchLogoTexture1.png" />
     <Image Include="Art\Textures\JIscratchLogoTexture2.png" />
+    <Image Include="Art\Textures\JIscratchLogoTexture3.png" />
+    <Image Include="Art\Textures\JIscratchLogoTexture4.png" />
     <Image Include="Art\Textures\logoBMW.png" />
     <Image Include="Art\Textures\logoJI.png" />
     <Image Include="Art\Textures\logoJI2.png" />

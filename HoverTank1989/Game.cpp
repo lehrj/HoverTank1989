@@ -1393,6 +1393,25 @@ void Game::CreateDeviceDependentResources()
 
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecTextBlack.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture0.png", nullptr, m_textureJI0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm0.png", nullptr, m_normalMapJI0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec0.png", nullptr, m_specularJI0.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture1.png", nullptr, m_textureJI1.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm1.png", nullptr, m_normalMapJI1.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec1.png", nullptr, m_specularJI1.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture2.png", nullptr, m_textureJI2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm2.png", nullptr, m_normalMapJI2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec2.png", nullptr, m_specularJI2.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture3.png", nullptr, m_textureJI3.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm3.png", nullptr, m_normalMapJI3.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec3.png", nullptr, m_specularJI3.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture4.png", nullptr, m_textureJI4.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm4.png", nullptr, m_normalMapJI4.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec4.png", nullptr, m_specularJI4.ReleaseAndGetAddressOf()));
 
     // BMW textures
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
@@ -1803,6 +1822,7 @@ void Game::DrawIntroScene()
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         //m_effect->SetTexture(m_textureJI.Get());
 
+        /*
         if (m_timer.GetTotalSeconds() > m_jiNormalTrigger)
         {         
             if (m_isLogoAudioTriggerTrue1 == false)
@@ -1825,18 +1845,10 @@ void Game::DrawIntroScene()
                 fireEmitter->CurveDistanceScaler = 14.f;
                 fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
                 fireFx->SetEmitter(fireEmitter);
-                
-                
-
+              
                 fireFx->fx->Play(true);
                 m_soundFxVecTest.push_back(fireFx);
-                
             }
-
-
-            //m_effect->SetTexture(m_textureMetalTest2.Get());
-            //m_effect->SetNormalTexture(m_normalMapMetalTest2.Get());
-            //m_effect->SetSpecularTexture(m_specularMetalTest2.Get());
 
             m_effect->SetTexture(m_textureJI.Get());        
             m_effect->SetNormalTexture(m_normalMapJI.Get());
@@ -1849,8 +1861,129 @@ void Game::DrawIntroScene()
             //m_effect->SetNormalTexture(m_normalMapJI.Get());
             m_effect->SetSpecularTexture(m_specularMetalTest2.Get());
         }
+        */
+      
 
-        //m_effect->SetSpecularTexture(m_specularJI.Get());
+        
+        if (m_timer.GetTotalSeconds() < m_jiTriggerTime1)
+        {
+            m_effect->SetTexture(m_textureJI0.Get());
+            m_effect->SetNormalTexture(m_normalMapJI0.Get());
+            m_effect->SetSpecularTexture(m_specularJI0.Get());
+        }
+        else if (m_timer.GetTotalSeconds() < m_jiTriggerTime2)
+        {
+            if (m_isLogoAudioTriggerTrue1 == false)
+            {
+                m_isLogoAudioTriggerTrue1 = true;
+
+                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
+                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+
+                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+ 
+                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+                fireEmitter->SetOmnidirectional();
+                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+                fireEmitter->CurveDistanceScaler = 14.f;
+                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+                fireFx->SetEmitter(fireEmitter);
+
+                fireFx->fx->Play(true);
+                m_soundFxVecTest.push_back(fireFx);
+            }
+
+            m_effect->SetTexture(m_textureJI1.Get());
+            m_effect->SetNormalTexture(m_normalMapJI1.Get());
+            m_effect->SetSpecularTexture(m_specularJI1.Get());
+        }
+        else if (m_timer.GetTotalSeconds() < m_jiTriggerTime3)
+        {
+            if (m_isLogoAudioTriggerTrue2 == false)
+            {
+                m_isLogoAudioTriggerTrue2 = true;
+
+                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
+                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+
+                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+                fireEmitter->SetOmnidirectional();
+                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+                fireEmitter->CurveDistanceScaler = 14.f;
+                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+                fireFx->SetEmitter(fireEmitter);
+
+                fireFx->fx->Play(true);
+                m_soundFxVecTest.push_back(fireFx);
+            }
+
+            m_effect->SetTexture(m_textureJI2.Get());
+            m_effect->SetNormalTexture(m_normalMapJI2.Get());
+            m_effect->SetSpecularTexture(m_specularJI2.Get());
+        }
+        else if (m_timer.GetTotalSeconds() < m_jiTriggerTime4)
+        {
+            if (m_isLogoAudioTriggerTrue3 == false)
+            {
+                m_isLogoAudioTriggerTrue3 = true;
+
+                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
+                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+
+                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+                fireEmitter->SetOmnidirectional();
+                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+                fireEmitter->CurveDistanceScaler = 14.f;
+                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+                fireFx->SetEmitter(fireEmitter);
+
+                fireFx->fx->Play(true);
+                m_soundFxVecTest.push_back(fireFx);
+            }
+
+            m_effect->SetTexture(m_textureJI3.Get());
+            m_effect->SetNormalTexture(m_normalMapJI3.Get());
+            m_effect->SetSpecularTexture(m_specularJI3.Get());
+        }
+        else
+        {
+            if (m_isLogoAudioTriggerTrue4 == false)
+            {
+                m_isLogoAudioTriggerTrue4 = true;
+
+                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
+                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+
+                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+                fireEmitter->SetOmnidirectional();
+                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+                fireEmitter->CurveDistanceScaler = 14.f;
+                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+                fireFx->SetEmitter(fireEmitter);
+
+                fireFx->fx->Play(true);
+                m_soundFxVecTest.push_back(fireFx);
+            }
+
+            m_effect->SetTexture(m_textureJI4.Get());
+            m_effect->SetNormalTexture(m_normalMapJI4.Get());
+            m_effect->SetSpecularTexture(m_specularJI4.Get());
+        }
+        
 
         if (timeStamp < fadeInEnd1)  // fade in
         {
@@ -2967,6 +3100,27 @@ void Game::OnDeviceLost()
     m_normalMapJI.Reset();
     m_specularJI.Reset();
     m_textureJI.Reset();
+
+    m_normalMapJI0.Reset();
+    m_specularJI0.Reset();
+    m_textureJI0.Reset();
+
+    m_normalMapJI1.Reset();
+    m_specularJI1.Reset();
+    m_textureJI1.Reset();
+
+    m_normalMapJI2.Reset();
+    m_specularJI2.Reset();
+    m_textureJI2.Reset();
+
+    m_normalMapJI3.Reset();
+    m_specularJI3.Reset();
+    m_textureJI3.Reset();
+
+    m_normalMapJI4.Reset();
+    m_specularJI4.Reset();
+    m_textureJI4.Reset();
+
     m_normalMapBMW.Reset();
     m_normalMapBMW2.Reset();
     m_specularBMW.Reset();

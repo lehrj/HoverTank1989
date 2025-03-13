@@ -191,6 +191,26 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI;
 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI0;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI1;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI2;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI3;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapJI4;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularJI4;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureJI4;
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW2;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularBMW;
@@ -406,7 +426,19 @@ private:
     bool m_isStartTriggerTrue2 = false;
 
     bool m_isLogoAudioTriggerTrue1 = false;
+    bool m_isLogoAudioTriggerTrue2 = false;
+    bool m_isLogoAudioTriggerTrue3 = false;
+    bool m_isLogoAudioTriggerTrue4 = false;
 
+    bool m_isJILogoAudioTriggerTrue1 = false;
+    bool m_isJILogoAudioTriggerTrue2 = false;
+    bool m_isJILogoAudioTriggerTrue3 = false;
+    bool m_isJILogoAudioTriggerTrue4 = false;
+
+    const float m_jiTriggerTime1 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.3f);
+    const float m_jiTriggerTime2 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.4f);
+    const float m_jiTriggerTime3 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.5f);
+    const float m_jiTriggerTime4 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.6f);
 
     const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
