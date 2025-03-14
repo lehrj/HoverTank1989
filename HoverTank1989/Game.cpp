@@ -86,6 +86,38 @@ Game::Game() noexcept(false)
     m_deviceResources = std::make_unique<DX::DeviceResources>(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_UNKNOWN);
 }
 
+void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::SoundFxType aSfxType)
+{
+    std::shared_ptr <Utility::SoundFx> fx(new Utility::SoundFx());
+
+    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+        fx->fx = m_audioBank->CreateStreamInstance(23, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+        fx->fx = m_audioBank->CreateStreamInstance(23, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    }
+    else
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+        fx->fx = m_audioBank->CreateStreamInstance(1, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    }
+
+    std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+    fireEmitter->SetOmnidirectional();
+    fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    fireEmitter->CurveDistanceScaler = 14.f;
+    fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    fx->SetEmitter(fireEmitter);
+
+    fx->fx->Play(true);
+    m_soundFxVecTest.push_back(fx);
+}
+
 void Game::AudioFxDelete(std::shared_ptr<Utility::SoundFx> aFx)
 {
     aFx->fx.reset();
@@ -1822,49 +1854,6 @@ void Game::DrawIntroScene()
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         //m_effect->SetTexture(m_textureJI.Get());
 
-        /*
-        if (m_timer.GetTotalSeconds() > m_jiNormalTrigger)
-        {         
-            if (m_isLogoAudioTriggerTrue1 == false)
-            {
-                m_isLogoAudioTriggerTrue1 = true;
-
-                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
-                //fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG;
-                //fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_POOF;
-                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-                
-                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
-                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-                //fireFx->fx = m_audioBank->CreateInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
-                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
-                fireEmitter->SetOmnidirectional();
-                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-                fireEmitter->CurveDistanceScaler = 14.f;
-                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-                fireFx->SetEmitter(fireEmitter);
-              
-                fireFx->fx->Play(true);
-                m_soundFxVecTest.push_back(fireFx);
-            }
-
-            m_effect->SetTexture(m_textureJI.Get());        
-            m_effect->SetNormalTexture(m_normalMapJI.Get());
-            m_effect->SetSpecularTexture(m_specularJI.Get());
-        }
-        else
-        {
-            m_effect->SetTexture(m_textureMetalTest2.Get());
-            m_effect->SetNormalTexture(m_normalMapMetalTest2.Get());
-            //m_effect->SetNormalTexture(m_normalMapJI.Get());
-            m_effect->SetSpecularTexture(m_specularMetalTest2.Get());
-        }
-        */
-      
-
-        
         if (m_timer.GetTotalSeconds() < m_jiTriggerTime1)
         {
             m_effect->SetTexture(m_textureJI0.Get());
@@ -1876,23 +1865,7 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue1 == false)
             {
                 m_isLogoAudioTriggerTrue1 = true;
-
-                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
-                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-
-                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
-                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
- 
-                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
-                fireEmitter->SetOmnidirectional();
-                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-                fireEmitter->CurveDistanceScaler = 14.f;
-                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-                fireFx->SetEmitter(fireEmitter);
-
-                fireFx->fx->Play(true);
-                m_soundFxVecTest.push_back(fireFx);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
             }
 
             m_effect->SetTexture(m_textureJI1.Get());
@@ -1904,23 +1877,7 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue2 == false)
             {
                 m_isLogoAudioTriggerTrue2 = true;
-
-                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
-                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-
-                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
-                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
-                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
-                fireEmitter->SetOmnidirectional();
-                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-                fireEmitter->CurveDistanceScaler = 14.f;
-                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-                fireFx->SetEmitter(fireEmitter);
-
-                fireFx->fx->Play(true);
-                m_soundFxVecTest.push_back(fireFx);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
             }
 
             m_effect->SetTexture(m_textureJI2.Get());
@@ -1932,23 +1889,7 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue3 == false)
             {
                 m_isLogoAudioTriggerTrue3 = true;
-
-                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
-                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-
-                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
-                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
-                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
-                fireEmitter->SetOmnidirectional();
-                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-                fireEmitter->CurveDistanceScaler = 14.f;
-                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-                fireFx->SetEmitter(fireEmitter);
-
-                fireFx->fx->Play(true);
-                m_soundFxVecTest.push_back(fireFx);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
             }
 
             m_effect->SetTexture(m_textureJI3.Get());
@@ -1960,23 +1901,7 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue4 == false)
             {
                 m_isLogoAudioTriggerTrue4 = true;
-
-                std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
-                fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-
-                m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
-                fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
-                std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
-                fireEmitter->SetOmnidirectional();
-                fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-                fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-                fireEmitter->CurveDistanceScaler = 14.f;
-                fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-                fireFx->SetEmitter(fireEmitter);
-
-                fireFx->fx->Play(true);
-                m_soundFxVecTest.push_back(fireFx);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
             }
 
             m_effect->SetTexture(m_textureJI4.Get());
@@ -1984,7 +1909,6 @@ void Game::DrawIntroScene()
             m_effect->SetSpecularTexture(m_specularJI4.Get());
         }
         
-
         if (timeStamp < fadeInEnd1)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
@@ -2031,6 +1955,12 @@ void Game::DrawIntroScene()
     }
     else if (timeStamp < fadeOutEnd2) // Render BMW Logo
     {
+        if (m_isBMWLogoAudioTriggerTrue1 == false)
+        {
+            m_isBMWLogoAudioTriggerTrue1 = true;
+            AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
+        }
+
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_effect->SetTexture(m_textureBMW.Get());
         m_effect->SetNormalTexture(m_normalMapBMW.Get());

@@ -65,6 +65,8 @@ private:
     void AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX);
     void AudioPlaySFX(XACT_WAVEBANK_AUDIOBANK aSFX);
 
+    void AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::SoundFxType aSfxType);
+
     void Clear();
 
     void CreateDeviceDependentResources();
@@ -430,6 +432,8 @@ private:
     bool m_isLogoAudioTriggerTrue3 = false;
     bool m_isLogoAudioTriggerTrue4 = false;
 
+    bool m_isBMWLogoAudioTriggerTrue1 = false;
+
     bool m_isJILogoAudioTriggerTrue1 = false;
     bool m_isJILogoAudioTriggerTrue2 = false;
     bool m_isJILogoAudioTriggerTrue3 = false;
@@ -439,6 +443,8 @@ private:
     const float m_jiTriggerTime2 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.4f);
     const float m_jiTriggerTime3 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.5f);
     const float m_jiTriggerTime4 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.6f);
+
+    const float m_bmwTriggerTime = 0.0f + m_startDelay + m_logoDisplayDuration + (m_logoDisplayDuration * 0.1f);
 
     const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
