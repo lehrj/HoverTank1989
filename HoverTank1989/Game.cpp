@@ -92,18 +92,18 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 
     if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
     {
-        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-        fx->fx = m_audioBank->CreateStreamInstance(23, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
+        fx->fx = m_audioBank->CreateStreamInstance(22, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
     {
-        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
         fx->fx = m_audioBank->CreateStreamInstance(23, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else
     {
-        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
-        fx->fx = m_audioBank->CreateStreamInstance(1, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
+        fx->fx = m_audioBank->CreateStreamInstance(2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
 
     std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
@@ -112,9 +112,10 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     fireEmitter->CurveDistanceScaler = 14.f;
     fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+
     fx->SetEmitter(fireEmitter);
 
-    fx->fx->Play(true);
+    fx->fx->Play(false);
     m_soundFxVecTest.push_back(fx);
 }
 
