@@ -98,7 +98,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
-        fx->fx = m_audioBank->CreateStreamInstance(23, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(24, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else
     {
@@ -112,6 +112,28 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     fireEmitter->CurveDistanceScaler = 14.f;
     fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+
+    auto pos = DirectX::SimpleMath::Vector3::Zero;
+
+    if (m_jiTriggerCount == 0)
+    {
+        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+    }
+    else if (m_jiTriggerCount == 1)
+    {
+        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 40.0f);
+    }
+    else if (m_jiTriggerCount == 2)
+    {
+        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -40.0f);
+    }
+    else if (m_jiTriggerCount == 3)
+    {
+        pos = DirectX::SimpleMath::Vector3(0.0f, 90.0f, 0.0f);
+    }
+
+    fireEmitter->SetPosition(pos);
+    fx->pos = pos;
 
     fx->SetEmitter(fireEmitter);
 
@@ -1867,6 +1889,8 @@ void Game::DrawIntroScene()
             {
                 m_isLogoAudioTriggerTrue1 = true;
                 AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+
+                ++m_jiTriggerCount;
             }
 
             m_effect->SetTexture(m_textureJI1.Get());
@@ -1879,6 +1903,8 @@ void Game::DrawIntroScene()
             {
                 m_isLogoAudioTriggerTrue2 = true;
                 AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+
+                ++m_jiTriggerCount;
             }
 
             m_effect->SetTexture(m_textureJI2.Get());
@@ -1891,6 +1917,8 @@ void Game::DrawIntroScene()
             {
                 m_isLogoAudioTriggerTrue3 = true;
                 AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+
+                ++m_jiTriggerCount;
             }
 
             m_effect->SetTexture(m_textureJI3.Get());
@@ -1903,6 +1931,8 @@ void Game::DrawIntroScene()
             {
                 m_isLogoAudioTriggerTrue4 = true;
                 AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+
+                ++m_jiTriggerCount;
             }
 
             m_effect->SetTexture(m_textureJI4.Get());
@@ -4098,6 +4128,18 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
         m_soundFxVecTest.push_back(createdFx);
     }
     m_fireControl->ClearCreateAudioVec();
+
+    for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
+    {
+        if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
+        {
+            auto pos = m_lighting->GetLightDir();
+            pos *= -1.0f;
+            pos *= 10.0f;
+            m_soundFxVecTest[i]->emitter->SetPosition(pos);
+            m_soundFxVecTest[i]->pos = pos;
+        }
+    }
 
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {

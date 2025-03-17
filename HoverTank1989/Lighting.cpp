@@ -7,6 +7,11 @@ Lighting::LightingState Lighting::GetLightingState()
     return m_currentLightingState;
 }
 
+DirectX::SimpleMath::Vector3 Lighting::GetLightDir()
+{
+    return m_lightPos0;
+}
+
 void Lighting::SetLighting(LightingState aLightState)
 {
     m_currentLightingState = aLightState;

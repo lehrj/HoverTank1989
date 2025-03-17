@@ -444,6 +444,8 @@ private:
     const float m_jiTriggerTime3 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.5f);
     const float m_jiTriggerTime4 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.6f);
 
+    int m_jiTriggerCount = 0;
+
     const float m_bmwTriggerTime = 0.0f + m_startDelay + m_logoDisplayDuration + (m_logoDisplayDuration * 0.1f);
 
     const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);

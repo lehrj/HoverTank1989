@@ -22,7 +22,7 @@ public:
     //Lighting();
 
     LightingState GetLightingState();
-
+    DirectX::SimpleMath::Vector3 GetLightDir();
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
 
     void SetLighting(LightingState aLightState);  
@@ -78,6 +78,5 @@ private:
     float m_lightTimer = 0.0f;
     float m_lightTimerMax = 3.0f;
     bool m_isTimerOn = false;
-
 };
 
