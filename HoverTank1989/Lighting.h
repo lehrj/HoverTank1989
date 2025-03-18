@@ -10,6 +10,7 @@ public:
         LIGHTINGSTATE_JI,
         LIGHTINGSTATE_JI_TEST,
         LIGHTINGSTATE_BMW,
+        LIGHTINGSTATE_BMWALT,
         LIGHTINGSTATE_STARTSCREEN,
         LIGHTINGSTATE_TEASERSCREEN,
         LIGHTINGSTATE_MANUAL,
@@ -78,5 +79,11 @@ private:
     float m_lightTimer = 0.0f;
     float m_lightTimerMax = 3.0f;
     bool m_isTimerOn = false;
+
+    const DirectX::SimpleMath::Vector3                m_defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
+    const DirectX::SimpleMath::Vector3                m_defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
+    const DirectX::SimpleMath::Vector3                m_defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
+
+
 };
 
