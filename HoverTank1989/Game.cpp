@@ -105,6 +105,21 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
         fx->fx = m_audioBank->CreateStreamInstance(10, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1)
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
+        fx->fx = m_audioBank->CreateStreamInstance(11, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2)
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
+        fx->fx = m_audioBank->CreateStreamInstance(12, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3)
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
+        fx->fx = m_audioBank->CreateStreamInstance(13, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    }
     else
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
@@ -136,6 +151,8 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     {
         pos = DirectX::SimpleMath::Vector3(0.0f, 90.0f, 0.0f);
     }
+
+    pos = DirectX::SimpleMath::Vector3::Zero;
 
     fireEmitter->SetPosition(pos);
     fx->pos = pos;
@@ -1893,7 +1910,8 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue1 == false)
             {
                 m_isLogoAudioTriggerTrue1 = true;
-                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+                //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1);
 
                 ++m_jiTriggerCount;
             }
@@ -1907,7 +1925,8 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue2 == false)
             {
                 m_isLogoAudioTriggerTrue2 = true;
-                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+                //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2);
 
                 ++m_jiTriggerCount;
             }
@@ -1921,7 +1940,8 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue3 == false)
             {
                 m_isLogoAudioTriggerTrue3 = true;
-                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+                //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3);
 
                 ++m_jiTriggerCount;
             }
