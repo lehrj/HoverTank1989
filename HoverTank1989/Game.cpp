@@ -102,23 +102,23 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG)
     {
-        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG;
         fx->fx = m_audioBank->CreateStreamInstance(10, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1)
     {
-        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
-        fx->fx = m_audioBank->CreateStreamInstance(11, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1;
+        fx->fx = m_audioBank->CreateStreamInstance(12, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2)
     {
-        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2;
         fx->fx = m_audioBank->CreateStreamInstance(12, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3)
     {
-        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
-        fx->fx = m_audioBank->CreateStreamInstance(13, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3;
+        fx->fx = m_audioBank->CreateStreamInstance(15, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else
     {
