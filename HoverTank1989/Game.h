@@ -419,10 +419,14 @@ private:
     const float                         m_logoSize = 1.0f;
     const float                         m_fadeDuration = 1.5f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
+    //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 2.4f; // 7.4,5.1
     const float                         m_logoDisplayGap = 0.1f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
+
+
+    const int m_playerVehicleAudioFxId = 27;
 
     bool m_isStartTriggerTrue1 = false;
     bool m_isStartTriggerTrue2 = false;
@@ -438,7 +442,7 @@ private:
     bool m_isJILogoAudioTriggerTrue2 = false;
     bool m_isJILogoAudioTriggerTrue3 = false;
     bool m_isJILogoAudioTriggerTrue4 = false;
-
+    
     const float m_jiTriggerTime1 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.3f);
     const float m_jiTriggerTime2 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.4f);
     const float m_jiTriggerTime3 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.5f);

@@ -1317,6 +1317,21 @@ DirectX::SimpleMath::Vector3 Vehicle::GetSlopeForce(const DirectX::SimpleMath::V
     return slopeForceUpdate;
 }
 
+float Vehicle::GetThrottleTank()
+{
+    auto throttle = 0.0f;
+
+   // float GetGlowValCenter() const { return m_playerModel.glowCenterVal; };
+
+    throttle += abs(m_modelController->GetGlowValCenter()) + abs(m_modelController->GetGlowValLeft()) + abs(m_modelController->GetGlowValRight());
+    if (throttle > 1.0f)
+    {
+        throttle = 1.0f;
+    }
+    return throttle;
+    //return m_throttleVolume;
+}
+
 DirectX::SimpleMath::Vector3 Vehicle::GetThrusterLiftMagnitude(const DirectX::SimpleMath::Vector3 aLiftForce, const DirectX::SimpleMath::Vector3 aPos)
 {
     float altitudeAtPos = aPos.y - m_environment->GetTerrainHeightAtPos(aPos);
@@ -3414,6 +3429,14 @@ void Vehicle::UpdateModelColorVals(const float aTimeStep)
     rightVal += rightYawVal;
 
     m_modelController->SetGlowVals(centerVal, leftVal, rightVal, m_heli.q.position, m_heli.forward, aTimeStep);
+
+    auto volume = centerVal + leftVal + rightVal;
+    if (volume > 1.0f)
+    {
+        volume = 1.0f;
+    }
+
+    m_throttleVolume = volume;
 }
 
 void Vehicle::UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep)

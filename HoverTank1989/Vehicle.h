@@ -382,7 +382,10 @@ public:
     float GetRPM() const { return m_heli.mainRotor.rpm; };
     DirectX::SimpleMath::Vector4 GetRearGlowColor();
     DirectX::SimpleMath::Vector3 GetSlopeForce(const DirectX::SimpleMath::Vector3 aTerrainNorm, const float aAltitude, const float aGroundInteractionRange);
+    
     float GetThrottle() { return m_heli.controlInput.throttleInput; };
+    float GetThrottleTank();
+
     double GetTime() { return m_heli.time; };
     DirectX::SimpleMath::Vector3 GetVehicleRight() const { return m_heli.right; };
     DirectX::SimpleMath::Vector3 GetVehicleUp() const { return m_heli.up; };
@@ -600,5 +603,7 @@ private:
 
     const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-150.0f, 8.0f, 150.0f);
+
+    float m_throttleVolume = 0.0f;
 };
 

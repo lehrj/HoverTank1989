@@ -90,7 +90,12 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 {
     std::shared_ptr <Utility::SoundFx> fx(new Utility::SoundFx());
 
-    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
+    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER;
+        fx->fx = m_audioBank->CreateStreamInstance(m_playerVehicleAudioFxId, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
         fx->fx = m_audioBank->CreateStreamInstance(22, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
@@ -159,7 +164,16 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 
     fx->SetEmitter(fireEmitter);
 
-    fx->fx->Play(false);
+    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
+    {
+        fx->fx->Play(true);
+    }
+    else
+    {
+        fx->fx->Play(false);
+    }
+
+    
     m_soundFxVecTest.push_back(fx);
 }
 
@@ -308,14 +322,13 @@ void Game::Initialize(HWND window, int width, int height)
     }
 
     auto context = m_deviceResources->GetD3DDeviceContext();
-    //m_vehicle->InitializeVehicle(context, m_npcController);
+
     m_vehicle->InitializeVehicle(context, m_npcController, m_vehicle);
     m_vehicle->SetDebugData(m_debugData);
     m_vehicle->PassFireControl(m_fireControl);
 
     //m_npcController->LoadNPCs(context, m_npcController);
     //m_npcController->LoadNPCsTestFireRange(context, m_npcController);
-
 
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_BLANK, m_texture, m_normalMap, m_specular);
     m_npcController->InitializeTextureMaps(NpcTextureMapType::TEXTUREMAPTYPE_TEST1, m_textureMetalTest1, m_normalMapMetalTest1, m_specularMetalTest1);
@@ -326,6 +339,8 @@ void Game::Initialize(HWND window, int width, int height)
     m_camera->SetFireControl(m_fireControl);
 
     m_terrainVector.clear();
+
+    
 }
 
 // Testing Terrain Vertex
@@ -1955,8 +1970,8 @@ void Game::DrawIntroScene()
             if (m_isLogoAudioTriggerTrue4 == false)
             {
                 m_isLogoAudioTriggerTrue4 = true;
-                //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
-                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
+                //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
                 ++m_jiTriggerCount;
             }
 
@@ -2009,14 +2024,13 @@ void Game::DrawIntroScene()
         m_camera->SetPos(m_introCamPos2);
         m_camera->SetTargetPos(m_introCamTarg2);
     }
+    else if (timeStamp > fadeInStart2 && m_isBMWLogoAudioTriggerTrue1 == false)
+    {
+        m_isBMWLogoAudioTriggerTrue1 = true;
+        AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
+    }
     else if (timeStamp < fadeOutEnd2) // Render BMW Logo
     {
-        if (m_isBMWLogoAudioTriggerTrue1 == false)
-        {
-            m_isBMWLogoAudioTriggerTrue1 = true;
-            AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
-        }
-
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_effect->SetTexture(m_textureBMW.Get());
         m_effect->SetNormalTexture(m_normalMapBMW.Get());
@@ -2253,12 +2267,11 @@ void Game::DrawIntroScene()
         m_effect->SetTexture(m_normalMap.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
-       
     }
     else
     {
-        int testBreak = 0;
-        testBreak++;
+        // turn on player vehicle engine sound
+        AudioCreateSFX3D(DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
     }
 }
 
@@ -4163,6 +4176,34 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             pos *= 10.0f;
             m_soundFxVecTest[i]->emitter->SetPosition(pos);
             m_soundFxVecTest[i]->pos = pos;
+        }
+
+        if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
+        {
+            auto pos = m_vehicle->GetPos();
+
+            m_soundFxVecTest[i]->emitter->SetPosition(pos);
+            m_soundFxVecTest[i]->pos = pos;
+
+            auto volume = m_vehicle->GetThrottleTank();
+            auto pitch = volume;
+            pitch *= 0.8f;
+            pitch *= 2.0f;
+            pitch -= 1.0f;
+            pitch = volume;
+            volume *= 0.9f;
+            volume += 0.1f;
+       
+            m_soundFxVecTest[i]->fx->SetPitch(volume);
+            m_soundFxVecTest[i]->fx->SetVolume(volume);
+            m_soundFxVecTest[i]->volume = volume;
+
+            m_soundFxVecTest[i]->emitter->SetVelocity(m_vehicle->GetVelocity());
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
+            m_debugData->DebugPushUILineDecimalNumber("pitch  ", pitch, "");
+            m_debugData->ToggleDebugOff();
         }
     }
 
