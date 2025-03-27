@@ -94,6 +94,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER;
         fx->fx = m_audioBank->CreateStreamInstance(m_playerVehicleAudioFxId, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
     {
@@ -137,6 +138,11 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     fireEmitter->CurveDistanceScaler = 14.f;
     fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+
+    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
+    {
+        fireEmitter->ChannelCount = 2;
+    }
 
     auto pos = DirectX::SimpleMath::Vector3::Zero;
 
@@ -194,7 +200,6 @@ void Game::AudioFxReset(std::shared_ptr<Utility::SoundFx> aFx)
 void Game::AudioPlayMusic(XACT_WAVEBANK_AUDIOBANK aSFX)
 {
     m_audioMusicStream = m_audioBank->CreateStreamInstance(aSFX);
-    //m_audioMusicStream = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
     if (m_audioMusicStream)
     {
         m_audioMusicStream->SetVolume(m_musicVolume);
@@ -981,8 +986,37 @@ void Game::Update(DX::StepTimer const& aTimer)
         
         m_npcController->UpdateNPCController(m_camera->GetCameraFrustum() , aTimer.GetElapsedSeconds());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
+
         auto context = m_deviceResources->GetD3DDeviceContext();
-        m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());
+        if (m_npcController->CheckIsNpcLoadQueueEmptyTrue() == false)
+        {
+            // trigger fire fx
+            std::shared_ptr <Utility::SoundFx> npcFx(new Utility::SoundFx());
+            npcFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_VEHICLENPC;
+  
+            npcFx->fx = m_audioBank->CreateStreamInstance(25, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+            std::shared_ptr<DirectX::AudioEmitter> npcEmitter = std::make_shared<DirectX::AudioEmitter>();
+            npcEmitter->SetOmnidirectional();
+            npcEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+            npcEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+            npcEmitter->CurveDistanceScaler = 14.f;
+            npcEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+            npcEmitter->SetPosition(DirectX::SimpleMath::Vector3::Zero);
+            npcEmitter->ChannelCount = 2;
+            npcFx->SetEmitter(npcEmitter);
+            npcFx->SetPos(DirectX::SimpleMath::Vector3::Zero);
+            npcFx->up = DirectX::SimpleMath::Vector3::UnitY;
+            npcFx->forward = DirectX::SimpleMath::Vector3::UnitX;
+
+            //npcFx->emitter->SetPosition(DirectX::SimpleMath::Vector3::Zero);
+
+            m_npcController->UpdateLoadQueueWithAudio(context, m_npcController, npcFx);
+            npcFx->fx->Play(true);
+            m_soundFxVecTest.push_back(npcFx);
+           
+            //m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());
+            
+        }
     }
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
@@ -990,9 +1024,10 @@ void Game::Update(DX::StepTimer const& aTimer)
 
 
     ////////////////////////////////
-    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest.size() ", m_soundFxVecTest.size(), "");
+    m_debugData->ToggleDebugOff();
 
-    m_debugData->DebugPushUILineWholeNumber("Not JI logo ", 0, "");
     auto targPos = m_camera->GetTargetPos();
     //targPos.x += 50.0f;
     auto camPos = m_camera->GetPos();

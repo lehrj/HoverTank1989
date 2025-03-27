@@ -47,6 +47,22 @@ void NPCController::AddNPC(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext
     m_npcVec.push_back(newNPC);
 }
 
+void NPCController::AddNpcWithAudio(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, NPCType aNPCType, const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Utility::SoundFx> aAudioFx)
+{
+    NPCVehicle* newNPC = new NPCVehicle;
+    newNPC->SetDebugData(m_debugData);
+    newNPC->SetNpcType(aNPCType);
+    newNPC->InitializeNPCVehicleWithAudio(aContext, aHeading, aPosition, m_environment, aNpcController, m_player, aAudioFx, GetUniqueID());
+    newNPC->InitializeTextureMaps(m_textureDataTest2.textureMapType, m_textureDataTest2.textureMap, m_textureDataTest2.normalMap, m_textureDataTest2.specularMap);
+
+    if (aNPCType == NPCType::NPCTYPE_SPAWNED || aNPCType == NPCType::NPCTYPE_SPAWNEDALT)
+    {
+        newNPC->DebugToggleAI();
+    }
+
+    m_npcVec.push_back(newNPC);
+}
+
 void NPCController::AirDropNPCs(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const DirectX::SimpleMath::Vector3 aDropPosition,
     const DirectX::SimpleMath::Vector3 aOrientation, const float aAltitude, const unsigned int aColumnCount, const unsigned int aRowCount, const float aColumnSpacing, const float aRowSpacing)
 {
@@ -274,6 +290,18 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
         }
     }
     return isCollisionTrue;
+}
+
+bool NPCController::CheckIsNpcLoadQueueEmptyTrue()
+{
+    if (m_loadQueue.size() > 0)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 void NPCController::CheckNpcAvoidance()
@@ -1442,6 +1470,16 @@ void NPCController::UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
     {
         const unsigned int i = static_cast<unsigned int>(m_loadQueue.size() - 1);
         this->AddNPC(aContext, m_loadQueue[i].deployType, m_loadQueue[i].deployOrientation, m_loadQueue[i].deployPosition, aNpcController);
+        m_loadQueue.pop_back();
+    }
+}
+
+void NPCController::UpdateLoadQueueWithAudio(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Utility::SoundFx> aAudioFx)
+{
+    if (m_loadQueue.size() > 0)
+    {
+        const unsigned int i = static_cast<unsigned int>(m_loadQueue.size() - 1);
+        this->AddNpcWithAudio(aContext, m_loadQueue[i].deployType, m_loadQueue[i].deployOrientation, m_loadQueue[i].deployPosition, aNpcController, aAudioFx);
         m_loadQueue.pop_back();
     }
 }

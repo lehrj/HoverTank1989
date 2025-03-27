@@ -2350,6 +2350,35 @@ void NPCVehicle::InitializeNPCVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext
     }
 }
 
+void NPCVehicle::InitializeNPCVehicleWithAudio(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+    const DirectX::SimpleMath::Vector3 aHeading, const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
+    std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Vehicle> aPlayer, std::shared_ptr<Utility::SoundFx> aAudioFx, const unsigned int aID)
+{
+    m_context = aContext;
+    m_environment = aEnvironment;
+    m_npcController = aNpcController;
+    m_vehicleStruct00.vehicleData.id = aID;
+
+    m_vehicleStruct00.audioFx = aAudioFx;
+
+    const float low = -1.0f;
+    const float high = 1.0f;
+    m_testHoverFlutter = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+
+    InitializeNPCStruct(m_vehicleStruct00, aHeading, aPosition, this->GetNPCType(), aEnvironment);
+    CalculateTopSpeed();
+    InitializeNPCModelStruct(aContext, m_vehicleStruct00.npcModel, m_vehicleStruct00.vehicleData.hardPoints, m_vehicleStruct00.vehicleData.dimensions);
+
+    if (this->GetNPCType() == NPCType::NPCTYPE_SPAWNEDALT)
+    {
+        m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, true);
+    }
+    else
+    {
+        m_npcAI->InitializeAI(aEnvironment, aPlayer, m_debugData, aNpcController, false);
+    }
+}
+
 void NPCVehicle::PushImpactTorque(Utility::Torque aTorque)
 {
     aTorque.axis.Normalize();
@@ -3536,6 +3565,21 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     m_vehicleStruct00.vehicleData.impactTorque.magnitude = 0.0f;
 
     UpdateForceTorqueVecs();
+
+    if (m_vehicleStruct00.audioFx->isDestroyTrue == false)
+    {
+        m_vehicleStruct00.audioFx->pos = m_vehicleStruct00.vehicleData.q.position;
+        m_vehicleStruct00.audioFx->up = m_vehicleStruct00.vehicleData.up;
+        m_vehicleStruct00.audioFx->emitter->Position = m_vehicleStruct00.vehicleData.q.position;
+        m_vehicleStruct00.audioFx->emitter->Velocity = m_vehicleStruct00.vehicleData.q.velocity;
+        //m_vehicleStruct00.audioFx->fx->SetVolume(1.0f);
+
+        // /////////////////////////////////////////////////////////////////////////////
+        //m_vehicleStruct00.audioFx->SetPos(m_vehicleStruct00.vehicleData.q.position);
+        //m_vehicleStruct00.audioFx->emitter->SetPosition(m_vehicleStruct00.vehicleData.q.position);
+        //m_vehicleStruct00.audioFx->emitter->SetVelocity(m_vehicleStruct00.vehicleData.q.velocity);
+    }
+    
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)

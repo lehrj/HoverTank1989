@@ -496,6 +496,8 @@ struct VehicleStruct
     VehicleData                 vehicleData;
     Environment                 const* environment;
     NPCModel                    npcModel;
+
+    std::shared_ptr<Utility::SoundFx> audioFx;
 };
 
 enum class NpcTextureMapType
@@ -529,6 +531,10 @@ public:
         const DirectX::SimpleMath::Vector3 aHeading,
         const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
         std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Vehicle> aPlayer, const unsigned int aID);
+    void InitializeNPCVehicleWithAudio(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
+        const DirectX::SimpleMath::Vector3 aHeading,
+        const DirectX::SimpleMath::Vector3 aPosition, Environment const* aEnvironment,
+        std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Vehicle> aPlayer, std::shared_ptr<Utility::SoundFx> aAudioFx, const unsigned int aID);
     void InitializeTextureMaps(NpcTextureMapType aTextureMapType, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aTexture, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aNormalMap, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& aSpecularMap);
 
     DirectX::SimpleMath::Matrix GetAlignment() const { return m_vehicleStruct00.vehicleData.alignment; };
