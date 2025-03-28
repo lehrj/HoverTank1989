@@ -1001,8 +1001,12 @@ void Game::Update(DX::StepTimer const& aTimer)
             npcEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
             npcEmitter->CurveDistanceScaler = 14.f;
             npcEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+            npcEmitter->EnableDefaultMultiChannel(2, 1.0f);
             npcEmitter->SetPosition(DirectX::SimpleMath::Vector3::Zero);
-            npcEmitter->ChannelCount = 2;
+
+            npcEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+            
+            //npcEmitter->ChannelCount = 2;
             npcFx->SetEmitter(npcEmitter);
             npcFx->SetPos(DirectX::SimpleMath::Vector3::Zero);
             npcFx->up = DirectX::SimpleMath::Vector3::UnitY;
