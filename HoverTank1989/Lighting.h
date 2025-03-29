@@ -24,18 +24,19 @@ public:
 
     LightingState GetLightingState();
     DirectX::SimpleMath::Vector3 GetLightDir();
+
+    void SetCamPos(const DirectX::SimpleMath::Vector3 aCamPos);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
+
+    void SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
+    void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
 
     void SetLighting(LightingState aLightState);  
     void SetLightingNormColorTextureVertex(LightingState aLightState);
     void SetLightingNormColorVertex2(LightingState aLightState);
     void SetLightingColorVertex3(LightingState aLightState);
 
-    void SetFogVals1(std::unique_ptr<DirectX::NormalMapEffect>  aEffect, const DirectX::SimpleMath::Vector3 aCamPos, const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
-    void SetFogVals2(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
-    void SetFogVals3(const DirectX::SimpleMath::Vector3 aTargetPos, const float aDimmerVal);
-
-    void SetCamPos(const DirectX::SimpleMath::Vector3 aCamPos);
 
     void SetTimerVal(const float aVal);
 

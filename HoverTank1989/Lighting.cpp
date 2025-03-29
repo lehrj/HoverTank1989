@@ -305,7 +305,6 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             //ilights->SetLightSpecularColor(0, DirectX::SimpleMath::Vector3(1, 0.9607844, 0.8078432));
 
 
-
             /*
             ilights->SetLightEnabled(0, false);
             ilights->SetLightEnabled(1, false);
@@ -327,7 +326,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             //ilights->SetAmbientLightColor(testColor);
         }
     }
-    else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BMW)
+    else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BMWALT)
     {
         // BMW effects
         auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
@@ -374,8 +373,15 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             light0 = m_defaultLightDir0;
             light1 = m_defaultLightDir1;
             light2 = m_defaultLightDir2;
-            auto yaw = Utility::WrapAngle(m_testTimerTotal);
+
+            light0 = DirectX::SimpleMath::Vector3::UnitX;
+            light1 = DirectX::SimpleMath::Vector3::UnitX;
+            light2 = DirectX::SimpleMath::Vector3::UnitX;
+
+            auto yaw = Utility::WrapAngle(m_testTimerTotal * 10.0f);
             quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0f, 0.0f);
+            //quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, yaw, 0.0f);
+            quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, yaw);
 
             axis = DirectX::SimpleMath::Vector3::UnitY;
 
@@ -384,7 +390,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             //light2 = XMVector3Rotate(axis, quat);
 
             light0 = DirectX::SimpleMath::Vector3::Transform(light0, quat);
-            light1 = DirectX::SimpleMath::Vector3::Transform(light2, quat);
+            light1 = DirectX::SimpleMath::Vector3::Transform(light1, quat);
             light2 = DirectX::SimpleMath::Vector3::Transform(light2, quat);
             //////////////////////
 
@@ -392,12 +398,14 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             ilights->SetLightDirection(1, light1);
             ilights->SetLightDirection(2, light2);
 
+            //ilights->EnableDefaultLighting();
+
             m_lightPos0 = light0;
             m_lightPos1 = light1;
             m_lightPos2 = light2;
         }
     }
-    else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BMWALT)
+    else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BMW)
     {
         // BMW effects
         auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());

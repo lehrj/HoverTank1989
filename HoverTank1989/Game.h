@@ -417,11 +417,12 @@ private:
     */
 
     const float                         m_logoSize = 1.0f;
-    const float                         m_fadeDuration = 1.5f;
+    //const float                         m_fadeDuration = 1.5f;
+    const float                         m_fadeDuration = 0.85f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 2.4f; // 7.4,5.1
-    const float                         m_logoDisplayGap = 0.1f;
+    const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
+    const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
 
@@ -443,16 +444,24 @@ private:
     bool m_isJILogoAudioTriggerTrue3 = false;
     bool m_isJILogoAudioTriggerTrue4 = false;
     
+    const float m_jiTriggerTime1 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.45f);
+    const float m_jiTriggerTime2 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.55f);
+    const float m_jiTriggerTime3 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.65f);
+    const float m_jiTriggerTime4 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.75f);
+
+    /*
     const float m_jiTriggerTime1 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.3f);
     const float m_jiTriggerTime2 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.4f);
     const float m_jiTriggerTime3 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.5f);
     const float m_jiTriggerTime4 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.6f);
+    */
 
     int m_jiTriggerCount = 0;
 
     const float m_bmwTriggerTime = 0.0f + m_startDelay + m_logoDisplayDuration + (m_logoDisplayDuration * 0.1f);
 
     const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
     const float m_jiNormalTrigger = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.5f);
@@ -589,7 +598,8 @@ private:
     //const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(500.0f, 170.0f, -900.0f);
     //const DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(0.0f, 130.0f, 00.0f);
-    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(200.0f, 350.0f, 00.0f);
+    //const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(200.0f, 350.0f, 800.0f);
+    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, 400.0f);
     //const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(640.0f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(475.0f, 10.0f, 0.0f);
 
