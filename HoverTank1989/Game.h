@@ -421,7 +421,7 @@ private:
     const float                         m_fadeDuration = 0.85f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
@@ -444,10 +444,10 @@ private:
     bool m_isJILogoAudioTriggerTrue3 = false;
     bool m_isJILogoAudioTriggerTrue4 = false;
     
-    const float m_jiTriggerTime1 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.45f);
-    const float m_jiTriggerTime2 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.55f);
-    const float m_jiTriggerTime3 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.65f);
-    const float m_jiTriggerTime4 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.75f);
+    const float m_jiTriggerTime1 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.35f);
+    const float m_jiTriggerTime2 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.45f);
+    const float m_jiTriggerTime3 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.55f);
+    const float m_jiTriggerTime4 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.65f);
 
     /*
     const float m_jiTriggerTime1 = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.3f);
@@ -589,6 +589,7 @@ private:
     const DirectX::SimpleMath::Vector3 m_missileRangePos1 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, (m_missileRangeDistance * 0.5f));
     const DirectX::SimpleMath::Vector3 m_missileRangePos2 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, -(m_missileRangeDistance * 0.5f));
 
+    const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
     //const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f);
     //const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(800.0f, 120.0f, 1100.0f);
@@ -617,11 +618,12 @@ private:
     const float m_introTargStep1 = 0.09f;
     const float m_introSlerp1 = 0.9f;
 
+    //const DirectX::SimpleMath::Vector3 m_gamePlayCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_gamePlayCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_gamePlayTarg = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
-    const float m_gamePlayCamStep = 0.1f;
-    const float m_gamePlayTargStep = 0.1f;
-    const float m_gamePlaySlerp = 0.1f;
+    const float m_gamePlayCamStep = 0.16f;
+    const float m_gamePlayTargStep = 0.16f;
+    const float m_gamePlaySlerp = 0.16f;
 
     // multisampling
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_offscreenRenderTarget;

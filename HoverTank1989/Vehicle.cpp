@@ -158,12 +158,6 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
 
     DirectX::SimpleMath::Vector3 buoyancyForce = testDensity * immersedVolume * gravForce;
 
-    m_debugData->ToggleDebugOnOverRide();
-
-    m_debugData->DebugPushUILineDecimalNumber("immersedRatio = ", immersedRatio, "");
-    m_debugData->ToggleDebugOff();
-    
-
     /*
     m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.x = ", buoyancyForce.x, "");
     m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");

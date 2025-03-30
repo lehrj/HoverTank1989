@@ -1317,52 +1317,8 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
-	//m_debugData->ToggleDebugOnOverRide();
-	//m_debugData->PushDebugLinePositionIndicator(m_target, 50.0f, 0.0f, DirectX::Colors::Yellow);
-	m_debugData->PushDebugLinePositionIndicator(m_panTargPos, 50.0f, 0.0f, DirectX::Colors::Red);
-	m_debugData->PushDebugLinePositionIndicator(m_target, 40.0f, 0.0f, DirectX::Colors::Yellow);
-
 	
-
-	if (m_cameraState == CameraState::CAMERASTATE_FIRSTPERSON)
-	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_FIRSTPERSON ", 0, "");
-	}
-	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
-	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SPRINGCAMERA ", 0, "");
-	}
-	else if (m_cameraState == CameraState::CAMERASTATE_PRESWINGVIEW)
-	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_PRESWINGVIEW ", 0, "");
-	}
-	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERA)
-	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SPRINGCAMERA ", 0, "");
-	}
-	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
-	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAM ", 0, "");
-	}
-	else if (m_cameraState == CameraState::CAMERASTATE_SPRINGCAMERANPC)
-	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SPRINGCAMERANPC ", 0, "");
-	}
-	else if (m_cameraState == CameraState::CAMERASTATE_TARGETPAN)
-	{
-		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_TARGETPAN ", 0, "");
-	}
-	else
-	{
-		int testBreak = 0;
-		testBreak++;
-	}
-
-	//m_debugData->ToggleDebugOnOverRide();
-	m_debugData->DebugPushUILineDecimalNumber("m_position.x = ", m_position.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.y = ", m_position.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_position.z = ", m_position.z, "");
-	m_debugData->ToggleDebugOff();
+	
 }
 
 void Camera::UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer)

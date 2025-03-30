@@ -520,8 +520,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         }
         else
         {
-            baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-            //baseColor = DirectX::XMFLOAT4(0.0f, 0.35f, 0.0f, 1.0f);
+            baseColor = m_terrainBaseColor;
         }   
         /*
         baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -1012,23 +1011,28 @@ void Game::Update(DX::StepTimer const& aTimer)
             npcEmitter->CurveDistanceScaler = 14.f;
             npcEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
             npcEmitter->EnableDefaultMultiChannel(2, 1.0f);
-            npcEmitter->SetPosition(DirectX::SimpleMath::Vector3::Zero);
+            npcEmitter->SetPosition(m_npcController->GetNextSpawnerLoc());
 
             npcEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
             
             //npcEmitter->ChannelCount = 2;
+            npcFx->volume = 1.0f;
+            npcFx->fx->SetVolume(1.0f);
+            //npcFx->emitter->SetPosition(m_npcController->GetNextSpawnerLoc());
+            npcFx->pos = m_npcController->GetNextSpawnerLoc();
+
             npcFx->SetEmitter(npcEmitter);
-            npcFx->SetPos(DirectX::SimpleMath::Vector3::Zero);
+            //npcFx->SetPos(DirectX::SimpleMath::Vector3::Zero);
             npcFx->up = DirectX::SimpleMath::Vector3::UnitY;
             npcFx->forward = DirectX::SimpleMath::Vector3::UnitX;
 
-            //npcFx->emitter->SetPosition(DirectX::SimpleMath::Vector3::Zero);
+            npcFx->emitter->SetPosition(m_npcController->GetNextSpawnerLoc());
 
             m_npcController->UpdateLoadQueueWithAudio(context, m_npcController, npcFx);
             npcFx->fx->Play(true);
             m_soundFxVecTest.push_back(npcFx);
            
-            //m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());
+            m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());
             
         }
     }
@@ -1038,8 +1042,8 @@ void Game::Update(DX::StepTimer const& aTimer)
 
 
     ////////////////////////////////
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest.size() ", m_soundFxVecTest.size(), "");
+    //m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest.size() ", m_soundFxVecTest.size(), "");
     m_debugData->ToggleDebugOff();
 
     auto targPos = m_camera->GetTargetPos();
@@ -1132,8 +1136,8 @@ void Game::Update(DX::StepTimer const& aTimer)
         }
     }
 
-    m_emitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
-    m_fxEmitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
+    //m_emitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
+    //m_fxEmitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
     m_listener.SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUpAudio());
     m_listener.Update(m_camera->GetPos(), m_camera->GetUpAudio(), aTimer.GetElapsedSeconds());
    
@@ -1226,7 +1230,7 @@ void Game::Render()
 
 
     //m_effect->EnableDefaultLighting();
-    m_effect->SetWorld(m_world);
+   // m_effect->SetWorld(m_world);
 
 
 
@@ -1257,44 +1261,9 @@ void Game::Render()
 
     context->IASetInputLayout(m_inputLayout.Get());
 
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
-    m_effect->SetColorAndAlpha(DirectX::Colors::White);
+   // m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
+   // m_effect->SetColorAndAlpha(DirectX::Colors::White);
 
-
-    const float timeStamp = static_cast<float>(m_testTimer + m_debugStartTime);
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("timeStamp ", timeStamp, "");
-
-    Lighting::LightingState lightState = m_lighting->GetLightingState();
-
-    if (lightState == Lighting::LightingState::LIGHTINGSTATE_)
-    {
-        m_debugData->DebugPushUILineDecimalNumber("LIGHTINGSTATE_ ", 0.0f, "");
-    }
-    if (lightState == Lighting::LightingState::LIGHTINGSTATE_TEST01)
-    {
-        m_debugData->DebugPushUILineDecimalNumber("LIGHTINGSTATE_TEST01 ", 0.0f, "");
-    }
-    if (lightState == Lighting::LightingState::LIGHTINGSTATE_BMW)
-    {
-        m_debugData->DebugPushUILineDecimalNumber("LIGHTINGSTATE_BMW ", 0.0f, "");
-    }
-    if (lightState == Lighting::LightingState::LIGHTINGSTATE_JI)
-    {
-        m_debugData->DebugPushUILineDecimalNumber("LIGHTINGSTATE_JI ", 0.0f, "");
-    }
-
-
-    if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
-    {
-        m_debugData->DebugPushUILineDecimalNumber("GameState::GAMESTATE_STARTSCREEN) ", 0.0f, "");
-    }
-    if (m_currentGameState == GameState::GAMESTATE_TEASERSCREEN)
-    {
-        m_debugData->DebugPushUILineDecimalNumber("GAMESTATE_TEASERSCREEN ", 0.0f, "");
-    }
-
-    m_debugData->ToggleDebugOff();
 
     //m_batch->Begin();
 
@@ -1542,15 +1511,15 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm1.png", nullptr, m_normalMapJI1.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec1.png", nullptr, m_specularJI1.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture1.png", nullptr, m_textureJI2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture0.png", nullptr, m_textureJI2.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm2.png", nullptr, m_normalMapJI2.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec2.png", nullptr, m_specularJI2.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture2.png", nullptr, m_textureJI3.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture0.png", nullptr, m_textureJI3.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm3.png", nullptr, m_normalMapJI3.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec3.png", nullptr, m_specularJI3.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture3.png", nullptr, m_textureJI4.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture0.png", nullptr, m_textureJI4.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm4.png", nullptr, m_normalMapJI4.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec4.png", nullptr, m_specularJI4.ReleaseAndGetAddressOf()));
 
@@ -1837,6 +1806,8 @@ void Game::DrawDebugDataUI()
     textLinePos.y += 30;
     */
 
+    /*
+
     std::string textLine = "Time   " + std::to_string(m_timer.GetTotalSeconds());
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
@@ -1855,6 +1826,8 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
+
+    */
 }
 
 void Game::DrawEndUI()
@@ -1909,6 +1882,7 @@ void Game::DrawIntroScene()
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
+    const float ravenStart = fadeInStart2 - 0.2f;
     const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
 
     const float fadeInEnd1 = startDelay + fadeDuration;
@@ -2066,6 +2040,11 @@ void Game::DrawIntroScene()
     ///////////////////////////////
     ///    Render BMW Logo      /// 
     ///////////////////////////////
+    else if (timeStamp < ravenStart && m_isBMWLogoAudioTriggerTrue1 == false)
+    {
+        m_isBMWLogoAudioTriggerTrue1 = true;
+        AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
+    }
     else if (timeStamp < fadeInStart2)
     {
         // render nothing
@@ -2073,11 +2052,7 @@ void Game::DrawIntroScene()
         m_camera->SetPos(m_introCamPos2);
         m_camera->SetTargetPos(m_introCamTarg2);
     }
-    else if (timeStamp > fadeInStart2 && m_isBMWLogoAudioTriggerTrue1 == false)
-    {
-        m_isBMWLogoAudioTriggerTrue1 = true;
-        AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
-    }
+
     else if (timeStamp < fadeOutEnd2) // Render BMW Logo
     {
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
@@ -4239,7 +4214,7 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             pitch *= 0.8f;
             pitch *= 2.0f;
             pitch -= 1.0f;
-            pitch = volume;
+          //  pitch = volume;
             volume *= 0.9f;
             volume += 0.1f;
        
@@ -4248,8 +4223,10 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->volume = volume;
 
             m_soundFxVecTest[i]->emitter->SetVelocity(m_vehicle->GetVelocity());
+            m_soundFxVecTest[i]->emitter->SetOrientation(m_vehicle->GetForward(), m_vehicle->GetVehicleUp());
 
-            m_debugData->ToggleDebugOnOverRide();
+
+            //m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch  ", pitch, "");
             m_debugData->ToggleDebugOff();

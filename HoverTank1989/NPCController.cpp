@@ -1146,6 +1146,20 @@ bool NPCController::GetIsNpcUntargetedTrue(int aId)
     return isUntargetedTrue;
 }
 
+DirectX::SimpleMath::Vector3 NPCController::GetNextSpawnerLoc()
+{
+
+    if (m_isAltSpawnLocTrue == true)
+    {
+        return m_spawnerPosAlt;
+    }
+    else
+    {
+        return m_spawnerPos;
+    }
+    
+}
+
 DirectX::SimpleMath::Vector3 NPCController::GetNpcAccelVecTest(const unsigned int aId)
 {
     for (int i = 0; i < m_npcVec.size(); ++i)

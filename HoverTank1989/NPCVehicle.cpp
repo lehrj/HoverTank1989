@@ -3570,9 +3570,14 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
     {
         m_vehicleStruct00.audioFx->pos = m_vehicleStruct00.vehicleData.q.position;
         m_vehicleStruct00.audioFx->up = m_vehicleStruct00.vehicleData.up;
+        m_vehicleStruct00.audioFx->forward = m_vehicleStruct00.vehicleData.forward;
+        m_vehicleStruct00.audioFx->emitter->SetOrientation(m_vehicleStruct00.vehicleData.forward, m_vehicleStruct00.vehicleData.up);
+
         m_vehicleStruct00.audioFx->emitter->Position = m_vehicleStruct00.vehicleData.q.position;
         m_vehicleStruct00.audioFx->emitter->Velocity = m_vehicleStruct00.vehicleData.q.velocity;
-        //m_vehicleStruct00.audioFx->fx->SetVolume(1.0f);
+        //m_vehicleStruct00.audioFx->fx->SetVolume(1.0f);  m_vehicleStruct00.vehicleData.hoverData.forwardThrust
+        m_vehicleStruct00.audioFx->fx->SetVolume(abs(m_vehicleStruct00.vehicleData.controlInput.throttleInput));
+        m_vehicleStruct00.audioFx->fx->SetPitch(abs(m_vehicleStruct00.vehicleData.controlInput.throttleInput));
 
         // /////////////////////////////////////////////////////////////////////////////
         //m_vehicleStruct00.audioFx->SetPos(m_vehicleStruct00.vehicleData.q.position);
