@@ -89,22 +89,36 @@ Game::Game() noexcept(false)
 void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::SoundFxType aSfxType)
 {
     std::shared_ptr <Utility::SoundFx> fx(new Utility::SoundFx());
+    std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+    fireEmitter->SetOmnidirectional();
+    fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
 
     if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER;
-        fx->fx = m_audioBank->CreateStreamInstance(m_playerVehicleAudioFxId, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdPlayerVehicle, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+    }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_AMBIENT)
+    {
+        fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_AMBIENT;
+        fireEmitter->EnableDefaultCurves();
+        fireEmitter->SetOmnidirectional();
+        fireEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdAmbient, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
 
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
-        fx->fx = m_audioBank->CreateStreamInstance(22, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_RAVEN;
-        fx->fx = m_audioBank->CreateStreamInstance(24, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdRavens, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitZ;
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG)
     {
@@ -114,28 +128,28 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1;
-        fx->fx = m_audioBank->CreateStreamInstance(12, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI1, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        
+        //fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitZ;
+
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2;
-        fx->fx = m_audioBank->CreateStreamInstance(12, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3;
-        fx->fx = m_audioBank->CreateStreamInstance(15, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
     else
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
-        fx->fx = m_audioBank->CreateStreamInstance(2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
     }
 
-    std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
-    fireEmitter->SetOmnidirectional();
-    fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-    fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+
 
     if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
     {
@@ -264,7 +278,8 @@ void Game::Initialize(HWND window, int width, int height)
     m_audioEngine = std::make_unique<AudioEngine>(eflags);
 
     //m_audioEngine->SetReverb(Reverb_Hangar);
-    m_audioEngine->SetReverb(Reverb_Mountains);
+    //m_audioEngine->SetReverb(Reverb_Mountains);
+    m_audioEngine->SetReverb(m_jIAudioReverb);
 
     //m_audioEngine = std::make_unique<AudioEngine>(eflags);
     m_retryAudio = false;
@@ -1003,16 +1018,16 @@ void Game::Update(DX::StepTimer const& aTimer)
             std::shared_ptr <Utility::SoundFx> npcFx(new Utility::SoundFx());
             npcFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_VEHICLENPC;
   
-            npcFx->fx = m_audioBank->CreateStreamInstance(25, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+            npcFx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdNPCVehicle, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
             std::shared_ptr<DirectX::AudioEmitter> npcEmitter = std::make_shared<DirectX::AudioEmitter>();
             npcEmitter->SetOmnidirectional();
             npcEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
             npcEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-            npcEmitter->CurveDistanceScaler = 14.f;
+            npcEmitter->CurveDistanceScaler = 4.0f;
             npcEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
             npcEmitter->EnableDefaultMultiChannel(2, 1.0f);
             npcEmitter->SetPosition(m_npcController->GetNextSpawnerLoc());
-
+            
             npcEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
             
             //npcEmitter->ChannelCount = 2;
@@ -1175,6 +1190,7 @@ void Game::Render()
     context;
     context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
     context->OMSetDepthStencilState(m_states->DepthNone(), 0);
+
     context->RSSetState(m_states->CullNone());
     //context->RSSetState(m_raster.Get());
 
@@ -1193,6 +1209,7 @@ void Game::Render()
         DrawIntroScene();
     }
 
+    /*
     auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
     if (ilights)
     {
@@ -1201,6 +1218,7 @@ void Game::Render()
         ilights->SetLightEnabled(1, true);
         ilights->SetLightEnabled(2, true);
     }
+    */
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
@@ -1228,12 +1246,8 @@ void Game::Render()
         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
-
     //m_effect->EnableDefaultLighting();
    // m_effect->SetWorld(m_world);
-
-
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -1246,14 +1260,11 @@ void Game::Render()
 
     context->IASetInputLayout(m_inputLayout.Get());
 
-
-
     /*
     m_effect->SetTexture(m_textureBMW.Get());
     m_effect->SetNormalTexture(m_normalMapBMW2.Get());
     m_effect->SetSpecularTexture(m_specularBMW.Get());
     */
-
 
     m_effect->Apply(context);
     sampler = m_states->LinearClamp();
@@ -1268,7 +1279,6 @@ void Game::Render()
     //m_batch->Begin();
 
     //m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
-
 
     //DrawLogoScreen();
     //DrawIntroScene();
@@ -1298,7 +1308,8 @@ void Game::Render()
     }
     m_batch2->End();
     //context->RSSetState(m_states->CullNone());
-    context->RSSetState(m_raster.Get());
+   // context->RSSetState(m_raster.Get());
+
 
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
@@ -1334,7 +1345,7 @@ void Game::Render()
 
     m_deviceResources->PIXEndEvent();
 
-    // multisamping 
+    // multisamping
     context->ResolveSubresource(m_deviceResources->GetRenderTarget(), 0,
         m_offscreenRenderTarget.Get(), 0,
         m_deviceResources->GetBackBufferFormat());
@@ -1362,6 +1373,7 @@ void Game::Clear()
     // multisampling
     auto renderTarget = m_offscreenRenderTargetSRV.Get();
     auto depthStencil = m_depthStencilSRV.Get();
+    
     context->ClearRenderTargetView(renderTarget, Colors::Black);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
@@ -2042,6 +2054,8 @@ void Game::DrawIntroScene()
     ///////////////////////////////
     else if (timeStamp < ravenStart && m_isBMWLogoAudioTriggerTrue1 == false)
     {
+        m_audioEngine->SetReverb(m_bMWAudioReverb);
+        //m_audioEngine->SetReverb(Reverb_Mountains);
         m_isBMWLogoAudioTriggerTrue1 = true;
         AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
     }
@@ -2294,8 +2308,10 @@ void Game::DrawIntroScene()
     }
     else
     {
+        m_audioEngine->SetReverb(m_jIGameReverb);
         // turn on player vehicle engine sound
-        AudioCreateSFX3D(DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
+        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
+        AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
     }
 }
 
@@ -3037,6 +3053,7 @@ void Game::DrawTerrainNew(Terrain& aTerrain)
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
 
     // Create base to black out skydome under terrain
+    /*
     DirectX::SimpleMath::Vector3 vertNorm = -DirectX::SimpleMath::Vector3::UnitY;
     const float baseSize = m_skyBoxSize;
     const float heightOffSet = -m_groundBlackHeight;
@@ -3052,7 +3069,8 @@ void Game::DrawTerrainNew(Terrain& aTerrain)
     DirectX::VertexPositionNormalColor vpn3(v3, vertNorm, vertColor);
     DirectX::VertexPositionNormalColor vpn4(v4, vertNorm, vertColor);
 
-    //m_batch2->DrawQuad(vpn1, vpn2, vpn3, vpn4);
+    m_batch2->DrawQuad(vpn1, vpn2, vpn3, vpn4);
+    */
 }
 
 void Game::FadeOutMusic()
@@ -3848,6 +3866,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             //m_fireControl->DebugIntputValUpdate(static_cast<float>(-aTimer.GetElapsedSeconds()));
             //m_fireControl->DebugIntputValUpdateStatic(false);
+
+
+            CameraState camState = m_camera->GetCameraState();
+
             m_camera->FovDown(static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
@@ -4125,6 +4147,27 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
 void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 {
+
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+    {
+        m_audioVolumeTimer += aTimer.GetElapsedSeconds();
+
+        if (m_audioVolumeTimer >= m_audioVolumeTransitionTime)
+        {
+            m_audioVolumeTimer = m_audioVolumeTransitionTime;
+            m_audioVolumeGamePlay = m_audioVolumeGamePlayMax;
+        }
+        else
+        {
+            float mod = m_audioVolumeTimer / m_audioVolumeTransitionTime;
+            m_audioVolumeGamePlay = mod * m_audioVolumeGamePlayMax;
+        }
+
+        m_debugData->ToggleDebugOnOverRide();
+        m_debugData->DebugPushUILineDecimalNumber("m_audioVolumeGamePlay ", m_audioVolumeGamePlay, "");
+        m_debugData->ToggleDebugOff();
+    }
+
     for (unsigned int i = 0; i < m_fireControl->GetCreateAudioCount(); ++i)
     {
         std::shared_ptr <Utility::SoundFx> createdFx(new Utility::SoundFx());
@@ -4193,6 +4236,18 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {
+        if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLENPC)
+        {
+            if (m_currentGameState != GameState::GAMESTATE_GAMEPLAY)
+            {
+                m_soundFxVecTest[i]->fx->SetVolume(0.0f);;
+                m_soundFxVecTest[i]->volume = 0.0f;
+            }
+
+            m_soundFxVecTest[i]->fx->SetVolume(m_audioVolumeGamePlay * m_audioPlayerNPCMod);
+            m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
+        }
+
         if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
         {
             auto pos = m_lighting->GetLightDir();
@@ -4217,7 +4272,9 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
           //  pitch = volume;
             volume *= 0.9f;
             volume += 0.1f;
-       
+
+            volume *= m_audioVolumeGamePlay * m_audioPlayerNPCMod;
+
             m_soundFxVecTest[i]->fx->SetPitch(volume);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
@@ -4230,6 +4287,20 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch  ", pitch, "");
             m_debugData->ToggleDebugOff();
+        }
+
+        if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_AMBIENT)
+        {
+            auto pos = m_camera->GetPos();
+            m_soundFxVecTest[i]->emitter->SetPosition(pos);
+            m_soundFxVecTest[i]->pos = pos;
+
+
+            m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
+
+            //m_soundFxVecTest[i]->emitter->SetVelocity(m_vehicle->GetVelocity());
+            //m_soundFxVecTest[i]->emitter->SetOrientation(m_vehicle->GetForward(), m_vehicle->GetVehicleUp());
+            m_soundFxVecTest[i]->emitter->SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUp());
         }
     }
 

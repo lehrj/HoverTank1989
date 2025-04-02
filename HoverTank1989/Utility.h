@@ -1223,6 +1223,7 @@ public:
 
     enum class SoundFxType
     {
+        SOUNDFXTYPE_AMBIENT,
         SOUNDFXTYPE_DEBUG,
         SOUNDFXTYPE_ERROR,
         SOUNDFXTYPE_EXPLOSION,
