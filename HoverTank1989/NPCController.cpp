@@ -1151,11 +1151,11 @@ DirectX::SimpleMath::Vector3 NPCController::GetNextSpawnerLoc()
 
     if (m_isAltSpawnLocTrue == true)
     {
-        return m_spawnerPosAlt;
+        return m_spawnerPos;
     }
     else
     {
-        return m_spawnerPos;
+        return m_spawnerPosAlt;
     }
     
 }

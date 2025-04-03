@@ -419,6 +419,7 @@ private:
     const float                         m_logoSize = 1.0f;
     //const float                         m_fadeDuration = 1.5f;
     const float                         m_fadeDuration = 0.85f;
+    const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
     const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
@@ -431,9 +432,10 @@ private:
     const float m_audioVolumeTransitionTime = 1.0f;
     float m_audioVolumeTimer = 0.0f;
 
+    const float m_audioAmbientMod = 1.0f;
     const float m_audioPlayerVehicleMod = 1.0f;
     const float m_audioPlayerNPCMod = 1.0f;
-    const float m_audioAmbientMod = 1.0f;
+    const float m_audioSpawnerMod = 1.0f;
 
     const int m_audioFxIdNPCVehicle = 27;
     const int m_audioFxIdPlayerVehicle = 27;
@@ -443,18 +445,32 @@ private:
     const int m_audioFxIdJI2 = 12;
     const int m_audioFxIdJI3 = 15;
     const int m_audioFxIdJI4 = 22;
-    */
+    /
     const int m_audioFxIdJI1 = 11;
     const int m_audioFxIdJI2 = 13;
     const int m_audioFxIdJI3 = 14;
     const int m_audioFxIdJI4 = 16;
+    */
+    const int m_audioFxIdJI1 = 22;
+    const int m_audioFxIdJI2 = 22;
+    const int m_audioFxIdJI3 = 22;
+    const int m_audioFxIdJI4 = 22;
 
+    const int m_audioSpawner1 = 41;
+    const int m_audioSpawner2 = 41;
 
-    const int m_audioFxIdRavens= 24;
+    const int m_audioFxIdRaven= 24;
+    const int m_audioFxIdRavenAlt = 23;
+
+    const float m_audioCurveDistanceScalarNPC = 14.0f;
+    const float m_audioCurveDistanceScalarPlayer = 14.0f;
+    const float m_audioCurveDistanceScalarSpawner = 14.0f;
+    const float m_audioCurveDistanceScalarLogo = 14.0f;
 
     bool m_isStartTriggerTrue1 = false;
     bool m_isStartTriggerTrue2 = false;
 
+    bool m_isLogoAudioTriggerTrueDice = false;
     bool m_isLogoAudioTriggerTrue1 = false;
     bool m_isLogoAudioTriggerTrue2 = false;
     bool m_isLogoAudioTriggerTrue3 = false;
@@ -471,6 +487,7 @@ private:
     DirectX::AUDIO_ENGINE_REVERB m_bMWAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Alley;
     DirectX::AUDIO_ENGINE_REVERB m_jIGameReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Mountains;
 
+    const float m_jiTriggerTimeDice = -2.2f;
     const float m_jiTriggerTime1 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.35f);
     const float m_jiTriggerTime2 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.45f);
     const float m_jiTriggerTime3 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.55f);
@@ -531,7 +548,7 @@ private:
     DirectX::XMFLOAT4 m_testColor;
     const DirectX::XMFLOAT4 m_defaultStartTerrainColor = DirectX::XMFLOAT4(0.1f, 0.01f, 0.01f, 1.0f);
     const DirectX::XMFLOAT4 m_defaultGameTerrainColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 1.0f);
-    const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
+    const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
     const float m_startTerrainMaxY = 0.347000033f;
     const float m_gameTerrainMaxY = 396.0f;
