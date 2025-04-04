@@ -93,22 +93,43 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     fireEmitter->SetOmnidirectional();
     fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
     fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
     fireEmitter->CurveDistanceScaler = 14.f;
-
+    
     auto pos = DirectX::SimpleMath::Vector3::Zero;
 
     if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER;
-        fireEmitter->ChannelCount = 2;
+        //fireEmitter->ChannelCount = 2;
+
         //fireEmitter->CurveDistanceScaler = 8.f;
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarPlayer;
 
         pos = m_vehicle->GetPos();
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdPlayerVehicle, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        //fireEmitter->ChannelCount = fx->fx->GetChannelCount();
+        //fireEmitter->EnableDefaultMultiChannel(fx->fx->GetChannelCount(), 10.0f);
+        //fireEmitter->SetOmnidirectional();
+        //fireEmitter->EmitterAzimuths(0.0f);
 
+
+        int testINt = fx->fx->GetChannelCount();
+        fx->up = m_vehicle->GetVehicleUp();
+        fx->forward = m_vehicle->GetForward();
+        
         fx->fx->Play(true);
 
+    }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_DEBUG)
+    {
+        fx->fxType = aSfxType;
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdDebug, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+    
+        pos = m_camera->GetPos();
+        pos = m_vehicle->GetPos();
+        fx->fx->Play(false);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_DICE)
     {
@@ -144,7 +165,6 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         pos = aPos;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdAmbient, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         fx->fx->Play(false);
-
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
     {
@@ -152,6 +172,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = DirectX::SimpleMath::Vector3(0.0f, -40.0f, 0.0f);
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+       
         fx->fx->Play(false);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
@@ -186,29 +207,28 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->fxType = aSfxType;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI1, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         
-        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 40.0f);
+        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 4.0f);
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
-        fireEmitter->Velocity = -DirectX::SimpleMath::Vector3::UnitZ;
+        //fireEmitter->Velocity = -DirectX::SimpleMath::Vector3::UnitZ;
         fx->fx->Play(false);
-
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2)
     {
         fx->fxType = aSfxType;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI2, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -40.0f);
+        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -4.0f);
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
-        fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitZ;
-        fx->fx->SetPitch(-0.5f);
+        //fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitZ;
+        //fx->fx->SetPitch(-0.5f);
         fx->fx->Play(false);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3)
     {
         fx->fxType = aSfxType;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-        pos = DirectX::SimpleMath::Vector3(0.0f, 40.0f, 0.0f);
+        pos = DirectX::SimpleMath::Vector3(0.0f, 4.0f, 0.0f);
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
-        fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitX * 50.0f;
+        //fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitX * 50.0f;
         fx->fx->Play(false);
     }
     else
@@ -220,65 +240,10 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     }
 
 
-    /*
-    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
-    {
-        fireEmitter->CurveDistanceScaler = 8.f;
-    }
-    else
-    {
-        fireEmitter->CurveDistanceScaler = 14.f;
-    }
-    */
-
-    
-    fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-
-    /*
-    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
-    {
-        fireEmitter->ChannelCount = 2;
-    }
-    */
-
-    
-    /*
-    if (m_jiTriggerCount == 0)
-    {
-        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 40.0f);
-    }
-    else if (m_jiTriggerCount == 1)
-    {
-        pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -40.0f);
-    }
-    else if (m_jiTriggerCount == 2)
-    {
-        pos = DirectX::SimpleMath::Vector3(0.0f, 40.0f, 0.0f);
-    }
-    else if (m_jiTriggerCount == 3)
-    {
-        pos = DirectX::SimpleMath::Vector3(0.0f, -40.0f, 0.0f);
-    }
-    */
-
-
-    //pos = DirectX::SimpleMath::Vector3::Zero;
-
     fireEmitter->SetPosition(pos);
-    fx->pos = pos;
+   // fx->pos = pos;
 
     fx->SetEmitter(fireEmitter);
-
-    /*
-    if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
-    {
-        fx->fx->Play(true);
-    }
-    else
-    {
-        fx->fx->Play(false);
-    }
-    */
     
     m_soundFxVecTest.push_back(fx);
 }
@@ -376,7 +341,7 @@ void Game::Initialize(HWND window, int width, int height)
 
     //m_soundSource->Play(true);
 
-    m_listener.pCone = const_cast<X3DAUDIO_CONE*>(&c_listenerCone);
+   // m_listener.pCone = const_cast<X3DAUDIO_CONE*>(&c_listenerCone);
 
     m_emitter.pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
     m_emitter.pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
@@ -1233,7 +1198,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     //m_fxEmitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
     m_listener.SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUpAudio());
     m_listener.Update(m_camera->GetPos(), m_camera->GetUpAudio(), aTimer.GetElapsedSeconds());
-   
+
     if (m_soundSource)
     {
         m_soundSource->Apply3D(m_listener, m_emitter);
@@ -2038,7 +2003,8 @@ void Game::DrawIntroScene()
                 m_isLogoAudioTriggerTrueDice = true;
                 //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
                // AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1);
-                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DICE);
+                //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DICE);
+               // AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
             }
         }
 
@@ -4370,14 +4336,17 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             volume += 0.1f;
 
             volume *= m_audioVolumeGamePlay * m_audioPlayerNPCMod;
+            volume = 1.0f;
+            pitch = 1.0f;
 
-            m_soundFxVecTest[i]->fx->SetPitch(volume);
+            m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
 
-            m_soundFxVecTest[i]->emitter->SetVelocity(m_vehicle->GetVelocity());
+            //m_soundFxVecTest[i]->emitter->SetVelocity(m_vehicle->GetVelocity());
+            
             m_soundFxVecTest[i]->emitter->SetOrientation(m_vehicle->GetForward(), m_vehicle->GetVehicleUp());
-
+          //  m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
 
             //m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
@@ -4414,8 +4383,15 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {
         m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
-        m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-        m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+
+        if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
+        {
+            m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
+        }
+
+        //m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+        m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
+       // m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
     }
 
     // laser tone

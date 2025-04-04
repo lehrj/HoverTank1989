@@ -437,7 +437,10 @@ private:
     const float m_audioPlayerNPCMod = 1.0f;
     const float m_audioSpawnerMod = 1.0f;
 
-    const int m_audioFxIdNPCVehicle = 27;
+    const int m_audioFxIdDebug = 0;
+
+    const int m_audioFxIdNPCVehicle = 25;
+    //const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdAmbient = 31;
     /*
@@ -464,7 +467,7 @@ private:
 
     const float m_audioCurveDistanceScalarNPC = 14.0f;
     const float m_audioCurveDistanceScalarPlayer = 14.0f;
-    const float m_audioCurveDistanceScalarSpawner = 14.0f;
+    const float m_audioCurveDistanceScalarSpawner = 4.0f;
     const float m_audioCurveDistanceScalarLogo = 14.0f;
 
     bool m_isStartTriggerTrue1 = false;
