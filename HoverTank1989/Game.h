@@ -328,21 +328,22 @@ private:
     std::unique_ptr<DirectX::AudioEngine>       m_audioEngine;
     bool                                        m_retryAudio;
     float                                       m_musicVolume = 0.9f;
-    float                                       m_sfxVolume = 0.5f;
+   float                                       m_sfxVolume = 0.5f;
+
     std::unique_ptr<DirectX::WaveBank>          m_audioBank;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioMusicStream;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioEffectStream;
 
-    std::unique_ptr<DirectX::SoundEffect>       m_soundEffect;
-    std::shared_ptr<DirectX::SoundEffectInstance> m_soundSource;
+ //   std::unique_ptr<DirectX::SoundEffect>       m_soundEffect;
+  //  std::shared_ptr<DirectX::SoundEffectInstance> m_soundSource;
 
-    std::shared_ptr<DirectX::SoundStreamInstance> m_ssiTest;
+   // std::shared_ptr<DirectX::SoundStreamInstance> m_ssiTest;
     //std::vector<std::shared_ptr<DirectX::SoundEffectInstance>> m_soundSourceVec;
     std::vector<std::shared_ptr<Utility::SoundFx>> m_soundFxVecTest;
 
-    DirectX::AudioEmitter  m_fxEmitter;
-    DirectX::AudioListener m_listener;
-    DirectX::AudioEmitter  m_emitter;
+  //  DirectX::AudioEmitter  m_fxEmitter;
+   DirectX::AudioListener m_listener;
+   //5 DirectX::AudioEmitter  m_emitter;
 
     unsigned int m_currentFxExplosion = 4;
     unsigned int m_currentFxShotBang = 10;
@@ -437,11 +438,16 @@ private:
     const float m_audioPlayerNPCMod = 1.0f;
     const float m_audioSpawnerMod = 1.0f;
 
-    const int m_audioFxIdDebug = 0;
+    DirectX::SimpleMath::Vector3 m_debugAudioPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
+
+    bool m_audioTestBoolTrue = false;
+
+    const int m_audioFxIdDebug = 44;
+    float m_audioDebugTestVal = 0.0f;
 
     const int m_audioFxIdNPCVehicle = 25;
     //const int m_audioFxIdPlayerVehicle = 27;
-    const int m_audioFxIdPlayerVehicle = 27;
+    const int m_audioFxIdPlayerVehicle = 44;
     const int m_audioFxIdAmbient = 31;
     /*
     const int m_audioFxIdJI1 = 12;
@@ -463,10 +469,10 @@ private:
     const int m_audioSpawner2 = 41;
 
     const int m_audioFxIdRaven= 24;
-    const int m_audioFxIdRavenAlt = 23;
+    const int m_audioFxIdRavenAlt = 44;
 
     const float m_audioCurveDistanceScalarNPC = 14.0f;
-    const float m_audioCurveDistanceScalarPlayer = 14.0f;
+    const float m_audioCurveDistanceScalarPlayer = 1.0f;
     const float m_audioCurveDistanceScalarSpawner = 4.0f;
     const float m_audioCurveDistanceScalarLogo = 14.0f;
 
@@ -487,7 +493,8 @@ private:
     bool m_isJILogoAudioTriggerTrue4 = false;
     
     DirectX::AUDIO_ENGINE_REVERB m_jIAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Plate;
-    DirectX::AUDIO_ENGINE_REVERB m_bMWAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Alley;
+   // DirectX::AUDIO_ENGINE_REVERB m_bMWAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Alley;
+    DirectX::AUDIO_ENGINE_REVERB m_bMWAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Off;
     DirectX::AUDIO_ENGINE_REVERB m_jIGameReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Mountains;
 
     const float m_jiTriggerTimeDice = -2.2f;

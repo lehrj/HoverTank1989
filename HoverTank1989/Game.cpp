@@ -117,19 +117,46 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         int testINt = fx->fx->GetChannelCount();
         fx->up = m_vehicle->GetVehicleUp();
         fx->forward = m_vehicle->GetForward();
-        
+        fireEmitter->OrientFront = m_vehicle->GetForward();
+
+
+        fireEmitter->CurveDistanceScaler = 1.f;
+        fireEmitter->DopplerScaler = 1.0f;
+        fireEmitter->InnerRadius = 0.0f;
+        fireEmitter->InnerRadiusAngle = X3DAUDIO_PI / 4.0f;
+        fireEmitter->InnerRadiusAngle = Utility::ToRadians(270.0f);
+
         fx->fx->Play(true);
 
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_DEBUG)
     {
+        /*
         fx->fxType = aSfxType;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdDebug, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+        fireEmitter->ChannelCount = fx->fx->GetChannelCount();
+        fireEmitter->EnableDefaultMultiChannel(fx->fx->GetChannelCount(), 10.0f);
+
+        fx->forward = -DirectX::SimpleMath::Vector3::UnitZ;
+        fx->up = DirectX::SimpleMath::Vector3::UnitY;
+        fireEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     
-        pos = m_camera->GetPos();
-        pos = m_vehicle->GetPos();
-        fx->fx->Play(false);
+        pos = m_debugAudioPos;
+        fx->fx->Play(true);
+        */
+
+        fx->fxType = aSfxType;
+        //fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdDebug, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdDebug, SoundEffectInstance_Use3D);
+        fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitZ;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+        pos = aPos;
+
+        fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+
+        fx->fx->Play(true);
+        
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_DICE)
     {
@@ -164,7 +191,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fireEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
         pos = aPos;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdAmbient, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-        fx->fx->Play(false);
+        fx->fx->Play(true);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
     {
@@ -326,15 +353,16 @@ void Game::Initialize(HWND window, int width, int height)
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"Art/Audio/audioBank.xwb");
 
-    float wavLength = m_audioBank->GetSampleDurationMS(21);
+   // m_listener.SetOmnidirectional();
 
-    m_soundEffect = std::make_unique<SoundEffect>(m_audioEngine.get(), L"Art/Audio/RocketBoostEngineLoop.wav");
+    //float wavLength = m_audioBank->GetSampleDurationMS(21);
+
+    //m_soundEffect = std::make_unique<SoundEffect>(m_audioEngine.get(), L"Art/Audio/RocketBoostEngineLoop.wav");
     //m_soundSource = m_soundEffect->CreateInstance();
     //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
     //m_soundSource->Play(true);
 
-    m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-     
+
     //m_soundSource = m_audioBank->CreateInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
     //m_soundSource = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
     //m_soundSource = m_audioBank->CreateStreamInstance(2);
@@ -343,21 +371,21 @@ void Game::Initialize(HWND window, int width, int height)
 
    // m_listener.pCone = const_cast<X3DAUDIO_CONE*>(&c_listenerCone);
 
+    /*
     m_emitter.pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
     m_emitter.pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     m_emitter.CurveDistanceScaler = 14.f;
     m_emitter.pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-    
-    // sound stream instance testing
-    m_ssiTest = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-    //m_ssiTest->Play(true);
+    */
 
     m_soundFxVecTest.clear();
 
+    /*
     m_fxEmitter.pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
     m_fxEmitter.pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     m_fxEmitter.CurveDistanceScaler = 14.f;
     m_fxEmitter.pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    */
     //
 
     // Game Pad
@@ -945,8 +973,6 @@ Game::~Game()
     }
     m_audioMusicStream.reset();
     m_audioEffectStream.reset();
-    m_soundSource.reset();
-    m_ssiTest.reset();
 
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {
@@ -1066,7 +1092,7 @@ void Game::Update(DX::StepTimer const& aTimer)
             npcEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
             npcEmitter->CurveDistanceScaler = 4.0f;
             npcEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-            npcEmitter->EnableDefaultMultiChannel(2, 1.0f);
+           // npcEmitter->EnableDefaultMultiChannel(2, 1.0f);
             npcEmitter->SetPosition(m_npcController->GetNextSpawnerLoc());
             
             npcEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
@@ -1083,44 +1109,21 @@ void Game::Update(DX::StepTimer const& aTimer)
             npcFx->up = DirectX::SimpleMath::Vector3::UnitY;
             npcFx->forward = DirectX::SimpleMath::Vector3::UnitX;
 
-            
+            npcFx->fx->Play(true);
 
             m_npcController->UpdateLoadQueueWithAudio(context, m_npcController, npcFx);
-            npcFx->fx->Play(true);
+            
             m_soundFxVecTest.push_back(npcFx);
            
             //m_npcController->UpdateLoadQueue(context, m_npcController, aTimer.GetElapsedSeconds());
             
-            AudioCreateSFX3D(pos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNER1);
+            //AudioCreateSFX3D(pos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNER1);
         }
     }
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
     m_environment->SetCameraPos(m_camera->GetPos());
 
-
-    ////////////////////////////////
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest.size() ", m_soundFxVecTest.size(), "");
-    m_debugData->ToggleDebugOff();
-
-    auto targPos = m_camera->GetTargetPos();
-    //targPos.x += 50.0f;
-    auto camPos = m_camera->GetPos();
-    auto testLine = DirectX::SimpleMath::Vector3::UnitX;
-    auto testQuat = DirectX::SimpleMath::Quaternion::Identity;
-
-    m_debugData->PushDebugLinePositionIndicatorAligned(targPos, 5.0f, 0.0f, testQuat, DirectX::Colors::Red);
-    m_debugData->PushTestDebugBetweenPoints(camPos, targPos, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLinePositionIndicator(targPos, 4.0f, 0.0f, DirectX::Colors::Red);
-
-    m_debugData->DebugPushUILineDecimalNumber("camPos.x ", camPos.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("camPos.y ", camPos.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("camPos.z ", camPos.z, "");
-    m_debugData->DebugPushUILineDecimalNumber("targPos.x ", targPos.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("targPos.y ", targPos.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("targPos.z ", targPos.z, "");
-    m_debugData->ToggleDebugOff();
 
     m_lighting->SetTargPos(m_camera->GetTargetPos());
 
@@ -1170,15 +1173,7 @@ void Game::Update(DX::StepTimer const& aTimer)
                 //m_audioEffectStream->Play(); // WLJ this could lead to problems and might not be needed, maybe cause unwanted effect to play after reset?
             }
 
-            if (m_soundSource)
-            {
-                //m_soundSource->Play(true);
-            }
-
-            if (m_ssiTest)
-            {
-                //m_ssiTest->Play(true);
-            }
+   
 
             for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
             {
@@ -1194,22 +1189,64 @@ void Game::Update(DX::StepTimer const& aTimer)
         }
     }
 
-    //m_emitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
-    //m_fxEmitter.Update(m_vehicle->GetPos(), m_vehicle->GetVehicleUp(), static_cast<float>(aTimer.GetElapsedSeconds()));
-    m_listener.SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUpAudio());
-    m_listener.Update(m_camera->GetPos(), m_camera->GetUpAudio(), aTimer.GetElapsedSeconds());
+    auto camQuat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_camera->GetForwardAudio(), m_camera->GetUpAudio());
+    m_listener.SetOrientationFromQuaternion(DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(camQuat));
+    //m_listener.SetOrientationFromQuaternion(DirectX::SimpleMath::Quaternion::Identity);
 
-    if (m_soundSource)
-    {
-        m_soundSource->Apply3D(m_listener, m_emitter);
-    }
+    auto camUp = m_camera->GetForwardAudio();
+    auto camPosPrev = m_listener.Position;
+    /*
+   
+    auto camForward = m_camera->GetForwardAudio();
+    auto camUp = m_camera->GetForwardAudio();
+    auto camRight = camForward.Cross(camUp);
+    //m_listener.SetOrientation(-camRight, m_camera->GetUpAudio());
+    m_listener.OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+    m_listener.OrientTop = -DirectX::SimpleMath::Vector3::UnitY;
 
-    if (m_ssiTest)
-    {
-        m_ssiTest->Apply3D(m_listener, m_emitter);
-    }
+    m_listener.OrientFront = m_camera->GetForwardAudio();
+    m_listener.OrientTop = m_camera->GetForwardAudio();
+   // m_listener.Position = m_camera->GetPos();
+
+
+    m_listener.OrientFront = camForward;
+    camUp = DirectX::SimpleMath::Vector3::UnitY;
+    m_listener.OrientTop = camUp;
+   
+    //m_listener.OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+    //m_listener.OrientTop = DirectX::SimpleMath::Vector3::UnitY;
+    */
+   // m_listener.SetOrientation(-m_camera->GetForwardAudio(), m_camera->GetUpAudio());
+  //  m_listener.SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    //m_listener.Update(m_camera->GetPos(), -m_camera->GetUpAudio(), aTimer.GetElapsedSeconds());
+    //m_listener.Update(m_camera->GetPos(), camUp, aTimer.GetElapsedSeconds());
+    m_listener.Update(m_camera->GetPos(), DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
+  //  m_listener.Update(m_debugAudioPos, DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
+    //m_listener.Update(m_debugAudioPos, m_camera->GetUpAudio(), aTimer.GetElapsedSeconds());
+
+    //m_listener.SetVelocity(DirectX::SimpleMath::Vector3::Zero);
+    //m_listener.Velocity = DirectX::SimpleMath::Vector3::Zero;
     
     UpdateAudioFx(aTimer);
+
+
+    DirectX::SimpleMath::Vector3 camPosPost = m_listener.Position;
+    auto camDelta = camPosPost - camPosPrev;
+    
+    camUp = m_camera->GetUpAudio();
+    auto camPos = m_camera->GetForwardAudio();
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest.size() = ", m_soundFxVecTest.size(), "");
+    m_debugData->DebugPushUILineDecimalNumber("camDelta = ", camDelta.Length(), "");
+
+    m_debugData->DebugPushUILineDecimalNumber("camUp.x = ", camUp.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("camUp.y = ", camUp.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("camUp.z = ", camUp.z, "");
+
+    m_debugData->DebugPushUILineDecimalNumber("camPos.x = ", camPos.x, "");
+    m_debugData->DebugPushUILineDecimalNumber("camPos.y = ", camPos.y, "");
+    m_debugData->DebugPushUILineDecimalNumber("camPos.z = ", camPos.z, "");
+    m_debugData->ToggleDebugOff();
 
 }
 #pragma endregion
@@ -2374,8 +2411,11 @@ void Game::DrawIntroScene()
     {
         m_audioEngine->SetReverb(m_jIGameReverb);
         // turn on player vehicle engine sound
-        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
-        AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
+        //AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
+        //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
+
+        //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
+        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
     }
 }
 
@@ -3899,21 +3939,29 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_vehicle->DebugToggle9();
+            /*
             m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            */
+            
         }
+        m_audioVolumeGamePlay = 1.0f;
     }
     if (m_kbStateTracker.pressed.D0)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_fireControl->ZeroMissileVelocities();
+            /*
             m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
 
             m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
 
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+            */
+            
         }
+        m_audioVolumeGamePlay = 0.0f;
     }
     if (kb.OemOpenBrackets)
     {
@@ -4227,7 +4275,7 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             m_audioVolumeGamePlay = mod * m_audioVolumeGamePlayMax;
         }
 
-       // m_debugData->ToggleDebugOnOverRide();
+        m_debugData->ToggleDebugOnOverRide();
         m_debugData->DebugPushUILineDecimalNumber("m_audioVolumeGamePlay ", m_audioVolumeGamePlay, "");
         m_debugData->ToggleDebugOff();
     }
@@ -4310,6 +4358,74 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 
             m_soundFxVecTest[i]->fx->SetVolume(m_audioVolumeGamePlay * m_audioPlayerNPCMod);
             m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
+
+            //auto pos = m_soundFxVecTest[i]->pos;
+            //m_soundFxVecTest[i]->emitter->SetPosition(pos);
+            //m_soundFxVecTest[i]->pos = pos;
+
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_DEBUG)
+        {
+            /*
+            auto pos = m_debugAudioPos;
+
+            m_soundFxVecTest[i]->emitter->SetPosition(pos);
+            m_soundFxVecTest[i]->pos = pos;
+
+            auto volume = 1.0f;
+            auto pitch = 1.0f;
+
+            m_soundFxVecTest[i]->fx->SetPitch(pitch);
+            m_soundFxVecTest[i]->fx->SetVolume(volume);
+            m_soundFxVecTest[i]->volume = volume;
+
+            m_soundFxVecTest[i]->emitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+         
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->PushDebugLinePositionIndicator(pos, 5.0f, 0.0f, DirectX::Colors::Red);
+            m_debugData->ToggleDebugOff();
+            */
+
+
+            auto camPos = m_camera->GetPos();
+            auto camForward = m_camera->GetForwardAudio();
+            auto camUp = m_camera->GetForwardAudio();
+            auto camRight = camForward.Cross(camUp);
+            auto camMat = DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, camForward, camUp);
+            auto camQuat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(camMat);
+
+            m_audioDebugTestVal += aTimer.GetElapsedSeconds();
+
+            float testAngle = cos(m_audioDebugTestVal);
+
+            auto testForward = DirectX::SimpleMath::Vector3::UnitX * 10.0f;
+            //testForward = DirectX::SimpleMath::Vector3::Transform(testForward, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, Utility::ToRadians(m_timer.GetTotalSeconds())));
+            testForward = DirectX::SimpleMath::Vector3::Transform(testForward, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, testAngle));
+
+            testForward = DirectX::SimpleMath::Vector3::Transform(testForward, camQuat);
+            //testForward += camPos;
+            testForward += m_vehicle->GetPos();
+
+
+            float speed = m_timer.GetTotalSeconds() / 2.0f;
+            testForward = DirectX::SimpleMath::Vector3(static_cast<float>(cos(speed)) * 5.f, 0.0f, static_cast<float>(sin(speed)) * -5.0f);
+       
+            //testForward += m_vehicle->GetPos();
+            testForward += camPos;
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->PushDebugLinePositionIndicator(testForward, 2.0f, 0.0f, DirectX::Colors::Red);
+
+            m_debugData->DebugPushUILineDecimalNumber("testForward.x = ", testForward.x, "");
+            m_debugData->DebugPushUILineDecimalNumber("testForward.y = ", testForward.y, "");
+            m_debugData->DebugPushUILineDecimalNumber("testForward.z = ", testForward.z, "");
+            m_debugData->ToggleDebugOff();
+
+            //auto pos = m_debugAudioPos;
+            //auto pos = m_vehicle->GetPos();
+            auto pos = testForward;
+            //m_soundFxVecTest[i]->emitter->SetPosition(pos);
+            m_soundFxVecTest[i]->pos = pos;
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
         {
@@ -4321,6 +4437,7 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
         {
+            /*
             auto pos = m_vehicle->GetPos();
 
             m_soundFxVecTest[i]->emitter->SetPosition(pos);
@@ -4352,6 +4469,19 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch  ", pitch, "");
             m_debugData->ToggleDebugOff();
+            */
+
+           // auto pos = m_debugAudioPos;
+            auto pos = m_vehicle->GetPos();
+   
+
+          //  m_soundFxVecTest[i]->emitter->SetPosition(pos);
+            m_soundFxVecTest[i]->pos = pos;
+
+            m_soundFxVecTest[i]->emitter->SetOrientation(m_vehicle->GetForward(), m_vehicle->GetVehicleUp());
+            m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
+
+
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_AMBIENT)
         {
@@ -4382,15 +4512,16 @@ void Game::UpdateAudioFx(DX::StepTimer const& aTimer)
 
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {
+
+        auto pos = m_soundFxVecTest[i]->pos;
+     //   m_soundFxVecTest[i]->emitter->Position = pos;
         m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+        //m_soundFxVecTest[i]->emitter->Update(m_debugAudioPos, DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
+        //m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
+        m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
-        if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
-        {
-            m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
-        }
 
-        //m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-        m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
+        //m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
        // m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
     }
 

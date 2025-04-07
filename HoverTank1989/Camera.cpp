@@ -1283,7 +1283,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
 		UpdateSnapCamera(aTimer);
-		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMDEMO)
 	{
@@ -1310,10 +1310,6 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	UpdateBoundingFrustum();
 
 	//DrawUI();
-
-	//m_debugData->ToggleDebugOnOverRide();
-	m_debugData->PushDebugLinePositionIndicator(m_target, 5.0f, 0.0f, DirectX::Colors::Orange);
-	m_debugData->ToggleDebugOff();
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
