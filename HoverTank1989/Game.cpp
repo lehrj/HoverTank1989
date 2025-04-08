@@ -93,7 +93,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     fireEmitter->SetOmnidirectional();
     fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
     fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-    fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    //fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
     fireEmitter->CurveDistanceScaler = 14.f;
     
     auto pos = DirectX::SimpleMath::Vector3::Zero;
@@ -154,7 +154,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 
         pos = aPos;
 
-        fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+       // fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
 
         fx->fx->Play(true);
         
@@ -354,7 +354,7 @@ void Game::Initialize(HWND window, int width, int height)
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"Art/Audio/audioBank.xwb");
 
-   // m_listener.SetOmnidirectional();
+     m_listener.SetOmnidirectional();
 
     //float wavLength = m_audioBank->GetSampleDurationMS(21);
 
@@ -4366,7 +4366,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //testForward = DirectX::SimpleMath::Vector3::UnitX * 10.0f;
 
             //testForward += m_vehicle->GetPos();
-            testForward += m_debugAudioPos;
+            //testForward += m_debugAudioPos;
+            testForward += m_camera->GetPos();
 
             //float azmuth2[64];
             float azmuth2;
@@ -4400,7 +4401,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->emitter->Update(testForward, DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
 
-           
+            //m_soundFxVecTest[i]->emitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
@@ -4631,10 +4632,14 @@ void Game::UpdateAudioListener(DX::StepTimer const& aTimer)
       //m_listener.SetVelocity(DirectX::SimpleMath::Vector3::Zero);
       //m_listener.Velocity = DirectX::SimpleMath::Vector3::Zero;
 
+   // m_listener.OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+
     m_listener.Update(m_camera->GetPos(), m_camera->GetUpAudio(), aTimer.GetElapsedSeconds());
 
-    m_listener.SetVelocity(DirectX::SimpleMath::Vector3::Zero);
-    m_listener.Velocity = DirectX::SimpleMath::Vector3::Zero;
+
+
+    //m_listener.SetVelocity(DirectX::SimpleMath::Vector3::Zero);
+    //m_listener.Velocity = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void Game::TriggerFireWithAudio()

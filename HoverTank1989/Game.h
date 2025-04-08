@@ -344,8 +344,8 @@ private:
     std::vector<std::shared_ptr<Utility::SoundFx>> m_soundFxVecTest;
 
   //  DirectX::AudioEmitter  m_fxEmitter;
-   DirectX::AudioListener m_listener;
-   //5 DirectX::AudioEmitter  m_emitter;
+    DirectX::AudioListener m_listener;
+   // DirectX::AudioEmitter  m_emitter;
 
     unsigned int m_currentFxExplosion = 4;
     unsigned int m_currentFxShotBang = 10;
@@ -380,12 +380,12 @@ private:
     DirectX::SimpleMath::Vector3 m_debugAudioPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
 
     bool m_audioTestBoolTrue = false;
-
-    const int m_audioFxIdDebug = 44;
+   
     float m_audioDebugTestVal = 0.0f;
 
     float m_audioDebugRavenTimer = 0.0f;
 
+    const int m_audioFxIdDebug = 44;
     const int m_audioFxIdNPCVehicle = 25;
     //const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdPlayerVehicle = 44;
@@ -497,10 +497,12 @@ private:
     bool m_isJILogoAudioTriggerTrue3 = false;
     bool m_isJILogoAudioTriggerTrue4 = false;
     
-    DirectX::AUDIO_ENGINE_REVERB m_jIAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Plate;
+    //DirectX::AUDIO_ENGINE_REVERB m_jIAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Plate;
+    DirectX::AUDIO_ENGINE_REVERB m_jIAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Off;
    // DirectX::AUDIO_ENGINE_REVERB m_bMWAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Alley;
     DirectX::AUDIO_ENGINE_REVERB m_bMWAudioReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Off;
-    DirectX::AUDIO_ENGINE_REVERB m_jIGameReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Mountains;
+    //DirectX::AUDIO_ENGINE_REVERB m_jIGameReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Mountains;
+    DirectX::AUDIO_ENGINE_REVERB m_jIGameReverb = DirectX::AUDIO_ENGINE_REVERB::Reverb_Off;
 
     const float m_jiTriggerTimeDice = -2.2f;
     const float m_jiTriggerTime1 = 0.0f + m_startDelay + m_fadeDuration + (m_logoDisplayDuration * 0.35f);
