@@ -113,9 +113,11 @@ private:
     void ToggleMusicFadeOut();
     void TogglePause();
     void Update(DX::StepTimer const& aTimer);
-    void UpdateAudioFx(DX::StepTimer const& aTimer);
-    void UpdateInput(DX::StepTimer const& aTimer);
+    void UpdateAudio(DX::StepTimer const& aTimer);
+    void UpdateAudioEmitters(DX::StepTimer const& aTimer);
+    void UpdateAudioListener(DX::StepTimer const& aTimer);
     void UpdateAutoFire();
+    void UpdateInput(DX::StepTimer const& aTimer);
 
     // Device resources.
     std::unique_ptr<DX::DeviceResources>    m_deviceResources;
@@ -328,7 +330,7 @@ private:
     std::unique_ptr<DirectX::AudioEngine>       m_audioEngine;
     bool                                        m_retryAudio;
     float                                       m_musicVolume = 0.9f;
-   float                                       m_sfxVolume = 0.5f;
+    float                                       m_sfxVolume = 0.5f;
 
     std::unique_ptr<DirectX::WaveBank>          m_audioBank;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioMusicStream;
@@ -364,6 +366,57 @@ private:
     const float                                 m_musicFadeOutDuration = 5.0f;
     const float                                 m_musicFadeOutRate = 0.2f;
     bool                                        m_isMusicFadeOutTrue = false;
+
+    float m_audioVolumeGamePlay = 0.0f;
+    const float m_audioVolumeGamePlayMax = 1.0f;
+    const float m_audioVolumeTransitionTime = 1.0f;
+    float m_audioVolumeTimer = 0.0f;
+
+    const float m_audioAmbientMod = 1.0f;
+    const float m_audioPlayerVehicleMod = 1.0f;
+    const float m_audioPlayerNPCMod = 1.0f;
+    const float m_audioSpawnerMod = 1.0f;
+
+    DirectX::SimpleMath::Vector3 m_debugAudioPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
+
+    bool m_audioTestBoolTrue = false;
+
+    const int m_audioFxIdDebug = 44;
+    float m_audioDebugTestVal = 0.0f;
+
+    float m_audioDebugRavenTimer = 0.0f;
+
+    const int m_audioFxIdNPCVehicle = 25;
+    //const int m_audioFxIdPlayerVehicle = 27;
+    const int m_audioFxIdPlayerVehicle = 44;
+    const int m_audioFxIdAmbient = 31;
+    /*
+    const int m_audioFxIdJI1 = 12;
+    const int m_audioFxIdJI2 = 12;
+    const int m_audioFxIdJI3 = 15;
+    const int m_audioFxIdJI4 = 22;
+    /
+    const int m_audioFxIdJI1 = 11;
+    const int m_audioFxIdJI2 = 13;
+    const int m_audioFxIdJI3 = 14;
+    const int m_audioFxIdJI4 = 16;
+    */
+    const int m_audioFxIdJI1 = 22;
+    const int m_audioFxIdJI2 = 22;
+    const int m_audioFxIdJI3 = 22;
+    const int m_audioFxIdJI4 = 22;
+
+    const int m_audioSpawner1 = 41;
+    const int m_audioSpawner2 = 41;
+
+    const int m_audioFxIdRaven = 24;
+    const int m_audioFxIdRavenAlt = 44;
+
+    const float m_audioCurveDistanceScalarNPC = 14.0f;
+    const float m_audioCurveDistanceScalarPlayer = 1.0f;
+    const float m_audioCurveDistanceScalarSpawner = 4.0f;
+    const float m_audioCurveDistanceScalarLogo = 14.0f;
+
 
     const bool                                  m_isInDebugMode = true;
 
@@ -427,54 +480,6 @@ private:
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
-
-    float m_audioVolumeGamePlay = 0.0f;
-    const float m_audioVolumeGamePlayMax = 1.0f;
-    const float m_audioVolumeTransitionTime = 1.0f;
-    float m_audioVolumeTimer = 0.0f;
-
-    const float m_audioAmbientMod = 1.0f;
-    const float m_audioPlayerVehicleMod = 1.0f;
-    const float m_audioPlayerNPCMod = 1.0f;
-    const float m_audioSpawnerMod = 1.0f;
-
-    DirectX::SimpleMath::Vector3 m_debugAudioPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
-
-    bool m_audioTestBoolTrue = false;
-
-    const int m_audioFxIdDebug = 44;
-    float m_audioDebugTestVal = 0.0f;
-
-    const int m_audioFxIdNPCVehicle = 25;
-    //const int m_audioFxIdPlayerVehicle = 27;
-    const int m_audioFxIdPlayerVehicle = 44;
-    const int m_audioFxIdAmbient = 31;
-    /*
-    const int m_audioFxIdJI1 = 12;
-    const int m_audioFxIdJI2 = 12;
-    const int m_audioFxIdJI3 = 15;
-    const int m_audioFxIdJI4 = 22;
-    /
-    const int m_audioFxIdJI1 = 11;
-    const int m_audioFxIdJI2 = 13;
-    const int m_audioFxIdJI3 = 14;
-    const int m_audioFxIdJI4 = 16;
-    */
-    const int m_audioFxIdJI1 = 22;
-    const int m_audioFxIdJI2 = 22;
-    const int m_audioFxIdJI3 = 22;
-    const int m_audioFxIdJI4 = 22;
-
-    const int m_audioSpawner1 = 41;
-    const int m_audioSpawner2 = 41;
-
-    const int m_audioFxIdRaven= 24;
-    const int m_audioFxIdRavenAlt = 44;
-
-    const float m_audioCurveDistanceScalarNPC = 14.0f;
-    const float m_audioCurveDistanceScalarPlayer = 1.0f;
-    const float m_audioCurveDistanceScalarSpawner = 4.0f;
-    const float m_audioCurveDistanceScalarLogo = 14.0f;
 
     bool m_isStartTriggerTrue1 = false;
     bool m_isStartTriggerTrue2 = false;

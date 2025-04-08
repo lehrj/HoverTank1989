@@ -75,7 +75,7 @@ struct ControlInput
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
     //const float weaponPitchInputRate = 0.2f;
-    const float weaponPitchMax = Utility::ToRadians(25.0f);
+    const float weaponPitchMax = Utility::ToRadians(21.0f);
     const float weaponPitchMin = Utility::ToRadians(-10.0f);
     const float weaponPitchInputRate = 0.4f;
 

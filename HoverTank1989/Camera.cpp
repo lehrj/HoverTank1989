@@ -1283,7 +1283,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
 		UpdateSnapCamera(aTimer);
-		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
+		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMDEMO)
 	{
@@ -1313,7 +1313,16 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
-	
+	m_debugData->ToggleDebugOnOverRide();
+	m_debugData->DebugPushUILineDecimalNumber("m_forwardAudio.x = ", m_forwardAudio.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_forwardAudio.y = ", m_forwardAudio.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_forwardAudio.z = ", m_forwardAudio.z, "");
+
+	m_debugData->DebugPushUILineDecimalNumber("m_upAudio.x = ", m_upAudio.x, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_upAudio.y = ", m_upAudio.y, "");
+	m_debugData->DebugPushUILineDecimalNumber("m_upAudio.z = ", m_upAudio.z, "");
+
+	m_debugData->ToggleDebugOff();
 	
 }
 
@@ -1352,13 +1361,13 @@ void Camera::UpdateFirstPersonCamera()
 	m_target = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
 	m_target.Normalize();
 
-	m_right = DirectX::XMVector3TransformCoord(m_defaultRight, m_rotationMatrix);
-	m_forward = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
+	m_rightFPV = DirectX::XMVector3TransformCoord(m_defaultRight, m_rotationMatrix);
+	m_forwardFPV = DirectX::XMVector3TransformCoord(m_defaultForward, m_rotationMatrix);
 
-	m_up = DirectX::XMVector3Cross(m_right, m_forward);
+	m_up = DirectX::XMVector3Cross(m_rightFPV, m_forwardFPV);
 
-	m_position += DirectX::operator*(m_moveLeftRight, m_right);
-	m_position += DirectX::operator*(m_moveBackForward, m_forward);
+	m_position += DirectX::operator*(m_moveLeftRight, m_rightFPV);
+	m_position += DirectX::operator*(m_moveBackForward, m_forwardFPV);
 	m_position += DirectX::operator*(m_moveUpDown, m_up);
 
 	m_moveLeftRight = 0.0f;
@@ -2683,6 +2692,11 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 
 	m_position = camPos;
 	m_target = targPos;
+
+	//m_forward = m_position - m_target;
+	//m_forward.Normalize();
+
+	//m_up = DirectX::XMVector3Cross(m_right, m_forwardFPV);
 
 }
 

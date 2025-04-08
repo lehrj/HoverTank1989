@@ -1257,9 +1257,9 @@ public:
         std::shared_ptr<DirectX::AudioEmitter> emitter;
         std::shared_ptr<DirectX::SoundStreamInstance> fx;
 
-        DirectX::SimpleMath::Vector3 forward;
-        DirectX::SimpleMath::Vector3 pos;
-        DirectX::SimpleMath::Vector3 up;
+        DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::UnitX;
+        DirectX::SimpleMath::Vector3 pos = DirectX::SimpleMath::Vector3::Zero;
+        DirectX::SimpleMath::Vector3 up = DirectX::SimpleMath::Vector3::UnitY;
         bool isDestroyTrue;
         bool isTriggeredTrue = true;
         SoundFxType fxType = SoundFxType::SOUNDFXTYPE_DEBUG;
