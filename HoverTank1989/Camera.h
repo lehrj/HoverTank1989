@@ -109,6 +109,8 @@ public:
 
     float GetZoom() const { return m_fovZoomPercent; };
 
+    DirectX::SimpleMath::Vector3 GetVelocity() const { return m_camVelocity; };
+
     void InintializePreSwingCamera(DirectX::SimpleMath::Vector3 aPosition, float aDirectionDegrees);
     bool IsCameraAtDestination();
     void OnResize(uint32_t aWidth, uint32_t aHeight);
@@ -526,7 +528,7 @@ private:
     const float m_rampUpMod = 1.3f;
     bool m_isRampUpOn = false;
 
-
+    DirectX::SimpleMath::Vector3 m_camVelocity = DirectX::SimpleMath::Vector3::Zero;
     
     void RampUpReset();
     void RampUpUpdate(DX::StepTimer const& aTimer);

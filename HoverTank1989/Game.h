@@ -339,13 +339,15 @@ private:
  //   std::unique_ptr<DirectX::SoundEffect>       m_soundEffect;
   //  std::shared_ptr<DirectX::SoundEffectInstance> m_soundSource;
 
-   // std::shared_ptr<DirectX::SoundStreamInstance> m_ssiTest;
+    std::shared_ptr<DirectX::SoundStreamInstance> m_ssiTest;
     //std::vector<std::shared_ptr<DirectX::SoundEffectInstance>> m_soundSourceVec;
     std::vector<std::shared_ptr<Utility::SoundFx>> m_soundFxVecTest;
 
+    
+
   //  DirectX::AudioEmitter  m_fxEmitter;
     DirectX::AudioListener m_listener;
-   // DirectX::AudioEmitter  m_emitter;
+    DirectX::AudioEmitter  m_emitter;
 
     unsigned int m_currentFxExplosion = 4;
     unsigned int m_currentFxShotBang = 10;

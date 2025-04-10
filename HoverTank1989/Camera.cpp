@@ -1108,6 +1108,8 @@ void Camera::UpdateBoundingFrustum()
 
 void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 {
+	auto posPrev = m_position;
+
 	UpdateTimer(aTimer);
 	UpdateSmoothStepVal(static_cast<float>(aTimer.GetElapsedSeconds()));
 	RampUpUpdate(aTimer);
@@ -1324,6 +1326,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_debugData->ToggleDebugOff();
 	
+	m_camVelocity = (m_position - posPrev) / aTimer.GetElapsedSeconds();
 }
 
 void Camera::UpdateTrackAllMissilesCam(DX::StepTimer const& aTimer)
