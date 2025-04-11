@@ -386,12 +386,13 @@ private:
     float m_audioDebugTestVal = 0.0f;
 
     float m_audioDebugRavenTimer = 0.0f;
+    const float m_audioRavenDistance = 10.0f;
 
     const int m_audioFxIdDebug = 44;
     const int m_audioFxIdNPCVehicle = 25;
     //const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdPlayerVehicle = 44;
-    const int m_audioFxIdAmbient = 31;
+    const int m_audioFxIdAmbient = 44;
     /*
     const int m_audioFxIdJI1 = 12;
     const int m_audioFxIdJI2 = 12;

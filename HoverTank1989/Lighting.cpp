@@ -420,6 +420,8 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             float pitch = -time * 1.1f;
             pitch = Utility::WrapAngle(timeStamp);
 
+            m_logoLightingAngle = pitch;
+
             auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch, 0.0);
             auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch + 3.14f, 0.0);
             auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, pitch + 1.25f, 0.0);

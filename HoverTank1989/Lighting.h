@@ -24,6 +24,8 @@ public:
 
     LightingState GetLightingState();
     DirectX::SimpleMath::Vector3 GetLightDir();
+    float GetLightAngle() const { return m_logoLightingAngle; };
+
 
     void SetCamPos(const DirectX::SimpleMath::Vector3 aCamPos);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
@@ -70,6 +72,8 @@ private:
     DirectX::SimpleMath::Vector3                m_lightEffect2Pos2 = DirectX::SimpleMath::Vector3::UnitX;
 
     std::shared_ptr<DebugData> m_debugData;
+
+    float m_logoLightingAngle = Utility::ToRadians(0.0f);
 
     float m_testTimerTotal = 0.0f;
     float m_testTimer = 0.0f;
