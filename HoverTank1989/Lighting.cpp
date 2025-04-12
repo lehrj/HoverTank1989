@@ -381,7 +381,7 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             auto yaw = Utility::WrapAngle(m_testTimerTotal * 10.0f);
             quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(yaw, 0.0f, 0.0f);
             //quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, yaw, 0.0f);
-            quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, yaw);
+            //quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, yaw);
 
             axis = DirectX::SimpleMath::Vector3::UnitY;
 

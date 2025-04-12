@@ -1986,17 +1986,19 @@ void FireControl::CastRayLaser()
         std::shared_ptr <Utility::SoundFx> beaconFx(new Utility::SoundFx());
         beaconFx->emitter = std::make_shared<DirectX::AudioEmitter>();
         beaconFx->emitter->SetOmnidirectional();
-        auto forward = m_playerVehicle->GetForward();
-        auto up = m_playerVehicle->GetVehicleUp();
+        //auto forward = m_playerVehicle->GetForward();
+        //auto up = m_playerVehicle->GetVehicleUp();
         beaconFx->emitter->SetPosition(m_playerVehicle->GetPos());
         beaconFx->emitter->SetVelocity(m_playerVehicle->GetVelocity());
-        beaconFx->emitter->SetOmnidirectional();
-        beaconFx->emitter->SetOrientation(forward, up);
+        //beaconFx->emitter->SetOrientation(forward, up);
+        beaconFx->emitter->OrientFront = m_playerVehicle->GetForward();
+        beaconFx->emitter->OrientTop = m_playerVehicle->GetVehicleUp();
+        beaconFx->forward = m_playerVehicle->GetForward();;
         beaconFx->pos = m_playerVehicle->GetPos();
-        beaconFx->up = up;
+        beaconFx->up = m_playerVehicle->GetVehicleUp();
         beaconFx->isDestroyTrue = false;
         beaconFx->isTriggeredTrue = true;
-        beaconFx->forward = forward;
+  
         //beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON;
         beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE;
         beaconFx->volume = 0.0f;
@@ -2283,23 +2285,29 @@ void FireControl::CreateExplosion(const DirectX::SimpleMath::Vector3 aPos, const
 
     explosionFx->emitter = std::make_shared<DirectX::AudioEmitter>();
     explosionFx->emitter->SetOmnidirectional();
+    
+    explosionFx->emitter->CurveDistanceScaler = 1.f;
+
     /*
     explosionEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
-    explosionEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    explosionEmitter->->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     explosionEmitter->CurveDistanceScaler = 14.f;
     explosionEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
     */
+
     auto launchDir = DirectX::SimpleMath::Vector3::UnitX;
     auto up = DirectX::SimpleMath::Vector3::UnitY;
     explosionFx->emitter->SetPosition(aPos);
     explosionFx->emitter->SetVelocity(aVelocity);
-    explosionFx->emitter->SetOmnidirectional();
+
     explosionFx->emitter->SetOrientation(launchDir, up);
+    explosionFx->emitter->OrientTop = up;
+    explosionFx->emitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+    explosionFx->forward = launchDir;
     explosionFx->pos = aPos;
     explosionFx->up = up;
     explosionFx->isDestroyTrue = false;
     explosionFx->isTriggeredTrue = true;
-    explosionFx->forward = launchDir;
 
     explosionFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_EXPLOSION;
 
@@ -8821,14 +8829,17 @@ void FireControl::ToggleTargetingLaser()
         auto up = m_playerVehicle->GetVehicleUp();
         beaconFx->emitter->SetPosition(m_playerVehicle->GetPos());
         beaconFx->emitter->SetVelocity(m_playerVehicle->GetVelocity());
-        beaconFx->emitter->SetOmnidirectional();
+     
         beaconFx->emitter->SetOrientation(forward, up);
+        beaconFx->emitter->OrientFront = m_playerVehicle->GetForward();
+        beaconFx->emitter->OrientTop = m_playerVehicle->GetVehicleUp();
         beaconFx->pos = m_playerVehicle->GetPos();
-        beaconFx->up = up;
+        beaconFx->forward = m_playerVehicle->GetForward();
+        beaconFx->up = m_playerVehicle->GetVehicleUp();
         beaconFx->isDestroyTrue = false;
         beaconFx->isTriggeredTrue = true;
-        beaconFx->forward = forward;
-        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON;
+        
+        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_ON;
         m_fxExplosionVec.push_back(beaconFx);
 
     }
@@ -8839,18 +8850,19 @@ void FireControl::ToggleTargetingLaser()
         std::shared_ptr <Utility::SoundFx> beaconFx(new Utility::SoundFx());
         beaconFx->emitter = std::make_shared<DirectX::AudioEmitter>();
         beaconFx->emitter->SetOmnidirectional();
-        auto forward = m_playerVehicle->GetForward();
-        auto up = m_playerVehicle->GetVehicleUp();
+        //auto forward = m_playerVehicle->GetForward();
+       //auto up = m_playerVehicle->GetVehicleUp();
         beaconFx->emitter->SetPosition(m_playerVehicle->GetPos());
         beaconFx->emitter->SetVelocity(m_playerVehicle->GetVelocity());
-        beaconFx->emitter->SetOmnidirectional();
-        beaconFx->emitter->SetOrientation(forward, up);
+
+        beaconFx->emitter->OrientFront = m_playerVehicle->GetForward();
+        beaconFx->emitter->OrientTop = m_playerVehicle->GetVehicleUp();
         beaconFx->pos = m_playerVehicle->GetPos();
-        beaconFx->up = up;
+        beaconFx->up = m_playerVehicle->GetVehicleUp();
         beaconFx->isDestroyTrue = false;
         beaconFx->isTriggeredTrue = true;
-        beaconFx->forward = forward;
-        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_BEACON_ALT;
+        beaconFx->forward = m_playerVehicle->GetForward();
+        beaconFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF;
         m_fxExplosionVec.push_back(beaconFx);
     }
 }
@@ -9176,6 +9188,11 @@ void FireControl::UpdateExplosionVec(double aTimeDelta)
             {
                 // to do : add collision detonation to vehicle
             }
+
+            // audio
+            m_explosionStruct.explosionVec[i].soundFx->pos = m_explosionStruct.explosionVec[i].position;
+
+        
         }
     }
 
@@ -13427,26 +13444,29 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
         {
             if (aMissile.guidance.isFinsDeployStarted == true && aMissile.projectileData.time >= m_missileConsts.finDeployDelay + (m_missileConsts.finDeployTime * 0.5f))
             {
-                int testBreak = 0;
-                testBreak++;
-
                 // sound fx for fin deploy
-                std::shared_ptr <Utility::SoundFx> poofFx(new Utility::SoundFx());
-                poofFx->emitter = std::make_shared<DirectX::AudioEmitter>();
-                poofFx->emitter->SetOmnidirectional();
+                std::shared_ptr <Utility::SoundFx> finFx(new Utility::SoundFx());
+                finFx->emitter = std::make_shared<DirectX::AudioEmitter>();
+                finFx->emitter->SetOmnidirectional();
                 auto forward = aMissile.projectileData.forward;
                 auto up = aMissile.projectileData.up;
-                poofFx->emitter->SetPosition(aMissile.projectileData.q.position);
-                poofFx->emitter->SetVelocity(aMissile.projectileData.q.velocity);
-                poofFx->emitter->SetOmnidirectional();
-                poofFx->emitter->SetOrientation(forward, up);
-                poofFx->pos = aMissile.projectileData.q.position;
-                poofFx->up = up;
-                poofFx->isDestroyTrue = false;
-                poofFx->isTriggeredTrue = true;
-                poofFx->forward = forward;
-                poofFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_POOF;
-                m_fxExplosionVec.push_back(poofFx);
+                //finFx->emitter->SetPosition(aMissile.projectileData.q.position);
+                //finFx->emitter->SetVelocity(aMissile.projectileData.q.velocity);
+
+                finFx->emitter->Position = aMissile.projectileData.q.position;
+                finFx->emitter->Velocity = aMissile.projectileData.q.velocity;
+                //finFx->emitter->SetOrientation(forward, up);
+                finFx->emitter->OrientFront = forward;
+                finFx->emitter->OrientTop = up;
+
+                finFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_FIN_DEPLOY;
+                finFx->pos = aMissile.projectileData.q.position;
+                finFx->forward = forward;
+                finFx->up = up;
+                finFx->isDestroyTrue = false;
+                finFx->isTriggeredTrue = true;
+                    
+                m_fxExplosionVec.push_back(finFx);
 
                 aMissile.guidance.isFinDeployAudioTriggered = true;
             }
@@ -15556,7 +15576,9 @@ void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTim
     {
         aMissile.audioFx->pos = aMissile.projectileData.q.position;
         aMissile.audioFx->up = aMissile.projectileData.up;
-        aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
+        aMissile.audioFx->forward = aMissile.projectileData.forward;
+
+        //aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
         aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
     }
 }

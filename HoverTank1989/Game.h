@@ -358,7 +358,7 @@ private:
 
     const float m_audioDistanceBang = 14.0f;
     const float m_audioDistanceBeacon = 14.0f;
-    const float m_audioDistanceExplosion = 140.0f;
+    const float m_audioDistanceExplosion = 14.0f;
     const float m_audioDistancePoof = 14.0f;
     //const float m_audioDistanceRocketLoopable = 14.0f;
     const float m_audioDistanceRocketLoopable = 75.0f;
@@ -376,7 +376,7 @@ private:
 
     const float m_audioAmbientMod = 1.0f;
     const float m_audioPlayerVehicleMod = 1.0f;
-    const float m_audioPlayerNPCMod = 1.0f;
+    const float m_audioNPCMod = 1.0f;
     const float m_audioSpawnerMod = 1.0f;
 
     DirectX::SimpleMath::Vector3 m_debugAudioPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
@@ -387,11 +387,12 @@ private:
 
     float m_audioDebugRavenTimer = 0.0f;
     const float m_audioRavenDistance = 10.0f;
+    const DirectX::SimpleMath::Vector3 m_audioRavenOffset = DirectX::SimpleMath::Vector3(3.0f, -1.0f, 0.0f);
 
     const int m_audioFxIdDebug = 44;
     const int m_audioFxIdNPCVehicle = 25;
     //const int m_audioFxIdPlayerVehicle = 27;
-    const int m_audioFxIdPlayerVehicle = 44;
+    const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdAmbient = 44;
     /*
     const int m_audioFxIdJI1 = 12;
@@ -416,9 +417,11 @@ private:
     const int m_audioFxIdRavenAlt = 44;
 
     const float m_audioCurveDistanceScalarNPC = 14.0f;
-    const float m_audioCurveDistanceScalarPlayer = 1.0f;
+    const float m_audioCurveDistanceScalarPlayer = 8.0f;
     const float m_audioCurveDistanceScalarSpawner = 4.0f;
     const float m_audioCurveDistanceScalarLogo = 14.0f;
+    const float m_audioCurveDistScalarMissileRocket = 14.0f;
+    const float m_audioCurveDistScalarMissileFin = 14.0f;
 
 
     const bool                                  m_isInDebugMode = true;
@@ -479,7 +482,10 @@ private:
     const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
+    //const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
+
+
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
