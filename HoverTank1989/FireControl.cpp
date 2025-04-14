@@ -13465,7 +13465,7 @@ void FireControl::UpdateFlightDataDependantVars(MissileData& aMissile, const dou
                 finFx->up = up;
                 finFx->isDestroyTrue = false;
                 finFx->isTriggeredTrue = true;
-                    
+                
                 m_fxExplosionVec.push_back(finFx);
 
                 aMissile.guidance.isFinDeployAudioTriggered = true;
@@ -15554,6 +15554,8 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
 
     firedMissile.audioFx = aFireFx;
 
+    firedMissile.audioFx->fx->Pause();
+
     if (aDebugToggle == true)
     {
         firedMissile.guidance.isShotFromLeftTubeTrue = true;
@@ -15566,7 +15568,6 @@ void FireControl::FireMissileWithAudio(const DirectX::SimpleMath::Vector3 aLaunc
     InitializeContrails(firedMissile);
     m_missileVec.push_back(firedMissile);
 
-
     m_fireList.push_back(m_currentTargetID);
 }
 
@@ -15574,12 +15575,50 @@ void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTim
 {
     if (aMissile.audioFx->isDestroyTrue == false)
     {
+        float liveTime = aMissile.projectileData.time;
+        if (aMissile.audioFx->fx->GetState() == DirectX::SoundState::PAUSED)
+        {
+            if (aMissile.guidance.throttlePercentage > 0.0f)
+            {
+                aMissile.audioFx->fx->Play();
+            } 
+        }
+
+
+
         aMissile.audioFx->pos = aMissile.projectileData.q.position;
         aMissile.audioFx->up = aMissile.projectileData.up;
         aMissile.audioFx->forward = aMissile.projectileData.forward;
 
-        //aMissile.audioFx->emitter->Position = aMissile.projectileData.q.position;
+
+        DirectX::SimpleMath::Vector3 toUseSteeringVecLocal = aMissile.guidance.conDat.thrustVecNorm;
+        DirectX::SimpleMath::Quaternion toUseSteeringQuat = aMissile.guidance.conDat.thrustVecQuat;
+
+        float angle = Utility::GetAngleBetweenVectors(toUseSteeringVecLocal, DirectX::SimpleMath::Vector3::UnitX);
+        float anglePercentage = angle / m_missileConsts.thrustVecAngMax;
+        float pitchMod = anglePercentage * m_missileConsts.thrustVecAudioPitchModMax;
+        float throttlePitch = (aMissile.guidance.throttlePercentage * 2.0f) - 1.0f;
+        float pitchMod2 = pitchMod * throttlePitch;
+        float pitchMod3 = (aMissile.guidance.throttlePercentage + pitchMod) - 1.0f;
+        if (pitchMod3 > 1.0f || pitchMod3 < -1.0f)
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
+        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.thrustAngle ", aMissile.guidance.thrustAngle, "");
+        m_debugData->DebugPushUILineDecimalNumber("angle  ", angle, "");
+        m_debugData->DebugPushUILineDecimalNumber("angleD ", Utility::ToDegrees(angle), "");
+        m_debugData->DebugPushUILineDecimalNumber("pitchMod      ", pitchMod, "");
+        m_debugData->DebugPushUILineDecimalNumber("throttlePitch ", throttlePitch, "");
+        m_debugData->DebugPushUILineDecimalNumber("pitchMod2     ", pitchMod2, "");
+        m_debugData->DebugPushUILineDecimalNumber("pitchMod3     ", pitchMod3, "");
+        m_debugData->PushDebugLine(aMissile.projectileData.q.position, toUseSteeringVecLocal, 15.0f, 0.0f, DirectX::Colors::YellowGreen);
+
+        m_debugData->ToggleDebugOff();
+        
         aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
+        aMissile.audioFx->fx->SetPitch(pitchMod3);
     }
 }
 

@@ -351,6 +351,7 @@ private:
 
     unsigned int m_currentFxExplosion = 4;
     unsigned int m_currentFxShotBang = 10;
+    
     const unsigned int m_fxExplosionRangeMax = 9;
     const unsigned int m_fxExplosionRangeMin = 4;
     const unsigned int m_fxShotBangRangeMax = 16;
@@ -378,8 +379,6 @@ private:
     const float m_audioPlayerVehicleMod = 1.0f;
     const float m_audioNPCMod = 1.0f;
     const float m_audioSpawnerMod = 1.0f;
-
-    DirectX::SimpleMath::Vector3 m_debugAudioPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
 
     bool m_audioTestBoolTrue = false;
    
@@ -415,6 +414,8 @@ private:
 
     const int m_audioFxIdRaven = 24;
     const int m_audioFxIdRavenAlt = 44;
+
+    const unsigned int m_audioFxIdRocketMotor = 3;
 
     const float m_audioCurveDistanceScalarNPC = 14.0f;
     const float m_audioCurveDistanceScalarPlayer = 8.0f;

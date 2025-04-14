@@ -4730,7 +4730,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
-        /*
+        
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON || 
                     m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)
         {
@@ -4745,11 +4745,37 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
-        */
-        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1 ||
-        m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3 ||
-        m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG)
         {
+            auto pos = m_soundFxVecTest[i]->pos;
+            //auto velocity = (m_soundFxVecTest[i]->pos - previousPosition) / aTimer.GetElapsedSeconds();
+            DirectX::SimpleMath::Vector3 velocity = m_soundFxVecTest[i]->emitter->Velocity;
+            //pos += velocity * aTimer.GetElapsedSeconds();
+            pos += velocity * static_cast<float>(aTimer.GetElapsedSeconds());
+
+            m_soundFxVecTest[i]->pos = pos;
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = velocity;
+
+            m_soundFxVecTest[i]->emitter->OrientFront = m_soundFxVecTest[i]->forward;
+            m_soundFxVecTest[i]->emitter->OrientTop = m_soundFxVecTest[i]->up;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 5.0f, 0.0f, DirectX::Colors::Red);
+            m_debugData->ToggleDebugOff();
+        }
+        else if ( m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2 
+                || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
+        {
+            //if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG)
+            {
+                int testBreak = 0;
+                testBreak++;
+            }
             auto volume = m_audioVolumeGamePlay * m_audioSpawnerMod;
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
@@ -4793,6 +4819,33 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->OrientTop = m_soundFxVecTest[i]->up;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 20.0f, 0.0f, DirectX::Colors::Red);
+            m_debugData->ToggleDebugOff();
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_FIN_DEPLOY)
+        {
+
+            auto pos = m_soundFxVecTest[i]->pos;
+            //auto velocity = (m_soundFxVecTest[i]->pos - previousPosition) / aTimer.GetElapsedSeconds();
+            DirectX::SimpleMath::Vector3 velocity = m_soundFxVecTest[i]->emitter->Velocity;
+            //pos += velocity * aTimer.GetElapsedSeconds();
+            pos += velocity * static_cast<float>(aTimer.GetElapsedSeconds());
+
+            m_soundFxVecTest[i]->pos = pos;
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = velocity;
+
+            m_soundFxVecTest[i]->emitter->OrientFront = m_soundFxVecTest[i]->forward;
+            m_soundFxVecTest[i]->emitter->OrientTop = m_soundFxVecTest[i]->up;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+          
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 5.0f, 0.0f, DirectX::Colors::Red);
+            m_debugData->ToggleDebugOff();
         }
         else
         {
@@ -4928,7 +4981,7 @@ void Game::TriggerFireWithAudio()
     // rocket fx
     std::shared_ptr <Utility::SoundFx> rocketFx(new Utility::SoundFx());
     rocketFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_MISSILE_ROCKET;
-    rocketFx->fx = m_audioBank->CreateStreamInstance(3, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+    rocketFx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdRocketMotor, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
     std::shared_ptr<DirectX::AudioEmitter> rocketEmitter = std::make_shared<DirectX::AudioEmitter>();
     rocketEmitter->SetOmnidirectional();
     rocketEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);

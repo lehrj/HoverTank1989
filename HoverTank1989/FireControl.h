@@ -735,6 +735,7 @@ struct MissileConsts
     //const float tailFinAngPerSecDeltaMax = Utility::ToRadians(90.0f);
     const float tailFinAngPerSecDeltaMax = Utility::ToRadians(65.0f);
 
+    const float thrustVecAudioPitchModMax = 0.9f;
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
     //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(40.0f);
