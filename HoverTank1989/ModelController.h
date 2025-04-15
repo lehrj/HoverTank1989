@@ -97,6 +97,8 @@ struct TankModel
     const DirectX::SimpleMath::Vector4 glowColorMin = DirectX::SimpleMath::Vector4(grayVal, grayVal, grayVal, 0.7f);
     const DirectX::SimpleMath::Vector4 glowColorMax = DirectX::SimpleMath::Vector4(1.0f, 0.1f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector3 glowLightDirectionBase = DirectX::SimpleMath::Vector3::UnitX;
+
+    const float zOffsetShadowMod = 0.65f;
 };
 
 

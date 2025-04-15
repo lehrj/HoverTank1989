@@ -867,9 +867,6 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     aEffect->SetNormalTexture(m_vehicleStruct00.npcModel.normalMapBlank.Get());
     aEffect->SetSpecularTexture(m_vehicleStruct00.npcModel.specularBlank.Get());
 
-
-
-
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldEyeLeftMatrix);
     aEffect->SetColorAndAlpha(eyeColor);
     m_vehicleStruct00.npcModel.eyeShape->Draw(aEffect.get(), aInputLayout.Get());

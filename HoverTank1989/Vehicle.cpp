@@ -26,7 +26,8 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     const float lowerCurveBound = aVehicleData.hoverRangeLower;
     const float upperCurveBound = aVehicleData.hoverRangeUpper;
     const float curveAdjustVal = lowerCurveBound;
-    DirectX::SimpleMath::Vector3 testDimensions = DirectX::SimpleMath::Vector3(8.0f, 4.0f, 4.0f);
+    //DirectX::SimpleMath::Vector3 testDimensions = DirectX::SimpleMath::Vector3(8.0f, 4.0f, 4.0f);
+    DirectX::SimpleMath::Vector3 testDimensions = m_heli.dimensions;
     const float vehicleVolumeMax = testDimensions.x * testDimensions.y * testDimensions.z;
     const float immersedDensityNeutralAtHalfDepth = aVehicleData.mass / (vehicleVolumeMax * 0.5f);
     float immersedRange = upperCurveBound - lowerCurveBound;
@@ -158,11 +159,12 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
 
     DirectX::SimpleMath::Vector3 buoyancyForce = testDensity * immersedVolume * gravForce;
 
-    /*
-    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.x = ", buoyancyForce.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.y = ", buoyancyForce.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce.z = ", buoyancyForce.z, "");
-    */
+    if (buoyancyForce.y > m_testMaxHoverForce)
+    {
+        m_testMaxHoverForce = buoyancyForce.y;
+    }
+
+    m_heli.hoverDriveImmersionRatio = immersedRatio;
 
     return buoyancyForce;
 }

@@ -460,7 +460,7 @@ void ModelController::UpdateModel(TankModel& aModel, const DirectX::SimpleMath::
     DirectX::SimpleMath::Plane groundPlane = aPlane;
     DirectX::SimpleMath::Vector3 modelPos = aPos;
 
-    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f;
+    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * aModel.zOffsetShadowMod;
     DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
     planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
     planeTrans = planeTrans.Transpose();

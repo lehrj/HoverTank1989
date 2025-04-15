@@ -92,7 +92,6 @@ struct Motion
 {
     DirectX::SimpleMath::Vector3 angularMomentum = DirectX::SimpleMath::Vector3::Zero;
     DirectX::SimpleMath::Vector3 angularVelocity = DirectX::SimpleMath::Vector3::Zero;
-    //DirectX::SimpleMath::Quaternion angularQuat = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Vector3 position;
     DirectX::SimpleMath::Vector3 velocity;
 };
@@ -150,6 +149,8 @@ struct HeliData
     const float hoverRangeUpper = 8.0f;
     const float groundNormalForceRange = hoverRangeUpper + 5.0f;
     const float hoverNeutralBoyantAlt = hoverRangeMid;
+
+    float hoverDriveImmersionRatio = 0.0f;
 
     const float jetThrustMax = 5000.0f;
     // rotor data
@@ -357,6 +358,8 @@ public:
     bool GetIsDebugToggled() const { return m_debugToggle; };
     bool GetIsDebugToggled2() const { return m_debugToggle2; };
     bool GetIsDebugToggled3() const { return m_debugToggle3; };
+
+    float GetImmersionRatio() const { return m_heli.hoverDriveImmersionRatio; };
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
     float GetMass() const { return m_heli.mass; };
 
@@ -605,5 +608,7 @@ private:
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-150.0f, 8.0f, 150.0f);
 
     float m_throttleVolume = 0.0f;
+
+    float m_testMaxHoverForce = 0.0f;
 };
 

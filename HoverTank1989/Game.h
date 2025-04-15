@@ -76,6 +76,7 @@ private:
     void DrawDebugDataUI();
     void DrawEndUI();
     void DrawIntroScene();
+    void DrawLaunchSite();
     void DrawLogoScreen();
     void DrawSky();
     void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -391,7 +392,8 @@ private:
     const int m_audioFxIdDebug = 44;
     const int m_audioFxIdNPCVehicle = 25;
     //const int m_audioFxIdPlayerVehicle = 27;
-    const int m_audioFxIdPlayerVehicle = 27;
+    const int m_audioFxIdPlayerVehicle = 28;
+    const int m_audioFxIdPlayerVehicleHover = 27;
     const int m_audioFxIdAmbient = 44;
     /*
     const int m_audioFxIdJI1 = 12;
@@ -601,10 +603,17 @@ private:
     bool m_isUiDisplayTrue = false;
     std::string m_uiAmmoDisplayString = "";
 
-    std::unique_ptr<DirectX::GeometricPrimitive> m_testShape;
-    std::unique_ptr<DirectX::GeometricPrimitive> m_testShape2;
-    std::unique_ptr<DirectX::GeometricPrimitive> m_testShape3;
+    // 3D shapes
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeWayPoint;
+    const DirectX::SimpleMath::Vector3           m_shapeDimensionsWayPoint = DirectX::SimpleMath::Vector3(80.0f, 1.0f, 80.0f);
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeWayPath;
+    const DirectX::SimpleMath::Vector3           m_shapeDimensionsWayPath = DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f);
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeSkyboxBase;
 
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeLaunchPad;
+    DirectX::SimpleMath::Matrix                  m_shapeLaunchPadMat;
+    DirectX::SimpleMath::Vector3                 m_shapeLaunchPadPos = DirectX::SimpleMath::Vector3(-500.0f, 0.5f, 0.0f);
+    DirectX::SimpleMath::Vector3                 m_shapeLaunchPadDimensions = DirectX::SimpleMath::Vector3(100.0f, 1.0f, 100.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
     DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;

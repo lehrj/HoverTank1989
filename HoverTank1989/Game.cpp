@@ -131,6 +131,23 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fireEmitter->OrientTop = m_vehicle->GetVehicleUp();
         fx->fx->Play(true);
     }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER)
+    {
+        fx->fxType = aSfxType;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarPlayer;
+
+        pos = m_vehicle->GetPos();
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdPlayerVehicleHover, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+        fireEmitter->ChannelCount = fx->fx->GetChannelCount();
+        fireEmitter->EnableDefaultMultiChannel(fx->fx->GetChannelCount(), 10.0f);
+
+        fx->up = m_vehicle->GetVehicleUp();
+        fx->forward = m_vehicle->GetForward();
+        fireEmitter->OrientFront = m_vehicle->GetForward();
+        fireEmitter->OrientTop = m_vehicle->GetVehicleUp();
+        fx->fx->Play(true);
+    }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_DEBUG)
     {
         /*
@@ -449,8 +466,6 @@ void Game::Initialize(HWND window, int width, int height)
     m_camera->SetFireControl(m_fireControl);
 
     m_terrainVector.clear();
-
-    
 }
 
 // Testing Terrain Vertex
@@ -1243,6 +1258,8 @@ void Game::Render()
         DrawTestTrack();
         //DrawTestRangeMissile();
         DrawSpawner();
+
+        DrawLaunchSite();
         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
@@ -1653,9 +1670,9 @@ void Game::CreateDeviceDependentResources()
 
     m_modelController->InitializePlayerModel(m_modelTestBarrel, m_modelTestBody, m_modelTestTurret, context);
 
-    m_testShape = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 80.0f);
-    m_testShape2 = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(250.0f, 1.0f, 6.0f));
-    m_testShape3 = DirectX::GeometricPrimitive::CreateTorus(context, m_ringDiameter, m_ringHeight);
+    m_shapeWayPoint = DirectX::GeometricPrimitive::CreateCylinder(context, m_shapeDimensionsWayPoint.y, m_shapeDimensionsWayPoint.x);
+    m_shapeWayPath = DirectX::GeometricPrimitive::CreateBox(context, m_shapeDimensionsWayPath);
+    m_shapeSkyboxBase = DirectX::GeometricPrimitive::CreateTorus(context, m_ringDiameter, m_ringHeight);
 
     // Spawners
     const float spawnerHeight = 50.0f;
@@ -1680,6 +1697,13 @@ void Game::CreateDeviceDependentResources()
     m_spawnerInnerMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerInnerMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     m_spawnerInnerMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    // launch pad or site
+    m_shapeLaunchPad = DirectX::GeometricPrimitive::CreateBox(context, m_shapeLaunchPadDimensions);
+    m_shapeLaunchPadMat = DirectX::SimpleMath::Matrix::Identity;
+    m_shapeLaunchPadMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
+    m_shapeLaunchPadMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_shapeLaunchPadPos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
 
     // pre multipampling
     //CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE, D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP, D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, FALSE, FALSE, TRUE);
@@ -2332,7 +2356,9 @@ void Game::DrawIntroScene()
     {
         m_audioEngine->SetReverb(m_jIGameReverb);
         // turn on player vehicle engine sound
-       //   AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
+        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
+        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
+
     //    AudioCreateSFX3D(m_camera->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
 
         //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
@@ -2486,6 +2512,20 @@ void Game::DrawDebugLinesVector()
         VertexPositionColor lineEnd(std::get<1>(lineTupVec[i]), lineColor);
         m_batch3->DrawLine(lineStart, lineEnd);
     }
+}
+
+void Game::DrawLaunchSite()
+{
+    m_effect->SetNormalTexture(m_normalMapJI0.Get());
+    m_effect->SetTexture(m_textureJI0.Get());
+    m_effect->SetSpecularTexture(m_specularJI0.Get());
+    //m_effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(0.2f, 0.2f, 0.6f, 1.0f));
+    m_effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(0.02352941f, 0.0f, 0.99215686f, 1.0f));
+   
+    m_effect->SetWorld(m_shapeLaunchPadMat);
+    m_shapeLaunchPad->Draw(m_effect.get(), m_inputLayout.Get());
+
+    //m_shapeLaunchPad->Draw(m_shapeLaunchPadMat, m_camera->GetViewMatrix(), m_proj);
 }
 
 void Game::DrawLogoScreen()
@@ -2675,7 +2715,7 @@ void Game::DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::
     worldMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, m_ringScale, 1.0f));
     worldMat *= DirectX::SimpleMath::Matrix::CreateTranslation(baseTransVec);
     aEffect->SetWorld(worldMat);
-    m_testShape3->Draw(aEffect.get(), aInputLayout.Get());
+    m_shapeSkyboxBase->Draw(aEffect.get(), aInputLayout.Get());
 }
 
 void Game::DrawStartScreen()
@@ -2978,13 +3018,13 @@ void Game::DrawTestRangeMissile()
     pos2.z -= wpDistance * 0.5f;
     pos2.y -= rodOffset;
     DirectX::SimpleMath::Matrix posMat2 = DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj);
 
     // waypoint 2
     pos1 = wPos2;
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj);
 }
 
 void Game::DrawTestTrack()
@@ -3001,13 +3041,13 @@ void Game::DrawTestTrack()
     pos2.z -= 100.0f;
     pos2.y -= rodOffset;
     DirectX::SimpleMath::Matrix posMat2 = DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // outside top left
     pos1 = DirectX::SimpleMath::Vector3(300.0f + xOffset, yOffset, -300.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // inside top right
     pos1 = DirectX::SimpleMath::Vector3(300.0f + xOffset, yOffset, 100.0f);
@@ -3016,13 +3056,13 @@ void Game::DrawTestTrack()
     pos2.z += 100.0f;
     pos2.y -= rodOffset;
     posMat2 = DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // outside top right
     pos1 = DirectX::SimpleMath::Vector3(300.0f + xOffset, yOffset, 300.0f);
     posMat = DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // inside bottom right
     pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, 100.0f);
@@ -3031,8 +3071,8 @@ void Game::DrawTestTrack()
     pos2.z += 100.0f;
     pos2.y -= rodOffset;
     posMat2 = DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // outside bottom right
     pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, 300.0f);
@@ -3042,8 +3082,8 @@ void Game::DrawTestTrack()
     pos2.y -= rodOffset;
     posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
     posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // inside bottom left
     pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, -100.0f);
@@ -3052,8 +3092,8 @@ void Game::DrawTestTrack()
     pos2.z -= 100.0f;
     pos2.y -= rodOffset;
     posMat2 = DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // outside bottom left
     pos1 = DirectX::SimpleMath::Vector3(75.0f + xOffset, yOffset, -300.0f);
@@ -3063,19 +3103,19 @@ void Game::DrawTestTrack()
     pos2.y -= rodOffset;
     posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
     posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPoint->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // cross 1
     pos2 = DirectX::SimpleMath::Vector3(187.0f + xOffset, yOffset - rodOffset, 0.0f);
     const float angle = 50.0f;
     posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(angle));
     posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
     // cross 2
     posMat2 = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-angle));
     posMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape2->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat2, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     // Extentions
     pos1 = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
@@ -3086,13 +3126,13 @@ void Game::DrawTestTrack()
     posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(2.4f, 1.0f, 1.0f));
 
     posMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape2->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
 
     pos1 = DirectX::SimpleMath::Vector3(600.0f, yOffset - rodOffset, -600.0f);
     posMat = DirectX::SimpleMath::Matrix::Identity;
     posMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(2.4f, 1.0f, 1.0f));
     posMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_testShape2->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
+    m_shapeWayPath->Draw(posMat, m_camera->GetViewMatrix(), m_proj, trackColor);
 }
 
 void Game::DrawTerrainNew(Terrain& aTerrain)
@@ -3253,9 +3293,14 @@ void Game::OnDeviceLost()
 
     m_backgroundTex.Reset();
 
-    m_testShape.reset();
-    m_testShape2.reset();
-    m_testShape3.reset();
+    // 3d shapes
+    m_shapeWayPoint.reset();
+    m_shapeWayPath.reset();
+    m_shapeSkyboxBase.reset();
+
+    m_spawnerInnerShape.reset();
+    m_spawnerOuterShape.reset();
+    m_shapeLaunchPad.reset();
 
     // multisampling
     m_offscreenRenderTarget.Reset();
@@ -4514,9 +4559,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
       
             pos = DirectX::SimpleMath::Vector3::Transform(pos, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, - m_lighting->GetLightAngle()));
 
-
-            //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
-
             auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
 
             m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
@@ -4525,17 +4567,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->Position = pos;
             m_soundFxVecTest[i]->emitter->Velocity = velocity;
 
-            m_debugData->ToggleDebugOnOverRide();
-
-            m_debugData->PushTestDebugBetweenPoints(DirectX::SimpleMath::Vector3::Zero, pos, DirectX::Colors::Yellow);
-            m_debugData->PushTestDebugBetweenPoints(m_camera->GetPos(), pos, DirectX::Colors::Orange);
-            m_debugData->DebugPushUILineDecimalNumber("posx ", pos.x, "");
-            m_debugData->DebugPushUILineDecimalNumber("posy ", pos.y, "");
-            m_debugData->DebugPushUILineDecimalNumber("posz ", pos.z, "");
-            m_debugData->ToggleDebugOff();
-
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
         {
@@ -4584,8 +4616,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             volume += 0.1f;
 
             volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
-            volume = 1.0f;
-            pitch = 1.0f;
 
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
@@ -4637,7 +4667,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
-            m_debugData->ToggleDebugOnOverRide();
+            //m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch", pitch, "");
 
@@ -4649,6 +4679,49 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_debugData->DebugPushUILineDecimalNumber("angleD2 ", Utility::ToDegrees(angle2), "");
             m_debugData->PushDebugLinePositionIndicator(posLocal, 5.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->PushTestDebugBetweenPoints(m_vehicle->GetPos(), posLocal, DirectX::Colors::Yellow);
+            m_debugData->ToggleDebugOff();
+
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER)
+        {
+
+            //auto volume = m_vehicle->GetThrottleTank();
+            auto volume = m_vehicle->GetImmersionRatio();
+            auto pitch = volume;
+            pitch *= 0.8f;
+            pitch *= 2.0f;
+            pitch -= 1.0f;
+            //  pitch = volume;
+            volume *= 0.9f;
+            volume += 0.1f;
+
+            volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
+      
+            //pitch = 1.0f;
+
+            m_soundFxVecTest[i]->fx->SetPitch(pitch);
+            m_soundFxVecTest[i]->fx->SetVolume(volume);
+            m_soundFxVecTest[i]->volume = volume;
+
+            auto pos = m_vehicle->GetPos();
+            //pos = m_debugAudioPos;
+
+            m_soundFxVecTest[i]->pos = pos;
+
+            auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
+
+            m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
+            m_soundFxVecTest[i]->emitter->OrientTop = m_vehicle->GetVehicleUp();
+
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = velocity;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+
+            //m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("volume", volume, "");
+            m_debugData->DebugPushUILineDecimalNumber("pitch", pitch, "");
             m_debugData->ToggleDebugOff();
 
         }
