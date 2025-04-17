@@ -235,12 +235,7 @@ private:
 
     std::unique_ptr<DirectX::GeometricPrimitive>    m_skyShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    m_billboardShape;
-    //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(50.0f, 50.0f, 50.0f);
-    //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(0.01f, 0.5f, 0.8888f);
-    //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 0.5f, 0.8888f);
-    //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 0.75f, 0.8888f);
     const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
-    //const DirectX::SimpleMath::Vector3              m_billboardSize = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
     const DirectX::SimpleMath::Vector3              m_billboardPosition = DirectX::SimpleMath::Vector3(0.0f, 50.0f, 0.0f);
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_raster;
@@ -380,6 +375,7 @@ private:
     const float m_audioPlayerVehicleMod = 1.0f;
     const float m_audioNPCMod = 1.0f;
     const float m_audioSpawnerMod = 1.0f;
+    const float m_audioLogoMod = 1.0f;
 
     bool m_audioTestBoolTrue = false;
    
@@ -389,11 +385,19 @@ private:
     const float m_audioRavenDistance = 10.0f;
     const DirectX::SimpleMath::Vector3 m_audioRavenOffset = DirectX::SimpleMath::Vector3(3.0f, -1.0f, 0.0f);
 
+    float m_audioHoverVal = 0.0f;
+    float m_audioHoverVal1 = 0.0f;
+    float m_audioHoverVal2 = 0.0f;
+    float m_audioHoverVal3 = 0.0f;
+    float m_audioHoverVal4 = 0.0f;
+    float m_audioHoverVal5 = 0.0f;
+
+
     const int m_audioFxIdDebug = 44;
     const int m_audioFxIdNPCVehicle = 25;
     //const int m_audioFxIdPlayerVehicle = 27;
-    const int m_audioFxIdPlayerVehicle = 28;
-    const int m_audioFxIdPlayerVehicleHover = 27;
+    const int m_audioFxIdPlayerVehicle = 27;
+    const int m_audioFxIdPlayerVehicleHover = 28;
     const int m_audioFxIdAmbient = 44;
     /*
     const int m_audioFxIdJI1 = 12;
@@ -604,6 +608,11 @@ private:
     std::string m_uiAmmoDisplayString = "";
 
     // 3D shapes
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapePlatform;
+    DirectX::SimpleMath::Matrix                  m_shapePlatformMat;
+    const DirectX::SimpleMath::Vector3           m_shapeDimensionsPlatform = DirectX::SimpleMath::Vector3(30.0f, 10.0f, 30.0f);
+    const DirectX::SimpleMath::Vector3           m_shapeTranslatePlatform = DirectX::SimpleMath::Vector3(-500.0f, 5.0f, 0.0f);
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeWayPoint;
     const DirectX::SimpleMath::Vector3           m_shapeDimensionsWayPoint = DirectX::SimpleMath::Vector3(80.0f, 1.0f, 80.0f);
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeWayPath;

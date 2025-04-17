@@ -164,8 +164,10 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
         m_testMaxHoverForce = buoyancyForce.y;
     }
 
+    m_heli.hoverDriveImmersionRatioPrev = m_heli.hoverDriveImmersionRatio;
     m_heli.hoverDriveImmersionRatio = immersedRatio;
-
+    m_heli.hoverDriveOutputAudio = m_testMaxHoverForce;
+    m_heli.hoverDriveOutputAudio = buoyancyForce.y;
     return buoyancyForce;
 }
 
@@ -3874,6 +3876,39 @@ void Vehicle::UpdateTerrainData()
         // to do: add error handling if out of play
     }
 
+
+
+    //m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
+    m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
+    //m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
+    //m_heli.terrainNormal = m_environment->GetTerrainNormal(m_heli.q.position);
+     
+    
+    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
+    DirectX::SimpleMath::Vector3 offSet = DirectX::SimpleMath::Vector3(15.0f, 8.0f, 15.0f);
+    DirectX::SimpleMath::Vector3 ne = m_startPos;
+    ne.x += offSet.x;
+    ne.z += offSet.z;
+    DirectX::SimpleMath::Vector3 sw = m_startPos;
+    sw.x -= offSet.x;
+    sw.z -= offSet.z;
+
+    auto playerPos = m_heli.q.position;
+    if (playerPos.x < ne.x && playerPos.z < ne.z)
+    {
+        if (playerPos.x > sw.x && playerPos.z > sw.z)
+        {
+            m_debugData->ToggleDebugOnOverRide();
+
+            //m_debugData->DebugPushUILineDecimalNumber(" in box ", 0.0f, "");
+
+            m_debugData->ToggleDebugOff();
+            //m_heli.altitude -= 10.0f;
+            m_heli.terrainHightAtPos += 10.0f;
+        }
+    }
+
+
     //m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
     m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
     //m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
@@ -4460,7 +4495,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
 
     if (m_heli.altitude < 0.0f)
     {
-        CalculateGroundImpactForce(velocityUpdate, localAngularVec);
+      //  CalculateGroundImpactForce(velocityUpdate, localAngularVec);
     }
 
     m_heli.vehicleLinearForcesSum = velocityUpdate;

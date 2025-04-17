@@ -150,7 +150,9 @@ struct HeliData
     const float groundNormalForceRange = hoverRangeUpper + 5.0f;
     const float hoverNeutralBoyantAlt = hoverRangeMid;
 
+    float hoverDriveOutputAudio = 0.0f;
     float hoverDriveImmersionRatio = 0.0f;
+    float hoverDriveImmersionRatioPrev = 0.0f;
 
     const float jetThrustMax = 5000.0f;
     // rotor data
@@ -359,7 +361,9 @@ public:
     bool GetIsDebugToggled2() const { return m_debugToggle2; };
     bool GetIsDebugToggled3() const { return m_debugToggle3; };
 
+    float GetImmersionRatioPrev() const { return m_heli.hoverDriveImmersionRatioPrev; };
     float GetImmersionRatio() const { return m_heli.hoverDriveImmersionRatio; };
+    float GetHoverDriveOutput() const { return m_heli.hoverDriveOutputAudio; };
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
     float GetMass() const { return m_heli.mass; };
 
