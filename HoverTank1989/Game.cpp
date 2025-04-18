@@ -437,6 +437,7 @@ void Game::Initialize(HWND window, int width, int height)
     }
     m_terrainGamePlay.environType = EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY;
     result = InitializeTerrainArrayNew(m_terrainGamePlay);
+    //result = InitializeTerrainArrayNewBackUp(m_terrainGamePlay);
     if (!result)
     {
         isInitSuccessTrue = false;
@@ -1060,7 +1061,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
 
-
+    /*
     if (m_isStartTriggerTrue1 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger1)
@@ -1081,6 +1082,7 @@ void Game::Update(DX::StepTimer const& aTimer)
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
+    */
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -1675,10 +1677,10 @@ void Game::CreateDeviceDependentResources()
     m_shapeSkyboxBase = DirectX::GeometricPrimitive::CreateTorus(context, m_ringDiameter, m_ringHeight);
 
     // Spawners
-    const float spawnerHeight = 50.0f;
-    const float spawnerDiameter = 50.0f;
-    const float spawnerThickness = 10.0f;
-    const float spawnerScale = 15.0f;
+    const float spawnerHeight = m_spawnerDimensions.y;
+    const float spawnerDiameter = m_spawnerDimensions.x;
+    const float spawnerThickness = m_spawnerDimensions.z;
+    const float spawnerScale = m_spawnerScale;
     m_spawnerOuterShape = DirectX::GeometricPrimitive::CreateTorus(context, spawnerDiameter, spawnerThickness);
     m_spawnerOuterMat = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
@@ -1693,10 +1695,19 @@ void Game::CreateDeviceDependentResources()
     m_spawnerInnerShape = DirectX::GeometricPrimitive::CreateCylinder(context, 2.0f, spawnerInnerSize);
     m_spawnerInnerMat = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
-    m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos - m_spawnerShadowOffset, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
     m_spawnerInnerMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerInnerMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
-    m_spawnerInnerMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerInnerMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos2 + m_spawnerShadowOffset, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerArmShape = DirectX::GeometricPrimitive::CreateBox(context, m_spawnerArmDimensions);
+    m_spawnerArmMat = DirectX::SimpleMath::Matrix::Identity;
+
+    m_spawnerAxelShape = DirectX::GeometricPrimitive::CreateCylinder(context, m_spawnerAxelDimensions.x, m_spawnerAxelDimensions.y, 3);
+    m_spawnerAxelMat = DirectX::SimpleMath::Matrix::Identity;
+
+    m_spawnerDoorShape = DirectX::GeometricPrimitive::CreateBox(context, m_spawnerDoorDimensions);
+    m_spawnerDoorMat = DirectX::SimpleMath::Matrix::Identity;
 
     // launch pad or site
     m_shapeLaunchPad = DirectX::GeometricPrimitive::CreateBox(context, m_shapeLaunchPadDimensions);
@@ -1723,6 +1734,107 @@ void Game::CreateDeviceDependentResources()
 
 void Game::DrawSpawner()
 {
+
+    const float spawnerScale = 15.0f;
+    const float angle = cos(m_timer.GetTotalSeconds()) - Utility::ToRadians(45.0f);
+    //const float angle = Utility::ToRadians(-90.0f);
+    
+    m_spawnerOuterMat = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
+    //m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateRotationX(cos(m_timer.GetTotalSeconds()));
+    m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    
+    m_spawnerAxelMat = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerAxelMat *= DirectX::SimpleMath::Matrix::CreateRotationY(angle);
+    m_spawnerAxelMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    //m_spawnerAxelMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
+
+    auto pos = m_spawnerPos;
+    pos.z -= m_spawnerAxelOffset.z;
+    pos.y += m_spawnerAxelOffset.y;
+    m_spawnerAxelMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerAxelShape->Draw(m_spawnerAxelMat, m_camera->GetViewMatrix(), m_proj);
+
+
+    // arm 
+    //auto transMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(22.0f, 5.0f, 20.0f));
+    //auto transMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(29.5f, 5.0f, 20.0f));
+
+    
+    auto transMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(
+     (((m_spawnerAxelDimensions.x * 0.5f) - (0.5f * m_spawnerArmDimensions.x))), m_spawnerAxelDimensions.y * 0.5f, m_spawnerAxelDimensions.y * 2.0f));
+    
+    DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3(
+        (((m_spawnerAxelDimensions.x * 0.5f) - (0.5f * m_spawnerArmDimensions.x))), m_spawnerAxelDimensions.y * 0.5f, m_spawnerAxelDimensions.y * 2.0f);
+
+    float transX = 29.5f;
+    transX = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f);
+    float transY = 5.0f + (m_spawnerArmDimensions.y * 0.5f);
+    float transZ = (m_spawnerArmDimensions.z * 0.5f) - (m_spawnerAxelDimensions.y * 0.45f);
+    transZ = (m_spawnerArmDimensions.z * 0.5f);// -(34.0 * 0.5f);
+
+
+    float side = m_spawnerAxelDimensions.z * sqrt(3.0f);
+    transZ -= (side * 0.25f);
+    //transZ = 0.0f;
+    testVec = DirectX::SimpleMath::Vector3(transX, transY, transZ);
+    transMat = DirectX::SimpleMath::Matrix::CreateTranslation(testVec);
+
+    m_spawnerArmMat = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerArmMat *= transMat;
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(cos(m_timer.GetTotalSeconds()));
+    m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(angle);
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerArmShape->Draw(m_spawnerArmMat, m_camera->GetViewMatrix(), m_proj);
+
+    // second arm
+    //testVec = DirectX::SimpleMath::Vector3(-29.5f, 5.0f, (m_spawnerArmDimensions.z * 0.5f) - (m_spawnerAxelDimensions.y * 0.0f));
+    testVec = DirectX::SimpleMath::Vector3(-transX, transY, transZ);
+    transMat = DirectX::SimpleMath::Matrix::CreateTranslation(testVec);
+
+    m_spawnerArmMat = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerArmMat *= transMat;
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(cos(m_timer.GetTotalSeconds()));
+    m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(angle);
+    //m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerArmMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerArmShape->Draw(m_spawnerArmMat, m_camera->GetViewMatrix(), m_proj);
+
+
+    // door
+
+    float doorTransX = 0.0f;
+    //transX = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f);
+    float doorTransY = 0.0f;
+    float doorTransZ = (m_spawnerArmDimensions.z * 0.5f) - (m_spawnerAxelDimensions.y * 0.5f);
+    doorTransZ = (m_spawnerArmDimensions.z * 1.0f) - (m_spawnerAxelDimensions.y * 0.45f);
+    doorTransZ = transZ + (m_spawnerArmDimensions.z * 0.5f);
+    testVec = DirectX::SimpleMath::Vector3(doorTransX, doorTransY, doorTransZ);
+    
+    //auto transMat2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerArmDimensions.z));
+    auto transMat2 = DirectX::SimpleMath::Matrix::CreateTranslation(testVec);
+    //auto transMat2 = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(
+    //    0.0f , m_spawnerAxelDimensions.y * 0.0f, m_spawnerAxelDimensions.y * 4.0f));
+
+    m_spawnerDoorMat = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerDoorMat *= transMat2;
+    //m_spawnerDoorMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    //m_spawnerDoorMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
+    //m_spawnerDoorMat *= DirectX::SimpleMath::Matrix::CreateRotationX(cos(m_timer.GetTotalSeconds()));
+    m_spawnerDoorMat *= DirectX::SimpleMath::Matrix::CreateRotationX(angle);
+    //m_spawnerDoorMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerDoorMat *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerDoorShape->Draw(m_spawnerDoorMat, m_camera->GetViewMatrix(), m_proj);
+
+
+
     m_spawnerOuterShape->Draw(m_spawnerOuterMat, m_camera->GetViewMatrix(), m_proj);
     m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
 
@@ -2363,7 +2475,7 @@ void Game::DrawIntroScene()
     {
         m_audioEngine->SetReverb(m_jIGameReverb);
         // turn on player vehicle engine sound
-        //AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
+        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
 
     //    AudioCreateSFX3D(m_camera->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
@@ -2537,6 +2649,9 @@ void Game::DrawLaunchSite()
     m_effect->SetWorld(m_shapePlatformMat);
     m_shapePlatform->Draw(m_effect.get(), m_inputLayout.Get());
 
+    m_effect->SetNormalTexture(m_normalMap.Get());
+    m_effect->SetTexture(m_texture.Get());
+    m_effect->SetSpecularTexture(m_specular.Get());
 }
 
 void Game::DrawLogoScreen()
@@ -3148,7 +3263,7 @@ void Game::DrawTestTrack()
 
 void Game::DrawTerrainNew(Terrain& aTerrain)
 {
-    m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
+   // m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, aTerrain.terrainVertexArrayBase, aTerrain.terrainVertexCount);
     m_batch2->Draw(D3D_PRIMITIVE_TOPOLOGY_LINELIST, aTerrain.terrainVertexArray, aTerrain.terrainVertexCount);
 
     // Create base to black out skydome under terrain
@@ -3309,6 +3424,9 @@ void Game::OnDeviceLost()
     m_shapeWayPath.reset();
     m_shapeSkyboxBase.reset();
 
+    m_spawnerArmShape.reset();
+    m_spawnerAxelShape.reset();
+    m_spawnerDoorShape.reset();
     m_spawnerInnerShape.reset();
     m_spawnerOuterShape.reset();
     m_shapeLaunchPad.reset();
@@ -4701,7 +4819,127 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //auto volume = m_vehicle->GetThrottleTank();
             auto immersionRatio = m_vehicle->GetImmersionRatio();
             auto immersionRatioPrev = m_vehicle->GetImmersionRatioPrev();
+              
+            const float deltaMax = 0.3f * static_cast<float>(aTimer.GetElapsedSeconds());
+            const float timeDelta = static_cast<float>(aTimer.GetElapsedSeconds());
+
+
+            auto volume = m_vehicle->GetImmersionRatio();
+            //volume = (volume + m_audioHoverVal) * 0.5f;
+            //volume = volToUse;
+            m_audioHoverVal = volume;
+
+            m_audioHoverVal5 = m_audioHoverVal4;
+            m_audioHoverVal4 = m_audioHoverVal3;
+            m_audioHoverVal3 = m_audioHoverVal2;
+            m_audioHoverVal2 = m_audioHoverVal1;
+            
+            volume = (immersionRatio + m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 6.0f;
+            //m_audioHoverVal1 = immersionRatio;
+            m_audioHoverVal = volume;
+            m_audioHoverVal1 = volume;
+        
+
+            ////////////////////////////////////////////////
+
+            const float posKey0 = 0.0f;
+            const float angKey0 = 0.0f;
+            const float deltaKey0 = 0.0f;
+
+            const float posKey1 = 0.25f;
+            const float angKey1 = 0.45f;
+            const float deltaKey1 = (posKey1 - posKey0) / (angKey1 - angKey0);
+
+            const float posKey2 = 0.75f;
+            const float angKey2 = 0.75f;
+            //const float deltaKey2 = -((posKey2 - posKey1) / (angKey2 - angKey1));
+            const float deltaKey2 = -((posKey2 - posKey0) / (angKey2 - angKey0));
+
+            const float posKey3 = 1.0f;
+            const float angKey3 = 1.0f;
+            const float deltaKey3 = -((posKey3 - posKey2) / (angKey3 - angKey2));
+
+            //const float posKey4 = 1.0f;
+            //const float angKey4 = 18.0f;
+            //const float deltaKey4 = -((posKey4 - posKey3) / (angKey4 - angKey3));
+
+            float inputAngle = immersionRatio;
+            float cl;
+            float curveDeltaRate;
+            float clTarget;
+
+            
+            if (inputAngle < angKey1)
+            {
+                cl = inputAngle * deltaKey1;
+            }
+            else if (inputAngle < angKey2)
+            {
+                //cl = inputAngle * -deltaKey2;
+                const float inputAngMod = inputAngle - angKey1;
+                cl = posKey1 - (inputAngMod * deltaKey2);
+            }
+            else if (inputAngle < angKey3)
+            {
+                const float inputAngMod = inputAngle - angKey2;
+                cl = posKey2 - (inputAngMod * deltaKey3);
+            }
+            else
+            {
+                cl = 1.0f;
+            }
+
+            ////////////////////////////////////////////////
+
             auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
+
+            //auto pitch = volume;
+            auto pitch = cl;
+            pitch = (pitch - 0.5f) * 2.0f;
+            if (pitch > 1.0f)
+            {
+                pitch = 1.0f;
+            }
+            else if (pitch < -1.0f)
+            {
+                pitch = -1.0f;
+            }
+
+            volume *= 0.6f;
+            volume += 0.1f;
+
+            m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
+            m_debugData->DebugPushUILineDecimalNumber("pitch ", pitch, "");
+
+            m_soundFxVecTest[i]->fx->SetPitch(pitch);
+            m_soundFxVecTest[i]->fx->SetVolume(volume);
+            m_soundFxVecTest[i]->volume = volume;
+            
+            auto pos = m_vehicle->GetPos();
+            m_soundFxVecTest[i]->pos = pos;
+            auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
+            //velocity += DirectX::SimpleMath::Vector3::UnitY * (m_vehicle->GetThrottleTank() * 10.0f);
+
+            m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
+            m_soundFxVecTest[i]->emitter->OrientTop = m_vehicle->GetVehicleUp();
+
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = velocity;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+     
+            m_debugData->DebugPushUILineDecimalNumber("immersionRatio = ", immersionRatio, "");
+            m_debugData->DebugPushUILineDecimalNumber("cl             =  ", cl, "");
+            m_debugData->ToggleDebugOff();
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVEROLD)
+        {
+            m_debugData->ToggleDebugOnOverRide();
+            //auto volume = m_vehicle->GetThrottleTank();
+            auto immersionRatio = m_vehicle->GetImmersionRatio();
+            auto immersionRatioPrev = m_vehicle->GetImmersionRatioPrev();
+
             auto volume = m_vehicle->GetImmersionRatio();
             //volume = (volume + m_audioHoverVal) * 0.5f;
             const float deltaMax = 0.3f * static_cast<float>(aTimer.GetElapsedSeconds());
@@ -4737,7 +4975,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             {
                 volume = m_audioHoverVal + deltaMax;
                 m_debugData->DebugPushUILineDecimalNumber("- ", 0.0f, "");
-            }      
+            }
 
             */
 
@@ -4761,27 +4999,63 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             auto pitch2 = volume;
 
             m_audioHoverVal1 = immersionRatio;
-            //volume = (m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 5.0f;
+            volume = (m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 5.0f;
             m_audioHoverVal = volume;
             m_audioHoverVal1 = volume;
+
+            m_audioHoverVal5 = m_audioHoverVal4;
+            m_audioHoverVal4 = m_audioHoverVal3;
+            m_audioHoverVal3 = m_audioHoverVal2;
+            m_audioHoverVal2 = m_audioHoverVal1;
+
+
+            auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
+
+            /*
+            m_audioHoverVal1 = hoverDriveOutput;
+            m_audioHoverVal5 = m_audioHoverVal4;
+            m_audioHoverVal4 = m_audioHoverVal3;
+            m_audioHoverVal3 = m_audioHoverVal2;
+            m_audioHoverVal2 = m_audioHoverVal1;
+            // m_audioHoverVal1 = m_audioHoverVal;
+            auto volumeForce = (m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 5.0f;
+            const float forceMax = 13640.0f;
+            const float forceMin = 8000.0f;
+            float volumeModed = 0.0f;
+            if (volumeForce > forceMax)
+            {
+                volumeModed = 1.0f;
+            }
+            else if (volumeForce < forceMin)
+            {
+                volumeModed = 0.0f;
+            }
+            else
+            {
+                //volumeModed = volumeForce / forceMax;
+                volumeModed = (volumeForce - forceMin) / (forceMax - forceMin);
+            }
+
+            volume = volumeModed;
+            */
 
             auto pitch = volume;
             //pitch *= 0.5f;
            // pitch *= 2.0f;
             pitch -= 0.5f;
             pitch *= 2.0f;
-         //   pitch -= 1.0f;
-            //m_debugData->DebugPushUILineDecimalNumber("xxxxx ", pitch, "");
-            //  pitch = volume;
-           //volume *= 0.5f;
-           // volume += 0.1f;
+            //   pitch -= 1.0f;
+               //m_debugData->DebugPushUILineDecimalNumber("xxxxx ", pitch, "");
+               //  pitch = volume;
+              //volume *= 0.5f;
+              // volume += 0.1f;
 
-            //volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
+               //volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
 
-       
-            //m_audioHoverVal = volume;
 
-            //if (immersionRatio < 0.5f)
+               //m_audioHoverVal = volume;
+
+               //if (immersionRatio < 0.5f)
             if (volume < 0.5f)
             {
                 //pitch = -1.0f;
@@ -4817,7 +5091,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
-            
+
             auto pos = m_vehicle->GetPos();
             //pos = m_debugAudioPos;
 
@@ -4838,12 +5112,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
 
-            m_audioHoverVal5 = m_audioHoverVal4;
-            m_audioHoverVal4 = m_audioHoverVal3;
-            m_audioHoverVal3 = m_audioHoverVal2;
-            m_audioHoverVal2 = m_audioHoverVal1;
-           // m_audioHoverVal1 = m_audioHoverVal;
-         
+
+
 
             //m_debugData->DebugPushUILineDecimalNumber("deltaMax ", deltaMax, "");
             m_debugData->DebugPushUILineDecimalNumber("immersionRatio ", immersionRatio, "");
@@ -4856,6 +5126,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal3 =  ", m_audioHoverVal3, "");
             m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal4 =  ", m_audioHoverVal4, "");
             m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal5 =  ", m_audioHoverVal5, "");
+            //m_debugData->DebugPushUILineDecimalNumber("volumeModed =  ", volumeModed, "");
             m_debugData->ToggleDebugOff();
 
 

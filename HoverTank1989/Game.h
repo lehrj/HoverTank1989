@@ -395,25 +395,27 @@ private:
 
     const int m_audioFxIdDebug = 44;
     const int m_audioFxIdNPCVehicle = 25;
-    //const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdPlayerVehicle = 27;
-    const int m_audioFxIdPlayerVehicleHover = 28;
+    const int m_audioFxIdPlayerVehicleHover = 29;
     const int m_audioFxIdAmbient = 44;
     /*
     const int m_audioFxIdJI1 = 12;
     const int m_audioFxIdJI2 = 12;
     const int m_audioFxIdJI3 = 15;
     const int m_audioFxIdJI4 = 22;
-    /
+    */
     const int m_audioFxIdJI1 = 11;
     const int m_audioFxIdJI2 = 13;
     const int m_audioFxIdJI3 = 14;
     const int m_audioFxIdJI4 = 16;
-    */
+    
+
+    /*
     const int m_audioFxIdJI1 = 22;
     const int m_audioFxIdJI2 = 22;
     const int m_audioFxIdJI3 = 22;
     const int m_audioFxIdJI4 = 22;
+    */
 
     const int m_audioSpawner1 = 41;
     const int m_audioSpawner2 = 41;
@@ -536,12 +538,12 @@ private:
     int m_jiTriggerCount = 0;
 
     const float m_bmwTriggerTime = 0.0f + m_startDelay + m_logoDisplayDuration + (m_logoDisplayDuration * 0.1f);
-
-    const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    //const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-
     const float m_jiNormalTrigger = 0.0f + m_startDelay + (m_logoDisplayDuration * 0.5f);
+
+    //const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger1 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger2 = 2.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;
@@ -581,7 +583,7 @@ private:
     DirectX::XMFLOAT4 m_testColor;
     const DirectX::XMFLOAT4 m_defaultStartTerrainColor = DirectX::XMFLOAT4(0.1f, 0.01f, 0.01f, 1.0f);
     const DirectX::XMFLOAT4 m_defaultGameTerrainColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 1.0f);
-    const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+    const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 
     const float m_startTerrainMaxY = 0.347000033f;
     const float m_gameTerrainMaxY = 396.0f;
@@ -624,6 +626,10 @@ private:
     DirectX::SimpleMath::Vector3                 m_shapeLaunchPadPos = DirectX::SimpleMath::Vector3(-500.0f, 0.5f, 0.0f);
     DirectX::SimpleMath::Vector3                 m_shapeLaunchPadDimensions = DirectX::SimpleMath::Vector3(100.0f, 1.0f, 100.0f);
 
+    // spawner shape
+    const DirectX::SimpleMath::Vector3           m_spawnerDimensions = DirectX::SimpleMath::Vector3(50.0f, 50.0f, 10.0f);
+    const float                                  m_spawnerScale = 15.0f;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
     DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;
     DirectX::SimpleMath::Matrix                  m_spawnerInnerMat2;
@@ -631,8 +637,26 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat;
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat2;
 
+
     DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
     DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(600.0f, 0.0f, -900.0f);
+
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerAxelMat;
+    const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions = DirectX::SimpleMath::Vector3(70.0f, 20.0f, 20.0f);
+
+    DirectX::SimpleMath::Vector3                 m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
+
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerArmShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerArmMat;
+    const DirectX::SimpleMath::Vector3           m_spawnerArmDimensions = DirectX::SimpleMath::Vector3(4.0f, 5.0f, 70.0f);
+
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerDoorShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;
+    const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(68.0f, 30.0f, 4.0f);
+
+
 
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;

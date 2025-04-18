@@ -1369,17 +1369,17 @@ float FireControl::CalculateFinLiftCoefFlat(const float aAngleOfAttack)
     // converting to degrees since all available NACA airfoil maps seem to obstain from radians
     //const float inputAngleRaw = abs(Utility::ToDegrees(aAngleOfAttack));
     const float inputAngleRaw = (Utility::ToDegrees(aAngleOfAttack));
-    float inputAngleMod = inputAngleRaw;
+    float inputAngleModNomrmalized = inputAngleRaw;
     bool isAoAReversed = false;
     if (inputAngleRaw > 90.0f)
     {
         float testVal = inputAngleRaw - 90.0f;
         float testVal2 = 90.0f - testVal;
-        inputAngleMod = testVal2;
-        inputAngleMod = 90.0f - (inputAngleRaw - 90.0f);
+        inputAngleModNomrmalized = testVal2;
+        inputAngleModNomrmalized = 90.0f - (inputAngleRaw - 90.0f);
         isAoAReversed = true;
     }
-    const float inputAngle = inputAngleMod;
+    const float inputAngle = inputAngleModNomrmalized;
 
     const float posKey0 = 0.0f;
     const float angKey0 = 0.0f;

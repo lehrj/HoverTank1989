@@ -256,7 +256,7 @@ private:
     const float                     m_frustumPlanePaddingVertical = Utility::ToRadians(15.0f);
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
-    float                           m_posTravelSpeed = 24.0f;
+    float                           m_posTravelSpeed = 124.0f;
     const float                     m_freeLookSpeedDelta = 3.0f;
     const float                     m_freeLookSpeedMax = 150.0f;
     const float                     m_freeLookSpeedMin = 1.0f;
@@ -503,19 +503,10 @@ private:
     float m_panSmoothStepCam = 0.4f;
     float m_panSmoothStepTarg = 0.45f;
 
-    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 85.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 0.0f);
-    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(-23.0f, 10.0f, 0.0f);
-
-    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(340.0f, 10.0f, 0.0f);
-    DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(100.0f, 10.0f, 0.0f);
-
-    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(850.0f, 90.0f, 1000.0f);
+    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(100.0f, 10.0f, 0.0f);
+    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(930.0f, 66.0f, 922.0f);
+    DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 70.0f);
     DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(930.0f, 66.0f, 922.0f);
-
 
     float m_snapSmoothStepCam = 0.1f;
     float m_snapSmoothStepTarg = 0.09f;
