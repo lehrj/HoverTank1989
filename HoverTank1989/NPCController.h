@@ -63,6 +63,7 @@ public:
     bool GetIsNpcUntargetedTrue(int aId);
 
     DirectX::SimpleMath::Vector3 GetNextSpawnerLoc();
+    bool GetIsNextSpawnerAltTrue() const { return m_isAltSpawnLocTrue; };
 
     DirectX::SimpleMath::Vector3 GetNpcAccelVecTest(const unsigned int aId);
     DirectX::SimpleMath::Matrix GetNpcAlignment(const unsigned int aId);
@@ -136,7 +137,7 @@ private:
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
 
-    const int m_spawnCountMax = 5;
+    const int m_spawnCountMax = 14;
 
     int m_spawnCount;
     const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);

@@ -7,6 +7,11 @@ NPCVehicle::NPCVehicle()
     m_npcAI = std::make_unique<NpcAI>(this);
 }
 
+void NPCVehicle::ActivateAi()
+{
+    m_npcAI->ActivateAI();
+}
+
 bool NPCVehicle::ActivateJump()
 {
     if (m_vehicleStruct00.vehicleData.jumpData.isJumpReady == true)
@@ -648,8 +653,6 @@ void NPCVehicle::DebugToggleAI()
     }
     */
 }
-
-
 
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
@@ -3428,6 +3431,11 @@ void NPCVehicle::UpdateJumpData(JumpData& aJumpData, const float aTimeDelta)
 
 void NPCVehicle::UpdateNPC(const double aTimeDelta)
 {
+    if (m_vehicleStruct00.vehicleData.time > m_spawnerDelay)
+    {
+        this->DebugToggleAI();
+    }
+
     m_testLightRotation = Utility::WrapAngle((m_testLightRotation + (aTimeDelta * -100.5f)));
     m_testShapeRotation = Utility::WrapAngle((m_testShapeRotation + (aTimeDelta * 200.5f)));
 

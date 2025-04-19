@@ -628,7 +628,7 @@ private:
 
     // spawner shape
     const DirectX::SimpleMath::Vector3           m_spawnerDimensions = DirectX::SimpleMath::Vector3(50.0f, 50.0f, 10.0f);
-    const float                                  m_spawnerScale = 15.0f;
+    const float                                  m_spawnerScale = 16.15f;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
     DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;
@@ -644,19 +644,65 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat;
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions = DirectX::SimpleMath::Vector3(70.0f, 20.0f, 20.0f);
+    const DirectX::SimpleMath::Vector3                 m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
+    const DirectX::SimpleMath::Vector3                 m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
 
-    DirectX::SimpleMath::Vector3                 m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
-    DirectX::SimpleMath::Vector3                 m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape2;
+    DirectX::SimpleMath::Matrix                  m_spawnerAxelMat2;
+    const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions2 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
+
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape3;
+    const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions3 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerArmShape;
     DirectX::SimpleMath::Matrix                  m_spawnerArmMat;
     const DirectX::SimpleMath::Vector3           m_spawnerArmDimensions = DirectX::SimpleMath::Vector3(4.0f, 5.0f, 70.0f);
 
+    //base
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerBaseShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseMat2;
+    const DirectX::SimpleMath::Vector3           m_spawnerBaseDimensions = DirectX::SimpleMath::Vector3(80.0f, 50.0f, 20.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerBaseTrans = DirectX::SimpleMath::Vector3(0.0f, 8.0f, 110.0f);
+
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerBaseRoofShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseRoofMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseRoofMat2;
+    const DirectX::SimpleMath::Vector3           m_spawnerBaseRoofDimensions = DirectX::SimpleMath::Vector3(115.0f, 5.0f, 80.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerBaseRoofTrans = DirectX::SimpleMath::Vector3(0.0f, 27.0f, 110.0f);
+
+    //std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerBaseLowerShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat2;
+    const DirectX::SimpleMath::Vector3           m_spawnerBaseLowerDimensions = DirectX::SimpleMath::Vector3(70.0f, 30.0f, 100.0f);
+
+
+    const DirectX::SimpleMath::Vector3 m_spawnerBasePos1 = DirectX::SimpleMath::Vector3(m_spawnerPos.x + m_spawnerBaseTrans.x, 
+        m_spawnerPos.y + m_spawnerAxelOffset.y + m_spawnerBaseTrans.y, m_spawnerPos.z - m_spawnerAxelOffset.z + m_spawnerBaseTrans.z);
+    const DirectX::SimpleMath::Vector3 m_spawnerBasePos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y, -m_spawnerBasePos1.z);
+    const DirectX::SimpleMath::Vector3 m_spawnerRoofPos1 = DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y + m_spawnerBaseRoofTrans.y, m_spawnerBasePos1.z);
+    const DirectX::SimpleMath::Vector3 m_spawnerRoofPos2 = DirectX::SimpleMath::Vector3(m_spawnerRoofPos1.x, m_spawnerRoofPos1.y, -m_spawnerRoofPos1.z);
+    const DirectX::SimpleMath::Vector3 m_spawnerLowerPos1 = DirectX::SimpleMath::Vector3(m_spawnerRoofPos1.x, m_spawnerRoofPos1.y - 30.0f, m_spawnerRoofPos1.z);
+    const DirectX::SimpleMath::Vector3 m_spawnerLowerPos2 = DirectX::SimpleMath::Vector3(m_spawnerLowerPos1.x, m_spawnerLowerPos1.y, -m_spawnerLowerPos1.z);
+
+    const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.5f);
+    const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.5f));
+    DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat2;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerDoorShape;
     DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;
-    const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(68.0f, 30.0f, 4.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(72.0f, 30.0f, 4.0f);
 
+    const float m_spawnerDoorAngleMax = Utility::ToRadians(80.0f);
 
+    const float m_spawnerDoorSwingTimeMax = 3.5f;
+    float m_spawnerDoorTimer1 = 0.0f;
+    float m_spawnerDoorTimer2 = 0.0f;
+    bool m_isSpawnerDoorActive1 = false;
+    bool m_isSpawnerDoorActive2 = false;
+
+    int m_doorSwingCount1 = 0;
+    int m_doorSwingCount2 = 0;
 
     bool m_isPauseOn = false;
     bool m_isSlowMoOn = false;

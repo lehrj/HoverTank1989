@@ -512,6 +512,7 @@ class NPCVehicle
 {
 public:
     NPCVehicle();
+    void ActivateAi();
     bool ActivateJump();
     void ActivateNPC();
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
@@ -751,6 +752,8 @@ private:
     const float m_angularDragMod = 0.3f;
 
     const bool m_isAiOn = true;
+
+    const float m_spawnerDelay = 1.0f;
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

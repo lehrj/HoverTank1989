@@ -30,6 +30,7 @@ class NpcAI
 {
 public:
     NpcAI(const NPCVehicle* aOwner);
+    void ActivateAI();
     void DebugToggle();
     bool GetAiToggle() const { return  m_debugToggle; };
     float GetAngleToDestination(DirectX::SimpleMath::Vector3 aForward, DirectX::SimpleMath::Vector3 aUp, DirectX::SimpleMath::Vector3 aDest);

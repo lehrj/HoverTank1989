@@ -266,6 +266,11 @@ void NpcAI::CreateWayPathTestMissileRange()
     m_currentWayPath.targetNode = 0;
 }
 
+void NpcAI::ActivateAI()
+{
+    m_debugToggle = true;
+}
+
 void NpcAI::DebugToggle()
 {
     if (m_debugToggle == true)

@@ -57,7 +57,7 @@ void NPCController::AddNpcWithAudio(Microsoft::WRL::ComPtr<ID3D11DeviceContext1>
 
     if (aNPCType == NPCType::NPCTYPE_SPAWNED || aNPCType == NPCType::NPCTYPE_SPAWNEDALT)
     {
-        newNPC->DebugToggleAI();
+        //newNPC->DebugToggleAI();
     }
 
     m_npcVec.push_back(newNPC);
@@ -1148,7 +1148,6 @@ bool NPCController::GetIsNpcUntargetedTrue(int aId)
 
 DirectX::SimpleMath::Vector3 NPCController::GetNextSpawnerLoc()
 {
-
     if (m_isAltSpawnLocTrue == true)
     {
         return m_spawnerPos;
@@ -1157,7 +1156,6 @@ DirectX::SimpleMath::Vector3 NPCController::GetNextSpawnerLoc()
     {
         return m_spawnerPosAlt;
     }
-    
 }
 
 DirectX::SimpleMath::Vector3 NPCController::GetNpcAccelVecTest(const unsigned int aId)
