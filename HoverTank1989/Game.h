@@ -676,7 +676,6 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat2;
     const DirectX::SimpleMath::Vector3           m_spawnerBaseLowerDimensions = DirectX::SimpleMath::Vector3(70.0f, 30.0f, 100.0f);
 
-
     const DirectX::SimpleMath::Vector3 m_spawnerBasePos1 = DirectX::SimpleMath::Vector3(m_spawnerPos.x + m_spawnerBaseTrans.x, 
         m_spawnerPos.y + m_spawnerAxelOffset.y + m_spawnerBaseTrans.y, m_spawnerPos.z - m_spawnerAxelOffset.z + m_spawnerBaseTrans.z);
     const DirectX::SimpleMath::Vector3 m_spawnerBasePos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y, -m_spawnerBasePos1.z);
@@ -688,6 +687,15 @@ private:
     const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.5f);
     const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.5f));
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat2;
+
+    // cylon eye
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerEyeShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerEyeMat1;
+    //const DirectX::SimpleMath::Vector3           m_spawnerEyePos1 = DirectX::SimpleMath::Vector3(72.0f, 30.0f, 4.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerEyePos1 = DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y + (m_spawnerRearScale.y * 0.58f), m_spawnerBasePos1.z - (m_spawnerRearScale.z * 1.0f));
+
+    
+    const float                                  m_spawnerEyeDiameter = 8.0f;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerDoorShape;
     DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;

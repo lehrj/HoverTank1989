@@ -1750,6 +1750,10 @@ void Game::CreateDeviceDependentResources()
     m_spawnerBaseRearMat2 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
     m_spawnerBaseRearMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerRearPos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
+    m_spawnerEyeShape = DirectX::GeometricPrimitive::CreateSphere(context, m_spawnerEyeDiameter);
+    m_spawnerEyeMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerEyeMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerEyePos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
 
     // launch pad or site
     m_shapeLaunchPad = DirectX::GeometricPrimitive::CreateBox(context, m_shapeLaunchPadDimensions);
@@ -1781,16 +1785,23 @@ void Game::DrawSpawner()
     if (m_isSpawnerDoorActive1 == true)
     {
         float halfTime = m_spawnerDoorSwingTimeMax * 0.5f;   
+        float closeStartTime = m_spawnerDoorSwingTimeMax * 0.9f;
         if (m_spawnerDoorTimer1 < halfTime)
         {
             //ratio = m_spawnerDoorTimer1 / halfTime;
             angle1 = -m_spawnerDoorAngleMax * (m_spawnerDoorTimer1 / halfTime);
         }
+        else if (m_spawnerDoorTimer1 < closeStartTime)
+        {
+            angle1 = -m_spawnerDoorAngleMax;
+        }
         else
         {
             //ratio = (m_spawnerDoorTimer1 - halfTime) / halfTime;
-            angle1 = -m_spawnerDoorAngleMax + (m_spawnerDoorAngleMax * ((m_spawnerDoorTimer1 - halfTime) / halfTime));
+            //angle1 = -m_spawnerDoorAngleMax + (m_spawnerDoorAngleMax * ((m_spawnerDoorTimer1 - halfTime) / halfTime));
+            angle1 = -m_spawnerDoorAngleMax + (m_spawnerDoorAngleMax * ((m_spawnerDoorTimer1 - closeStartTime) / (m_spawnerDoorSwingTimeMax - closeStartTime)));
         }
+
         m_spawnerDoorTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
         if (m_spawnerDoorTimer1 >= m_spawnerDoorSwingTimeMax)
         {
@@ -1967,7 +1978,7 @@ void Game::DrawSpawner()
     m_spawnerBaseMat1 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
     m_spawnerBaseMat1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.5f, 1.0f, 0.6f));
     m_spawnerBaseMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(basePos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    m_spawnerBaseShape->Draw(m_spawnerBaseMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
+    //m_spawnerBaseShape->Draw(m_spawnerBaseMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
 
     //basePos1.y += m_spawnerBaseRoofTrans.y;
     basePos1 = m_spawnerRoofPos1;
@@ -1986,16 +1997,30 @@ void Game::DrawSpawner()
     m_spawnerBaseLowerMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerBaseLowerDimensions);
     //m_spawnerBaseLowerMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(2.5f));
     m_spawnerBaseLowerMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(baseLowerPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
-    m_spawnerBaseRoofShape->Draw(m_spawnerBaseLowerMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
+ //   m_spawnerBaseRoofShape->Draw(m_spawnerBaseLowerMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
+
+    // eye
+    float eyeSlide = sin((m_spawnerDoorTimer1) * (Utility::GetPi() * 2.0f));
+
+    auto eyeVec = DirectX::SimpleMath::Vector3((eyeSlide * (m_spawnerBaseLowerDimensions.x * 0.42f)), 0.0f, 0.0f);
+    auto eyeMat = m_spawnerEyeMat1;
+    eyeMat *= DirectX::SimpleMath::Matrix::CreateTranslation(eyeVec);
+
+    float eyeMod = 5.0f;
+    float eyeRed = m_spawnerDoorTimer1 * eyeMod;
+    float eyeLimitLower = 0.2f;
+    if (eyeRed > 1.0f)
+    {
+        eyeRed = 1.0f;
+    }
+
+    DirectX::SimpleMath::Vector4 eyeColor = DirectX::SimpleMath::Vector4(eyeRed, 0.0f, 0.0f, 1.0f);
+    m_spawnerEyeShape->Draw(eyeMat, m_camera->GetViewMatrix(), m_proj, eyeColor);
 
     // base 2
-
     m_spawnerBaseShape->Draw(m_spawnerBaseMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
-
     m_spawnerBaseRoofShape->Draw(m_spawnerBaseRoofMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::LightGray);
-
     m_spawnerBaseRoofShape->Draw(m_spawnerBaseLowerMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
-
     m_spawnerBaseRoofShape->Draw(m_spawnerBaseRearMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
 
     /// 
@@ -2005,11 +2030,53 @@ void Game::DrawSpawner()
     doorMatAlt *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
     m_spawnerDoorShape->Draw(doorMatAlt, m_camera->GetViewMatrix(), m_proj);
 
-    m_spawnerOuterShape->Draw(m_spawnerOuterMat, m_camera->GetViewMatrix(), m_proj);
+    //m_spawnerOuterShape->Draw(m_spawnerOuterMat, m_camera->GetViewMatrix(), m_proj);
     m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
 
     m_spawnerOuterShape->Draw(m_spawnerOuterMat2, m_camera->GetViewMatrix(), m_proj);
     m_spawnerInnerShape->Draw(m_spawnerInnerMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
+
+
+    m_effect->EnableDefaultLighting();
+    DirectX::SimpleMath::Vector3 mainLightDirection0 = - DirectX::SimpleMath::Vector3::UnitY;
+    DirectX::SimpleMath::Vector3 mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
+    mainLightDirection1.Normalize();
+    DirectX::SimpleMath::Vector3 mainLightDirection2 = DirectX::SimpleMath::Vector3::UnitZ;
+    //m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
+
+    float eyeSlideMod = eyeSlide * 0.5f;
+    //mainLightDirection0 = DirectX::SimpleMath::Vector3::Transform(mainLightDirection0, DirectX::SimpleMath::Matrix::CreateRotationZ(-eyeSlide));
+   // mainLightDirection1 = DirectX::SimpleMath::Vector3::Transform(mainLightDirection1, DirectX::SimpleMath::Matrix::CreateRotationZ(-eyeSlide));
+    mainLightDirection2 = DirectX::SimpleMath::Vector3::Transform(mainLightDirection2, DirectX::SimpleMath::Matrix::CreateRotationY(-eyeSlideMod));
+   // m_effect->SetLightSpecularColor(2, DirectX::SimpleMath::Vector4(eyeColor.x, eyeColor.y + 0.4f, eyeColor.z + 0.4f, eyeColor.w));
+    m_effect->SetLightDiffuseColor(2, DirectX::SimpleMath::Vector4(eyeColor.x, eyeColor.y + 0.4f, eyeColor.z + 0.4f, eyeColor.w));
+
+    m_effect->SetLightDirection(0, mainLightDirection0);
+    m_effect->SetLightDirection(1, mainLightDirection1);
+    m_effect->SetLightDirection(2, mainLightDirection2);
+
+    auto updateMat = m_spawnerBaseLowerMat1;
+    m_effect->SetWorld(updateMat);
+    m_effect->SetColorAndAlpha(DirectX::Colors::DarkGray);
+    m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    updateMat = m_spawnerBaseMat1;
+    m_effect->SetWorld(updateMat);
+    m_effect->SetColorAndAlpha(DirectX::Colors::Gray);
+   
+    m_spawnerBaseShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    updateMat = m_spawnerOuterMat;
+    m_effect->SetWorld(updateMat);
+    m_effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(eyeColor.x, eyeColor.y + 0.4f, eyeColor.z + 0.4f, eyeColor.w));
+    m_effect->SetColorAndAlpha(DirectX::Colors::LightGray);
+
+    //m_effect->SetLightDirection(2, DirectX::SimpleMath::Vector3::Transform(-DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Matrix::CreateRotationY(eyeSlideMod)));
+
+    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -1.0f, 0.0f));
+    m_spawnerOuterShape->Draw(updateMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -3605,6 +3672,7 @@ void Game::OnDeviceLost()
 
     m_spawnerBaseShape.reset();
     m_spawnerBaseRoofShape.reset();
+    m_spawnerEyeShape.reset();
 
     m_shapePlatform.reset();
 
