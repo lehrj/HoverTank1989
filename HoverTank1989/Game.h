@@ -647,6 +647,8 @@ private:
     const DirectX::SimpleMath::Vector3                 m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
     const DirectX::SimpleMath::Vector3                 m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
 
+    DirectX::SimpleMath::Matrix                  m_spawnerMainAxelMat2;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape2;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat2;
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions2 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
@@ -662,7 +664,9 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerBaseShape;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseMat2;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMat2;
     const DirectX::SimpleMath::Vector3           m_spawnerBaseDimensions = DirectX::SimpleMath::Vector3(80.0f, 50.0f, 20.0f);
+    //const DirectX::SimpleMath::Vector3           m_spawnerBaseTrans = DirectX::SimpleMath::Vector3(0.0f, 8.0f, 110.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerBaseTrans = DirectX::SimpleMath::Vector3(0.0f, 8.0f, 110.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerBaseRoofShape;
@@ -687,6 +691,7 @@ private:
     const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.5f);
     const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.5f));
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat2;
+    DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat1;
 
     // cylon eye
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerEyeShape;
@@ -702,6 +707,9 @@ private:
     const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(72.0f, 30.0f, 4.0f);
 
     const float m_spawnerDoorAngleMax = Utility::ToRadians(80.0f);
+
+    float m_spawnerDoorPrevAngle1 = 0.0f;
+    float m_spawnerDoorPrevAngle2 = 0.0f;
 
     const float m_spawnerDoorSwingTimeMax = 3.5f;
     float m_spawnerDoorTimer1 = 0.0f;
