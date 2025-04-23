@@ -753,7 +753,7 @@ private:
 
     const bool m_isAiOn = true;
 
-    const float m_spawnerDelay = 3.0f;
+    const float m_spawnerDelay = 0.0f;
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

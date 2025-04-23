@@ -89,6 +89,7 @@ public:
 
     void TestPositionChange();
     void ToggleDebugBool();
+    void ToggleSpawner();
     void UnlockJumpAbility();
     void UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const double aTimeDelta);
     void UpdateLoadQueueWithAudio(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Utility::SoundFx> aAudioFx);
@@ -132,18 +133,21 @@ private:
 
     //float m_spawnerCooldown = 3.0f;
     float m_spawnerCooldown = 0.3f;
-    const float m_spawnerCooldownTime = 3.5f;
+    const float m_spawnerCooldownTime = 7.5f;
 
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
 
     const int m_spawnCountMax = 18;
 
-    int m_spawnCount;
-    const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
+    int m_spawnCount = 0;
+    //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
+    //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 800.0f);
+    const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(510.0f, 10.0f, -790.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
-    const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -900.0f);
+    //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -900.0f);
+    const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -800.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeadingAlt = DirectX::SimpleMath::Vector3::UnitZ;
 };
 

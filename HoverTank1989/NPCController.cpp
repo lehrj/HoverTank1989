@@ -1151,10 +1151,12 @@ DirectX::SimpleMath::Vector3 NPCController::GetNextSpawnerLoc()
     if (m_isAltSpawnLocTrue == true)
     {
         return m_spawnerPos;
+        //return m_spawnerPosAlt;
     }
     else
     {
         return m_spawnerPosAlt;
+        //return m_spawnerPos;
     }
 }
 
@@ -1468,6 +1470,18 @@ void NPCController::ToggleDebugBool()
     }
 }
 
+void NPCController::ToggleSpawner()
+{
+    if (m_isAltSpawnLocTrue == true)
+    {
+        m_isAltSpawnLocTrue = false;
+    }
+    else
+    {
+        m_isAltSpawnLocTrue = true;
+    }
+}
+
 void NPCController::UnlockJumpAbility()
 {
     for (unsigned int i = 0; i < m_npcVec.size(); ++i)
@@ -1565,6 +1579,23 @@ void NPCController::UpdateNPCController(const DirectX::BoundingFrustum& aFrustum
 {
     UpdateSpawner(aTimeDelta);
     UpdateNPCs(aFrustum, aTimeDelta);
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLinePositionIndicator(m_spawnerPos, 50.0f, 0.0f, DirectX::Colors::Green);
+    m_debugData->PushDebugLinePositionIndicator(m_spawnerPosAlt, 70.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->ToggleDebugOff();
+    /*
+    loadData.deployPosition = m_spawnerPosAlt;
+    loadData.isAltTrue = true;
+    m_isAltSpawnLocTrue = false;
+}
+    else
+    {
+    loadData.deployType = NPCType::NPCTYPE_SPAWNED;
+    loadData.deployOrientation = m_spawnerHeading;
+    loadData.deployPosition = m_spawnerPos;
+
+    */
 }
 
 void NPCController::UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta)
@@ -1650,7 +1681,7 @@ void NPCController::SpawnToQueue()
         loadData.deployOrientation = m_spawnerHeadingAlt;
         loadData.deployPosition = m_spawnerPosAlt;
         loadData.isAltTrue = true;
-        m_isAltSpawnLocTrue = false;
+        //m_isAltSpawnLocTrue = false;
     }
     else
     {
@@ -1658,7 +1689,7 @@ void NPCController::SpawnToQueue()
         loadData.deployOrientation = m_spawnerHeading;
         loadData.deployPosition = m_spawnerPos;
         loadData.isAltTrue = false;
-        m_isAltSpawnLocTrue = true;
+        //m_isAltSpawnLocTrue = true;
     }
 
     m_loadQueue.push_back(loadData);
