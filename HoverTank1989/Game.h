@@ -67,6 +67,8 @@ private:
 
     void AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::SoundFxType aSfxType);
 
+    void CalculateSpawnerData();
+
     void Clear();
 
     void CreateDeviceDependentResources();
@@ -84,6 +86,7 @@ private:
     
     void DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSpawner();
+    void DrawSpawnerOld();
     void DrawStartScreen();
     void DrawTerrainNew(Terrain& aTerrain);
     void DrawTestRangeMissile();
@@ -643,11 +646,20 @@ private:
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat;
-    const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions = DirectX::SimpleMath::Vector3(70.0f, 20.0f, 20.0f);
-    const DirectX::SimpleMath::Vector3                 m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
-    const DirectX::SimpleMath::Vector3                 m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
-
+    DirectX::SimpleMath::Matrix                  m_spawnerMainAxelMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerMainAxelMat2;
+    //DirectX::SimpleMath::Matrix                  m_spawnerMainAxelMat2;
+
+    DirectX::SimpleMath::Quaternion              m_spawnerMainAxelQuat1 = DirectX::SimpleMath::Quaternion::Identity;
+    DirectX::SimpleMath::Quaternion              m_spawnerMainAxelQuat2 = DirectX::SimpleMath::Quaternion::Identity;
+
+    const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions = DirectX::SimpleMath::Vector3(70.0f, 20.0f, 20.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
+
+    const DirectX::SimpleMath::Vector3           m_spawnerMainAxelPos1 = DirectX::SimpleMath::Vector3(m_spawnerPos.x, m_spawnerPos.y + 15.0f, m_spawnerPos.z - 25.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerMainAxelPos2 = DirectX::SimpleMath::Vector3(m_spawnerPos.x, m_spawnerPos.y + 15.0f, m_spawnerPos2.z + 25.0f);
+
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape2;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat2;
@@ -664,7 +676,6 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerBaseShape;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseMat2;
-    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMat2;
     const DirectX::SimpleMath::Vector3           m_spawnerBaseDimensions = DirectX::SimpleMath::Vector3(80.0f, 50.0f, 20.0f);
     //const DirectX::SimpleMath::Vector3           m_spawnerBaseTrans = DirectX::SimpleMath::Vector3(0.0f, 8.0f, 110.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerBaseTrans = DirectX::SimpleMath::Vector3(0.0f, 8.0f, 110.0f);
@@ -688,11 +699,21 @@ private:
     const DirectX::SimpleMath::Vector3 m_spawnerLowerPos1 = DirectX::SimpleMath::Vector3(m_spawnerRoofPos1.x, m_spawnerRoofPos1.y - 30.0f, m_spawnerRoofPos1.z);
     const DirectX::SimpleMath::Vector3 m_spawnerLowerPos2 = DirectX::SimpleMath::Vector3(m_spawnerLowerPos1.x, m_spawnerLowerPos1.y, -m_spawnerLowerPos1.z);
 
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMat2;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost1 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y - 2.0f, m_spawnerBasePos1.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost2 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y - 2.0f, m_spawnerBasePos2.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
     const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.5f);
     const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.5f));
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat2;
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat1;
 
+    const DirectX::XMVECTORF32 m_spawnerColorGray1 = DirectX::Colors::LightGray;
+    const DirectX::XMVECTORF32 m_spawnerColorGray2 = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorAxel1 = DirectX::Colors::LightGray;
+    const DirectX::XMVECTORF32 m_spawnerColorAxel2 = DirectX::Colors::Gray;
     // cylon eye
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerEyeShape;
     DirectX::SimpleMath::Matrix                  m_spawnerEyeMat1;
@@ -706,10 +727,25 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;
     const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(72.0f, 30.0f, 4.0f);
 
-    const float m_spawnerDoorAngleMax = Utility::ToRadians(80.0f);
-
+    const float                                  m_spawnerDoorAngleMax = Utility::ToRadians(80.0f);
+    const DirectX::SimpleMath::Quaternion        m_spawnerDoorClosedQuat = DirectX::SimpleMath::Quaternion::Identity;
+    const DirectX::SimpleMath::Quaternion        m_spawnerDoorOpenQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, m_spawnerDoorAngleMax);
+    const DirectX::SimpleMath::Quaternion        m_spawnerDoorOpenQuat2 = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, -m_spawnerDoorAngleMax);
     float m_spawnerDoorPrevAngle1 = 0.0f;
     float m_spawnerDoorPrevAngle2 = 0.0f;
+
+    float m_spawnerDatatMainAxelAngle1 = Utility::ToRadians(0.0f);
+    float m_spawnerDatatMainAxelAngle2 = Utility::ToRadians(0.0f);
+    float m_spawnerDatatSecondAxelAngle1 = Utility::ToRadians(0.0f);
+    float m_spawnerDatatSecondAxelAngle2 = Utility::ToRadians(0.0f);
+    float m_spawnerDatatThirdAxelAngle1 = Utility::ToRadians(0.0f);
+    float m_spawnerDatatThirdAxelAngle2 = Utility::ToRadians(0.0f);
+    float m_spawnerMainAxelRatio1 = 0.0f;
+    float m_spawnerMainAxelRatio2 = 0.0f;
+    float m_spawnerBlastShieldRatio1 = 0.0f;
+    float m_spawnerBlastShieldRatio2 = 0.0f;
+    float m_spawnerGlowRatio1 = 0.0f;
+    float m_spawnerGlowRatio2 = 0.0f;
 
     const float m_spawnerDoorSwingTimeMax = 3.5f;
     float m_spawnerDoorTimer1 = 0.0f;
