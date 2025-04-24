@@ -2013,7 +2013,8 @@ void Game::CalculateSpawnerData()
     float availableForce2 = 0.0f;
     float angAcc = 0.0f;
 
-    float angle2 = cos(m_timer.GetTotalSeconds()) + Utility::ToRadians(45.0f);
+    float angle2 = 0.0f;
+    float quatAngle2 = 0.0f;
     float ratio2 = 0.0f;
     auto closedVec2 = DirectX::SimpleMath::Vector3::UnitZ;
     auto overCloseVec2 = closedVec2;
@@ -2025,6 +2026,7 @@ void Game::CalculateSpawnerData()
     DirectX::SimpleMath::Vector3 stepVec2 = DirectX::SimpleMath::Vector3::UnitZ;
     DirectX::SimpleMath::Vector3 compVec = DirectX::SimpleMath::Vector3::UnitY;
     float smoothAng2 = 0.0f;
+    float blastShieldRatio2 = 0.0f;
     if (m_isSpawnerDoorActive2 == true)
     {
         float halfTime = m_spawnerDoorSwingTimeMax * 0.45f;
@@ -2040,9 +2042,21 @@ void Game::CalculateSpawnerData()
             //angle2 = m_spawnerDoorPrevAngle2 + angAcc;
             angle2 = angAcc;
 
+            auto stepQuat = DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorClosedQuat, m_spawnerDoorOpenQuat, ratio2);
+            quatAngle2 = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorClosedQuat, stepQuat);
+
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             //stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(overCloseVec2, openVec2, ratio2 * 0.5f);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
+            
+            m_altSpawnerAng2 = smoothAng2;
+            //smoothAng2 = quatAngle2;
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("smoothAng2 ", Utility::ToRadians(smoothAng2), "");
+            m_debugData->DebugPushUILineDecimalNumber("quatAngle2 ", Utility::ToRadians(quatAngle2), "");
+     
+            m_debugData->ToggleDebugOff();
+            blastShieldRatio2 = ratio2;
         }
         else if (m_spawnerDoorTimer2 < closeStartTime)
         {
@@ -2057,6 +2071,8 @@ void Game::CalculateSpawnerData()
 
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
+            m_altSpawnerAng2 = smoothAng2;
+            blastShieldRatio2 = ratio2;
         }
         else
         {
@@ -2077,6 +2093,8 @@ void Game::CalculateSpawnerData()
             //smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
             smoothAng2 = Utility::GetAngleBetweenVectors(-compVec, stepVec2);
             smoothAng2 -= Utility::ToRadians(90.0f);
+            m_altSpawnerAng2 = smoothAng2;
+            blastShieldRatio2 = ratio2;
         }
         m_spawnerDoorTimer2 += static_cast<float>(m_timer.GetElapsedSeconds());
         if (m_spawnerDoorTimer2 >= m_spawnerDoorSwingTimeMax)
@@ -2085,20 +2103,41 @@ void Game::CalculateSpawnerData()
             m_spawnerDoorTimer2 = 0.0f;
             angle2 = Utility::ToRadians(0.0f);
             ratio2 = 0.0f;
-
+            blastShieldRatio2 = 0.0f;
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
+            m_altSpawnerAng2 = smoothAng2;
         }
     }
     else
     {
         angle2 = Utility::ToRadians(0.0f);
         ratio2 = 0.0f;
+        blastShieldRatio2 = 0.0f;
         stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
         stepVec2 = closedVec2;
         smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
+        m_altSpawnerAng2 = smoothAng2;
     }
 
+
+    if (m_isSpawnerDoorActive2 == true)
+    {
+        float openFinishTime = m_spawnerDoorSwingTimeMax * 0.1f;
+        float closeStartTime = m_spawnerDoorSwingTimeMax * 0.9f;
+        if (m_spawnerDoorTimer2 < openFinishTime)
+        {
+            blastShieldRatio2 = m_spawnerDoorTimer2 / openFinishTime;
+        }
+        else if (m_spawnerDoorTimer2 < closeStartTime)
+        {
+            blastShieldRatio2 = 1.0f;
+        }
+        else
+        {
+            blastShieldRatio2 = 1.0f - (((m_spawnerDoorTimer2 - closeStartTime) / (m_spawnerDoorSwingTimeMax - closeStartTime)));
+        }
+    }
   
     DirectX::SimpleMath::Vector3 prevVec = DirectX::SimpleMath::Vector3::UnitZ;
     prevVec = DirectX::SimpleMath::Vector3::Transform(prevVec, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDoorPrevAngle2));
@@ -2137,26 +2176,28 @@ void Game::CalculateSpawnerData()
     //doorZ = DirectX::SimpleMath::Vector3::Transform(doorZCur, DirectX::SimpleMath::Quaternion::Slerp(DirectX::SimpleMath::Quaternion::Identity, doorQuat, (1.0f - ratio2)));
     float doorAng = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitZ, doorZ);
     float invStep = 1.0f - stepVec2.y;
-    //m_debugData->ToggleDebugOnOverRide();
 
-    m_debugData->DebugPushUILineDecimalNumber("availableForce ", availableForce2, "");
-    m_debugData->DebugPushUILineDecimalNumber("mmi ", mmi, "");
-    m_debugData->DebugPushUILineDecimalNumber("angAcc ", angAcc, "");
-
-    m_debugData->DebugPushUILineDecimalNumber("rotAng ", Utility::ToDegrees(rotAng), "");
-    m_debugData->ToggleDebugOff();
 
     if (smoothAng2 < 0.0f)
     {
         smoothAng2 = 0.0f;
     }
+    if (m_altSpawnerAng2 < 0.0f)
+    {
+        m_altSpawnerAng2 = 0.0f;
+    }
 
-    ratio2 = invStep;
+
+    
+
+
+    //ratio2 = invStep;
     angle2 = m_spawnerDoorAngleMax * ratio2;
     angle2 = smoothAng2;
     //angle2 = rotAng;
     m_spawnerDatatMainAxelAngle2 = angle2;
     m_spawnerMainAxelRatio2 = ratio2;
+    m_spawnerBlastShieldRatio2 = blastShieldRatio2;
 
     m_spawnerDatatMainAxelAngle1 = -ang;
     m_spawnerMainAxelRatio1 = ratio1;
@@ -2225,8 +2266,8 @@ void Game::DrawSpawner()
     m_spawnerAxelMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(posAxelTwo, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     axelMat2Alt *= DirectX::SimpleMath::Matrix::CreateWorld(posAxelTwoAlt, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
-    m_spawnerAxelShape2->Draw(m_spawnerAxelMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Gray);
-    m_spawnerAxelShape2->Draw(axelMat2Alt, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Gray);
+    m_spawnerAxelShape2->Draw(m_spawnerAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_spawnerAxelShape2->Draw(axelMat2Alt, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
 
     // axel 3
     auto posAxelThree = posAxelTwo;
@@ -2271,7 +2312,7 @@ void Game::DrawSpawner()
     armMatAlt *= DirectX::SimpleMath::Matrix::CreateRotationX(angle2);
     armMatAlt *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
     const auto armMat1 = m_spawnerArmMat;
-    m_spawnerArmShape->Draw(armMatAlt, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::LightGray);
+    m_spawnerArmShape->Draw(armMatAlt, m_camera->GetViewMatrix(), m_proj, m_spawnerColorArms);
 
     // second arm
     testVec = DirectX::SimpleMath::Vector3(-transX, transY, transZ);
@@ -2288,9 +2329,9 @@ void Game::DrawSpawner()
     armTransAlt = DirectX::SimpleMath::Matrix::CreateTranslation(testVec);
     armMatAlt = DirectX::SimpleMath::Matrix::Identity;
     armMatAlt *= armTransAlt;
-    armMatAlt *= DirectX::SimpleMath::Matrix::CreateRotationX(angle2);
+    armMatAlt *= DirectX::SimpleMath::Matrix::CreateRotationX(m_altSpawnerAng2);
     armMatAlt *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
-    m_spawnerArmShape->Draw(armMatAlt, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::LightGray);
+    m_spawnerArmShape->Draw(armMatAlt, m_camera->GetViewMatrix(), m_proj, m_spawnerColorArms);
 
     // door
     float doorTransX = 0.0f;
@@ -2329,7 +2370,7 @@ void Game::DrawSpawner()
     blastMat *= m_spawnerBaseBlastMatPost1;
     m_spawnerBaseShape->Draw(blastMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Red);
 
-    float blastScale2 = ratio2;
+    float blastScale2 = m_spawnerBlastShieldRatio2;
     auto blastMat2 = m_spawnerBaseBlastMat2;
     blastMat2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f - (blastScale2 * 0.1f), 0.92f - (blastScale2 * 0.35f), 1.0f - (blastScale2 * 0.1f)));
     //auto blastPos2 = m_spawnerBasePos2;
@@ -2408,9 +2449,15 @@ void Game::DrawSpawner()
     //m_effect->SetEmissiveColor(DirectX::Colors::White);
     //m_effect->SetLightSpecularColor(
     //m_effect->SetSpecularColor(DirectX::SimpleMath::Vector4(red, green, blue, 1.0f));
-    
-    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
 
+    m_effect->EnableDefaultLighting();
+    m_effect->SetSpecularPower(cos(ratio2 * 7000.0f));
+
+
+    m_effect->SetColorAndAlpha(m_spawnerColorInterior);
+    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetSpecularPower(1.0f);
+    
     m_effect->EnableDefaultLighting();
     DirectX::SimpleMath::Vector3 mainLightDirection0 = - DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
@@ -2453,14 +2500,14 @@ void Game::DrawSpawner()
     updateMat = m_spawnerOuterMat;
     m_effect->SetWorld(updateMat);
     m_effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(eyeColor.x, eyeColor.y + 0.4f, eyeColor.z + 0.4f, eyeColor.w));
-    m_effect->SetColorAndAlpha(m_spawnerColorGray1);
+    m_effect->SetColorAndAlpha(m_spawnerColorExterior);
 
     //m_effect->SetLightDirection(2, DirectX::SimpleMath::Vector3::Transform(-DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Matrix::CreateRotationY(eyeSlideMod)));
 
     m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     updateMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -1.0f, 0.0f));
-    m_spawnerOuterShape->Draw(updateMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
+    m_spawnerOuterShape->Draw(updateMat, m_camera->GetViewMatrix(), m_proj, m_spawnerColorInterior);
 
     updateMat = armMat1;
     m_effect->SetWorld(updateMat);

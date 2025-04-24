@@ -712,8 +712,12 @@ private:
 
     const DirectX::XMVECTORF32 m_spawnerColorGray1 = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorGray2 = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorArms = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorAxel1 = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorAxel2 = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorExterior = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorInterior = DirectX::Colors::Gray;
+
     // cylon eye
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerEyeShape;
     DirectX::SimpleMath::Matrix                  m_spawnerEyeMat1;
@@ -727,6 +731,7 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;
     const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(72.0f, 30.0f, 4.0f);
 
+    float m_altSpawnerAng2 = 0.0f;
     const float                                  m_spawnerDoorAngleMax = Utility::ToRadians(80.0f);
     const DirectX::SimpleMath::Quaternion        m_spawnerDoorClosedQuat = DirectX::SimpleMath::Quaternion::Identity;
     const DirectX::SimpleMath::Quaternion        m_spawnerDoorOpenQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, m_spawnerDoorAngleMax);
