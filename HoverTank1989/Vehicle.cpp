@@ -4495,7 +4495,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
 
     if (m_heli.altitude < 0.0f)
     {
-      //  CalculateGroundImpactForce(velocityUpdate, localAngularVec);
+        CalculateGroundImpactForce(velocityUpdate, localAngularVec);
     }
 
     m_heli.vehicleLinearForcesSum = velocityUpdate;

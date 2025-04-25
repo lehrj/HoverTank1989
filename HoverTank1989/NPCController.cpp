@@ -1580,10 +1580,6 @@ void NPCController::UpdateNPCController(const DirectX::BoundingFrustum& aFrustum
     UpdateSpawner(aTimeDelta);
     UpdateNPCs(aFrustum, aTimeDelta);
 
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLinePositionIndicator(m_spawnerPos, 50.0f, 0.0f, DirectX::Colors::Green);
-    m_debugData->PushDebugLinePositionIndicator(m_spawnerPosAlt, 70.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->ToggleDebugOff();
     /*
     loadData.deployPosition = m_spawnerPosAlt;
     loadData.isAltTrue = true;

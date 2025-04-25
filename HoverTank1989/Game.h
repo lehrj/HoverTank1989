@@ -494,9 +494,9 @@ private:
     const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
-    //const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
-
+    const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
+    //const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
+    //const float                         m_logoDisplayDuration = 6.8f; // 7.4,5.1
 
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
@@ -545,8 +545,10 @@ private:
 
     //const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger1 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger2 = 2.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger1 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger2 = 2.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger2 = 19.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;
@@ -752,7 +754,7 @@ private:
     float m_spawnerGlowRatio1 = 0.0f;
     float m_spawnerGlowRatio2 = 0.0f;
 
-    const float m_spawnerDoorSwingTimeMax = 3.5f;
+    const float m_spawnerDoorSwingTimeMax = 4.5f;
     float m_spawnerDoorTimer1 = 0.0f;
     float m_spawnerDoorTimer2 = 0.0f;
     bool m_isSpawnerDoorActive1 = false;
@@ -815,7 +817,7 @@ private:
     //const DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(0.0f, 130.0f, 00.0f);
     //const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(200.0f, 350.0f, 800.0f);
-    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, 400.0f);
+    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, -400.0f);
     //const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(640.0f, 0.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(475.0f, 10.0f, 0.0f);
 

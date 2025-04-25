@@ -234,6 +234,7 @@
     <Image Include="Art\HeightMaps\heightmapCleanTest - Copy (3).bmp" />
     <Image Include="Art\HeightMaps\heightmapCleanTest - Copy.bmp" />
     <Image Include="Art\HeightMaps\heightmapCleanTest.bmp" />
+    <Image Include="Art\HeightMaps\heightmapMissileDemoBumpy.bmp" />
     <Image Include="Art\HeightMaps\HeightmapRoughTerrain.bmp" />
     <Image Include="Art\HeightMaps\heightmapStartScreen.bmp" />
     <Image Include="Art\Models\Cup\cup.jpg" />

@@ -1060,8 +1060,7 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     // TODO: Add your game logic here.
     elapsedTime;
-
-    /*
+    
     if (m_isStartTriggerTrue1 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger1)
@@ -1082,7 +1081,7 @@ void Game::Update(DX::StepTimer const& aTimer)
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
-    */
+    
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -2051,11 +2050,7 @@ void Game::CalculateSpawnerData()
             
             m_altSpawnerAng2 = smoothAng2;
             //smoothAng2 = quatAngle2;
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("smoothAng2 ", Utility::ToRadians(smoothAng2), "");
-            m_debugData->DebugPushUILineDecimalNumber("quatAngle2 ", Utility::ToRadians(quatAngle2), "");
-     
-            m_debugData->ToggleDebugOff();
+
             blastShieldRatio2 = ratio2;
         }
         else if (m_spawnerDoorTimer2 < closeStartTime)
@@ -2201,14 +2196,6 @@ void Game::CalculateSpawnerData()
 
     m_spawnerDatatMainAxelAngle1 = -ang;
     m_spawnerMainAxelRatio1 = ratio1;
-    
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerDoorActive2 ", m_isSpawnerDoorActive2, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_spawnerDoorTimer2 ", m_spawnerDoorTimer2, "");
-    m_debugData->DebugPushUILineDecimalNumber("angle2 ", Utility::ToDegrees(angle2), "");
-    m_debugData->ToggleDebugOff();
-
 }
 
 void Game::DrawSpawner()
@@ -2220,6 +2207,46 @@ void Game::DrawSpawner()
 
     float ratio2 = m_spawnerMainAxelRatio2;
     float angle2 = m_spawnerDatatMainAxelAngle2;
+
+    ///////////////////////////////////////////////////////////
+        /////////////////////////////////////////////
+
+    DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
+    DirectX::SimpleMath::Plane groundPlane;;
+    DirectX::SimpleMath::Vector3 zFightOffSet = groundPlane.Normal() * 0.1f; //zoffsetmod
+    DirectX::SimpleMath::Matrix planeTrans = DirectX::SimpleMath::Matrix::Identity;
+    planeTrans *= DirectX::SimpleMath::Matrix::CreateTranslation(zFightOffSet);
+    DirectX::SimpleMath::Matrix planeTrans2 = planeTrans;
+    planeTrans2 = planeTrans2.Transpose();
+    groundPlane = DirectX::SimpleMath::Plane::Transform(groundPlane, planeTrans2);
+    float alt;// = m_vehicleStruct00.vehicleData.altitude;
+    alt = 5.0f;
+    DirectX::SimpleMath::Matrix shadowMat = DirectX::SimpleMath::Matrix::CreateShadow(lightDir, groundPlane);
+
+    const float maxShadowRange = m_environment->GetMaxShadowCastRange();
+    float shadowScale;
+    float inverseShadowScale;
+    /*
+    if (m_vehicleStruct00.vehicleData.altitude > maxShadowRange)
+    {
+        shadowScale = 0.0f;
+        inverseShadowScale = 1.0f;
+    }
+    else
+    {
+        inverseShadowScale = m_vehicleStruct00.vehicleData.altitude / maxShadowRange;
+        shadowScale = 1.0f - inverseShadowScale;
+    }
+    */
+
+    //inverseShadowScale = m_vehicleStruct00.vehicleData.altitude / maxShadowRange;
+    inverseShadowScale = alt / maxShadowRange;
+    shadowScale = 1.0f - inverseShadowScale;
+    DirectX::SimpleMath::Matrix shadowScaleMat = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(shadowScale, shadowScale, shadowScale));
+
+    DirectX::SimpleMath::Matrix doorShadowMat2 = DirectX::SimpleMath::Matrix::Identity;
+
+    //////////////////////////////////////////////////////////
 
     DirectX::SimpleMath::Matrix doorMatAlt = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix doorTransAlt = DirectX::SimpleMath::Matrix::Identity;
@@ -2424,6 +2451,8 @@ void Game::DrawSpawner()
     doorMatAlt *= DirectX::SimpleMath::Matrix::CreateWorld(pos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
     m_spawnerDoorShape->Draw(doorMatAlt, m_camera->GetViewMatrix(), m_proj);
 
+    doorShadowMat2 = doorMatAlt;
+
     //m_spawnerOuterShape->Draw(m_spawnerOuterMat, m_camera->GetViewMatrix(), m_proj);
     m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
     m_spawnerOuterShape->Draw(m_spawnerOuterMat2, m_camera->GetViewMatrix(), m_proj);
@@ -2451,12 +2480,12 @@ void Game::DrawSpawner()
     //m_effect->SetSpecularColor(DirectX::SimpleMath::Vector4(red, green, blue, 1.0f));
 
     m_effect->EnableDefaultLighting();
-    m_effect->SetSpecularPower(cos(ratio2 * 7000.0f));
+    //m_effect->SetSpecularPower(cos(ratio2 * 7000.0f));
 
 
     m_effect->SetColorAndAlpha(m_spawnerColorInterior);
     m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
-    m_effect->SetSpecularPower(1.0f);
+    //m_effect->SetSpecularPower(1.0f);
     
     m_effect->EnableDefaultLighting();
     DirectX::SimpleMath::Vector3 mainLightDirection0 = - DirectX::SimpleMath::Vector3::UnitY;
@@ -2526,10 +2555,20 @@ void Game::DrawSpawner()
     m_effect->SetColorAndAlpha(DirectX::Colors::LightGray);
     m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
 
+    /*
+    m_effect->SetWorld(doorShadowMat2);
+    m_effect->SetColorAndAlpha(DirectX::Colors::LightGray);
+    m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
+    */
     m_effect->EnableDefaultLighting();
-
+   
     m_spawnerDoorPrevAngle1 = angle1;
     m_spawnerDoorPrevAngle2 = angle2;
+
+
+
+
+
 }
 
 void Game::DrawSpawnerOld()
@@ -3464,7 +3503,7 @@ void Game::DrawIntroScene()
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
         }
-        else if (timeStamp > fadeOutStart2) // fade out
+        else if (timeStamp > fadeOutStart2) // fade out // trouble spot?
         {
             float colorIntensity = (fadeOutEnd2 - timeStamp) / (fadeDuration);
 
@@ -3474,8 +3513,8 @@ void Game::DrawIntroScene()
             m_effect->SetFogEnd(fogEnd);
 
             SetFogVals(testFogTarget1, colorIntensity);
-            SetFogVals2(testFogTarget2, colorIntensity);
-            SetFogVals3(testFogTarget3, colorIntensity);
+         //   SetFogVals2(testFogTarget2, colorIntensity);
+         //   SetFogVals3(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;

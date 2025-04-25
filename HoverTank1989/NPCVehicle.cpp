@@ -3589,10 +3589,6 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         //m_vehicleStruct00.audioFx->emitter->SetPosition(m_vehicleStruct00.vehicleData.q.position);
         //m_vehicleStruct00.audioFx->emitter->SetVelocity(m_vehicleStruct00.vehicleData.q.velocity);
     }
-    
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLinePositionIndicator(m_vehicleStruct00.vehicleData.q.position, 50.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->ToggleDebugOff();
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)

@@ -133,7 +133,7 @@ private:
 
     //float m_spawnerCooldown = 3.0f;
     float m_spawnerCooldown = 0.3f;
-    const float m_spawnerCooldownTime = 5.5f;
+    const float m_spawnerCooldownTime = 4.5f;
 
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
@@ -143,7 +143,7 @@ private:
     int m_spawnCount = 0;
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 800.0f);
-    const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(510.0f, 10.0f, -790.0f);
+    const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 835.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
     //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -900.0f);
