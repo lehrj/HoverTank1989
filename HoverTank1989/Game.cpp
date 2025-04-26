@@ -1061,6 +1061,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
     
+    /*
     if (m_isStartTriggerTrue1 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger1)
@@ -1081,7 +1082,7 @@ void Game::Update(DX::StepTimer const& aTimer)
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
-    
+    */
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -1693,7 +1694,8 @@ void Game::CreateDeviceDependentResources()
     const float spawnerDiameter = m_spawnerDimensions.x;
     const float spawnerThickness = m_spawnerDimensions.z;
     const float spawnerScale = m_spawnerScale;
-    m_spawnerOuterShape = DirectX::GeometricPrimitive::CreateTorus(context, spawnerDiameter, spawnerThickness);
+    const int spawnerSides = 6;
+    m_spawnerOuterShape = DirectX::GeometricPrimitive::CreateTorus(context, spawnerDiameter, spawnerThickness, spawnerSides);
     m_spawnerOuterMat = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
@@ -1704,7 +1706,7 @@ void Game::CreateDeviceDependentResources()
     m_spawnerOuterMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
 
     const float spawnerInnerSize = spawnerDiameter;
-    m_spawnerInnerShape = DirectX::GeometricPrimitive::CreateCylinder(context, 2.0f, spawnerInnerSize);
+    m_spawnerInnerShape = DirectX::GeometricPrimitive::CreateCylinder(context, 2.0f, spawnerInnerSize, spawnerSides);
     m_spawnerInnerMat = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     m_spawnerInnerMat *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos - m_spawnerShadowOffset, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
@@ -1824,6 +1826,7 @@ void Game::CreateDeviceDependentResources()
 
 void Game::CalculateSpawnerData()
 {
+    /*
     ////////////////////////////////////////////////
     const float posKey0 = 0.0f;
     const float angKey0 = 0.0f;
@@ -1909,6 +1912,9 @@ void Game::CalculateSpawnerData()
     m_debugData->DebugPushUILineDecimalNumber("immersionRatio = ", immersionRatio, "");
     
     m_debugData->ToggleDebugOff();
+
+    */
+
     ////////////////////////////////////////////////
     /*
     m_spawnerMainAxelRatio1 = cos(static_cast<float>(m_timer.GetTotalSeconds()));
@@ -1919,99 +1925,102 @@ void Game::CalculateSpawnerData()
     m_spawnerDatatMainAxelAngle1 = -ang;
     */
 
+
+    auto closedVec = -DirectX::SimpleMath::Vector3::UnitZ;
+    auto overCloseVec = closedVec;
+    auto openVec = closedVec;
+    openVec = DirectX::SimpleMath::Vector3::Transform(openVec, m_spawnerDoorOpenQuat);
+    overCloseVec = DirectX::SimpleMath::Vector3::Transform(overCloseVec, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(
+        DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(-80.0f)));
+    DirectX::SimpleMath::Vector3 compVec1 = DirectX::SimpleMath::Vector3::UnitY;
     ////////////////////////////////////////
     float angle1 = Utility::ToRadians(0.0f);
     float ratio1 = 0.0f;
-    ///auto currQuat = DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorClosedQuat, m_spawnerDoorOpenQuat, m_spawnerMainAxelRatio1);
-    //float ang = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorClosedQuat, currQuat);
+    float quatAngle1 = 0.0f;
     auto currQuat = DirectX::SimpleMath::Quaternion::Identity;
     float ang = 0.0f;
+    DirectX::SimpleMath::Vector3 stepVec1 = -DirectX::SimpleMath::Vector3::UnitZ;
+    float smoothAng1 = 0.0f;
+
+    auto pos = m_spawnerPos;
+    pos.y += 50.0f;
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(pos, overCloseVec, 140.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(pos, closedVec, 110.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLine(pos, openVec, 120.0f, 0.0f, DirectX::Colors::Green);
+    m_debugData->PushDebugLine(pos, DirectX::SimpleMath::Vector3::UnitY, 100.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLinePositionIndicator(m_spawnerPos, 100.0f, 0.0f, DirectX::Colors::Red);
 
     if (m_isSpawnerDoorActive1 == true)
     {
-        float halfTime = m_spawnerDoorSwingTimeMax * 0.5f;
-        float closeStartTime = m_spawnerDoorSwingTimeMax * 0.6f;
+        float halfTime = m_spawnerDoorSwingTimeMax * 0.45f;
+        float closeStartTime = m_spawnerDoorSwingTimeMax * 0.55f;
         if (m_spawnerDoorTimer1 < halfTime)
         {
             ratio1 = m_spawnerDoorTimer1 / halfTime;
-            angle1 = -m_spawnerDoorAngleMax * (m_spawnerDoorTimer1 / halfTime);
 
-            /*
-            ang = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorClosedQuat, 
-                DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorClosedQuat, m_spawnerDoorOpenQuat, m_spawnerDoorTimer1 / halfTime));
-            */
-            ang = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorClosedQuat,
-                DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorClosedQuat, m_spawnerDoorOpenQuat, ratio1));
+            auto stepQuat = DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorClosedQuat, m_spawnerDoorOpenQuat, ratio1);
+            quatAngle1 = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorClosedQuat, stepQuat);
+
+            stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
+            smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
+
+            //m_altSpawnerAng1 = smoothAng1;
         }
         else if (m_spawnerDoorTimer1 < closeStartTime)
         {
             ratio1 = 1.0f;
-            angle1 = -m_spawnerDoorAngleMax;
-            ang = m_spawnerDoorAngleMax;
+
+            stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
+            smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
+            //m_altSpawnerAng1 = smoothAng1;
         }
         else
         {
-            //ratio = (m_spawnerDoorTimer1 - halfTime) / halfTime;
-            //angle1 = -m_spawnerDoorAngleMax + (m_spawnerDoorAngleMax * ((m_spawnerDoorTimer1 - halfTime) / halfTime));
             ratio1 = ((m_spawnerDoorTimer1 - closeStartTime) / (m_spawnerDoorSwingTimeMax - closeStartTime));
             ratio1 = 1.0f - ratio1;
-            angle1 = -m_spawnerDoorAngleMax + (m_spawnerDoorAngleMax * ((m_spawnerDoorTimer1 - closeStartTime) / ratio1));
 
-            ang = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorOpenQuat,
-                DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorOpenQuat, m_spawnerDoorClosedQuat, ratio1 * 2.0f));
+            stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
+            stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(overCloseVec, openVec, ratio1);
+            smoothAng1 = - Utility::GetAngleBetweenVectors(compVec1, stepVec1);
+            smoothAng1 -= Utility::ToRadians(-90.0f);
+            //m_altSpawnerAng1 = smoothAng1;
+            //smoothAng1 = Utility::ToRadians(45.0f);
+            m_debugData->DebugPushUILineDecimalNumber("else ratio1 ", ratio1, "");
 
-            if (ang < Utility::ToDegrees(0.0f))
-            {
-                ang = 0.0f;
-            }
+            //smoothAng1 = ratio1 * m_spawnerDoorAngleMax;
+
         }
-
         m_spawnerDoorTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
         if (m_spawnerDoorTimer1 >= m_spawnerDoorSwingTimeMax)
         {
             m_isSpawnerDoorActive1 = false;
             m_spawnerDoorTimer1 = 0.0f;
-            angle1 = Utility::ToRadians(0.0f);
             ratio1 = 0.0f;
-            ang = 0.0f;
+            stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
+            smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
+            //m_altSpawnerAng1 = smoothAng1;
         }
     }
     else
     {
-        angle1 = Utility::ToRadians(0.0f);
         ratio1 = 0.0f;
-        cl = 0.0f;
-        ang = 0.0f;
+        stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
+        stepVec1 = closedVec;
+        smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
+        //m_altSpawnerAng1 = smoothAng1;
+
+        m_debugData->DebugPushUILineDecimalNumber("zeroed ", ratio1, "");
     }
 
-    //ratio1 = cl;
-    //angle1 = m_spawnerDoorAngleMax * cl;
 
-    //DirectX::SimpleMath::Quaternion mainAxelQuat1 = m_spawnerMainAxelQuat1;
     DirectX::SimpleMath::Quaternion mainAxelQuat1 = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, angle1);
     DirectX::SimpleMath::Quaternion mainAxelQuatUpdate1 = DirectX::SimpleMath::Quaternion::Slerp(m_spawnerMainAxelQuat1, mainAxelQuat1, ratio1);
 
-    //angle1 = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitZ, mainAxelQuatUpdate1), DirectX::SimpleMath::Vector3::UnitZ);
+    m_debugData->PushDebugLine(pos, stepVec1, 90.0f, 0.0f, DirectX::Colors::White);
+    m_debugData->ToggleDebugOff();
 
-
-
-    float kg = 1000.0f;
-    float m = 50.0f;
-    float rad = 25.0f;
-    float mmi = (kg - m) / (rad * rad);
-    auto gravNorm2 = DirectX::SimpleMath::Vector3::Transform(-DirectX::SimpleMath::Vector3::UnitY,
-        DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDoorPrevAngle2));
-    float gravForce2 = (gravNorm2.y * 9.8f) * kg;
-    float driveForceMax = 0.1f * kg;
-
-    if (m_isSpawnerDoorActive2 == false)
-    {
-        //  driveForceMax = -gravForce2;
-    }
-
-    float availableForce2 = 0.0f;
-    float angAcc = 0.0f;
-
+// Spawner 2
     float angle2 = 0.0f;
     float quatAngle2 = 0.0f;
     float ratio2 = 0.0f;
@@ -2026,6 +2035,17 @@ void Game::CalculateSpawnerData()
     DirectX::SimpleMath::Vector3 compVec = DirectX::SimpleMath::Vector3::UnitY;
     float smoothAng2 = 0.0f;
     float blastShieldRatio2 = 0.0f;
+
+    auto pos2 = m_spawnerPos2;
+    pos2.y += 50.0f;
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(pos2, overCloseVec2, 140.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(pos2, closedVec2, 110.0f, 0.0f, DirectX::Colors::Orange);
+    m_debugData->PushDebugLine(pos2, openVec2, 120.0f, 0.0f, DirectX::Colors::Green);
+    m_debugData->PushDebugLine(pos2, DirectX::SimpleMath::Vector3::UnitY, 100.0f, 0.0f, DirectX::Colors::Yellow);
+    //m_debugData->PushDebugLinePositionIndicator(m_spawnerPos, 100.0f, 0.0f, DirectX::Colors::Red);
+
+
     if (m_isSpawnerDoorActive2 == true)
     {
         float halfTime = m_spawnerDoorSwingTimeMax * 0.45f;
@@ -2033,72 +2053,40 @@ void Game::CalculateSpawnerData()
         if (m_spawnerDoorTimer2 < halfTime)
         {
             ratio2 = m_spawnerDoorTimer2 / halfTime;
-            angle2 = m_spawnerDoorAngleMax * (m_spawnerDoorTimer2 / halfTime);
-
-            availableForce2 = driveForceMax - abs(gravForce2);
-            angAcc = availableForce2 / mmi;
-            angAcc *= static_cast<float>(m_timer.GetElapsedSeconds());
-            //angle2 = m_spawnerDoorPrevAngle2 + angAcc;
-            angle2 = angAcc;
-
+    
             auto stepQuat = DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorClosedQuat, m_spawnerDoorOpenQuat, ratio2);
             quatAngle2 = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorClosedQuat, stepQuat);
 
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
-            //stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(overCloseVec2, openVec2, ratio2 * 0.5f);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
             
             m_altSpawnerAng2 = smoothAng2;
-            //smoothAng2 = quatAngle2;
-
-            blastShieldRatio2 = ratio2;
         }
         else if (m_spawnerDoorTimer2 < closeStartTime)
         {
             ratio2 = 1.0f;
-            angle2 = m_spawnerDoorAngleMax;
-
-            driveForceMax = -gravForce2;
-            availableForce2 = driveForceMax + (gravForce2);
-            angAcc = availableForce2 / mmi;
-            angAcc *= static_cast<float>(m_timer.GetElapsedSeconds());
-            angle2 = m_spawnerDoorPrevAngle2 + angAcc;
 
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
             m_altSpawnerAng2 = smoothAng2;
-            blastShieldRatio2 = ratio2;
         }
         else
         {
             ratio2 = ((m_spawnerDoorTimer2 - closeStartTime) / (m_spawnerDoorSwingTimeMax - closeStartTime));
             ratio2 = 1.0f - ratio2;
-            angle2 = m_spawnerDoorAngleMax - (m_spawnerDoorAngleMax * ((m_spawnerDoorTimer2 - closeStartTime) / (m_spawnerDoorSwingTimeMax - closeStartTime)));
-            //angle2 = m_spawnerDoorAngleMax - (m_spawnerDoorAngleMax * ((m_spawnerDoorTimer2 - halfTime) / halfTime));
-            angle2 = m_spawnerDoorPrevAngle2 - angAcc;
 
-            driveForceMax = 0.0;
-            availableForce2 = driveForceMax + (gravForce2);
-            angAcc = availableForce2 / mmi;
-            angAcc *= static_cast<float>(m_timer.GetElapsedSeconds());
-            // angle2 = m_spawnerDoorPrevAngle2 + angAcc;
-            //ratio2 *= 0.5f;
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(overCloseVec2, openVec2, ratio2);
-            //smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
             smoothAng2 = Utility::GetAngleBetweenVectors(-compVec, stepVec2);
             smoothAng2 -= Utility::ToRadians(90.0f);
             m_altSpawnerAng2 = smoothAng2;
-            blastShieldRatio2 = ratio2;
         }
         m_spawnerDoorTimer2 += static_cast<float>(m_timer.GetElapsedSeconds());
         if (m_spawnerDoorTimer2 >= m_spawnerDoorSwingTimeMax)
         {
             m_isSpawnerDoorActive2 = false;
             m_spawnerDoorTimer2 = 0.0f;
-            angle2 = Utility::ToRadians(0.0f);
             ratio2 = 0.0f;
-            blastShieldRatio2 = 0.0f;
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
             m_altSpawnerAng2 = smoothAng2;
@@ -2106,9 +2094,7 @@ void Game::CalculateSpawnerData()
     }
     else
     {
-        angle2 = Utility::ToRadians(0.0f);
         ratio2 = 0.0f;
-        blastShieldRatio2 = 0.0f;
         stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
         stepVec2 = closedVec2;
         smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
@@ -2116,6 +2102,8 @@ void Game::CalculateSpawnerData()
     }
 
 
+    m_debugData->PushDebugLine(pos2, stepVec2, 90.0f, 0.0f, DirectX::Colors::White);
+    m_debugData->ToggleDebugOff();
     if (m_isSpawnerDoorActive2 == true)
     {
         float openFinishTime = m_spawnerDoorSwingTimeMax * 0.1f;
@@ -2134,45 +2122,6 @@ void Game::CalculateSpawnerData()
         }
     }
   
-    DirectX::SimpleMath::Vector3 prevVec = DirectX::SimpleMath::Vector3::UnitZ;
-    prevVec = DirectX::SimpleMath::Vector3::Transform(prevVec, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDoorPrevAngle2));
-
-    /*
-    //DirectX::SimpleMath::Vector3 stepVec = DirectX::SimpleMath::Vector3::SmoothStep(DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector3::Zero, ratio2);
-    stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(DirectX::SimpleMath::Vector3::UnitY, DirectX::SimpleMath::Vector3::Zero, ratio2);
-    stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(openVec2, closedVec2, ratio2);
-    stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
-    smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
-    */
-
-    //DirectX::SimpleMath::Vector3 rotVec = DirectX::SimpleMath::Vector3::SmoothStep(DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY, ratio2);
-    DirectX::SimpleMath::Vector3 rotVec;
-
-    if (m_isSpawnerDoorActive2 == true)
-    {
-        rotVec = DirectX::SimpleMath::Vector3::SmoothStep(prevVec, DirectX::SimpleMath::Vector3::UnitY, 0.4f);
-    }
-    else
-    {
-        rotVec = DirectX::SimpleMath::Vector3::SmoothStep(prevVec, DirectX::SimpleMath::Vector3::UnitZ, 0.4f);
-    }
-
-    float rotAng = Utility::GetAngleBetweenVectors(rotVec, DirectX::SimpleMath::Vector3::UnitZ);
-
-    auto doorQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, m_spawnerDoorAngleMax);
-    auto doorQuatCur = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, m_spawnerDoorPrevAngle2);
-    auto doorZ = DirectX::SimpleMath::Vector3::UnitZ;
-    auto doorZCur = doorZ;
-    doorZCur = DirectX::SimpleMath::Vector3::Transform(doorZCur, doorQuatCur);
-
-    doorZ = DirectX::SimpleMath::Vector3::Transform(doorZ, DirectX::SimpleMath::Quaternion::Slerp(doorQuat, DirectX::SimpleMath::Quaternion::Identity, (1.0f - ratio2)));
-    //doorZ = DirectX::SimpleMath::Vector3::Transform(doorZ, DirectX::SimpleMath::Quaternion::Slerp(doorQuat, doorQuatCur, (1.0f - ratio2)));
-    //doorZ = DirectX::SimpleMath::Vector3::Transform(doorZ, DirectX::SimpleMath::Quaternion::Slerp(doorQuatCur, doorQuat, 0.5f));
-    //doorZ = DirectX::SimpleMath::Vector3::Transform(doorZCur, DirectX::SimpleMath::Quaternion::Slerp(DirectX::SimpleMath::Quaternion::Identity, doorQuat, (1.0f - ratio2)));
-    float doorAng = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitZ, doorZ);
-    float invStep = 1.0f - stepVec2.y;
-
-
     if (smoothAng2 < 0.0f)
     {
         smoothAng2 = 0.0f;
@@ -2182,19 +2131,21 @@ void Game::CalculateSpawnerData()
         m_altSpawnerAng2 = 0.0f;
     }
 
+    if (smoothAng1 < 0.0f)
+    {
+        smoothAng1 = 0.0f;
+    }
 
-    
-
-
-    //ratio2 = invStep;
     angle2 = m_spawnerDoorAngleMax * ratio2;
     angle2 = smoothAng2;
-    //angle2 = rotAng;
     m_spawnerDatatMainAxelAngle2 = angle2;
     m_spawnerMainAxelRatio2 = ratio2;
     m_spawnerBlastShieldRatio2 = blastShieldRatio2;
 
-    m_spawnerDatatMainAxelAngle1 = -ang;
+    angle1 = m_spawnerDoorAngleMax * ratio1;
+    angle1 = smoothAng1;
+    //m_spawnerDatatMainAxelAngle1 = -ang;
+    m_spawnerDatatMainAxelAngle1 = -angle1;
     m_spawnerMainAxelRatio1 = ratio1;
 }
 
