@@ -615,6 +615,8 @@ private:
     std::string m_uiAmmoDisplayString = "";
 
     // 3D shapes
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCube;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapePlatform;
     DirectX::SimpleMath::Matrix                  m_shapePlatformMat;
     const DirectX::SimpleMath::Vector3           m_shapeDimensionsPlatform = DirectX::SimpleMath::Vector3(30.0f, 10.0f, 30.0f);
@@ -634,6 +636,7 @@ private:
     // spawner shape
     const DirectX::SimpleMath::Vector3           m_spawnerDimensions = DirectX::SimpleMath::Vector3(50.0f, 50.0f, 10.0f);
     const float                                  m_spawnerScale = 16.15f;
+    const int                                    m_spawnerSides = 6;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
     DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;
@@ -642,10 +645,13 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat;
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat2;
 
+    DirectX::SimpleMath::Matrix                  m_spawnerShellInteriorMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerShellInteriorMat2;
 
     DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
     DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(600.0f, 0.0f, -900.0f);
 
+    // axels and gearbox
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat;
     DirectX::SimpleMath::Matrix                  m_spawnerMainAxelMat1;
@@ -662,6 +668,15 @@ private:
     const DirectX::SimpleMath::Vector3           m_spawnerMainAxelPos1 = DirectX::SimpleMath::Vector3(m_spawnerPos.x, m_spawnerPos.y + 15.0f, m_spawnerPos.z - 25.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerMainAxelPos2 = DirectX::SimpleMath::Vector3(m_spawnerPos.x, m_spawnerPos.y + 15.0f, m_spawnerPos2.z + 25.0f);
 
+    // gearbox
+    const DirectX::SimpleMath::Vector3           m_spawneGearboxDimensions = DirectX::SimpleMath::Vector3(40.0f, 20.0f, 52.0f);
+    DirectX::SimpleMath::Matrix                  m_spawnerGearBoxMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerGearBoxMat2;
+    const DirectX::SimpleMath::Vector3           m_spawnerGearboxOffset = DirectX::SimpleMath::Vector3(0.0f, -10.0f, 5.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerGearboxPos1 = DirectX::SimpleMath::Vector3(m_spawnerMainAxelPos1.x + m_spawnerGearboxOffset.x,
+        m_spawnerMainAxelPos1.y + m_spawnerGearboxOffset.y, m_spawnerMainAxelPos1.z - m_spawnerGearboxOffset.z);
+    const DirectX::SimpleMath::Vector3           m_spawnerGearboxPos2 = DirectX::SimpleMath::Vector3(m_spawnerMainAxelPos2.x + m_spawnerGearboxOffset.x,
+        m_spawnerMainAxelPos2.y + m_spawnerGearboxOffset.y, m_spawnerMainAxelPos2.z + m_spawnerGearboxOffset.z);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape2;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat2;
@@ -719,15 +734,7 @@ private:
     const DirectX::XMVECTORF32 m_spawnerColorAxel2 = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorExterior = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorInterior = DirectX::Colors::Gray;
-
-    // cylon eye
-    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerEyeShape;
-    DirectX::SimpleMath::Matrix                  m_spawnerEyeMat1;
-    //const DirectX::SimpleMath::Vector3           m_spawnerEyePos1 = DirectX::SimpleMath::Vector3(72.0f, 30.0f, 4.0f);
-    const DirectX::SimpleMath::Vector3           m_spawnerEyePos1 = DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y + (m_spawnerRearScale.y * 0.58f), m_spawnerBasePos1.z - (m_spawnerRearScale.z * 1.0f));
-
-    
-    const float                                  m_spawnerEyeDiameter = 8.0f;
+    const DirectX::XMVECTORF32 m_spawnerColorGearBox = DirectX::Colors::DarkGray;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerDoorShape;
     DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;
