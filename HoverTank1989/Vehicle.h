@@ -552,15 +552,17 @@ private:
 
     Utility::Torque m_testGravForce;
 
+    /*
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
+    */
 
-    /*
+    
     const float m_inertiaModelX = 3.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 1.8f;
-    */
+    
 
     /*
     const float m_testMass = 800.1f;
@@ -608,10 +610,19 @@ private:
 
     DirectX::SimpleMath::Quaternion m_angQuatStep = DirectX::SimpleMath::Quaternion::Identity;
 
-    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 100.0f);
 
     float m_throttleVolume = 0.0f;
 
     float m_testMaxHoverForce = 0.0f;
+
+    const float m_dragCoefficient = 0.4f;
+
+    bool m_isGravTimerTripped = false;
+
+    float m_gravVelocity = 0.0f;
+    float m_gravTimer = 0.0f;
+    float m_gravTimerLast = 0.0f;
 };
 

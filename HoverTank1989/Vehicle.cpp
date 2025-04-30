@@ -792,6 +792,10 @@ void Vehicle::DebugInputVelocityZero()
 
     //m_heli.q.angularVelocity = DirectX::SimpleMath::Vector3::Zero;
     //m_heli.q.angularMomentum = DirectX::SimpleMath::Vector3::Zero;
+
+    m_isGravTimerTripped = true;
+    m_gravTimer = 0.0f;
+    m_heli.q.velocity = DirectX::SimpleMath::Vector3::Zero;
 }
 
 void Vehicle::DebugToggle()
@@ -1566,7 +1570,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.dimensions = DirectX::SimpleMath::Vector3(8.0f, 4.0f, 4.0f);
     m_heli.dimensions = DirectX::SimpleMath::Vector3(4.7f, 2.0f, 2.0f);
     m_heli.airDensity = m_environment->GetAirDensity();
-    m_heli.dragCoefficient = 2.5f;
+    m_heli.dragCoefficient = m_dragCoefficient;
 
     m_heli.airResistance = 0.0f;
     m_heli.totalResistance = m_heli.airResistance;
@@ -3883,7 +3887,7 @@ void Vehicle::UpdateTerrainData()
     //m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
     //m_heli.terrainNormal = m_environment->GetTerrainNormal(m_heli.q.position);
      
-    
+    /*
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 8.0f, 0.0f);
     DirectX::SimpleMath::Vector3 offSet = DirectX::SimpleMath::Vector3(15.0f, 8.0f, 15.0f);
     DirectX::SimpleMath::Vector3 ne = m_startPos;
@@ -3908,11 +3912,11 @@ void Vehicle::UpdateTerrainData()
         }
     }
 
-
     //m_heli.terrainHightAtPos = m_environment->GetTerrainHeightAtPos(m_heli.q.position);
     m_heli.altitude = m_heli.landingGearPos.y - m_heli.terrainHightAtPos;
     //m_debugData->DebugPushUILineDecimalNumber("altitude = ", m_heli.altitude, "");
     //m_heli.terrainNormal = m_environment->GetTerrainNormal(m_heli.q.position);
+    */
 }
 
 void Vehicle::UpdateTerrainNorm()
@@ -4366,28 +4370,48 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_testAngularRotationPerSecond = angRadsPerSecond;
 
 
-    //m_debugData->ToggleDebugOnOverRide();
-    //pos = m_modelController->GetLocalizedTubeRightPos();
-    //m_debugData->PushDebugLinePositionIndicator(m_modelController->GetLocalizedTubeRightPos(), 10.0f, 0.0f, DirectX::Colors::Red);
-    //m_debugData->PushDebugLinePositionIndicator(m_modelController->GetLocalizedTubeLeftPos(), 10.0f, 0.0f, DirectX::Colors::Lime);
 
-    //m_debugData->PushDebugLine(m_heli.q.position, m_modelController->GetLocalizedTubeRightPos(), 10.0f, 0.0f, DirectX::Colors::Red);
-    //m_debugData->PushDebugLine(m_heli.q.position, m_modelController->GetLocalizedTubeLeftPos(), 10.0f, 0.0f, DirectX::Colors::Lime);
+    DirectX::SimpleMath::Vector3 postVel = m_heli.q.velocity;
+    auto deltaVel = (postVel - prevVelocity) / aTimeDelta;
 
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetLocalizedTubeLeftPos(), 15.0f, 0.0f, DirectX::Colors::Lavender);
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetLocalizedTubeRightPos(), 14.0f, 0.0f, DirectX::Colors::Orange);
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
+    float speed1 = m_heli.q.velocity.Length();
+    //speed1 *= aTimeDelta;
+    speed1 *= 2.237f;
 
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeDirLeft(), 12.0f, 0.0f, DirectX::Colors::Lime);
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeDirRight(), 10.0f, 0.0f, DirectX::Colors::Red);
+    auto front = DirectX::SimpleMath::Vector3(m_inertiaModelX, 0.0f, 0.0f);
+    auto left = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_inertiaModelZ);
+    auto back = DirectX::SimpleMath::Vector3(-m_inertiaModelX, 0.0f, 0.0f);
+    auto top = DirectX::SimpleMath::Vector3(0.0f, m_inertiaModelY, 0.0f);
+    auto leftFront = DirectX::SimpleMath::Vector3(m_inertiaModelX, 0.0f, m_inertiaModelZ);
 
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeLeftUp(), 10.0f, 0.0f, DirectX::Colors::Lime);
-    //m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeRightUp(), 10.0f, 0.0f, DirectX::Colors::Red);
+    front += m_heli.q.position;
+    left += m_heli.q.position;
+    back += m_heli.q.position;
+    top += m_heli.q.position;
+    leftFront += m_heli.q.position;
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("Alt : ", m_heli.altitude, "");
+    m_debugData->DebugPushUILineDecimalNumber("speed : ", speed1, "");
+    m_debugData->DebugPushUILineDecimalNumber("deltaVel : ", deltaVel.Length(), "");
+    m_debugData->PushDebugLine(m_heli.q.position, deltaVel, 7.0f, 0.0f, DirectX::Colors::Purple);
+
+    m_debugData->DebugPushUILineDecimalNumber("m_gravTimer     : ", m_gravTimer, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_gravTimerLast : ", m_gravTimerLast, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_gravVelocity : ", m_gravVelocity, "");
+
+    m_debugData->PushDebugLinePositionIndicator(front, 1.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(left, 1.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(back, 1.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(top, 1.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLinePositionIndicator(leftFront, 1.0f, 0.0f, DirectX::Colors::Yellow);
 
 
+    m_debugData->ToggleDebugOff();
 
+    m_gravTimer += aTimeDelta;
 
+    /*
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeTurretLocalLeftDir(), 10.0f, 0.0f, DirectX::Colors::Lime);
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeTurretLocalRightDir(), 10.0f, 0.0f, DirectX::Colors::Yellow);
@@ -4425,6 +4449,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_debugData->PushDebugLinePositionIndicator(bottom, 3.0f, 0.0f, DirectX::Colors::White);
 
     m_debugData->ToggleDebugOff();
+    */
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
@@ -4463,6 +4488,7 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     DirectX::SimpleMath::Vector3 slopeForce = GetSlopeForce(m_heli.terrainNormal, GetAltitude(), m_heli.groundNormalForceRange);
     m_heli.buoyancyForce = CalculateBuoyancyForce(m_heli);
 
+    /*
     velocityUpdate += calcHoverDriveForce;
     //velocityUpdate += damperForce;
     velocityUpdate += gravForce;
@@ -4471,6 +4497,17 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     velocityUpdate += m_heli.buoyancyForce;
     velocityUpdate += slopeForce;
     velocityUpdate += m_heli.controlInput.brakeForce;
+    */
+
+    velocityUpdate += calcHoverDriveForce;
+    //velocityUpdate += damperForce;
+    velocityUpdate += gravForce;
+    //velocityUpdate += jetThrust;
+    //velocityUpdate += rotorForce;
+    velocityUpdate += m_heli.buoyancyForce;
+    //velocityUpdate += slopeForce;
+    //velocityUpdate += m_heli.controlInput.brakeForce;
+
 
     //m_heli.vehicleLinearForcesSum = velocityUpdate;
 
@@ -4495,6 +4532,13 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
 
     if (m_heli.altitude < 0.0f)
     {
+        if (m_isGravTimerTripped == true)
+        {
+            m_isGravTimerTripped = false;
+            m_gravTimerLast = m_gravTimer;
+            m_gravVelocity = m_heli.q.velocity.Length();
+        }
+
         CalculateGroundImpactForce(velocityUpdate, localAngularVec);
     }
 

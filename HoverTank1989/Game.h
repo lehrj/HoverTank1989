@@ -545,10 +545,10 @@ private:
 
     //const float m_startTrigger1 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger2 = 13.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    //const float m_startTrigger1 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    //const float m_startTrigger2 = 2.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger2 = 19.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger1 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger2 = 2.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger2 = 19.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;
@@ -845,9 +845,13 @@ private:
     //const DirectX::SimpleMath::Vector3 m_gamePlayCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_gamePlayCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_gamePlayTarg = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
-    const float m_gamePlayCamStep = 0.16f;
-    const float m_gamePlayTargStep = 0.16f;
-    const float m_gamePlaySlerp = 0.16f;
+    //const float m_gamePlayCamStep = 0.16f;
+    //const float m_gamePlayTargStep = 0.16f;
+    //const float m_gamePlaySlerp = 0.16f;
+
+    const float m_gamePlayCamStep = 0.99f;
+    const float m_gamePlayTargStep = 0.99f;
+    const float m_gamePlaySlerp = 0.99f;
 
     // multisampling
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_offscreenRenderTarget;

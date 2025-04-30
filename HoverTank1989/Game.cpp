@@ -1274,7 +1274,7 @@ void Game::Render()
         //DrawTestRangeMissile();
         DrawSpawner();
 
-        DrawLaunchSite();
+       // DrawLaunchSite();
         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
@@ -1972,7 +1972,7 @@ void Game::CalculateSpawnerData()
 
     auto pos = m_spawnerPos;
     pos.y += 50.0f;
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(pos, overCloseVec, 140.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLine(pos, closedVec, 110.0f, 0.0f, DirectX::Colors::Orange);
     m_debugData->PushDebugLine(pos, openVec, 120.0f, 0.0f, DirectX::Colors::Green);
