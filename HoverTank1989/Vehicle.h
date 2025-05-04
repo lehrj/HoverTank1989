@@ -228,7 +228,12 @@ struct HeliData
     float   airResistance;
     float   airDensity;
 
+    float   dragAirDensityAngular;
+    float   dragAirDensityLinear;
     float   dragCoefficient;
+    float   dragCoefficientAngular;
+    float   dragCoefficientLinear;
+
     DirectX::SimpleMath::Vector3 dimensions;
     DirectX::SimpleMath::Vector3 gravity = DirectX::SimpleMath::Vector3(0.0f, -9.80665f, 0.0f);
     float   mainRotorMaxRPM;
@@ -496,6 +501,7 @@ private:
     void UpdateCyclicData();
     void UpdateCyclicStick(ControlInput& aInput);
     void UpdateCyclicNorm(); 
+    void UpdateDragVals();
     float UpdateGroundEffectForce(const float aLiftForce);
     void UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDelta);
     void UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep);
@@ -590,18 +596,21 @@ private:
 
     const float m_angularDampConst = 0.9f;
     const float m_testAngDampConst = 0.1f;
+    float m_testAngularRotationPerSecond = 0.0f;
 
-    const float m_angDragCoefficient = 0.3f;
+    //const float m_angDragCoefficient = 0.3f;
+    //const float m_airDensityDragMod = 1.0f;
+    //const float m_angularDragMod = 0.8f;
+
+    const float m_angDragCoefficient = 0.4f;
     const float m_airDensityDragMod = 1.0f;
     const float m_angularDragMod = 0.8f;
 
-    //DirectX::SimpleMath::Vector3 m_testTorqueLocal = DirectX::SimpleMath::Vector3::Zero;
-    //DirectX::SimpleMath::Vector3 m_testTorqueWorld = DirectX::SimpleMath::Vector3::Zero;
-
-    //DirectX::SimpleMath::Matrix m_testInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
-    //DirectX::SimpleMath::Matrix m_testInverseInertiaTensorLocal = DirectX::SimpleMath::Matrix::Identity;
-
-    float m_testAngularRotationPerSecond = 0.0f;
+    const float m_dragCoefficient = 0.4f;
+    const float m_dragCoefficientBase = 0.4f;
+    const float m_dragCoefficientMax = 2.0f;
+    const float m_dragCoefficientLinearBase = 0.4f;
+    const float m_dragCoefficientAngularBase = 0.4f;
 
     float m_testVal = 0.0f;
 
@@ -616,9 +625,6 @@ private:
     float m_throttleVolume = 0.0f;
 
     float m_testMaxHoverForce = 0.0f;
-
-    const float m_dragCoefficient = 0.4f;
-
     bool m_isGravTimerTripped = false;
 
     float m_gravVelocity = 0.0f;

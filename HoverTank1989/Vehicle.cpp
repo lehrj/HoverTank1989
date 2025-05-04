@@ -34,6 +34,8 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     float immersedPos = altitude - curveAdjustVal;
     float immersedRatio;
 
+    m_debugData->ToggleDebugOnOverRide();
+
     if (m_heli.buoyancyForce.y >= 33319.0f)
     {
         int testBreak = 0;
@@ -86,11 +88,12 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
 
     const float penetrationVelocity = -10.0f;
     int stateVal = -1;
+    float testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + immersedVolumeRatio);
     if (aVehicleData.q.position.y > upperCurveBound)
     {
+        testDensity = 0.0f;
         stateVal = 0;
     }
-    float testDensity = immersedDensityNeutralAtHalfDepth * (1.0f + immersedVolumeRatio);
     if (aVehicleData.q.velocity.y >= 0.0f && altitude > (lowerCurveBound))
     {
         testDensity = immersedDensityNeutralAtHalfDepth * (immersedVolumeRatio);
@@ -168,6 +171,16 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     m_heli.hoverDriveImmersionRatio = immersedRatio;
     m_heli.hoverDriveOutputAudio = m_testMaxHoverForce;
     m_heli.hoverDriveOutputAudio = buoyancyForce.y;
+
+    
+    m_debugData->DebugPushUILineDecimalNumber("testDensity   = ", testDensity, "");
+    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce = ", buoyancyForce.Length(), "");
+    m_debugData->DebugPushUILineDecimalNumber("immersedVolumeRatio   = ", immersedVolumeRatio, "");
+    m_debugData->DebugPushUILineDecimalNumber("immersedRatio         = ", immersedRatio, "");
+    m_debugData->DebugPushUILineWholeNumber("stateVal = ", stateVal, "");
+    m_debugData->ToggleDebugOff();
+
+
     return buoyancyForce;
 }
 
@@ -206,8 +219,10 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragAngularLocal(const DirectX::S
     float radiusSum = yawRadius + pitchRadius + rollRadius;
 
     float angVelocityF = aAngVelocity.Length();
-    float angDragCoefficient = m_angDragCoefficient;
-    float angAirDensity = m_environment->GetAirDensity() * m_airDensityDragMod;
+    //float angDragCoefficient = m_angDragCoefficient;
+    //float angAirDensity = m_environment->GetAirDensity() * m_airDensityDragMod;
+    float angDragCoefficient = m_heli.dragCoefficientAngular;
+    float angAirDensity = m_heli.dragAirDensityAngular;
     float angFrontSurfaceArea = m_heli.area;
     float radius = radiusSum;
     angFrontSurfaceArea = airSurfaceArea;
@@ -250,15 +265,34 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateDragLinear(const DirectX::SimpleM
 
 
     //  Compute the total drag force.
-    float airDensity = m_environment->GetAirDensity();
-    float dragCoefficient = m_heli.dragCoefficient;
+    //float airDensity = m_environment->GetAirDensity();
+    float airDensity = m_heli.dragAirDensityLinear;
+    //float dragCoefficient = m_heli.dragCoefficient;
+    //float dragCoefficient = m_heli.dragCoefficient + (m_dragCoefficientMax * m_heli.hoverDriveImmersionRatio);
+    float dragCoefficient = m_heli.dragCoefficientLinear;
     float velocity = aVelocity.Length();
     //float velocity = aNewQVelocity.Length();
     float dragResistance = 0.5f * airDensity * airSurfaceArea * dragCoefficient * velocity * velocity;
     DirectX::SimpleMath::Vector3 airResistance = velocityNorm * (-dragResistance);
 
     DirectX::SimpleMath::Vector3 drag = airResistance;
+
     return drag;
+}
+
+void Vehicle::UpdateDragVals()
+{
+
+    m_heli.dragAirDensityAngular = m_environment->GetAirDensity();
+    m_heli.dragAirDensityLinear = m_environment->GetAirDensity();
+
+    m_heli.dragCoefficientAngular = m_dragCoefficientAngularBase;
+    m_heli.dragCoefficientLinear = m_dragCoefficientLinearBase;
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("dragCoefficientLinear =", m_heli.dragCoefficientLinear, "");
+
+    m_debugData->ToggleDebugOff();
 }
 
 DirectX::SimpleMath::Vector3 Vehicle::CalculateHoverDriveForce(const struct HeliData& aHeli)
@@ -1418,6 +1452,16 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
     m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInertiaMatrix;
     m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInverseInertiaMatrix.Invert();
 
+    //cone
+    float height = m_inertiaModelX;
+    float radius = m_inertiaModelZ;
+    mass = m_testMass;
+    m_heli.inertiaMatrixTest._11 = ((3.0f / 80.0f) * (mass) * (height * height)) + ((3.0f/20.0f) * mass * (radius * radius));
+    //m_heli.inertiaMatrixTest._22 = ((3.0f / 80.0f) * (mass) * (height * height)) + ((3.0f / 20.0f) * mass * (radius * radius));
+    m_heli.inertiaMatrixTest._22 = ((3.0f / 10.0f) * (mass) * (radius * radius));
+    m_heli.inertiaMatrixTest._33 = ((3.0f / 80.0f) * (mass) * (height * height)) + ((3.0f / 20.0f) * mass * (radius * radius));
+    //m_heli.inertiaMatrixTest._33 = ((3.0f / 10.0f) * (mass) * (radius * radius));
+
     //sphere
     /*
     float radius = 4.0f;
@@ -1436,8 +1480,8 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
     ballastInteria._11 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
     ballastInteria._22 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
     ballastInteria._33 = (2.0f / 5.0f) * (mass) * (ballastRadius * ballastRadius);
-    DirectX::SimpleMath::Vector3 ballastTranslation = m_heli.ballastInertiaTranslation;
-    //ballastInteria *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
+    DirectX::SimpleMath::Vector3 ballastTranslation = DirectX::SimpleMath::Vector3(0.0f, -2.0f, 0.0f);
+    ballastInteria *= DirectX::SimpleMath::Matrix::CreateTranslation(ballastTranslation);
 
     m_heli.localBallastInertiaMatrix = ballastInteria;
     m_heli.localInverseBallastInertiaMatrix = m_heli.localBallastInertiaMatrix;
@@ -1571,7 +1615,10 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     m_heli.dimensions = DirectX::SimpleMath::Vector3(4.7f, 2.0f, 2.0f);
     m_heli.airDensity = m_environment->GetAirDensity();
     m_heli.dragCoefficient = m_dragCoefficient;
-
+    m_heli.dragCoefficientAngular = m_dragCoefficientAngularBase;
+    m_heli.dragCoefficientLinear = m_dragCoefficientLinearBase;
+    m_heli.dragAirDensityAngular = m_environment->GetAirDensity();
+    m_heli.dragAirDensityLinear = m_environment->GetAirDensity();
     m_heli.airResistance = 0.0f;
     m_heli.totalResistance = m_heli.airResistance;
     m_heli.gravity = m_environment->GetGravityVec();
@@ -1632,6 +1679,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     // Intialize key physics hardpoints based on model 
     m_heli.localCenterOfMass = DirectX::SimpleMath::Vector3::Zero;
     //m_heli.localCenterOfMass.y -= 0.5f;
+    m_heli.localCenterOfMass.y -= m_inertiaModelX * 0.25f;
     m_heli.centerOfMass = m_heli.localCenterOfMass;
 
     m_heli.localMainRotorPos = DirectX::SimpleMath::Vector3(0.0f, -2.174999997f, 0.00000000f);
@@ -4370,7 +4418,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_testAngularRotationPerSecond = angRadsPerSecond;
 
 
-
+    /*
     DirectX::SimpleMath::Vector3 postVel = m_heli.q.velocity;
     auto deltaVel = (postVel - prevVelocity) / aTimeDelta;
 
@@ -4406,13 +4454,13 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_debugData->PushDebugLinePositionIndicator(top, 1.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLinePositionIndicator(leftFront, 1.0f, 0.0f, DirectX::Colors::Yellow);
 
-
     m_debugData->ToggleDebugOff();
+    */
 
     m_gravTimer += aTimeDelta;
 
     /*
-    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeTurretLocalLeftDir(), 10.0f, 0.0f, DirectX::Colors::Lime);
     m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeTurretLocalRightDir(), 10.0f, 0.0f, DirectX::Colors::Yellow);
     
@@ -4459,6 +4507,7 @@ void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
 
 void Vehicle::UpdateVehicleForces(const float aTimeStep)
 {
+    UpdateDragVals();
     UpdateCollisionImpulseForces(static_cast<float>(aTimeStep));
     m_heli.angularDrag = CalculateDragAngularLocal(m_heli.q.angularVelocity, aTimeStep);
     //m_debugData->DebugPushUILineDecimalNumber("m_heli.angularDrag ", m_heli.angularDrag.Length(), "");
