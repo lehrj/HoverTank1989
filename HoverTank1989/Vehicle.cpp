@@ -3462,6 +3462,74 @@ void Vehicle::UpdateInertiaTensorOld(struct HeliData& aVehicle, const float aTim
 
 void Vehicle::UpdateModelColorVals(const float aTimeStep)
 {
+    //const float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
+    //float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
+    float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
+    centerVal += m_heli.hoverDriveImmersionRatio;
+    //centerVal *= 0.5f;
+    //centerVal = 1.0f;
+
+    if (centerVal >= 1.0f)
+    {
+        centerVal = 1.0f;
+    }
+
+    float leftYawVal = m_heli.controlInput.yawPedalInput / m_heli.controlInput.yawPedalInputMax;
+    if (leftYawVal <= 0.0f)
+    {
+        leftYawVal = 0.0f;
+    }
+    float leftVal = m_heli.controlInput.cyclicInputRoll / m_heli.controlInput.cyclicInputMin;
+    if (leftVal <= 0.0f)
+    {
+        leftVal = 0.0f;
+    }
+    leftVal += leftYawVal;
+
+    leftVal += m_heli.hoverDriveImmersionRatio;
+    if (leftVal >= 1.0f)
+    {
+        leftVal = 1.0f;
+    }
+
+    float rightYawVal = m_heli.controlInput.yawPedalInput / m_heli.controlInput.yawPedalInputMin;
+    if (rightYawVal <= 0.0f)
+    {
+        rightYawVal = 0.0f;
+    }
+    float rightVal = m_heli.controlInput.cyclicInputRoll / m_heli.controlInput.cyclicInputMax;
+    if (rightVal <= 0.0f)
+    {
+        rightVal = 0.0f;
+    }
+    rightVal += rightYawVal;
+
+    rightVal += m_heli.hoverDriveImmersionRatio;
+    if (rightVal >= 1.0f)
+    {
+        rightVal = 1.0f;
+    }
+
+   
+    m_modelController->SetGlowVals(centerVal, leftVal, rightVal, m_heli.q.position, m_heli.forward, aTimeStep);
+    /*
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("centerVal = ", centerVal,"");
+    m_debugData->DebugPushUILineDecimalNumber("leftVal   = ", leftVal, "");
+    m_debugData->DebugPushUILineDecimalNumber("rightVal  = ", rightVal, "");
+    m_debugData->ToggleDebugOff();
+    */
+    auto volume = centerVal + leftVal + rightVal;
+    if (volume > 1.0f)
+    {
+        volume = 1.0f;
+    }
+
+    m_throttleVolume = volume;
+}
+
+void Vehicle::UpdateModelColorValsNoHover(const float aTimeStep)
+{
     const float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
 
     float leftYawVal = m_heli.controlInput.yawPedalInput / m_heli.controlInput.yawPedalInputMax;

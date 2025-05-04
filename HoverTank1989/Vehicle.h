@@ -507,6 +507,7 @@ private:
     void UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep);
     void UpdateInertiaTensorOld(struct HeliData& aVehicle, const float aTimeStep);
     void UpdateModelColorVals(const float aTimeStep);
+    void UpdateModelColorValsNoHover(const float aTimeStep);
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdatePendulumMotion2(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeStep);
