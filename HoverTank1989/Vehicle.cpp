@@ -286,12 +286,14 @@ void Vehicle::UpdateDragVals()
     m_heli.dragAirDensityAngular = m_environment->GetAirDensity();
     m_heli.dragAirDensityLinear = m_environment->GetAirDensity();
 
-    m_heli.dragCoefficientAngular = m_dragCoefficientAngularBase;
-    m_heli.dragCoefficientLinear = m_dragCoefficientLinearBase;
+    //m_heli.dragCoefficientAngular = m_dragCoefficientAngularBase;
+    //m_heli.dragCoefficientLinear = m_dragCoefficientLinearBase;
 
+    m_heli.dragCoefficientLinear = m_dragCoefficientLinearBase + (m_heli.hoverDriveImmersionRatio * m_dragCoefficientLinearMax);
+    m_heli.dragCoefficientAngular = m_dragCoefficientAngularBase + (m_heli.hoverDriveImmersionRatio * m_dragCoefficientAngularMax);
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("dragCoefficientLinear =", m_heli.dragCoefficientLinear, "");
-
+    m_debugData->DebugPushUILineDecimalNumber("dragCoefficientAngular =", m_heli.dragCoefficientAngular, "");
     m_debugData->ToggleDebugOff();
 }
 
@@ -1453,6 +1455,7 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
     m_heli.localTurretInverseInertiaMatrix = m_heli.localTurretInverseInertiaMatrix.Invert();
 
     //cone
+    /*
     float height = m_inertiaModelX;
     float radius = m_inertiaModelZ;
     mass = m_testMass;
@@ -1461,6 +1464,7 @@ void Vehicle::InitializeInertiaTensor(HeliData& aHeliData)
     m_heli.inertiaMatrixTest._22 = ((3.0f / 10.0f) * (mass) * (radius * radius));
     m_heli.inertiaMatrixTest._33 = ((3.0f / 80.0f) * (mass) * (height * height)) + ((3.0f / 20.0f) * mass * (radius * radius));
     //m_heli.inertiaMatrixTest._33 = ((3.0f / 10.0f) * (mass) * (radius * radius));
+    */
 
     //sphere
     /*
@@ -1679,7 +1683,7 @@ void Vehicle::InitializeVehicle(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aCo
     // Intialize key physics hardpoints based on model 
     m_heli.localCenterOfMass = DirectX::SimpleMath::Vector3::Zero;
     //m_heli.localCenterOfMass.y -= 0.5f;
-    m_heli.localCenterOfMass.y -= m_inertiaModelX * 0.25f;
+   // m_heli.localCenterOfMass.y -= m_inertiaModelX * 0.25f;
     m_heli.centerOfMass = m_heli.localCenterOfMass;
 
     m_heli.localMainRotorPos = DirectX::SimpleMath::Vector3(0.0f, -2.174999997f, 0.00000000f);
@@ -4551,11 +4555,11 @@ void Vehicle::UpdateVehicleForces(const float aTimeStep)
     velocityUpdate += calcHoverDriveForce;
     //velocityUpdate += damperForce;
     velocityUpdate += gravForce;
-    //velocityUpdate += jetThrust;
+    velocityUpdate += jetThrust;
     //velocityUpdate += rotorForce;
     velocityUpdate += m_heli.buoyancyForce;
-    //velocityUpdate += slopeForce;
-    //velocityUpdate += m_heli.controlInput.brakeForce;
+    velocityUpdate += slopeForce;
+    velocityUpdate += m_heli.controlInput.brakeForce;
 
 
     //m_heli.vehicleLinearForcesSum = velocityUpdate;

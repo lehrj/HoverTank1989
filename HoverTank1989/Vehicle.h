@@ -558,17 +558,17 @@ private:
 
     Utility::Torque m_testGravForce;
 
-    /*
+    
     const float m_inertiaModelX = 4.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 3.0f;
-    */
-
     
+
+    /*
     const float m_inertiaModelX = 3.4f;
     const float m_inertiaModelY = 1.0f;
     const float m_inertiaModelZ = 1.8f;
-    
+    */
 
     /*
     const float m_testMass = 800.1f;
@@ -609,9 +609,13 @@ private:
     const float m_dragCoefficient = 0.4f;
     const float m_dragCoefficientBase = 0.4f;
     const float m_dragCoefficientMax = 2.0f;
-    const float m_dragCoefficientLinearBase = 0.4f;
     const float m_dragCoefficientAngularBase = 0.4f;
-
+    const float m_dragCoefficientLinearBase = 0.2f;
+    const float m_dragCoefficientAngularMax = 0.4f;
+    const float m_dragCoefficientLinearMax = 7.0f;
+    
+    
+    
     float m_testVal = 0.0f;
 
     const float m_testMOI = 1000.0f;
