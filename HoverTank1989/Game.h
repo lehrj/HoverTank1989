@@ -123,6 +123,8 @@ private:
     void UpdateAutoFire();
     void UpdateInput(DX::StepTimer const& aTimer);
 
+    void UpdateSpawners();
+
     // Device resources.
     std::unique_ptr<DX::DeviceResources>    m_deviceResources;
 
@@ -616,6 +618,7 @@ private:
 
     // 3D shapes
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCube;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinder;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapePlatform;
     DirectX::SimpleMath::Matrix                  m_shapePlatformMat;
@@ -703,7 +706,36 @@ private:
     const DirectX::SimpleMath::Vector3           m_spawnerBaseRoofDimensions = DirectX::SimpleMath::Vector3(115.0f, 5.0f, 80.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerBaseRoofTrans = DirectX::SimpleMath::Vector3(0.0f, 27.0f, 110.0f);
 
-    //std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerBaseLowerShape;
+
+
+    const float                                  m_spawnerLightAngle = Utility::ToRadians(100.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerLightHousingDimensions = DirectX::SimpleMath::Vector3(10.0f, 10.0f, 10.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerLightInnerDimensions = DirectX::SimpleMath::Vector3(
+        m_spawnerLightHousingDimensions.x * 0.9f, m_spawnerLightHousingDimensions.y * 1.0f, m_spawnerLightHousingDimensions.z * 0.9f);
+    const DirectX::SimpleMath::Vector3           m_spawnerLightInnerOffset = DirectX::SimpleMath::Vector3(-0.5f, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerLightingCenterTrans = DirectX::SimpleMath::Vector3(
+        -m_spawnerBaseRoofDimensions.x * 0.5f + (m_spawnerLightHousingDimensions.x * 0.0f), 31.5f, 0.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerLightingPosOffset = DirectX::SimpleMath::Vector3(m_spawnerBaseRoofDimensions.x * 1.0f, 0.0f, 0.0f);
+    const float                                  m_spawnerLightingSpacing = m_spawnerBaseRoofDimensions.x * 0.2f;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat1Pos1;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat1Pos1;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat1Pos2;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat1Pos2;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat1Pos3;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat1Pos3;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat1Pos4;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat1Pos4;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat2Pos1;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat2Pos1;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat2Pos2;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat2Pos2;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat2Pos3;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat2Pos3;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat2Pos4;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat2Pos4;
+
     DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat2;
     const DirectX::SimpleMath::Vector3           m_spawnerBaseLowerDimensions = DirectX::SimpleMath::Vector3(70.0f, 30.0f, 100.0f);
@@ -761,11 +793,16 @@ private:
     float m_spawnerGlowRatio1 = 0.0f;
     float m_spawnerGlowRatio2 = 0.0f;
 
+    const float m_spawnerRatioLightOn = 0.3f;
+    const float m_spawnerRationLightOff = 0.6f;
     const float m_spawnerDoorSwingTimeMax = 4.5f;
     float m_spawnerDoorTimer1 = 0.0f;
     float m_spawnerDoorTimer2 = 0.0f;
     bool m_isSpawnerDoorActive1 = false;
     bool m_isSpawnerDoorActive2 = false;
+
+    bool m_isSpawnerLightOn1 = false;
+    bool m_isSpawnerLightOn2 = false;
 
     int m_doorSwingCount1 = 0;
     int m_doorSwingCount2 = 0;

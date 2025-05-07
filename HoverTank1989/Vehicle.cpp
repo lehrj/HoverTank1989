@@ -34,7 +34,7 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
     float immersedPos = altitude - curveAdjustVal;
     float immersedRatio;
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
 
     if (m_heli.buoyancyForce.y >= 33319.0f)
     {
@@ -291,10 +291,11 @@ void Vehicle::UpdateDragVals()
 
     m_heli.dragCoefficientLinear = m_dragCoefficientLinearBase + (m_heli.hoverDriveImmersionRatio * m_dragCoefficientLinearMax);
     m_heli.dragCoefficientAngular = m_dragCoefficientAngularBase + (m_heli.hoverDriveImmersionRatio * m_dragCoefficientAngularMax);
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("dragCoefficientLinear =", m_heli.dragCoefficientLinear, "");
-    m_debugData->DebugPushUILineDecimalNumber("dragCoefficientAngular =", m_heli.dragCoefficientAngular, "");
-    m_debugData->ToggleDebugOff();
+
+    //m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->DebugPushUILineDecimalNumber("dragCoefficientLinear =", m_heli.dragCoefficientLinear, "");
+    //m_debugData->DebugPushUILineDecimalNumber("dragCoefficientAngular =", m_heli.dragCoefficientAngular, "");
+    //m_debugData->ToggleDebugOff();
 }
 
 DirectX::SimpleMath::Vector3 Vehicle::CalculateHoverDriveForce(const struct HeliData& aHeli)
