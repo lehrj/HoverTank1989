@@ -1877,6 +1877,14 @@ void Game::CreateDeviceDependentResources()
     m_spawnerLightRingMat2Pos3 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -0.5f, 0.0f, 0.0f));
     m_spawnerLightRingMat2Pos4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -1.5f, 0.0f, 0.0f));
 
+    // spawner lighting
+    m_spawnerLightDirection1 = DirectX::SimpleMath::Vector3::UnitY;
+    m_spawnerLightDirection1 = DirectX::SimpleMath::Vector3::Transform(m_spawnerLightDirection1, 
+        DirectX::SimpleMath::Matrix::CreateRotationX( - m_spawnerLightAngle));
+
+    m_spawnerLightDirection2 = DirectX::SimpleMath::Vector3::UnitY;
+    m_spawnerLightDirection2 = DirectX::SimpleMath::Vector3::Transform(m_spawnerLightDirection2,
+        DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerLightAngle));
 ////////////////////////////////////////////////////////
 
 
@@ -2215,7 +2223,6 @@ void Game::DrawSpawner()
     m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(angle2)* m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
     m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(angle2)* m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
     
-
     // axel 2
     auto posAxelTwo = pos;
     posAxelTwo.y -= m_spawnerAxelDimensions.z * 0.3f;
@@ -2244,7 +2251,6 @@ void Game::DrawSpawner()
     posAxelThree.z -= (m_spawnerAxelDimensions2.z * 0.25f) + (m_spawnerAxelDimensions.z * 0.13f);
     posAxelThreeAlt.z *= -1.0f;
     posAxelThreeAlt.z += (m_spawnerAxelDimensions2.z * 0.25f) + (m_spawnerAxelDimensions.z * 0.13f);
-
 
     auto axelMat3 = DirectX::SimpleMath::Matrix::Identity;
     axelMat3 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.25f, 1.02f, 0.25f));
@@ -2413,7 +2419,6 @@ void Game::DrawSpawner()
     m_effect->EnableDefaultLighting();
     //m_effect->SetSpecularPower(cos(ratio2 * 7000.0f));
 
-
     m_effect->SetColorAndAlpha(m_spawnerColorInterior);
   // m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
     //m_effect->SetSpecularPower(1.0f);
@@ -2422,19 +2427,14 @@ void Game::DrawSpawner()
     DirectX::SimpleMath::Vector3 mainLightDirection0 = - DirectX::SimpleMath::Vector3::UnitY;
     DirectX::SimpleMath::Vector3 mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
     mainLightDirection1.Normalize();
-    DirectX::SimpleMath::Vector3 mainLightDirection2 = DirectX::SimpleMath::Vector3::UnitZ;
+    //DirectX::SimpleMath::Vector3 mainLightDirection2 = DirectX::SimpleMath::Vector3::UnitZ;
+    DirectX::SimpleMath::Vector3 mainLightDirection2 = m_spawnerLightDirection1;
+
     //m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
-
     //float eyeSlideMod = eyeSlide * 0.5f;
-
-    DirectX::SimpleMath::Vector4 eyeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-
-
-    //mainLightDirection0 = DirectX::SimpleMath::Vector3::Transform(mainLightDirection0, DirectX::SimpleMath::Matrix::CreateRotationZ(-eyeSlide));
-   // mainLightDirection1 = DirectX::SimpleMath::Vector3::Transform(mainLightDirection1, DirectX::SimpleMath::Matrix::CreateRotationZ(-eyeSlide));
-    //mainLightDirection2 = DirectX::SimpleMath::Vector3::Transform(mainLightDirection2, DirectX::SimpleMath::Matrix::CreateRotationY(-eyeSlideMod));
+    //DirectX::SimpleMath::Vector4 eyeColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
    // m_effect->SetLightSpecularColor(2, DirectX::SimpleMath::Vector4(eyeColor.x, eyeColor.y + 0.4f, eyeColor.z + 0.4f, eyeColor.w));
-    m_effect->SetLightDiffuseColor(2, DirectX::SimpleMath::Vector4(eyeColor.x, eyeColor.y + 0.4f, eyeColor.z + 0.4f, eyeColor.w));
+    //m_effect->SetLightDiffuseColor(2, DirectX::SimpleMath::Vector4(eyeColor.x, eyeColor.y + 0.4f, eyeColor.z + 0.4f, eyeColor.w));
 
     m_effect->SetLightDirection(0, mainLightDirection0);
     m_effect->SetLightDirection(1, mainLightDirection1);
@@ -2471,7 +2471,6 @@ void Game::DrawSpawner()
     {
         m_spawnerBaseShape->Draw(m_spawnerBaseMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Yellow);
     }
-
 
     updateMat = m_spawnerBaseRearMat1;
     m_effect->SetWorld(updateMat);
@@ -2560,6 +2559,11 @@ void Game::DrawSpawner()
     m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
     m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
     m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(m_spawnerPos, m_spawnerLightDirection1, 500.0f, 50.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(m_spawnerPos2, m_spawnerLightDirection2, 500.0f, 50.0f, DirectX::Colors::Orange);
+    m_debugData->ToggleDebugOff();
 }
 
 void Game::DrawSpawnerOld()

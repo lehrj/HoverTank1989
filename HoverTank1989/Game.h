@@ -748,6 +748,13 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat2Pos3;
     DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat2Pos4;
 
+    DirectX::SimpleMath::Vector3                 m_spawnerLightDirection1;
+    DirectX::SimpleMath::Vector3                 m_spawnerLightDirection2;
+
+    const DirectX::SimpleMath::Vector3 m_spawnerWindowDimensions = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+    DirectX::SimpleMath::Matrix                  m_spawnerWindowMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerWindowMat2;
+
     DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat2;
     const DirectX::SimpleMath::Vector3           m_spawnerBaseLowerDimensions = DirectX::SimpleMath::Vector3(70.0f, 30.0f, 100.0f);
