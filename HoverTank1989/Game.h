@@ -707,9 +707,9 @@ private:
     const DirectX::SimpleMath::Vector3           m_spawnerBaseRoofTrans = DirectX::SimpleMath::Vector3(0.0f, 27.0f, 110.0f);
 
 
-
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerLightRingShape;
     const float                                  m_spawnerLightAngle = Utility::ToRadians(100.0f);
-    const DirectX::SimpleMath::Vector3           m_spawnerLightHousingDimensions = DirectX::SimpleMath::Vector3(10.0f, 10.0f, 10.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerLightHousingDimensions = DirectX::SimpleMath::Vector3(10.0f, 6.0f, 10.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerLightInnerDimensions = DirectX::SimpleMath::Vector3(
         m_spawnerLightHousingDimensions.x * 0.9f, m_spawnerLightHousingDimensions.y * 1.0f, m_spawnerLightHousingDimensions.z * 0.9f);
     const DirectX::SimpleMath::Vector3           m_spawnerLightInnerOffset = DirectX::SimpleMath::Vector3(-0.5f, 0.0f, 0.0f);
@@ -735,6 +735,18 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat2Pos3;
     DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat2Pos4;
     DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat2Pos4;
+
+    //const DirectX::SimpleMath::Vector3           m_spawnerLightRingTrans = DirectX::SimpleMath::Vector3(m_spawnerLightHousingDimensions.x, 0.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerLightRingTrans = DirectX::SimpleMath::Vector3(0.0f, m_spawnerLightHousingDimensions.y * 0.5f, 0.0f);
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat1Pos1;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat1Pos2;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat1Pos3;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat1Pos4;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat2Pos1;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat2Pos2;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat2Pos3;
+    DirectX::SimpleMath::Matrix                  m_spawnerLightRingMat2Pos4;
 
     DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseLowerMat2;

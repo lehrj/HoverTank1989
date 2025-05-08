@@ -1835,8 +1835,47 @@ void Game::CreateDeviceDependentResources()
     m_spawnerLightInnerMat2Pos3 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -0.5f, 0.0f, 0.0f));
     m_spawnerLightInnerMat2Pos4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -1.5f, 0.0f, 0.0f));
 
-    
+  
+    const float lightRingThickness = m_spawnerLightHousingDimensions.x - m_spawnerLightInnerDimensions.x;
+    const float lightRingDiameter = m_spawnerLightHousingDimensions.x - (lightRingThickness * 1.0f);
+    m_spawnerLightRingShape = DirectX::GeometricPrimitive::CreateTorus(context, lightRingDiameter, lightRingThickness);
 
+    const float ringScale = 7.0f;
+    m_spawnerLightRingMat1Pos1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, ringScale,1.0f));
+    //m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, -ringScale * 0.5f, 0.0f));
+    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_spawnerLightRingTrans);
+    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_spawnerLightAngle);
+    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_spawnerLightingCenterTrans);
+    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerBasePos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerLightRingMat1Pos2 = m_spawnerLightRingMat1Pos1;
+    m_spawnerLightRingMat1Pos3 = m_spawnerLightRingMat1Pos1;
+    m_spawnerLightRingMat1Pos4 = m_spawnerLightRingMat1Pos1;
+
+    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * 1.5f, 0.0f, 0.0f));
+    m_spawnerLightRingMat1Pos2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * 0.5f, 0.0f, 0.0f));
+    m_spawnerLightRingMat1Pos3 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -0.5f, 0.0f, 0.0f));
+    m_spawnerLightRingMat1Pos4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -1.5f, 0.0f, 0.0f));
+
+    // 2 lighting
+    m_spawnerLightRingMat2Pos1 = DirectX::SimpleMath::Matrix::Identity;
+    //m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerLightHousingDimensions);
+    m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 4.0f, 1.0f));
+    m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_spawnerLightRingTrans);
+    m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_spawnerLightAngle);
+    m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_spawnerLightingCenterTrans);
+    m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f));
+    m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerBasePos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerLightRingMat2Pos2 = m_spawnerLightRingMat2Pos1;
+    m_spawnerLightRingMat2Pos3 = m_spawnerLightRingMat2Pos1;
+    m_spawnerLightRingMat2Pos4 = m_spawnerLightRingMat2Pos1;
+
+    m_spawnerLightRingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * 1.5f, 0.0f, 0.0f));
+    m_spawnerLightRingMat2Pos2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * 0.5f, 0.0f, 0.0f));
+    m_spawnerLightRingMat2Pos3 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -0.5f, 0.0f, 0.0f));
+    m_spawnerLightRingMat2Pos4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -1.5f, 0.0f, 0.0f));
 
 ////////////////////////////////////////////////////////
 
@@ -2481,12 +2520,12 @@ void Game::DrawSpawner()
 
     m_spawnerOuterShape->Draw(m_spawnerShellInteriorMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Green);
     m_spawnerOuterShape->Draw(m_spawnerShellInteriorMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Purple);
-
+    
     m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
     m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
     m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
     m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
-
+    
     if (m_isSpawnerLightOn1 == true)
     {
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::White);
@@ -2512,6 +2551,15 @@ void Game::DrawSpawner()
     m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos3, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::White);
     m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos4, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::White);
 
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray2);
 }
 
 void Game::DrawSpawnerOld()
