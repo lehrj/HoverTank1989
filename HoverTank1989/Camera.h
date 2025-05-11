@@ -256,8 +256,8 @@ private:
     const float                     m_frustumPlanePaddingVertical = Utility::ToRadians(15.0f);
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
-    float                           m_posTravelSpeed = 424.0f;
-    const float                     m_freeLookSpeedDelta = 7.0f;
+    float                           m_posTravelSpeed = 124.0f;
+    const float                     m_freeLookSpeedDelta = 6.0f;
     const float                     m_freeLookSpeedMax = 550.0f;
     const float                     m_freeLookSpeedMin = 1.0f;
 

@@ -1633,10 +1633,9 @@ void Game::CreateDeviceDependentResources()
     // Spawners
     m_shapeNormCube = DirectX::GeometricPrimitive::CreateBox(context, DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
     m_shapeNormCylinder = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 1.0f);
-
+    m_shapeNormCylinderGear = DirectX::GeometricPrimitive::CreateCylinder(context, 1.0f, 1.0f, m_shapeGearCount);
     const float spawnerHeight = m_spawnerDimensions.y;
     const float spawnerDiameter = m_spawnerDimensions.x;
-    //const float spawnerThickness = m_spawnerDimensions.z;
     const float spawnerThickness = m_spawnerShellThickness;   
     const float spawnerScale = m_spawnerScale;
     const int spawnerSides = m_spawnerSides;
@@ -1887,6 +1886,42 @@ void Game::CreateDeviceDependentResources()
     m_spawnerLightDirection2 = DirectX::SimpleMath::Vector3::UnitY;
     m_spawnerLightDirection2 = DirectX::SimpleMath::Vector3::Transform(m_spawnerLightDirection2,
         DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerLightAngle));
+
+    // extender gear housing
+    
+    m_spawnerExtenderHousePortMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderHousePortMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendHousingDimensions);
+    m_spawnerExtenderHousePortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(-m_spawnerExtendHousingOffsetX, m_spawnerExtendHousingOffsetY, -m_spawnerExtendHousingOffsetZ));
+    m_spawnerExtenderHousePortMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerExtenderHouseStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderHouseStarMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendHousingDimensions);
+    m_spawnerExtenderHouseStarMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(-m_spawnerExtendHousingOffsetX, m_spawnerExtendHousingOffsetY, m_spawnerExtendHousingOffsetZ));
+    m_spawnerExtenderHouseStarMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerExtenderHousePortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderHousePortMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendHousingDimensions);
+    m_spawnerExtenderHousePortMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(m_spawnerExtendHousingOffsetX, m_spawnerExtendHousingOffsetY, -m_spawnerExtendHousingOffsetZ));
+    m_spawnerExtenderHousePortMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerExtenderHouseStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderHouseStarMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendHousingDimensions);
+    m_spawnerExtenderHouseStarMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(m_spawnerExtendHousingOffsetX, m_spawnerExtendHousingOffsetY, m_spawnerExtendHousingOffsetZ));
+    m_spawnerExtenderHouseStarMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    // extender gear
+    m_spawnerExtenderGearStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendGearScale);
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(-m_spawnerExtendGearOffsetX, m_spawnerExtendGearOffsetY, -m_spawnerExtendGearOffsetZ));
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+
 ////////////////////////////////////////////////////////
 
 
@@ -1941,7 +1976,6 @@ void Game::CalculateSpawnerData()
         {
             //m_isSpawnerLightOn1 = true;
         }
-        m_debugData->DebugPushUILineDecimalNumber("timerRatio ", timerRatio, "");
 
         float halfTime = m_spawnerDoorSwingTimeMax * 0.45f;
         float closeStartTime = m_spawnerDoorSwingTimeMax * 0.55f;
@@ -2044,7 +2078,6 @@ void Game::CalculateSpawnerData()
         {
             //m_isSpawnerLightOn2 = true;
         }
-        m_debugData->DebugPushUILineDecimalNumber("timerRatio2 ", timerRatio, "");
 
         float halfTime = m_spawnerDoorSwingTimeMax * 0.45f;
         float closeStartTime = m_spawnerDoorSwingTimeMax * 0.55f;
@@ -2096,8 +2129,7 @@ void Game::CalculateSpawnerData()
         m_altSpawnerAng2 = smoothAng2;
     }
 
-    m_debugData->DebugPushUILineDecimalNumber("ratio1 ", ratio1, "");
-    m_debugData->DebugPushUILineDecimalNumber("ratio2 ", ratio2, "");
+
     m_debugData->ToggleDebugOff();
     m_isSpawnerLightOn2 = false;
     if (m_isSpawnerDoorActive2 == true)
@@ -2147,65 +2179,115 @@ void Game::CalculateSpawnerData()
     m_spawnerBlastShieldRatio1 = blastShieldRatio1;
 
 
-
-
-
-
-
+    
     // extended door arms
+    const float extenderMod1 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
+    const float extenderMod2 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
         // arm 
-    float transX = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f);
-    //float transY = 5.0f + (m_spawnerArmDimensions.y * 0.5f);
-    float transY = 5.0f +  (m_spawnerArmDimensions.y * 1.0f) + (m_spawnerExtendorDimensions.y * 0.5f);
-    //float transZ = (m_spawnerArmDimensions.z * 1.0f) - (m_spawnerAxelDimensions.z * sqrt(3.0f) * 0.25f);
-    float transZ = (m_spawnerArmExtendedCombinedBase * 0.5f) + (m_spawnerExtendorDimensions.z * 0.5f);
-    //transZ += cos(m_timer.GetTotalSeconds()) * m_spawnerExtenderDistanceMax;
+    const float armOffsetX = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f);
+    const float armOffsetLowerY = m_spawnerArmDimensions.y - (m_spawnerExtendorDimensions.y * 0.5f);
+    const float armOffsetUpperY = m_spawnerArmDimensions.y + (m_spawnerArmDimensions.y * 1.0f) + (m_spawnerExtendorDimensions.y * 0.5f);
+    const float armOffsetZ = m_spawnerArmExtendedCombinedBase - (m_spawnerExtendorDimensions.z * 0.5f);
 
-    transZ = m_spawnerArmExtendedCombinedBase - (m_spawnerExtendorDimensions.z * 0.5f);
-    transZ += abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
 
-    DirectX::SimpleMath::Vector3 testVec = DirectX::SimpleMath::Vector3(-transX, transY, transZ);
-    auto transMat = DirectX::SimpleMath::Matrix::CreateTranslation(testVec);
-
-    auto pos = m_spawnerPos;
-    pos.z -= m_spawnerAxelOffset.z;
-    pos.y += m_spawnerAxelOffset.y;
+    m_spawnerExtenderDoorMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderDoorMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerArmExtendedCombinedBase + extenderMod1));
+    m_spawnerExtenderDoorMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle1);
+    m_spawnerExtenderDoorMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
 
     m_spawnerExtenderUpperPortMat1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
-    m_spawnerExtenderUpperPortMat1 *= transMat;
+    m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(armOffsetX, armOffsetUpperY, armOffsetZ + extenderMod1));
     m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle1);
-    m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
  
     m_spawnerExtenderLowerPortMat1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
-    //m_spawnerExtenderLowerPortMat1 *= transMat;
-    //m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-transX, m_spawnerArmDimensions.y * 0.5f, transZ));
-    auto testTransY = (5.0f + (m_spawnerArmDimensions.y * -1.0f) + (m_spawnerExtendorDimensions.y * 0.5f));
-    testTransY = 5.0f - (m_spawnerExtendorDimensions.y * 0.5f);
-    m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-transX, testTransY, transZ));
+    m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(armOffsetX, armOffsetLowerY, armOffsetZ + extenderMod1));
     m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle1);
-    m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
 
+    m_spawnerExtenderUpperStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderUpperStarMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
+    m_spawnerExtenderUpperStarMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-armOffsetX, armOffsetUpperY, armOffsetZ + extenderMod1));
+    m_spawnerExtenderUpperStarMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle1);
+    m_spawnerExtenderUpperStarMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
 
-    // door
-    float doorTransX = 0.0f;
-    float doorTransY = 0.0f;
-    float doorTransZ = (m_spawnerArmDimensions.z * 0.5f) - (m_spawnerAxelDimensions.y * 0.5f);
-    doorTransZ = (m_spawnerArmDimensions.z * 1.0f) - (m_spawnerAxelDimensions.y * 0.45f);
-    doorTransZ = transZ + (m_spawnerArmDimensions.z * 0.5f) - (m_spawnerDoorDimensions.z * 0.5f) + 0.08f;
-    doorTransZ = m_spawnerArmExtendedCombinedBase;
-    doorTransZ += abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
-    testVec = DirectX::SimpleMath::Vector3(doorTransX, doorTransY, doorTransZ);
+    m_spawnerExtenderLowerStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderLowerStarMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
+    m_spawnerExtenderLowerStarMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-armOffsetX, armOffsetLowerY, armOffsetZ + extenderMod1));
+    m_spawnerExtenderLowerStarMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle1);
+    m_spawnerExtenderLowerStarMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
 
-    auto transMat2 = DirectX::SimpleMath::Matrix::CreateTranslation(testVec);
-  //  doorTransAlt = DirectX::SimpleMath::Matrix::CreateTranslation(-testVec);
+    // extender gear
+    const float circumference = 2.0f * Utility::GetPi() * (m_spawnerExtendGearDiameter * 0.5f);
+    const float angRat1 = (extenderMod1 / circumference) * (2.0f * Utility::GetPi());
+    m_spawnerExtenderGearStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendGearScale);
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(angRat1);
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(-m_spawnerExtendGearOffsetX, m_spawnerExtendGearOffsetY, -m_spawnerExtendGearOffsetZ));
+    m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
-    m_spawnerExtenderDoorMat1 = DirectX::SimpleMath::Matrix::Identity;
-    m_spawnerExtenderDoorMat1 *= transMat2;
-    m_spawnerExtenderDoorMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle1);
-    m_spawnerExtenderDoorMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
-    //const auto doorMat = m_spawnerDoorMat;
+    m_spawnerExtenderGearPortMat1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderGearPortMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendGearScale);
+    m_spawnerExtenderGearPortMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerExtenderGearPortMat1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(angRat1);
+    m_spawnerExtenderGearPortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(-m_spawnerExtendGearOffsetX, m_spawnerExtendGearOffsetY, m_spawnerExtendGearOffsetZ));
+    m_spawnerExtenderGearPortMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    const float angRat2 = (extenderMod2 / circumference) * (2.0f * Utility::GetPi());
+    m_spawnerExtenderGearStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendGearScale);
+    m_spawnerExtenderGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerExtenderGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(-angRat2);
+    m_spawnerExtenderGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(m_spawnerExtendGearOffsetX, m_spawnerExtendGearOffsetY, m_spawnerExtendGearOffsetZ));
+    m_spawnerExtenderGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerExtenderGearPortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendGearScale);
+    m_spawnerExtenderGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerExtenderGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateRotationZ(-angRat2);
+    m_spawnerExtenderGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+        DirectX::SimpleMath::Vector3(m_spawnerExtendGearOffsetX, m_spawnerExtendGearOffsetY, -m_spawnerExtendGearOffsetZ));
+    m_spawnerExtenderGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+  
+
+    // door 2 arms
+    m_spawnerExtenderUpperPortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderUpperPortMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
+    m_spawnerExtenderUpperPortMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-armOffsetX, armOffsetUpperY, -armOffsetZ - extenderMod2));
+    m_spawnerExtenderUpperPortMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle2);
+    m_spawnerExtenderUpperPortMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerExtenderLowerPortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderLowerPortMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
+    m_spawnerExtenderLowerPortMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-armOffsetX, armOffsetLowerY, -armOffsetZ - extenderMod2));
+    m_spawnerExtenderLowerPortMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle2);
+    m_spawnerExtenderLowerPortMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerExtenderUpperStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderUpperStarMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
+    m_spawnerExtenderUpperStarMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(armOffsetX, armOffsetUpperY, -armOffsetZ - extenderMod2));
+    m_spawnerExtenderUpperStarMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle2);
+    m_spawnerExtenderUpperStarMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_spawnerExtenderLowerStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderLowerStarMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
+    m_spawnerExtenderLowerStarMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(armOffsetX, armOffsetLowerY, -armOffsetZ - extenderMod2));
+    m_spawnerExtenderLowerStarMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle2);
+    m_spawnerExtenderLowerStarMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
+    // door 2
+    m_spawnerExtenderDoorMat2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerExtenderDoorMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -m_spawnerArmExtendedCombinedBase - extenderMod2));
+    m_spawnerExtenderDoorMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle2);
+    m_spawnerExtenderDoorMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+
 
 }
 
@@ -2600,14 +2682,35 @@ void Game::DrawSpawner()
     m_effect->SetColorAndAlpha(m_spawnerColorShell);
     m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
 
-    m_effect->SetWorld(doorMatAlt);
-    m_effect->SetColorAndAlpha(m_spawnerColorDoor);
-    m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
+   // m_effect->SetWorld(doorMatAlt);
+   // m_effect->SetColorAndAlpha(m_spawnerColorDoor);
+ //   m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     m_shapeNormCube->Draw(m_spawnerExtenderUpperPortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
     m_shapeNormCube->Draw(m_spawnerExtenderLowerPortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+
+    m_shapeNormCube->Draw(m_spawnerExtenderUpperStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_spawnerExtenderLowerStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+
+    m_shapeNormCube->Draw(m_spawnerExtenderUpperPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_spawnerExtenderLowerPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+
+    m_shapeNormCube->Draw(m_spawnerExtenderUpperStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_spawnerExtenderLowerStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+
     m_spawnerDoorShape->Draw(m_spawnerExtenderDoorMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderDoor);
-    m_spawnerDoorShape->Draw(m_spawnerExtenderDoorMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Red);
+    m_spawnerDoorShape->Draw(m_spawnerExtenderDoorMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderDoor);
+
+    // extender housing
+    m_shapeNormCube->Draw(m_spawnerExtenderHousePortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    m_shapeNormCube->Draw(m_spawnerExtenderHouseStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    m_shapeNormCube->Draw(m_spawnerExtenderHousePortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    m_shapeNormCube->Draw(m_spawnerExtenderHouseStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+
+    m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearPortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
 
     m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(m_spawnerPos, m_spawnerLightDirection1, 500.0f, 50.0f, DirectX::Colors::Yellow);
