@@ -695,11 +695,11 @@ private:
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerDoorShape;
     DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;
-    const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(72.0f, 30.0f, 4.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerDoorDimensions = DirectX::SimpleMath::Vector3(72.0f, 35.0f, 4.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerArmShape;
     DirectX::SimpleMath::Matrix                  m_spawnerArmMat;
-    const float                                  m_spawnerArmExtendedCombinedBase = 57.0f;
+    const float                                  m_spawnerArmExtendedCombinedBase = 57.62f;
     const DirectX::SimpleMath::Vector3           m_spawnerArmDimensions = DirectX::SimpleMath::Vector3(4.0f, 5.0f, m_spawnerArmExtendedCombinedBase);
 
     const DirectX::SimpleMath::Vector3           m_spawnerExtendorDimensions = DirectX::SimpleMath::Vector3(5.0f, 3.0f, 33.5f);
@@ -708,7 +708,7 @@ private:
     const float                                  m_spawnerExtenderBaseHorizontalOffset = m_spawnerDoorDimensions.x * 0.5f;
     float                                        m_spawnerExtenderMod1 = 0.0f;
     float                                        m_spawnerExtenderMod2 = 0.0f;
-    const float                                  m_spawnerExtenderDistanceMax = 9.0f;
+    const float                                  m_spawnerExtenderDistanceMax = 11.0f;
     const float                                  m_spawnerExtenderDeployTime = 1.0f;
 
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderUpperPortMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -727,7 +727,7 @@ private:
     // extender gear housing
     const DirectX::SimpleMath::Vector3           m_spawnerExtendHousingDimensions = DirectX::SimpleMath::Vector3(m_spawnerExtendorDimensions.x, 22.0f, 5.0f);
     const float m_spawnerExtendHousingOffsetX = 40.0f;
-    const float m_spawnerExtendHousingOffsetY = - 10.0f;
+    const float m_spawnerExtendHousingOffsetY = - 12.0f;
     const float m_spawnerExtendHousingOffsetZ = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f) - (m_spawnerExtendHousingDimensions.x * 1.0f);
 
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderHousePortMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -833,6 +833,19 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost1 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y - 2.0f, m_spawnerBasePos1.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
     DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost2 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y - 2.0f, m_spawnerBasePos2.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
+    DirectX::SimpleMath::Vector3                  m_spawnerBlastWindowDimensions = DirectX::SimpleMath::Vector3(13.0f, 15.0f, 5.0f);
+    DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowMat2 = DirectX::SimpleMath::Matrix::Identity;
+
+    bool m_isSpanwerBlastWindowOn1 = false;
+    bool m_isSpanwerBlastWindowOn2 = false;
+
+    const float m_spawnerBlastWindowOffsetX = 10.0f;
+    const float m_spawnerBlastWindowOffsetY = 19.8f;
+    const float m_spawnerBlastWindowOffsetZ = 49.5f;
+    const float m_spawnerBlastWindowAngle = Utility::ToRadians(29.0f);
+
+
     const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.5f);
     const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.5f));
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat2;
@@ -849,7 +862,7 @@ private:
     const DirectX::XMVECTORF32 m_spawnerColorShell = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorDoor = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorLightHousing = DirectX::Colors::Gray;
-    const DirectX::XMVECTORF32 m_spawnerColorLightOn = DirectX::Colors::White;
+    const DirectX::XMVECTORF32 m_spawnerColorLightOn = DirectX::Colors::Yellow;
     const DirectX::XMVECTORF32 m_spawnerColorLightOff = DirectX::Colors::Black;
     const DirectX::XMVECTORF32 m_spawnerColorExtenderArm= DirectX::Colors::DarkGray;
     const DirectX::XMVECTORF32 m_spawnerColorExtenderDoor = DirectX::Colors::DarkGray;
@@ -875,8 +888,10 @@ private:
     float m_spawnerGlowRatio1 = 0.0f;
     float m_spawnerGlowRatio2 = 0.0f;
 
+    const float m_spawneBlastShieldExtendMod = 1.1f;
+
     const float m_spawnerRatioLightOn = 0.3f;
-    const float m_spawnerRationLightOff = 0.6f;
+    //const float m_spawnerRatioLightOff = 0.6f;
     const float m_spawnerDoorSwingTimeMax = 4.5f;
     float m_spawnerDoorTimer1 = 0.0f;
     float m_spawnerDoorTimer2 = 0.0f;
