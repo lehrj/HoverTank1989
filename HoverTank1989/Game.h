@@ -699,7 +699,7 @@ private:
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerArmShape;
     DirectX::SimpleMath::Matrix                  m_spawnerArmMat;
-    const float                                  m_spawnerArmExtendedCombinedBase = 58.0f;
+    const float                                  m_spawnerArmExtendedCombinedBase = 57.0f;
     const DirectX::SimpleMath::Vector3           m_spawnerArmDimensions = DirectX::SimpleMath::Vector3(4.0f, 5.0f, m_spawnerArmExtendedCombinedBase);
 
     const DirectX::SimpleMath::Vector3           m_spawnerExtendorDimensions = DirectX::SimpleMath::Vector3(5.0f, 3.0f, 33.5f);
@@ -708,7 +708,8 @@ private:
     const float                                  m_spawnerExtenderBaseHorizontalOffset = m_spawnerDoorDimensions.x * 0.5f;
     float                                        m_spawnerExtenderMod1 = 0.0f;
     float                                        m_spawnerExtenderMod2 = 0.0f;
-    const float                                  m_spawnerExtenderDistanceMax = 3.0f;
+    const float                                  m_spawnerExtenderDistanceMax = 9.0f;
+    const float                                  m_spawnerExtenderDeployTime = 1.0f;
 
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderUpperPortMat1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderLowerPortMat1 = DirectX::SimpleMath::Matrix::Identity;
@@ -743,7 +744,6 @@ private:
     const float m_spawnerExtendGearOffsetX = m_spawnerExtendHousingOffsetX;
     const float m_spawnerExtendGearOffsetY = m_spawnerArmDimensions.y - (m_spawnerExtendorDimensions.y * 1.0f) - (m_spawnerExtendGearDiameter * 0.5f);
     const float m_spawnerExtendGearOffsetZ = m_spawnerExtendHousingOffsetZ + (m_spawnerExtendHousingDimensions.z * 1.0f);
-
 
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderGearPortMat1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderGearStarMat1 = DirectX::SimpleMath::Matrix::Identity;

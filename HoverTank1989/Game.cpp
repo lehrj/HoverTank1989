@@ -1979,24 +1979,38 @@ void Game::CalculateSpawnerData()
 
         float halfTime = m_spawnerDoorSwingTimeMax * 0.45f;
         float closeStartTime = m_spawnerDoorSwingTimeMax * 0.55f;
-        if (m_spawnerDoorTimer1 < halfTime)
+        const float startTime = m_spawnerExtenderDeployTime;
+        const float endTime = m_spawnerDoorSwingTimeMax - m_spawnerExtenderDeployTime;
+
+        if (m_spawnerDoorTimer1 < startTime)
         {
-            ratio1 = m_spawnerDoorTimer1 / halfTime;
+            ratio1 = 0.0f;
+            stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
+            stepVec1 = closedVec;
+            smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
+        }
+        else if (m_spawnerDoorTimer1 > endTime)
+        {
+            ratio1 = 0.0f;
+            stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
+            stepVec1 = closedVec;
+            smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
+        }
+        else if (m_spawnerDoorTimer1 < halfTime)
+        {
+            ratio1 = (m_spawnerDoorTimer1 - m_spawnerExtenderDeployTime) / (halfTime - m_spawnerExtenderDeployTime);
 
             auto stepQuat = DirectX::SimpleMath::Quaternion::Slerp(m_spawnerDoorClosedQuat, m_spawnerDoorOpenQuat, ratio1);
             quatAngle1 = DirectX::SimpleMath::Quaternion::Angle(m_spawnerDoorClosedQuat, stepQuat);
 
             stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
             smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
-
-            //m_altSpawnerAng1 = smoothAng1;
         }
         else if (m_spawnerDoorTimer1 < closeStartTime)
         {
             ratio1 = 1.0f;
             stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
             smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
-            //m_altSpawnerAng1 = smoothAng1;
         }
         else
         {
@@ -2007,10 +2021,6 @@ void Game::CalculateSpawnerData()
             stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(overCloseVec, openVec, ratio1);
             smoothAng1 = - Utility::GetAngleBetweenVectors(compVec1, stepVec1);
             smoothAng1 -= Utility::ToRadians(-90.0f);
-            //m_altSpawnerAng1 = smoothAng1;
-            //smoothAng1 = Utility::ToRadians(45.0f);
-
-            //smoothAng1 = ratio1 * m_spawnerDoorAngleMax;
         }
         m_spawnerDoorTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
         if (m_spawnerDoorTimer1 >= m_spawnerDoorSwingTimeMax)
@@ -2020,7 +2030,6 @@ void Game::CalculateSpawnerData()
             ratio1 = 0.0f;
             stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
             smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
-            //m_altSpawnerAng1 = smoothAng1;  
         }
     }
     else
@@ -2029,6 +2038,26 @@ void Game::CalculateSpawnerData()
         stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
         stepVec1 = closedVec;
         smoothAng1 = Utility::GetAngleBetweenVectors(closedVec, stepVec1);
+    }
+
+    if (m_isSpawnerDoorActive1 == true)
+    {
+        if (m_spawnerDoorTimer1 < m_spawnerExtenderDeployTime)
+        {
+            m_spawnerExtenderMod1 = m_spawnerDoorTimer1 / m_spawnerExtenderDeployTime;
+        }
+        else if (m_spawnerDoorTimer1 > m_spawnerDoorSwingTimeMax - m_spawnerExtenderDeployTime)
+        {
+            m_spawnerExtenderMod1 = -1.0f * ((m_spawnerDoorTimer1 - m_spawnerDoorSwingTimeMax) / m_spawnerExtenderDeployTime);
+        }
+        else
+        {
+            m_spawnerExtenderMod1 = 1.0f;
+        }
+    }
+    else
+    {
+        m_spawnerExtenderMod1 = 0.0f;
     }
 
     m_isSpawnerLightOn1 = false;
@@ -2081,10 +2110,27 @@ void Game::CalculateSpawnerData()
 
         float halfTime = m_spawnerDoorSwingTimeMax * 0.45f;
         float closeStartTime = m_spawnerDoorSwingTimeMax * 0.55f;
-        if (m_spawnerDoorTimer2 < halfTime)
+        const float startTime = m_spawnerExtenderDeployTime;
+        const float endTime = m_spawnerDoorSwingTimeMax - m_spawnerExtenderDeployTime;
+        if (m_spawnerDoorTimer2 < startTime)
         {
-            ratio2 = m_spawnerDoorTimer2 / halfTime;
-    
+            ratio2 = 0.0f;
+            stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio2);
+            stepVec2 = closedVec;
+            smoothAng2 = Utility::GetAngleBetweenVectors(closedVec, stepVec2);
+        }
+        else if (m_spawnerDoorTimer2 > endTime)
+        {
+            ratio2 = 0.0f;
+            stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio2);
+            stepVec2 = closedVec;
+            smoothAng2 = Utility::GetAngleBetweenVectors(closedVec, stepVec2);
+        }
+        else if (m_spawnerDoorTimer2 < halfTime)
+        {
+            //ratio2 = m_spawnerDoorTimer2 / halfTime;
+            ratio2 = (m_spawnerDoorTimer2 - m_spawnerExtenderDeployTime) / (halfTime - m_spawnerExtenderDeployTime);
+
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
 
@@ -2129,6 +2175,25 @@ void Game::CalculateSpawnerData()
         m_altSpawnerAng2 = smoothAng2;
     }
 
+    if (m_isSpawnerDoorActive2 == true)
+    {
+        if (m_spawnerDoorTimer2 < m_spawnerExtenderDeployTime)
+        {
+            m_spawnerExtenderMod2 = m_spawnerDoorTimer2 / m_spawnerExtenderDeployTime;
+        }
+        else if (m_spawnerDoorTimer2 > m_spawnerDoorSwingTimeMax - m_spawnerExtenderDeployTime)
+        {
+            m_spawnerExtenderMod2 = -1.0f * ((m_spawnerDoorTimer2 - m_spawnerDoorSwingTimeMax) / m_spawnerExtenderDeployTime);
+        }
+        else
+        {
+            m_spawnerExtenderMod2 = 1.0f;
+        }
+    }
+    else
+    {
+        m_spawnerExtenderMod2 = 0.0f;
+    }
 
     m_debugData->ToggleDebugOff();
     m_isSpawnerLightOn2 = false;
@@ -2177,12 +2242,13 @@ void Game::CalculateSpawnerData()
     m_spawnerDatatMainAxelAngle1 = -angle1;
     m_spawnerMainAxelRatio1 = ratio1;
     m_spawnerBlastShieldRatio1 = blastShieldRatio1;
-
-
     
     // extended door arms
-    const float extenderMod1 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
-    const float extenderMod2 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
+    //const float extenderMod1 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
+    //const float extenderMod2 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
+    const float extenderMod1 = m_spawnerExtenderMod1 * m_spawnerExtenderDistanceMax;
+    const float extenderMod2 = m_spawnerExtenderMod2 * m_spawnerExtenderDistanceMax;
+
         // arm 
     const float armOffsetX = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f);
     const float armOffsetLowerY = m_spawnerArmDimensions.y - (m_spawnerExtendorDimensions.y * 0.5f);
