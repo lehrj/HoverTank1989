@@ -86,6 +86,7 @@ private:
     
     void DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSpawner();
+    void DrawSpawnerLit();
     void DrawSpawnerOld();
     void DrawStartScreen();
     void DrawTerrainNew(Terrain& aTerrain);
@@ -617,6 +618,7 @@ private:
     std::string m_uiAmmoDisplayString = "";
 
     // 3D shapes
+    const float                                  m_spawnerZOffSet = 0.3f;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCube;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinder;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinderGear;
@@ -723,6 +725,9 @@ private:
 
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderDoorMat1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderDoorMat2 = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerExtenderDoorShadowMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerExtenderDoorShadowMat2 = DirectX::SimpleMath::Matrix::Identity;
 
     // extender gear housing
     const DirectX::SimpleMath::Vector3           m_spawnerExtendHousingDimensions = DirectX::SimpleMath::Vector3(m_spawnerExtendorDimensions.x, 22.0f, 5.0f);
@@ -837,12 +842,19 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowMat1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowMat2 = DirectX::SimpleMath::Matrix::Identity;
 
+    DirectX::SimpleMath::Vector3                 m_spawnerBlastWindowBarDimensions = DirectX::SimpleMath::Vector3(3.0f, 15.0f, 5.0f);
+    DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowBarPortMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowBarStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowBarPortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowBarStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+
     bool m_isSpanwerBlastWindowOn1 = false;
     bool m_isSpanwerBlastWindowOn2 = false;
 
-    const float m_spawnerBlastWindowOffsetX = 10.0f;
+    const float m_spawnerBlastWindowOffsetX = 15.0f;
     const float m_spawnerBlastWindowOffsetY = 19.8f;
-    const float m_spawnerBlastWindowOffsetZ = 49.5f;
+    //const float m_spawnerBlastWindowOffsetZ = 49.5f;
+    const float m_spawnerBlastWindowOffsetZ = 51.5f;
     const float m_spawnerBlastWindowAngle = Utility::ToRadians(29.0f);
 
 
@@ -862,13 +874,13 @@ private:
     const DirectX::XMVECTORF32 m_spawnerColorShell = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorDoor = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorLightHousing = DirectX::Colors::Gray;
-    const DirectX::XMVECTORF32 m_spawnerColorLightOn = DirectX::Colors::Yellow;
+    const DirectX::XMVECTORF32 m_spawnerColorLightOn = DirectX::Colors::LightYellow;
     const DirectX::XMVECTORF32 m_spawnerColorLightOff = DirectX::Colors::Black;
     const DirectX::XMVECTORF32 m_spawnerColorExtenderArm= DirectX::Colors::DarkGray;
     const DirectX::XMVECTORF32 m_spawnerColorExtenderDoor = DirectX::Colors::DarkGray;
 
     float m_altSpawnerAng2 = 0.0f;
-    const float                                  m_spawnerDoorAngleMax = Utility::ToRadians(80.0f);
+    const float                                  m_spawnerDoorAngleMax = Utility::ToRadians(40.0f);
     const DirectX::SimpleMath::Quaternion        m_spawnerDoorClosedQuat = DirectX::SimpleMath::Quaternion::Identity;
     const DirectX::SimpleMath::Quaternion        m_spawnerDoorOpenQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, m_spawnerDoorAngleMax);
     const DirectX::SimpleMath::Quaternion        m_spawnerDoorOpenQuat2 = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, -m_spawnerDoorAngleMax);

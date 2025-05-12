@@ -138,7 +138,7 @@ private:
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
 
-    const int m_spawnCountMax = 1;
+    const int m_spawnCountMax = 18;
 
     int m_spawnCount = 0;
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);

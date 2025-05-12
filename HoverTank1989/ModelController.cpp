@@ -229,14 +229,11 @@ void ModelController::InitializeModel(TankModel& aModel, std::shared_ptr<DirectX
     aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
     aModel.localMissileTubeLeftDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
 
-
     //aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     //aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
     
     aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationY(-missileTubeHorizontalRot));
     aModel.localMissileTubeRightDir = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeRightDir, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
-
-
 
     aModel.localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftUp, DirectX::SimpleMath::Matrix::CreateRotationZ(missileTubeVerticalRot));
     aModel.localMissileTubeLeftUp = DirectX::SimpleMath::Vector3::TransformNormal(aModel.localMissileTubeLeftUp, DirectX::SimpleMath::Matrix::CreateRotationY(missileTubeHorizontalRot));
