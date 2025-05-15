@@ -689,9 +689,17 @@ private:
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape2;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat2;
+    DirectX::SimpleMath::Vector3                 m_spawnerAxel2PosSpawner1 = DirectX::SimpleMath::Vector3(600.0f, 9.0f, 861.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerAxel2PosSpawner2 = DirectX::SimpleMath::Vector3(600.0f, 9.0f, -861.0f);
+    DirectX::SimpleMath::Matrix                  m_spawnerAxel2Spawner1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerAxel2Spawner2 = DirectX::SimpleMath::Matrix::Identity;
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions2 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape3;
+    DirectX::SimpleMath::Matrix                  m_spawnerAxel3Spawner1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerAxel3Spawner2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner1 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, 853.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner2 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, -853.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions3 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerDoorShape;
@@ -735,6 +743,12 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderDoorMat2 = DirectX::SimpleMath::Matrix::Identity;
 
     // shadows
+    const int                                    m_spawnerTerrainFadeStartRow1Spawn1 = 2247;
+    const int                                    m_spawnerTerrainFadeEndRow1Spawn1 = 2258;
+    const int                                    m_spawnerTerrainFadeStartRow2Spawn1 = 2444;
+    const int                                    m_spawnerTerrainFadeEndRow2Spawn1 = 2460;
+
+    const float                                  m_spawnerShadowDoorOffset = 10.0f;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseArmPortShadowMat1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseArmStarShadowMat1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseArmPortShadowMat2 = DirectX::SimpleMath::Matrix::Identity;
@@ -866,9 +880,11 @@ private:
 
     DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMat2;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastScaledMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastScaledMat2;
 
-    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost1 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y - 2.0f, m_spawnerBasePos1.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost2 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y - 2.0f, m_spawnerBasePos2.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    const DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost1 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos1.x, m_spawnerBasePos1.y - 2.0f, m_spawnerBasePos1.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    const DirectX::SimpleMath::Matrix                  m_spawnerBaseBlastMatPost2 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y - 2.0f, m_spawnerBasePos2.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
     DirectX::SimpleMath::Vector3                  m_spawnerBlastWindowDimensions = DirectX::SimpleMath::Vector3(13.0f, 15.0f, 5.0f);
     DirectX::SimpleMath::Matrix                  m_spawnerBlastWindowMat1 = DirectX::SimpleMath::Matrix::Identity;

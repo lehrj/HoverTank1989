@@ -679,7 +679,64 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         }
 
 
-        if (i > 2000 && i < 3300)
+        if (i > m_spawnerTerrainFadeStartRow1Spawn1 && i < m_spawnerTerrainFadeEndRow1Spawn1)
+        {
+            //aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i > m_spawnerTerrainFadeStartRow2Spawn1 && i < m_spawnerTerrainFadeEndRow2Spawn1)
+        {
+            //aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        // spawner 1
+        if (i == 2249)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2252)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2253)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2437)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2440)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2442)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        // spawner 2
+        if (i == 2358)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2356)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2353)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        if (i == 2169)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2168)
+        {
+            aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        if (i == 2165)
         {
             aTerrain.terrainVertexArrayBase[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         }
@@ -1219,8 +1276,8 @@ void Game::Render()
 
         DrawTestTrack();
         //DrawTestRangeMissile();
-        DrawSpawner();
-
+        //DrawSpawner();
+        DrawSpawnerLit();
        // DrawLaunchSite();
         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
@@ -2495,16 +2552,18 @@ void Game::CalculateSpawnerData()
     // shadow test
     auto lightDir1 = doorPos1 - m_spawnerLightPos1;
     lightDir1.Normalize();
-  
+    lightDir1 = armBasePos1 - m_spawnerLightPos1;
+    lightDir1.x = 0.0f;
+    lightDir1.Normalize();
     auto zOffSetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, m_spawnerZOffSet, 0.0f));
 
     DirectX::SimpleMath::Plane shadowPlane;
     m_environment->GetGroundPlane(shadowPlane, doorPos1);
     auto shadowTestMat = DirectX::SimpleMath::Matrix::Identity;
     shadowTestMat = m_spawnerExtenderDoorMat1;
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, - 20.0f));
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(m_spawnerLightDirection1, shadowPlane);
-    //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -m_spawnerShadowDoorOffset));
+    //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(m_spawnerLightDirection1, shadowPlane);
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
     //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(-DirectX::SimpleMath::Vector3::UnitY, shadowPlane);
     //shadowTestMat *= m_spawnerExtenderDoorMat1;
     shadowTestMat *= zOffSetMat;
@@ -2581,10 +2640,13 @@ void Game::CalculateSpawnerData()
     shadowTestMat = m_spawnerExtenderLowerStarMat1;
 
     // shadow base arm port 1 
+    lightDir1 = armBasePos1 - m_spawnerLightPos1;
+    lightDir1.x = 0.0f;
+    lightDir1.Normalize();
     shadowTestMat = m_spawnerExtenderLowerPortMat1;
     //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 20.0f));
     //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(m_spawnerLightDirection1, shadowPlane);
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
     shadowTestMat *= zOffSetMat;
     m_spawnerExtenderArmPortShadowMat1 = shadowTestMat;
 
@@ -2592,7 +2654,7 @@ void Game::CalculateSpawnerData()
     shadowTestMat = m_spawnerExtenderLowerStarMat1;
     //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 20.0f));
     //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(m_spawnerLightDirection1, shadowPlane);
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
     shadowTestMat *= zOffSetMat;
     m_spawnerExtenderArmStarShadowMat1 = shadowTestMat;
 
@@ -2615,28 +2677,20 @@ void Game::CalculateSpawnerData()
     shadowTestMat *= zOffSetMat;
     m_spawnerExtenderArmStarShadowMat2 = shadowTestMat;
 
-    //zOffSetMat = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, m_spawnerZOffSet, 0.0f));
-    //DirectX::SimpleMath::Plane shadowPlane;
-
-
     // door 2
     auto doorMat2 = DirectX::SimpleMath::Matrix::Identity;
     auto doorPos2 = DirectX::SimpleMath::Vector3::Zero;
     doorMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, -m_spawnerArmExtendedCombinedBase - extenderMod2));
     doorMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle2);
     doorMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
-
-
     doorPos2 = m_spawnerMainAxelPos2;
     doorPos2.z += m_spawnerArmExtendedCombinedBase + extenderMod2;
     doorPos2.y += 30.0F;
-
     doorPos2 = DirectX::SimpleMath::Vector3::Zero;
     doorPos2 = DirectX::SimpleMath::Vector3::Transform(doorPos2, doorMat2);
-
     m_environment->GetGroundPlane(shadowPlane, doorPos2);
     shadowTestMat = m_spawnerExtenderDoorMat2;
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 20.0f));
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerShadowDoorOffset));
     shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir2, shadowPlane);
     shadowTestMat *= zOffSetMat;
     m_spawnerExtenderDoorShadowMat2 = shadowTestMat;
@@ -2645,9 +2699,8 @@ void Game::CalculateSpawnerData()
     lightDir1 = armBasePos1 - m_spawnerLightPos1;
     lightDir1.x = 0.0f;
     lightDir1.Normalize();
-    
     shadowTestMat = DirectX::SimpleMath::Matrix::Identity;
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 2.0f));
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.4f));
     shadowTestMat *= m_spawnerArmBaseStarMat1;
     shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
     shadowTestMat *= zOffSetMat;
@@ -2655,7 +2708,7 @@ void Game::CalculateSpawnerData()
 
     // shadow base arm port 1 
     shadowTestMat = DirectX::SimpleMath::Matrix::Identity;
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 2.0f));
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.4f));
     shadowTestMat *= m_spawnerArmBasePortMat1;
     shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir1, shadowPlane);
     shadowTestMat *= zOffSetMat;
@@ -2667,26 +2720,64 @@ void Game::CalculateSpawnerData()
     lightDir2.x = 0.0f;
     lightDir2.Normalize();
     shadowTestMat = DirectX::SimpleMath::Matrix::Identity;
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.4f));
     shadowTestMat *= m_spawnerArmBasePortMat2;
     shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir2, shadowPlane);
     shadowTestMat *= zOffSetMat;
     m_spawnerBaseArmPortShadowMat2 = shadowTestMat;
     // shadow base arm star 2
     shadowTestMat = DirectX::SimpleMath::Matrix::Identity;
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f));
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.4f));
     shadowTestMat *= m_spawnerArmBaseStarMat2;
     shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir2, shadowPlane);
     shadowTestMat *= zOffSetMat;
     m_spawnerBaseArmStarShadowMat2 = shadowTestMat;
 
 
-    m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->PushDebugLine(m_spawnerMainAxelPos1, lightDir1, 500.0f, 0.0f, DirectX::Colors::Lime);
-    //m_debugData->PushDebugLinePositionIndicator(armBasePos1, 200.0f, 0.0f, DirectX::Colors::Orange);
 
-    //m_debugData->PushDebugLinePositionIndicator(doorPos1, 200.0f, 0.0f, DirectX::Colors::Red);
-    //m_debugData->PushDebugLinePositionIndicator(doorPos2, 200.0f, 0.0f, DirectX::Colors::Yellow);
+
+
+    /// blast doors
+    m_spawnerBaseBlastScaledMat1 = m_spawnerBaseBlastMat1;
+    const float blastScale = m_spawnerBlastShieldRatio1 * m_spawneBlastShieldExtendMod;
+    m_spawnerBaseBlastScaledMat1 *= DirectX::SimpleMath::Matrix::CreateScale(
+        DirectX::SimpleMath::Vector3(1.0f - (blastScale * 0.1f), 0.92f - (blastScale * 0.35f), 1.0f - (blastScale * 0.1f)));
+    m_spawnerBaseBlastScaledMat1 *= m_spawnerBaseBlastMatPost1;
+
+    const float blastScale2 = m_spawnerBlastShieldRatio2 * m_spawneBlastShieldExtendMod;
+    m_spawnerBaseBlastScaledMat2 = m_spawnerBaseBlastMat2;
+    m_spawnerBaseBlastScaledMat2 *= DirectX::SimpleMath::Matrix::CreateScale(
+        DirectX::SimpleMath::Vector3(1.0f - (blastScale2 * 0.1f), 0.92f - (blastScale2 * 0.35f), 1.0f - (blastScale2 * 0.1f)));
+    m_spawnerBaseBlastScaledMat2 *= m_spawnerBaseBlastMatPost2;
+
+
+    // axel 2 spawner 1
+    m_spawnerAxel2Spawner1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerAxel2Spawner1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.5f, 0.98f, 0.5f));
+    m_spawnerAxel2Spawner1 *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_spawnerDatatMainAxelAngle1 * 2.0f);
+    m_spawnerAxel2Spawner1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerAxel2Spawner1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerAxel2PosSpawner1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    // axel 2 spawner 2
+    m_spawnerAxel2Spawner2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerAxel2Spawner2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.5f, 0.98f, 0.5f));
+    m_spawnerAxel2Spawner2 *= DirectX::SimpleMath::Matrix::CreateRotationY(-m_spawnerDatatMainAxelAngle2 * 2.0f);
+    m_spawnerAxel2Spawner2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerAxel2Spawner2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerAxel2PosSpawner2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    // axel 3 spawner 1
+    m_spawnerAxel3Spawner1 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerAxel3Spawner1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.25f, 1.02f, 0.25f));
+    m_spawnerAxel3Spawner1 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2 * 4.0f);
+    m_spawnerAxel3Spawner1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerAxel3Spawner1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerAxel3PosSpawner1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+    // axel 3 spawner 2
+    m_spawnerAxel3Spawner2 = DirectX::SimpleMath::Matrix::Identity;
+    m_spawnerAxel3Spawner2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.25f, 1.02f, 0.25f));
+    m_spawnerAxel3Spawner2 *= DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2 * 4.0f);
+    m_spawnerAxel3Spawner2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
+    m_spawnerAxel3Spawner2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerAxel3PosSpawner2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
+
+    m_debugData->ToggleDebugOnOverRide();
 
     m_debugData->PushDebugLinePositionIndicator(armBasePos1, 200.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLinePositionIndicator(armBasePos2, 200.0f, 0.0f, DirectX::Colors::Yellow);
@@ -2779,7 +2870,7 @@ void Game::DrawSpawner()
     posAxelTwo.z -= (m_spawnerAxelDimensions2.z * 0.5f) + (m_spawnerAxelDimensions.z * 0.2f);
     posAxelTwoAlt.z *= -1.0f;
     posAxelTwoAlt.z += (m_spawnerAxelDimensions2.z * 0.5f) + (m_spawnerAxelDimensions.z * 0.2f);
-
+    
     m_spawnerAxelMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerAxelMat2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.5f, 0.98f, 0.5f));
     auto axelMat2Alt = m_spawnerAxelMat2;
@@ -3110,15 +3201,6 @@ void Game::DrawSpawnerLit()
     ////////////
 
     // blast windows
-    if (m_isSpanwerBlastWindowOn1 == true)
-    {
-       // m_shapeNormCube->Draw(m_spawnerBlastWindowMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::White);
-    }
-    else
-    {
-       // m_shapeNormCube->Draw(m_spawnerBlastWindowMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
-    }
-
     m_shapeNormCube->Draw(m_spawnerBlastWindowBarPortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray1);
     m_shapeNormCube->Draw(m_spawnerBlastWindowBarStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray1);
     m_shapeNormCube->Draw(m_spawnerBlastWindowBarPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray1);
@@ -3259,6 +3341,38 @@ void Game::DrawSpawnerLit()
     {
         //m_shapeNormCube->Draw(m_spawnerBlastWindowMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
     }
+
+
+    // extras from old
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseRoofMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray1);
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseRoofMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::LightGray);
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseLowerMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseLowerMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseRearMat1, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseRearMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::DarkGray);
+    m_spawnerInnerShape->Draw(m_spawnerInnerMat, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
+    m_spawnerInnerShape->Draw(m_spawnerInnerMat2, m_camera->GetViewMatrix(), m_proj, DirectX::Colors::Black);
+
+    m_spawnerBaseShape->Draw(m_spawnerBaseBlastScaledMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray1);
+    m_spawnerBaseShape->Draw(m_spawnerBaseBlastScaledMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGray1);
+
+    // gearbox
+    m_shapeNormCube->Draw(m_spawnerGearBoxMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    m_shapeNormCube->Draw(m_spawnerGearBoxMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+
+    // main axel
+    m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1) * m_spawnerMainAxelMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
+    m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1) * m_spawnerMainAxelMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
+    m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    
+
+    m_spawnerAxelShape2->Draw(m_spawnerAxel2Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_spawnerAxelShape2->Draw(m_spawnerAxel2Spawner1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+
+    m_spawnerAxelShape3->Draw(m_spawnerAxel3Spawner1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_spawnerAxelShape3->Draw(m_spawnerAxel3Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+
 
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->PushDebugLine(m_spawnerPos, m_spawnerLightDirection1, 500.0f, 50.0f, DirectX::Colors::Yellow);
