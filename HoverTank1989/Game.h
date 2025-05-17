@@ -474,6 +474,7 @@ private:
     DirectX::VertexPositionNormalColor* m_terrainVertexArrayBase2;
     int                                 m_terrainVertexCount2;
     Terrain                             m_terrainGamePlay;
+    Terrain                             m_terrainGamePlayLightsOn;
     Terrain                             m_terrainStartScreen;
     DirectX::SimpleMath::Vector4        m_startScreenGridDimmerColor = DirectX::SimpleMath::Vector4(0.486274540f, 0.988235354f, 0.000000000f, 1.000000000f);
     float                               m_debugValue1 = 0.0;
@@ -617,7 +618,8 @@ private:
     std::string m_uiAmmoDisplayString = "";
 
     // 3D shapes
-    const float                                  m_spawnerZOffSet = 0.3f;
+    //const float                                  m_spawnerZOffSet = 0.3f;
+    const float                                  m_spawnerZOffSet = 0.5f;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCube;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinder;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinderGear;
@@ -820,7 +822,7 @@ private:
 
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerLightRingShape;
-    const float                                  m_spawnerLightAngle = Utility::ToRadians(100.0f);
+    const float                                  m_spawnerLightAngle = Utility::ToRadians(110.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerLightHousingDimensions = DirectX::SimpleMath::Vector3(10.0f, 6.0f, 10.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerLightInnerDimensions = DirectX::SimpleMath::Vector3(
         m_spawnerLightHousingDimensions.x * 0.9f, m_spawnerLightHousingDimensions.y * 1.0f, m_spawnerLightHousingDimensions.z * 0.9f);
@@ -829,6 +831,13 @@ private:
         -m_spawnerBaseRoofDimensions.x * 0.5f + (m_spawnerLightHousingDimensions.x * 0.0f), 31.5f, 0.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerLightingPosOffset = DirectX::SimpleMath::Vector3(m_spawnerBaseRoofDimensions.x * 1.0f, 0.0f, 0.0f);
     const float                                  m_spawnerLightingSpacing = m_spawnerBaseRoofDimensions.x * 0.2f;
+    const float                                  m_spawnerLightingRingThickness = 0.5f;
+    const float                                  m_spawnerLightingRingScale = 8.0f;
+
+    float                                        m_spawnerInteriorLightAngle0Spawner1 = 0.0f;
+    float                                        m_spawnerInteriorLightAngle1Spawner1 = 0.0f;
+    float                                        m_spawnerInteriorLightAngle2Spawner1 = 0.0f;
+    const float                                  m_spawnerInteriorLightAngleFrequencyMod = 39.04;
 
     DirectX::SimpleMath::Matrix                  m_spawnerLightHousingMat1Pos1;
     DirectX::SimpleMath::Matrix                  m_spawnerLightInnerMat1Pos1;
@@ -917,31 +926,36 @@ private:
 
 
     const DirectX::XMVECTORF32 m_spawnerColorArms = DirectX::Colors::LightGray;
-    const DirectX::XMVECTORF32 m_spawnerColorAxel1 = DirectX::Colors::LightGray;
-    const DirectX::XMVECTORF32 m_spawnerColorAxel2 = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorAxelCore1 = m_spawnerColorArms;
+    const DirectX::XMVECTORF32 m_spawnerColorAxel1 = DirectX::Colors::Gray;
+    DirectX::XMVECTORF32 m_spawnerColorAxel2 = { { { 0.55f, 0.55f, 0.65f, 1.f } } };
     const DirectX::XMVECTORF32 m_spawnerColorAxel3 = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorAxelShaft = DirectX::Colors::White;
     const DirectX::XMVECTORF32 m_spawnerColorBlastWindowBars = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorBlastWindowDeploy = DirectX::Colors::LightSteelBlue;
     const DirectX::XMVECTORF32 m_spawnerColorBlastWindowInterior = DirectX::Colors::Black;
     const DirectX::XMVECTORF32 m_spawnerColorDoor = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorExtenderDoor = DirectX::Colors::DarkGray;
+    const DirectX::XMVECTORF32 m_spawnerColorExtenderGear = m_spawnerColorAxel1;
     const DirectX::XMVECTORF32 m_spawnerColorExterior = DirectX::Colors::Gray;
-    const DirectX::XMVECTORF32 m_spawnerColorInterior = DirectX::Colors::Black;
+    const DirectX::XMVECTORF32 m_spawnerColorInterior = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorGearBox = DirectX::Colors::DarkGray;
     const DirectX::XMVECTORF32 m_spawnerColorGray1 = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorGray2 = DirectX::Colors::Gray;
-    const DirectX::XMVECTORF32 m_spawnerColorShell = DirectX::Colors::Gray;
+    //const DirectX::XMVECTORF32 m_spawnerColorShell = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorShell = { { { 0.4f, 0.4f, 0.4f, 1.f } } };
 
     const DirectX::XMVECTORF32 m_spawnerColorLightHousing = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorLightOn = DirectX::Colors::LightYellow;
     const DirectX::XMVECTORF32 m_spawnerColorLightOff = DirectX::Colors::Black;
     const DirectX::XMVECTORF32 m_spawnerColorBaseArm= DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorExtenderArm = DirectX::Colors::DarkGray;
-    const DirectX::XMVECTORF32 m_spawnerColorExtenderDoor = DirectX::Colors::DarkGray;
+
     const DirectX::XMVECTORF32 m_spawnerColorRoof = DirectX::Colors::SlateBlue;
     const DirectX::XMVECTORF32 m_spawnerColorShadow = DirectX::Colors::Black;
     const DirectX::XMVECTORF32 m_spawnerColorStackFirstFloor = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorStackSecondFloor = DirectX::Colors::Gray;
+    const DirectX::XMFLOAT4 m_spawnerColorTerrainPatch = DirectX::XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
 
     float m_altSpawnerAng2 = 0.0f;
     const float                                  m_spawnerDoorAngleMax = Utility::ToRadians(40.0f);
@@ -968,7 +982,10 @@ private:
 
     const float m_spawnerRatioLightOn = 0.3f;
     //const float m_spawnerRatioLightOff = 0.6f;
-    const float m_spawnerDoorSwingTimeMax = 4.5f;
+    //const float m_spawnerDoorSwingTimeMax = 4.5f;
+    const float m_spawnerDoorSwingTimeMax = 5.5f;
+    const float m_spawnerIntiorLightCutOffMod = 0.8f;
+
     float m_spawnerDoorTimer1 = 0.0f;
     float m_spawnerDoorTimer2 = 0.0f;
     bool m_isSpawnerDoorActive1 = false;
