@@ -621,6 +621,9 @@ private:
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCube;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinder;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinderGear;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinderAxel;
+    const float                                  m_shapeAxelDiameterScale = 0.6f;
+    const float                                  m_shapeAxelHeightScale = 1.3f;
     const int                                    m_shapeGearCount = 6;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapePlatform;
@@ -646,9 +649,9 @@ private:
     const float                                  m_spawnerScale = 18.6f;
     const int                                    m_spawnerSides = 6;
 
-    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerShape;
-    DirectX::SimpleMath::Matrix                  m_spawnerInnerMat;
-    DirectX::SimpleMath::Matrix                  m_spawnerInnerMat2;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerInnerBackShadowShape;
+    DirectX::SimpleMath::Matrix                  m_spawnerInnerBackShadowMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerInnerBackShadowMat2;
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerOuterShape;
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat;
     DirectX::SimpleMath::Matrix                  m_spawnerOuterMat2;
@@ -700,6 +703,10 @@ private:
     DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner1 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, 853.0f);
     DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner2 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, -853.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions3 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
+
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShaftShape;
+    const DirectX::SimpleMath::Vector3           m_spawnerAxelShaftDimensions = DirectX::SimpleMath::Vector3(65.5f, 12.0f, 1.0f);
+    const int                                    m_spawnerAxelShaftSideCount = 3;
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerDoorShape;
     DirectX::SimpleMath::Matrix                  m_spawnerDoorMat;
@@ -768,8 +775,6 @@ private:
 
     DirectX::SimpleMath::Matrix                  m_spawnerMainAxelShadowMat1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerMainAxelShadowMat2 = DirectX::SimpleMath::Matrix::Identity;
-
-
 
     // extender gear housing
     const DirectX::SimpleMath::Vector3           m_spawnerExtendHousingDimensions = DirectX::SimpleMath::Vector3(m_spawnerExtendorDimensions.x, 22.0f, 5.0f);
@@ -905,28 +910,38 @@ private:
     const float m_spawnerBlastWindowAngle = Utility::ToRadians(29.0f);
 
 
-    const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.5f);
-    const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.5f));
+    const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x * 0.9f, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.6f);
+    const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.2f));
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat2;
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat1;
 
-    const DirectX::XMVECTORF32 m_spawnerColorGray1 = DirectX::Colors::LightGray;
-    const DirectX::XMVECTORF32 m_spawnerColorGray2 = DirectX::Colors::Gray;
+
     const DirectX::XMVECTORF32 m_spawnerColorArms = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorAxel1 = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorAxel2 = DirectX::Colors::Gray;
-    const DirectX::XMVECTORF32 m_spawnerColorExterior = DirectX::Colors::Gray;
-    const DirectX::XMVECTORF32 m_spawnerColorInterior = DirectX::Colors::Gray;
-    const DirectX::XMVECTORF32 m_spawnerColorGearBox = DirectX::Colors::DarkGray;
-    const DirectX::XMVECTORF32 m_spawnerColorShell = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorAxel3 = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorAxelShaft = DirectX::Colors::White;
+    const DirectX::XMVECTORF32 m_spawnerColorBlastWindowBars = DirectX::Colors::LightGray;
+    const DirectX::XMVECTORF32 m_spawnerColorBlastWindowDeploy = DirectX::Colors::LightSteelBlue;
+    const DirectX::XMVECTORF32 m_spawnerColorBlastWindowInterior = DirectX::Colors::Black;
     const DirectX::XMVECTORF32 m_spawnerColorDoor = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorExterior = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorInterior = DirectX::Colors::Black;
+    const DirectX::XMVECTORF32 m_spawnerColorGearBox = DirectX::Colors::DarkGray;
+    const DirectX::XMVECTORF32 m_spawnerColorGray1 = DirectX::Colors::LightGray;
+    const DirectX::XMVECTORF32 m_spawnerColorGray2 = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorShell = DirectX::Colors::Gray;
+
     const DirectX::XMVECTORF32 m_spawnerColorLightHousing = DirectX::Colors::Gray;
     const DirectX::XMVECTORF32 m_spawnerColorLightOn = DirectX::Colors::LightYellow;
     const DirectX::XMVECTORF32 m_spawnerColorLightOff = DirectX::Colors::Black;
     const DirectX::XMVECTORF32 m_spawnerColorBaseArm= DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorExtenderArm = DirectX::Colors::DarkGray;
     const DirectX::XMVECTORF32 m_spawnerColorExtenderDoor = DirectX::Colors::DarkGray;
+    const DirectX::XMVECTORF32 m_spawnerColorRoof = DirectX::Colors::SlateBlue;
     const DirectX::XMVECTORF32 m_spawnerColorShadow = DirectX::Colors::Black;
+    const DirectX::XMVECTORF32 m_spawnerColorStackFirstFloor = DirectX::Colors::Gray;
+    const DirectX::XMVECTORF32 m_spawnerColorStackSecondFloor = DirectX::Colors::Gray;
 
     float m_altSpawnerAng2 = 0.0f;
     const float                                  m_spawnerDoorAngleMax = Utility::ToRadians(40.0f);
