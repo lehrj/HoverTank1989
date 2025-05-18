@@ -727,6 +727,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
                 aTerrain.terrainVertexArrayBase[i].color = spawnerPatchColor;
             }
 
+            /*
             // spawner 2
             if (i == 2358)
             {
@@ -753,6 +754,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
             {
                 aTerrain.terrainVertexArrayBase[i].color = spawnerPatchColor;
             }
+            */
         }
         
         if (aTerrain.terrainVertexArray[i].position.y >= maxY)
@@ -1290,7 +1292,11 @@ void Game::Render()
 
         DrawTestTrack();
         //DrawTestRangeMissile();
-        DrawSpawner();
+
+        //DrawSpawner();
+        DrawSpawner1();
+        //DrawSpawner2();
+        DrawSpawner1to2();
 
        // DrawLaunchSite();
         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -2779,9 +2785,9 @@ void Game::DrawSpawner()
     m_effect->SetLightDirection(1, mainLightDirection1);
     m_effect->SetLightDirection(2, mainLightDirection2);
 
-    m_effect->SetLightEnabled(0, true);
+    m_effect->SetLightEnabled(0, false);
     m_effect->SetLightEnabled(1, true);
-    m_effect->SetLightEnabled(2, false);
+    m_effect->SetLightEnabled(2, true);
     if (m_isSpawnerLightOn1 == true)
     {
         //mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
@@ -2791,7 +2797,8 @@ void Game::DrawSpawner()
         m_effect->SetLightEnabled(0, true);
         m_effect->SetLightEnabled(1, true);
         m_effect->SetLightEnabled(2, true);
-        m_effect->SetLightSpecularColor(2, m_spawnerColorLightOn);
+        //m_effect->SetLightDiffuseColor(2, m_spawnerColorLightOn);
+       // m_effect->SetLightSpecularColor(2, m_spawnerColorLightOn);
         m_effect->SetSpecularColor(m_spawnerColorLightOn);
     }
     else
@@ -2839,17 +2846,17 @@ void Game::DrawSpawner()
     //lightDir1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, 0.5f);
     //lightDir1.Normalize();
     
-    m_effect->SetLightDirection(2, lightDir1);
-
+    m_effect->SetLightDirection(0, lightDir1);
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
 
     m_effect->SetWorld(m_spawnerBaseMat1);
     m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowInterior);
     m_spawnerBaseShape->Draw(m_effect.get(), m_inputLayout.Get());
 
-    m_effect->SetLightDirection(2, m_spawnerLightDirection1);
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
 
     // light bars
-    m_effect->SetLightDirection(2, -m_spawnerLightDirection1);
+    m_effect->SetLightDirection(0, -m_spawnerLightDirection1);
     if (m_isSpawnerLightOn1 == true)
     {     
         /*
@@ -2895,7 +2902,7 @@ void Game::DrawSpawner()
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
         */
     }
-    m_effect->SetLightDirection(2, m_spawnerLightDirection1);
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
 
     m_effect->SetColorAndAlpha(m_spawnerColorLightHousing);
     m_effect->SetWorld(m_spawnerLightRingMat1Pos1);
@@ -2920,12 +2927,12 @@ void Game::DrawSpawner()
     lightDir1 = m_spawnerPos - m_spawnerLightPos1;
     lightDir1.x = 0.0f;
     lightDir1.Normalize();
-    m_effect->SetLightDirection(2, lightDir1);
+    m_effect->SetLightDirection(0, lightDir1);
     m_effect->SetWorld(m_spawnerOuterMat);
     m_effect->SetColorAndAlpha(m_spawnerColorShell);
     m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
 
-    m_effect->SetLightDirection(2, m_spawnerLightDirection1);
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
 
     m_effect->SetWorld(m_spawnerExtenderUpperPortMat1);
     m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
@@ -2942,8 +2949,6 @@ void Game::DrawSpawner()
     m_effect->SetWorld(m_spawnerExtenderLowerStarMat1);
     m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
     m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
-
-
 
     // extender housing 2
     m_effect->SetColorAndAlpha(m_spawnerColorGearBox);
@@ -3030,7 +3035,7 @@ void Game::DrawSpawner()
 
     ///////////
     lightDir1 = m_spawnerLightDirection1;
-    m_effect->SetLightDirection(2, lightDir1);
+    m_effect->SetLightDirection(0, lightDir1);
     m_effect->SetWorld(m_spawnerExtenderDoorMat1);
     m_effect->SetColorAndAlpha(m_spawnerColorDoor);
     m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
@@ -3040,7 +3045,7 @@ void Game::DrawSpawner()
 
     lightDir1 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.5f);
     lightDir1.Normalize();
-    m_effect->SetLightDirection(2, lightDir1);
+    m_effect->SetLightDirection(0, lightDir1);
         
     //m_effect->SetSpecularColor(DirectX::Colors::Yellow);
 
@@ -3250,6 +3255,823 @@ void Game::DrawSpawner()
 
     m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelCore1);
     m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
+
+    m_spawnerAxelShape2->Draw(m_spawnerAxel2Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    m_spawnerAxelShape3->Draw(m_spawnerAxel3Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel3);
+
+    m_spawnerAxelShaftShape->Draw(m_spawnerAxel2Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+    m_spawnerAxelShaftShape->Draw(m_spawnerAxel3Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+
+    m_effect->SetSpecularColor(m_spawnerColorLightOff);
+}
+
+void Game::DrawSpawner1()
+{
+    // spawner 1
+    m_effect->EnableDefaultLighting();
+    auto mainLightDirection0 = DirectX::SimpleMath::Vector3(1.0f, -0.1f, 0.0f);
+    mainLightDirection0.Normalize();
+    //mainLightDirection0 = DirectX::SimpleMath::Vector3(-1.0f, 0.7f, -0.4f);
+    //mainLightDirection0.Normalize();
+    auto mainLightDirection1 = DirectX::SimpleMath::Vector3(-1.0f, 0.3f, 0.0f);
+    mainLightDirection1.Normalize();
+    auto mainLightDirection2 = m_spawnerLightDirection1;
+
+    m_effect->SetLightDirection(0, mainLightDirection0);
+    m_effect->SetLightDirection(1, mainLightDirection1);
+    m_effect->SetLightDirection(2, mainLightDirection2);
+
+    m_effect->SetLightEnabled(0, false);
+    m_effect->SetLightEnabled(1, true);
+    m_effect->SetLightEnabled(2, true);
+    if (m_isSpawnerLightOn1 == true)
+    {
+        //mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
+        //mainLightDirection1.Normalize();
+        //m_effect->SetLightDirection(1, mainLightDirection1);
+        //m_effect->DisableSpecular();
+        m_effect->SetLightEnabled(0, true);
+        m_effect->SetLightEnabled(1, true);
+        m_effect->SetLightEnabled(2, true);
+        //m_effect->SetLightDiffuseColor(2, m_spawnerColorLightOn);
+       // m_effect->SetLightSpecularColor(2, m_spawnerColorLightOn);
+        m_effect->SetSpecularColor(m_spawnerColorLightOn);
+    }
+    else
+    {
+        m_effect->DisableSpecular();
+    }
+
+    //m_effect->SetLightEnabled(0, false);
+    //m_effect->SetLightEnabled(1, true);
+    //m_effect->SetLightEnabled(2, false);
+
+    m_effect->SetColorAndAlpha(m_spawnerColorLightHousing);
+    m_effect->SetWorld(m_spawnerLightHousingMat1Pos1);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightHousingMat1Pos2);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightHousingMat1Pos3);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightHousingMat1Pos4);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    /*
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    */
+    //m_effect->SetLightEnabled(2, true);
+    //m_effect->SetLightDirection(2, m_spawnerLightDirection1);
+
+///////////////////////
+/////////////////////////
+    //m_effect->SetLightEnabled(0, true);
+    //m_effect->SetLightEnabled(1, false);
+    //m_effect->SetLightEnabled(2, false);
+
+    auto lightDir1 = m_spawnerPos - m_spawnerLightPos1;
+
+    lightDir1.x = 0.0f;
+    lightDir1.Normalize();
+
+    //lightDir1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, 0.5f);
+    //lightDir1.Normalize();
+
+    m_effect->SetLightDirection(0, lightDir1);
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
+
+    m_effect->SetWorld(m_spawnerBaseMat1);
+    m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowInterior);
+    m_spawnerBaseShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
+
+    // light bars
+    m_effect->SetLightDirection(0, -m_spawnerLightDirection1);
+    if (m_isSpawnerLightOn1 == true)
+    {
+        /*
+        m_effect->SetColorAndAlpha(m_spawnerColorLightOn);
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos1);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos2);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos3);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos4);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+        */
+
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+
+    }
+    else
+    {
+        m_effect->SetColorAndAlpha(m_spawnerColorLightOff);
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos1);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos2);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos3);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat1Pos4);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        /*
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        */
+    }
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
+
+    m_effect->SetColorAndAlpha(m_spawnerColorLightHousing);
+    m_effect->SetWorld(m_spawnerLightRingMat1Pos1);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightRingMat1Pos2);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightRingMat1Pos3);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightRingMat1Pos4);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    /*
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    */
+
+    lightDir1 = m_spawnerPos - m_spawnerLightPos1;
+    lightDir1.x = 0.0f;
+    lightDir1.Normalize();
+    m_effect->SetLightDirection(0, lightDir1);
+    m_effect->SetWorld(m_spawnerOuterMat);
+    m_effect->SetColorAndAlpha(m_spawnerColorShell);
+    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetLightDirection(0, m_spawnerLightDirection1);
+
+    m_effect->SetWorld(m_spawnerExtenderUpperPortMat1);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerExtenderLowerPortMat1);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerExtenderUpperStarMat1);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerExtenderLowerStarMat1);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+
+
+    // extender housing 2
+    m_effect->SetColorAndAlpha(m_spawnerColorGearBox);
+    m_effect->SetWorld(m_spawnerExtenderHousePortMat1);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerExtenderHouseStarMat1);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_shapeNormCube->Draw(m_spawnerExtenderHousePortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    //m_shapeNormCube->Draw(m_spawnerExtenderHouseStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+
+    // extender gear 1
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderGear);
+    m_effect->SetWorld(m_spawnerExtenderGearPortMat1);
+    m_shapeNormCylinderGear->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerExtenderGearStarMat1);
+    m_shapeNormCylinderGear->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearPortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderGear);
+    //m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderGear);
+     // extender axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
+    m_effect->SetWorld(m_spawnerExtenderGearPortMat1);
+    m_shapeNormCylinderAxel->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerExtenderGearStarMat1);
+    m_shapeNormCylinderAxel->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_shapeNormCylinderAxel->Draw(m_spawnerExtenderGearPortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+    //m_shapeNormCylinderAxel->Draw(m_spawnerExtenderGearStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+
+    // base arm
+    m_effect->SetColorAndAlpha(m_spawnerColorBaseArm);
+    m_effect->SetWorld(m_spawnerArmBasePortMat1);
+    m_spawnerArmShape->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerArmBaseStarMat1);
+    m_spawnerArmShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerArmShape->Draw(m_spawnerArmBasePortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBaseArm);
+    //m_spawnerArmShape->Draw(m_spawnerArmBaseStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBaseArm);
+
+    ////////////
+    // Start 1 lighting
+    ////////////
+
+    // gearbox
+    m_effect->SetColorAndAlpha(m_spawnerColorGearBox);
+    m_effect->SetWorld(m_spawnerGearBoxMat1);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_shapeNormCube->Draw(m_spawnerGearBoxMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    // main axel core
+    m_effect->SetColorAndAlpha(m_spawnerColorAxelCore1);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1) * m_spawnerMainAxelMat1);
+    m_spawnerAxelShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1)* m_spawnerMainAxelMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelCore1);
+     // main axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxel1);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1) * m_spawnerMainAxelMat1);
+    m_spawnerAxelShape2->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1)* m_spawnerMainAxelMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
+    // second axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxel2);
+    m_effect->SetWorld(m_spawnerAxel2Spawner1);
+    m_spawnerAxelShape2->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerAxelShape2->Draw(m_spawnerAxel2Spawner1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
+    // thrid axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxel3);
+    m_effect->SetWorld(m_spawnerAxel3Spawner1);
+    m_spawnerAxelShape3->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerAxelShape3->Draw(m_spawnerAxel3Spawner1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel3);
+
+    // axel shafts
+    m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
+    m_effect->SetWorld(m_spawnerAxel2Spawner1);
+    m_spawnerAxelShaftShape->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerAxel3Spawner1);
+    m_spawnerAxelShaftShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerAxelShaftShape->Draw(m_spawnerAxel2Spawner1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+    //m_spawnerAxelShaftShape->Draw(m_spawnerAxel3Spawner1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+
+    ///////////
+
+
+    ////////////
+
+
+    ///////////
+
+
+    ///////////
+    lightDir1 = m_spawnerLightDirection1;
+    m_effect->SetLightDirection(0, lightDir1);
+    m_effect->SetWorld(m_spawnerExtenderDoorMat1);
+    m_effect->SetColorAndAlpha(m_spawnerColorDoor);
+    m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // backside lighting needed
+    // old style start
+
+    lightDir1 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.5f);
+    lightDir1.Normalize();
+    m_effect->SetLightDirection(0, lightDir1);
+
+    //m_effect->SetSpecularColor(DirectX::Colors::Yellow);
+
+    // blast windows bars
+    m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowBars);
+    m_effect->SetWorld(m_spawnerBlastWindowBarPortMat1);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerBlastWindowBarStarMat1);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_shapeNormCube->Draw(m_spawnerBlastWindowBarPortMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBlastWindowBars);
+    //m_shapeNormCube->Draw(m_spawnerBlastWindowBarStarMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBlastWindowBars);
+    // blast window
+    m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowDeploy);
+    m_effect->SetWorld(m_spawnerBaseBlastScaledMat1);
+    m_spawnerBaseShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerBaseShape->Draw(m_spawnerBaseBlastScaledMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBlastWindowDeploy);
+    // 1
+    // extras from old
+    // roof 1 
+    m_effect->SetColorAndAlpha(m_spawnerColorRoof);
+    m_effect->SetWorld(m_spawnerBaseRoofMat1);
+    m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerBaseRoofShape->Draw(m_spawnerBaseRoofMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorRoof);
+    // lower base 1
+    m_effect->SetColorAndAlpha(m_spawnerColorStackFirstFloor);
+    m_effect->SetWorld(m_spawnerBaseLowerMat1);
+    m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerBaseRoofShape->Draw(m_spawnerBaseLowerMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorStackFirstFloor);
+    // rear base second floor 1
+    m_effect->SetColorAndAlpha(m_spawnerColorStackSecondFloor);
+    m_effect->SetWorld(m_spawnerBaseRearMat1);
+    m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseRearMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorStackSecondFloor);
+
+    // inner back shadow1
+    m_effect->SetColorAndAlpha(m_spawnerColorInterior);
+    m_effect->SetWorld(m_spawnerInnerBackShadowMat1);
+    //m_spawnerInnerBackShadowShape->Draw(m_effect.get(), m_inputLayout.Get());
+    m_spawnerInnerBackShadowShape->Draw(m_spawnerInnerBackShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorInterior);
+
+    // shadows
+    if (m_isSpawnerLightOn1 == true)
+    {
+        m_spawnerDoorShape->Draw(m_spawnerExtenderDoorShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerOuterShape->Draw(m_spawnerShellShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_shapeNormCube->Draw(m_spawnerGearBoxShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerAxelShape2->Draw(m_spawnerMainAxelShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+
+        m_shapeNormCube->Draw(m_spawnerExtenderArmPortShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_shapeNormCube->Draw(m_spawnerExtenderArmStarShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+
+        m_spawnerArmShape->Draw(m_spawnerBaseArmStarShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerArmShape->Draw(m_spawnerBaseArmPortShadowMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+    }
+
+    // shell interiors
+    if (m_isSpawnerLightOn1 == true && m_spawnerDoorTimer1 < m_spawnerDoorSwingTimeMax * m_spawnerIntiorLightCutOffMod)
+    {
+        const float modVal = m_spawnerDoorTimer1 / (m_spawnerDoorSwingTimeMax * m_spawnerIntiorLightCutOffMod);
+        const float invsMod = 1.0f - modVal;
+
+        m_spawnerInteriorLightAngle0Spawner1 = Utility::WrapAnglePositive(m_spawnerInteriorLightAngle0Spawner1 + m_spawnerInteriorLightAngleFrequencyMod);
+        m_spawnerInteriorLightAngle1Spawner1 = Utility::WrapAnglePositive(m_spawnerInteriorLightAngle1Spawner1 + m_spawnerInteriorLightAngleFrequencyMod);
+        m_spawnerInteriorLightAngle2Spawner1 = Utility::WrapAnglePositive(m_spawnerInteriorLightAngle2Spawner1 + m_spawnerInteriorLightAngleFrequencyMod);
+
+        const float lightAng0 = cos(m_timer.GetTotalSeconds() * 1157647.53);
+        const float lightAng1 = cos(-m_timer.GetTotalSeconds() * 627969.1f);
+        const float lightAng2 = cos(m_timer.GetTotalSeconds() * 789482.4f);
+        auto lightDir0 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, 1.0f);
+        lightDir0.Normalize();
+        lightDir0 = DirectX::SimpleMath::Vector3::Transform(lightDir0, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerInteriorLightAngle0Spawner1));
+        auto lightDir1 = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+        lightDir1.Normalize();
+        lightDir1 = DirectX::SimpleMath::Vector3::Transform(lightDir1, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerInteriorLightAngle1Spawner1));
+        auto lightDir2 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 1.0f);
+        lightDir2.Normalize();
+        lightDir2 = DirectX::SimpleMath::Vector3::Transform(lightDir2, DirectX::SimpleMath::Matrix::CreateRotationX(-m_spawnerInteriorLightAngle2Spawner1));
+
+        m_effect->SetLightDirection(0, lightDir0);
+        m_effect->SetLightDirection(1, lightDir1);
+        m_effect->SetLightDirection(2, lightDir2);
+        m_effect->SetLightEnabled(0, true);
+        m_effect->SetLightEnabled(1, true);
+        m_effect->SetLightEnabled(2, true);
+        m_effect->SetSpecularColor(DirectX::Colors::Red * invsMod);
+        m_effect->SetLightDiffuseColor(0, DirectX::Colors::Yellow * invsMod);
+        m_effect->SetLightDiffuseColor(1, DirectX::Colors::Yellow * invsMod);
+        m_effect->SetLightDiffuseColor(2, DirectX::Colors::Yellow * invsMod);
+    }
+    else
+    {
+        m_effect->EnableDefaultLighting();
+        m_effect->SetLightEnabled(0, false);
+        m_effect->SetLightEnabled(1, false);
+        m_effect->SetLightEnabled(2, false);
+        m_effect->SetSpecularColor(m_spawnerColorLightOff);
+    }
+    m_effect->SetColorAndAlpha(m_spawnerColorInterior);
+    m_effect->SetWorld(m_spawnerShellInteriorMat1);
+    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerOuterShape->Draw(m_spawnerShellInteriorMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorInterior);
+
+}
+
+void Game::DrawSpawner1to2()
+{
+    // spawner 1
+    m_effect->EnableDefaultLighting();
+    auto mainLightDirection0 = m_spawnerLightDirection2;
+    mainLightDirection0.Normalize();
+    auto mainLightDirection1 = DirectX::SimpleMath::Vector3(1.0f, -0.1f, 0.0f);
+    mainLightDirection1.Normalize();
+    auto mainLightDirection2 = DirectX::SimpleMath::Vector3(-1.0f, 0.3f, 0.0f);
+    mainLightDirection2.Normalize();
+
+    m_effect->SetLightDirection(0, mainLightDirection0);
+    m_effect->SetLightDirection(1, mainLightDirection1);
+    m_effect->SetLightDirection(2, mainLightDirection2);
+
+    m_effect->SetLightEnabled(0, false);
+    m_effect->SetLightEnabled(1, true);
+    m_effect->SetLightEnabled(2, true);
+    if (m_isSpawnerLightOn2 == true)
+    {
+        //mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
+        //mainLightDirection1.Normalize();
+        //m_effect->SetLightDirection(1, mainLightDirection1);
+        //m_effect->DisableSpecular();
+        m_effect->SetLightEnabled(0, true);
+        m_effect->SetLightEnabled(1, true);
+        m_effect->SetLightEnabled(2, true);
+        //m_effect->SetLightDiffuseColor(2, m_spawnerColorLightOn);
+       // m_effect->SetLightSpecularColor(2, m_spawnerColorLightOn);
+        m_effect->SetSpecularColor(m_spawnerColorLightOn);
+    }
+    else
+    {
+        m_effect->DisableSpecular();
+    }
+
+    m_effect->SetColorAndAlpha(m_spawnerColorLightHousing);
+    m_effect->SetWorld(m_spawnerLightHousingMat2Pos1);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightHousingMat2Pos2);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightHousingMat2Pos3);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightHousingMat2Pos4);
+    m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+    auto lightDir1 = m_spawnerPos2 - m_spawnerLightPos2;
+    lightDir1.x = 0.0f;
+    lightDir1.Normalize();
+    m_effect->SetLightDirection(0, lightDir1);
+    m_effect->SetLightDirection(0, m_spawnerLightDirection2);
+
+    m_effect->SetWorld(m_spawnerBaseMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowInterior);
+    m_spawnerBaseShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetLightDirection(0, m_spawnerLightDirection2);
+
+    // light bars
+    m_effect->SetLightDirection(0, m_spawnerLightDirection2);
+    if (m_isSpawnerLightOn2 == true)
+    {
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn); 
+    }
+    else
+    {
+        /*
+        m_effect->SetColorAndAlpha(m_spawnerColorLightOff);
+        m_effect->SetWorld(m_spawnerLightInnerMat2Pos1);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat2Pos2);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat2Pos3);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+
+        m_effect->SetWorld(m_spawnerLightInnerMat2Pos4);
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
+        */
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+
+    }
+    m_effect->SetLightDirection(0, m_spawnerLightDirection2);
+
+    m_effect->SetColorAndAlpha(m_spawnerColorLightHousing);
+    m_effect->SetWorld(m_spawnerLightRingMat2Pos1);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightRingMat2Pos2);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightRingMat2Pos3);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerLightRingMat2Pos4);
+    m_spawnerLightRingShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    lightDir1 = m_spawnerPos2 - m_spawnerLightPos2;
+    lightDir1.x = 0.0f;
+    lightDir1.Normalize();
+    m_effect->SetLightDirection(0, lightDir1);
+    m_effect->SetWorld(m_spawnerOuterMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorShell);
+    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetLightDirection(0, m_spawnerLightDirection2);
+
+    m_effect->SetWorld(m_spawnerExtenderUpperPortMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerExtenderLowerPortMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerExtenderUpperStarMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerExtenderLowerStarMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // extender housing 2
+    m_effect->SetColorAndAlpha(m_spawnerColorGearBox);
+    m_effect->SetWorld(m_spawnerExtenderHousePortMat2);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerExtenderHouseStarMat2);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // extender gear 1
+    m_effect->SetColorAndAlpha(m_spawnerColorExtenderGear);
+    m_effect->SetWorld(m_spawnerExtenderGearPortMat2);
+    m_shapeNormCylinderGear->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerExtenderGearStarMat2);
+    m_shapeNormCylinderGear->Draw(m_effect.get(), m_inputLayout.Get());
+
+     // extender axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
+    m_effect->SetWorld(m_spawnerExtenderGearPortMat2);
+    m_shapeNormCylinderAxel->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerExtenderGearStarMat2);
+    m_shapeNormCylinderAxel->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // base arm
+    m_effect->SetColorAndAlpha(m_spawnerColorBaseArm);
+    m_effect->SetWorld(m_spawnerArmBasePortMat2);
+    m_spawnerArmShape->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerArmBaseStarMat2);
+    m_spawnerArmShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    ////////////
+    // Start 1 lighting
+    ////////////
+
+    // gearbox
+    m_effect->SetColorAndAlpha(m_spawnerColorGearBox);
+    m_effect->SetWorld(m_spawnerGearBoxMat2);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // main axel core
+    m_effect->SetColorAndAlpha(m_spawnerColorAxelCore1);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2);
+    m_spawnerAxelShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+     // main axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxel1);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2);
+    m_spawnerAxelShape2->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // second axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxel2);
+    m_effect->SetWorld(m_spawnerAxel2Spawner2);
+    m_spawnerAxelShape2->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // thrid axel 1
+    m_effect->SetColorAndAlpha(m_spawnerColorAxel3);
+    m_effect->SetWorld(m_spawnerAxel3Spawner2);
+    m_spawnerAxelShape3->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // axel shafts
+    m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
+    m_effect->SetWorld(m_spawnerAxel2Spawner2);
+    m_spawnerAxelShaftShape->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerAxel3Spawner2);
+    m_spawnerAxelShaftShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    lightDir1 = m_spawnerLightDirection2;
+    m_effect->SetLightDirection(0, lightDir1);
+    m_effect->SetWorld(m_spawnerExtenderDoorMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorDoor);
+    m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // backside lighting needed
+    // old style start
+
+    lightDir1 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.5f);
+    lightDir1.Normalize();
+    m_effect->SetLightDirection(0, lightDir1);
+
+    //m_effect->SetSpecularColor(DirectX::Colors::Yellow);
+
+    // blast windows bars
+    m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowBars);
+    m_effect->SetWorld(m_spawnerBlastWindowBarPortMat2);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+    m_effect->SetWorld(m_spawnerBlastWindowBarStarMat2);
+    m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // blast window
+    m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowDeploy);
+    m_effect->SetWorld(m_spawnerBaseBlastScaledMat2);
+    m_spawnerBaseShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // 1
+    // extras from old
+    // roof 1 
+    m_effect->SetColorAndAlpha(m_spawnerColorRoof);
+    m_effect->SetWorld(m_spawnerBaseRoofMat2);
+    m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // lower base 1
+    m_effect->SetColorAndAlpha(m_spawnerColorStackFirstFloor);
+    m_effect->SetWorld(m_spawnerBaseLowerMat2);
+    m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
+ 
+    // rear base second floor 1
+    m_effect->SetColorAndAlpha(m_spawnerColorStackSecondFloor);
+    m_effect->SetWorld(m_spawnerBaseRearMat2);
+    m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
+    //m_spawnerBaseRoofShape->Draw(m_spawnerBaseRearMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorStackSecondFloor);
+
+    // inner back shadow1
+    m_effect->SetColorAndAlpha(m_spawnerColorInterior);
+    m_effect->SetWorld(m_spawnerInnerBackShadowMat2);
+    m_spawnerInnerBackShadowShape->Draw(m_spawnerInnerBackShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorInterior);
+
+    // shadows
+    if (m_isSpawnerLightOn2 == true)
+    {
+        m_spawnerDoorShape->Draw(m_spawnerExtenderDoorShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerOuterShape->Draw(m_spawnerShellShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_shapeNormCube->Draw(m_spawnerGearBoxShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerAxelShape2->Draw(m_spawnerMainAxelShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+
+        m_shapeNormCube->Draw(m_spawnerExtenderArmPortShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_shapeNormCube->Draw(m_spawnerExtenderArmStarShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+
+        m_spawnerArmShape->Draw(m_spawnerBaseArmStarShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerArmShape->Draw(m_spawnerBaseArmPortShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+    }
+
+    // shell interiors
+    if (m_isSpawnerLightOn2 == true && m_spawnerDoorTimer2 < m_spawnerDoorSwingTimeMax * m_spawnerIntiorLightCutOffMod)
+    {
+        const float modVal = m_spawnerDoorTimer2/ (m_spawnerDoorSwingTimeMax * m_spawnerIntiorLightCutOffMod);
+        const float invsMod = 1.0f - modVal;
+        /// <summary>
+        /// /
+        /// Need to update with new variables
+        /// </summary>
+        m_spawnerInteriorLightAngle0Spawner1 = Utility::WrapAnglePositive(m_spawnerInteriorLightAngle0Spawner1 + m_spawnerInteriorLightAngleFrequencyMod);
+        m_spawnerInteriorLightAngle1Spawner1 = Utility::WrapAnglePositive(m_spawnerInteriorLightAngle1Spawner1 + m_spawnerInteriorLightAngleFrequencyMod);
+        m_spawnerInteriorLightAngle2Spawner1 = Utility::WrapAnglePositive(m_spawnerInteriorLightAngle2Spawner1 + m_spawnerInteriorLightAngleFrequencyMod);
+
+        const float lightAng0 = cos(m_timer.GetTotalSeconds() * 1157647.53);
+        const float lightAng1 = cos(-m_timer.GetTotalSeconds() * 627969.1f);
+        const float lightAng2 = cos(m_timer.GetTotalSeconds() * 789482.4f);
+        auto lightDir0 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, 1.0f);
+        lightDir0.Normalize();
+        lightDir0 = DirectX::SimpleMath::Vector3::Transform(lightDir0, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerInteriorLightAngle0Spawner1));
+        auto lightDir1 = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+        lightDir1.Normalize();
+        lightDir1 = DirectX::SimpleMath::Vector3::Transform(lightDir1, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerInteriorLightAngle1Spawner1));
+        auto lightDir2 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 1.0f);
+        lightDir2.Normalize();
+        lightDir2 = DirectX::SimpleMath::Vector3::Transform(lightDir2, DirectX::SimpleMath::Matrix::CreateRotationX(-m_spawnerInteriorLightAngle2Spawner1));
+
+        m_effect->SetLightDirection(0, lightDir0);
+        m_effect->SetLightDirection(1, lightDir1);
+        m_effect->SetLightDirection(2, lightDir2);
+        m_effect->SetLightEnabled(0, true);
+        m_effect->SetLightEnabled(1, true);
+        m_effect->SetLightEnabled(2, true);
+        m_effect->SetSpecularColor(DirectX::Colors::Red * invsMod);
+        m_effect->SetLightDiffuseColor(0, DirectX::Colors::Yellow * invsMod);
+        m_effect->SetLightDiffuseColor(1, DirectX::Colors::Yellow * invsMod);
+        m_effect->SetLightDiffuseColor(2, DirectX::Colors::Yellow * invsMod);
+    }
+    else
+    {
+        m_effect->EnableDefaultLighting();
+        m_effect->SetLightEnabled(0, false);
+        m_effect->SetLightEnabled(1, false);
+        m_effect->SetLightEnabled(2, false);
+        m_effect->SetSpecularColor(m_spawnerColorLightOff);
+    }
+    m_effect->SetColorAndAlpha(m_spawnerColorInterior);
+    m_effect->SetWorld(m_spawnerShellInteriorMat2);
+    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetSpecularColor(m_spawnerColorLightOff);
+}
+
+void Game::DrawSpawner2()
+{
+
+    // 2
+        ////////////
+    // Start 2 lighting
+    ////////////
+    // spawner 2  lighting
+    auto mainLightDirection0 = -DirectX::SimpleMath::Vector3::UnitY;
+    auto mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
+    mainLightDirection1.Normalize();
+    auto mainLightDirection2 = m_spawnerLightDirection2;
+    m_effect->SetLightDirection(0, mainLightDirection0);
+    m_effect->SetLightDirection(1, mainLightDirection1);
+    m_effect->SetLightDirection(2, mainLightDirection2);
+
+    m_effect->EnableDefaultLighting();
+    if (m_isSpawnerLightOn2 == false)
+    {
+        //m_effect->DisableSpecular();
+        //m_effect->SetLightEnabled(0, false);
+        //m_effect->SetLightEnabled(1, false);
+        //m_effect->SetLightEnabled(2, false);
+        mainLightDirection2 = m_spawnerLightDirection2;
+        m_effect->SetLightDirection(2, mainLightDirection2);
+    }
+
+    m_effect->SetWorld(m_spawnerOuterMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorShell);
+    m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_effect->SetWorld(m_spawnerBaseMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorBlastWindowInterior);
+    m_spawnerBaseShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_shapeNormCube->Draw(m_spawnerBlastWindowBarPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBlastWindowBars);
+    m_shapeNormCube->Draw(m_spawnerBlastWindowBarStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBlastWindowBars);
+
+    // shell interiors
+    m_spawnerOuterShape->Draw(m_spawnerShellInteriorMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorInterior);
+    // light bars
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_shapeNormCylinder->Draw(m_spawnerLightHousingMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+
+    if (m_isSpawnerLightOn2 == true)
+    {
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
+    }
+    else
+    {
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
+    }
+
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+    m_spawnerLightRingShape->Draw(m_spawnerLightRingMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightHousing);
+
+    m_shapeNormCube->Draw(m_spawnerExtenderUpperPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_spawnerExtenderLowerPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+
+    m_shapeNormCube->Draw(m_spawnerExtenderUpperStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+    m_shapeNormCube->Draw(m_spawnerExtenderLowerStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderArm);
+
+    m_effect->SetWorld(m_spawnerExtenderDoorMat2);
+    m_effect->SetColorAndAlpha(m_spawnerColorGray1);
+    m_spawnerDoorShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    m_spawnerArmShape->Draw(m_spawnerArmBasePortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBaseArm);
+    m_spawnerArmShape->Draw(m_spawnerArmBaseStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBaseArm);
+
+    if (m_isSpawnerLightOn2 == true)
+    {
+        m_spawnerDoorShape->Draw(m_spawnerExtenderDoorShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerOuterShape->Draw(m_spawnerShellShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_shapeNormCube->Draw(m_spawnerGearBoxShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerAxelShape2->Draw(m_spawnerMainAxelShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+
+        m_shapeNormCube->Draw(m_spawnerExtenderArmPortShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_shapeNormCube->Draw(m_spawnerExtenderArmStarShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+
+        m_spawnerArmShape->Draw(m_spawnerBaseArmStarShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+        m_spawnerArmShape->Draw(m_spawnerBaseArmPortShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorShadow);
+    }
+
+    // extender housing
+    m_shapeNormCube->Draw(m_spawnerExtenderHousePortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    m_shapeNormCube->Draw(m_spawnerExtenderHouseStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+    m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderGear);
+    m_shapeNormCylinderGear->Draw(m_spawnerExtenderGearStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorExtenderGear);
+    m_shapeNormCylinderAxel->Draw(m_spawnerExtenderGearPortMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+    m_shapeNormCylinderAxel->Draw(m_spawnerExtenderGearStarMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelShaft);
+
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseRoofMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorRoof);
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseLowerMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorStackFirstFloor);
+    m_spawnerBaseRoofShape->Draw(m_spawnerBaseRearMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorStackSecondFloor);
+    m_spawnerInnerBackShadowShape->Draw(m_spawnerInnerBackShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorInterior);
+    m_spawnerBaseShape->Draw(m_spawnerBaseBlastScaledMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBlastWindowDeploy);
+    m_shapeNormCube->Draw(m_spawnerGearBoxMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
+
+    m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelCore1);
+    m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
 
     m_spawnerAxelShape2->Draw(m_spawnerAxel2Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
     m_spawnerAxelShape3->Draw(m_spawnerAxel3Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel3);

@@ -86,7 +86,9 @@ private:
     
     void DrawSky2Base(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSpawner();
-
+    void DrawSpawner1();
+    void DrawSpawner1to2();
+    void DrawSpawner2();
     void DrawStartScreen();
     void DrawTerrainNew(Terrain& aTerrain);
     void DrawTestRangeMissile();
