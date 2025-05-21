@@ -282,6 +282,24 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         //fireEmitter->Velocity = DirectX::SimpleMath::Vector3::UnitX * 50.0f;
         fx->fx->Play(false);
     }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF)
+    {
+        fx->fxType = aSfxType;
+        fx->fx = m_audioBank->CreateStreamInstance(47, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        pos = aPos;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+
+        fx->fx->Play(false);
+    }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON)
+    {
+        fx->fxType = aSfxType;
+        fx->fx = m_audioBank->CreateStreamInstance(46, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        pos = aPos;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+
+        fx->fx->Play(false);
+    }
     else
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
@@ -701,6 +719,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         }
         if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY || aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY_LIGHTS_ON)
         {         
+            /*
             // spawner 1
             if (i == 2249)
             {
@@ -726,8 +745,8 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
             {
                 aTerrain.terrainVertexArrayBase[i].color = spawnerPatchColor;
             }
-
-            /*
+            */
+            
             // spawner 2
             if (i == 2358)
             {
@@ -754,7 +773,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
             {
                 aTerrain.terrainVertexArrayBase[i].color = spawnerPatchColor;
             }
-            */
+            
         }
         
         if (aTerrain.terrainVertexArray[i].position.y >= maxY)
@@ -1140,22 +1159,70 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
     
-    /*
+    
+    if (m_isStartTriggerTrue0 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger0)
+        {
+            m_isStartTriggerTrue0 = true;
+            SetUiTextDisplay("Deploying Target Drones");
+        }
+    }
+
+    if (m_isStartTriggerTrue00 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger00)
+        {
+            m_isStartTriggerTrue00 = true;
+            SetUiTextDisplay("Orbital drop in progress\nPlease stand by...");
+        }
+    }
+    
     if (m_isStartTriggerTrue1 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger1)
         {
             m_isStartTriggerTrue1 = true;
             m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);   
         }
     }
-
     if (m_isStartTriggerTrue2 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger2)
         {
             m_isStartTriggerTrue2 = true;
+            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, m_gamePlayTarg);
+
+            auto snapCamPos = m_vehicle->GetPos();
+            snapCamPos.x -= 30.0f;
+            snapCamPos.y += 10.0f;
+            auto snapTargPos = m_vehicle->GetPos();
+            snapTargPos.x = 0.0f;
+            snapTargPos.y *= 0.5f;
+
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, m_introTarg1);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, snapTargPos);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, m_introTarg2);
+            m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, DirectX::SimpleMath::Vector3::Zero);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+
+            m_vehicle->ToggleAirDropTrigger();
+        }
+    }
+    /*
+    if (m_isStartTriggerTrue3 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger3)
+        {
+            m_isStartTriggerTrue3 = true;
             m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
@@ -1362,7 +1429,7 @@ void Game::Render()
         //DrawTerrainNew(m_terrainGamePlay);
         //DrawTerrainNew(m_terrainStartScreen);
 
-        if (m_isSpawnerLightOn1 == true)
+        if (m_isSpawnerLightOn2 == true)
         {
             DrawTerrainNew(m_terrainGamePlayLightsOn);
         }
@@ -1740,10 +1807,13 @@ void Game::CreateDeviceDependentResources()
     auto spawnerTunnelPos1 = m_spawnerPos;
     spawnerTunnelPos1.y += 4.0f;
     m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateWorld(spawnerTunnelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    
     m_spawnerOuterMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerOuterMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     m_spawnerOuterMat2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
-    m_spawnerOuterMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
+    auto spawnerTunnelPos2 = m_spawnerPos2;
+    spawnerTunnelPos2.y += 4.0f;
+    m_spawnerOuterMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(spawnerTunnelPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
 
     const float spawnerInnerSize = spawnerDiameter;
     m_spawnerInnerBackShadowShape = DirectX::GeometricPrimitive::CreateCylinder(context, 2.0f, spawnerInnerSize, spawnerSides);
@@ -2616,10 +2686,12 @@ void Game::CalculateSpawnerData()
     m_spawnerMainAxelShadowMat1 = shadowTestMat;
 
     // shadow main axel 2
+    auto lightDir2 = m_spawnerMainAxelPos2 - m_spawnerLightPos2;
+    lightDir2.Normalize();
     shadowTestMat = m_spawnerMainAxelMat2;
     //shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
     shadowTestMat *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f));
-    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(m_spawnerLightDirection2, shadowPlane);
+    shadowTestMat *= DirectX::SimpleMath::Matrix::CreateShadow(lightDir2, shadowPlane);
     shadowTestMat *= zOffSetMat;
     m_spawnerMainAxelShadowMat2 = shadowTestMat;
 
@@ -2652,7 +2724,7 @@ void Game::CalculateSpawnerData()
     m_spawnerExtenderArmStarShadowMat1 = shadowTestMat;
 
     // shadow extender arm port 2 
-    auto lightDir2 = extendArmPortPos2 - m_spawnerLightPos2;
+    lightDir2 = extendArmPortPos2 - m_spawnerLightPos2;
     lightDir2 = armBasePos2 - m_spawnerLightPos2;
   
     lightDir2.x = 0.0f;
@@ -2761,11 +2833,46 @@ void Game::CalculateSpawnerData()
     m_spawnerAxel3Spawner2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     m_spawnerAxel3Spawner2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerAxel3PosSpawner2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
-    //m_debugData->ToggleDebugOnOverRide();
+    if (m_isSpawnerLightOn1 != m_isSpawnerLightOnAudioTrigger1)
+    {
+        if (m_isSpawnerLightOn1 == true)
+        {
+            // light on
+            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            m_isSpawnerLightOnAudioTrigger1 = false;
+        }
+        else
+        {
+            // light off
+            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            m_isSpawnerLightOnAudioTrigger1 = false;
+        }
+    }
+    
+    if (m_isSpawnerLightOn2 != m_isSpawnerLightOnAudioTrigger2)
+    {
+        if (m_isSpawnerLightOn2 == true)
+        {
+            // light on
+            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            m_isSpawnerLightOnAudioTrigger2 = true;
+        }
+        else
+        {
+            // light off
+            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            m_isSpawnerLightOnAudioTrigger2 = false;
+        }
+    }
+    
 
+    //
     m_debugData->PushDebugLinePositionIndicator(armBasePos1, 200.0f, 0.0f, DirectX::Colors::Red);
     m_debugData->PushDebugLinePositionIndicator(armBasePos2, 200.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLine(m_spawnerLightPos2, lightDir2, 500.0f, 0.0f, DirectX::Colors::Lime);
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn1 ", m_isSpawnerLightOn1, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn2 ", m_isSpawnerLightOn2, "");
     m_debugData->ToggleDebugOff();
 }
 
@@ -2773,17 +2880,18 @@ void Game::DrawSpawner()
 {
     // spawner 1
     m_effect->EnableDefaultLighting();
-    auto mainLightDirection0 = DirectX::SimpleMath::Vector3(1.0f, -0.1f, 0.0f);
+    auto mainLightDirection0 = m_spawnerLightDirection1;
     mainLightDirection0.Normalize();
     //mainLightDirection0 = DirectX::SimpleMath::Vector3(-1.0f, 0.7f, -0.4f);
     //mainLightDirection0.Normalize();
     auto mainLightDirection1 = DirectX::SimpleMath::Vector3(-1.0f, 0.3f, 0.0f);
     mainLightDirection1.Normalize();
-    auto mainLightDirection2 = m_spawnerLightDirection1;
+    auto mainLightDirection2 = DirectX::SimpleMath::Vector3(1.0f, -0.1f, 0.0f);
+    mainLightDirection2.Normalize();
 
     m_effect->SetLightDirection(0, mainLightDirection0);
-    m_effect->SetLightDirection(1, mainLightDirection1);
-    m_effect->SetLightDirection(2, mainLightDirection2);
+    m_effect->SetLightDirection(2, mainLightDirection1);
+    m_effect->SetLightDirection(1, mainLightDirection2);
 
     m_effect->SetLightEnabled(0, false);
     m_effect->SetLightEnabled(1, true);
@@ -3269,17 +3377,18 @@ void Game::DrawSpawner1()
 {
     // spawner 1
     m_effect->EnableDefaultLighting();
-    auto mainLightDirection0 = DirectX::SimpleMath::Vector3(1.0f, -0.1f, 0.0f);
+    auto mainLightDirection0 = m_spawnerLightDirection1;
     mainLightDirection0.Normalize();
     //mainLightDirection0 = DirectX::SimpleMath::Vector3(-1.0f, 0.7f, -0.4f);
     //mainLightDirection0.Normalize();
     auto mainLightDirection1 = DirectX::SimpleMath::Vector3(-1.0f, 0.3f, 0.0f);
     mainLightDirection1.Normalize();
-    auto mainLightDirection2 = m_spawnerLightDirection1;
+    auto mainLightDirection2 = DirectX::SimpleMath::Vector3(1.0f, -0.1f, 0.0f);;
+    mainLightDirection2.Normalize();
 
     m_effect->SetLightDirection(0, mainLightDirection0);
-    m_effect->SetLightDirection(1, mainLightDirection1);
-    m_effect->SetLightDirection(2, mainLightDirection2);
+    m_effect->SetLightDirection(2, mainLightDirection1);
+    m_effect->SetLightDirection(1, mainLightDirection2);
 
     m_effect->SetLightEnabled(0, false);
     m_effect->SetLightEnabled(1, true);
@@ -3650,7 +3759,7 @@ void Game::DrawSpawner1()
 
 void Game::DrawSpawner1to2()
 {
-    // spawner 1
+    // spawner 2
     m_effect->EnableDefaultLighting();
     auto mainLightDirection0 = m_spawnerLightDirection2;
     mainLightDirection0.Normalize();
@@ -3810,7 +3919,7 @@ void Game::DrawSpawner1to2()
     m_spawnerArmShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     ////////////
-    // Start 1 lighting
+    // Start 2 lighting
     ////////////
 
     // gearbox
@@ -3926,13 +4035,13 @@ void Game::DrawSpawner1to2()
         const float lightAng0 = cos(m_timer.GetTotalSeconds() * 1157647.53);
         const float lightAng1 = cos(-m_timer.GetTotalSeconds() * 627969.1f);
         const float lightAng2 = cos(m_timer.GetTotalSeconds() * 789482.4f);
-        auto lightDir0 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, 1.0f);
+        auto lightDir0 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -1.0f);
         lightDir0.Normalize();
         lightDir0 = DirectX::SimpleMath::Vector3::Transform(lightDir0, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerInteriorLightAngle0Spawner1));
-        auto lightDir1 = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+        auto lightDir1 = DirectX::SimpleMath::Vector3(1.0f, 1.0f, -1.0f);
         lightDir1.Normalize();
         lightDir1 = DirectX::SimpleMath::Vector3::Transform(lightDir1, DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerInteriorLightAngle1Spawner1));
-        auto lightDir2 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 1.0f);
+        auto lightDir2 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, -1.0f);
         lightDir2.Normalize();
         lightDir2 = DirectX::SimpleMath::Vector3::Transform(lightDir2, DirectX::SimpleMath::Matrix::CreateRotationX(-m_spawnerInteriorLightAngle2Spawner1));
 
@@ -4751,10 +4860,56 @@ void Game::DrawUIDisplay()
 
     textLinePos.x = static_cast<float>(m_camera->GetWindowWidth() * 0.02f);
     textLinePos.y = static_cast<float>(m_camera->GetWindowHeight() * 0.9f);
+
     float fontScale = 3.0f;
 
     std::string textLine = m_uiAmmoDisplayString;
 
+    if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
+    {
+        int textSize = static_cast<int>(textLine.size());
+        float ratio = m_uiDisplayTimer / m_uiDisplayTypeDuration;
+        int displaySize = static_cast<int>(ratio * static_cast<float>(textSize));
+        textLine.resize(displaySize);
+    }
+
+    DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.0f;
+    textLineOrigin.x = 0.0f;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Black, 0.f, textLineOrigin, fontScale);
+    const float shiftMod = -2.0f;
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::DimGray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::Gray, 0.f, textLineOrigin, fontScale);
+    textLinePos.x += shiftMod;
+    textLinePos.y += shiftMod;
+    m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, fontScale);
+
+    if (m_uiDisplayTimer > m_uiDisplayDuration)
+    {
+        m_isUiDisplayTrue = false;
+    }
+}
+
+void Game::DrawUIDisplayLaser()
+{
+    m_uiDisplayTimer += static_cast<float>(m_timer.GetElapsedSeconds());
+    DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
+    textLinePos.x = 960;
+    textLinePos.y = 540;
+
+    textLinePos.x = static_cast<float>(m_camera->GetWindowWidth() * 0.02f);
+    textLinePos.y = static_cast<float>(m_camera->GetWindowHeight() * 0.9f);
+
+    float fontScale = 3.0f;
+
+    std::string textLine = m_uiAmmoDisplayString;
+    
     if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
     {
         int textSize = static_cast<int>(textLine.size());
@@ -5811,6 +5966,14 @@ void Game::SetUiAmmoDisplay(AmmoType aAmmoType)
     m_isUiDisplayTrue = true;
 }
 
+void Game::SetUiTextDisplay(std::string aString)
+{
+    m_uiAmmoDisplayString = aString;
+
+    m_uiDisplayTimer = 0.0f;
+    m_isUiDisplayTrue = true;
+}
+
 void Game::UpdateInput(DX::StepTimer const& aTimer)
 {
     // WLJ add for mouse and keybord interface   
@@ -6006,7 +6169,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     if (m_kbStateTracker.pressed.P)
     {
         //m_npcController->DebugToggleAI();
-        m_camera->TransitionToNpcSpringCamera();
+        //m_camera->TransitionToNpcSpringCamera();
     }
     if (m_kbStateTracker.pressed.Y)
     {
@@ -6255,13 +6418,15 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //TogglePause();
+
+            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
         }
     }
     if (m_kbStateTracker.pressed.D1)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_fireControl->ToggleDebug1();
+            m_fireControl->ToggleDebug1();
             m_camera->CycleNpcFocus(true);
         }
     }
@@ -6269,7 +6434,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            //m_fireControl->ToggleDebug2();
+            m_fireControl->ToggleDebug2();
             m_camera->CycleNpcFocus(false);
         }
     }
@@ -6791,7 +6956,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON)
         {
-            createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+            //createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+            createdFx->fx = m_audioBank->CreateStreamInstance(15, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
 
             createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
             createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
@@ -6802,7 +6968,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)
         {
-            createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_5, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+            //createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_5, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+            createdFx->fx = m_audioBank->CreateStreamInstance(16, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
 
             createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
             createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
@@ -7015,8 +7182,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_debugData->ToggleDebugOff();
             */
 
-
-            auto volume = m_vehicle->GetThrottleTank();
+            //auto volume = m_vehicle->GetThrottleTank();
+            auto volume = 0.0f;
             auto pitch = volume;
             pitch *= 0.8f;
             pitch *= 2.0f;
@@ -7522,8 +7689,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
 
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 5.0f, 0.0f, DirectX::Colors::Red);
+            //m_debugData->ToggleDebugOnOverRide();
+            //m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 5.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->ToggleDebugOff();
         }
         else if ( m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2 
@@ -7582,8 +7749,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 20.0f, 0.0f, DirectX::Colors::Red);
+            //m_debugData->ToggleDebugOnOverRide();
+            //m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 20.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->ToggleDebugOff();
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_FIN_DEPLOY)
@@ -7605,9 +7772,46 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
           
-            m_debugData->ToggleDebugOnOverRide();
+            //m_debugData->ToggleDebugOnOverRide();
             m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 5.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->ToggleDebugOff();
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF)
+        {
+            auto volume = m_audioVolumeGamePlay * m_audioSpawnerMod;
+            m_soundFxVecTest[i]->fx->SetVolume(volume);
+            m_soundFxVecTest[i]->volume = volume;
+
+            //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+
+            Utility::SoundFxType sound = m_soundFxVecTest[i]->fxType;
+
+            auto pos = m_soundFxVecTest[i]->pos;
+            auto velocity = (m_soundFxVecTest[i]->pos - previousPosition) / aTimer.GetElapsedSeconds();
+
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = velocity;
+
+            m_soundFxVecTest[i]->emitter->OrientFront = m_soundFxVecTest[i]->forward;
+            m_soundFxVecTest[i]->emitter->OrientTop = m_soundFxVecTest[i]->up;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON)
+        {
+            auto pos = m_soundFxVecTest[i]->pos;
+            DirectX::SimpleMath::Vector3 velocity = m_soundFxVecTest[i]->emitter->Velocity;
+            //pos += velocity * static_cast<float>(aTimer.GetElapsedSeconds());
+
+            //m_soundFxVecTest[i]->pos = pos;
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = velocity;
+
+            m_soundFxVecTest[i]->emitter->OrientFront = m_soundFxVecTest[i]->forward;
+            m_soundFxVecTest[i]->emitter->OrientTop = m_soundFxVecTest[i]->up;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
         }
         else
         {

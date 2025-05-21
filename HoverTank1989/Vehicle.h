@@ -455,6 +455,7 @@ public:
     void SetTestCollisionVelocityUpdate(DirectX::SimpleMath::Vector3 aCollisionVelocityUpdate);
     void SetTestCollisionImpulseForce(Utility::ImpulseForce aCollisionImpulseForce);
     void SetTestVehicleCollisionTrue() { m_heli.isVehicleCollisionTrue = true; };
+    void ToggleAirDropTrigger();
     void ToggleFireControlLaser();
     void UpdateVehicle(const double aTimeDelta);
     void UpdateVehicleFireControl(const double aTimeDelta);
@@ -625,7 +626,7 @@ private:
     DirectX::SimpleMath::Quaternion m_angQuatStep = DirectX::SimpleMath::Quaternion::Identity;
 
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 100.0f);
+    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
 
     float m_throttleVolume = 0.0f;
 
@@ -635,5 +636,8 @@ private:
     float m_gravVelocity = 0.0f;
     float m_gravTimer = 0.0f;
     float m_gravTimerLast = 0.0f;
+
+    bool m_isAirDropTriggeredTrue = false;
+    const float m_airDropAltitude = 250.0f;
 };
 

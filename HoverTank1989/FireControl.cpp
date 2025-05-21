@@ -15584,12 +15584,9 @@ void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTim
             } 
         }
 
-
-
         aMissile.audioFx->pos = aMissile.projectileData.q.position;
         aMissile.audioFx->up = aMissile.projectileData.up;
         aMissile.audioFx->forward = aMissile.projectileData.forward;
-
 
         DirectX::SimpleMath::Vector3 toUseSteeringVecLocal = aMissile.guidance.conDat.thrustVecNorm;
         DirectX::SimpleMath::Quaternion toUseSteeringQuat = aMissile.guidance.conDat.thrustVecQuat;
@@ -15605,17 +15602,16 @@ void FireControl::UpdateMissileAudioData(MissileData& aMissile, const float aTim
             int testBreak = 0;
             testBreak++;
         }
-        m_debugData->ToggleDebugOnOverRide();
+        //m_debugData->ToggleDebugOnOverRide();
         //m_debugData->DebugPushUILineDecimalNumber("aMissile.guidance.thrustAngle ", aMissile.guidance.thrustAngle, "");
-        m_debugData->DebugPushUILineDecimalNumber("angle  ", angle, "");
-        m_debugData->DebugPushUILineDecimalNumber("angleD ", Utility::ToDegrees(angle), "");
-        m_debugData->DebugPushUILineDecimalNumber("pitchMod      ", pitchMod, "");
-        m_debugData->DebugPushUILineDecimalNumber("throttlePitch ", throttlePitch, "");
-        m_debugData->DebugPushUILineDecimalNumber("pitchMod2     ", pitchMod2, "");
-        m_debugData->DebugPushUILineDecimalNumber("pitchMod3     ", pitchMod3, "");
-        m_debugData->PushDebugLine(aMissile.projectileData.q.position, toUseSteeringVecLocal, 15.0f, 0.0f, DirectX::Colors::YellowGreen);
-
-        m_debugData->ToggleDebugOff();
+        //m_debugData->DebugPushUILineDecimalNumber("angle  ", angle, "");
+        //m_debugData->DebugPushUILineDecimalNumber("angleD ", Utility::ToDegrees(angle), "");
+        //m_debugData->DebugPushUILineDecimalNumber("pitchMod      ", pitchMod, "");
+        //m_debugData->DebugPushUILineDecimalNumber("throttlePitch ", throttlePitch, "");
+        //m_debugData->DebugPushUILineDecimalNumber("pitchMod2     ", pitchMod2, "");
+        //m_debugData->DebugPushUILineDecimalNumber("pitchMod3     ", pitchMod3, "");
+        //m_debugData->PushDebugLine(aMissile.projectileData.q.position, toUseSteeringVecLocal, 15.0f, 0.0f, DirectX::Colors::YellowGreen);
+        //m_debugData->ToggleDebugOff();
         
         aMissile.audioFx->fx->SetVolume(aMissile.guidance.throttlePercentage);
         aMissile.audioFx->fx->SetPitch(pitchMod3);

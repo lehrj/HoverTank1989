@@ -2613,8 +2613,19 @@ void Vehicle::RungeKutta4(struct HeliData* aHeli, double aTimeDelta)
     q.angularVelocity += angularVelocityUpdateTest;
     q.angularMomentum += angularMomentumUpdateTest;
     
-    aHeli->q.velocity = q.velocity;
-    aHeli->q.position = q.position;
+    if (m_isAirDropTriggeredTrue == true)
+    {
+        aHeli->q.velocity = q.velocity;
+        aHeli->q.position = q.position;
+    }
+    else
+    {
+        aHeli->q.velocity = q.velocity;
+        aHeli->q.position = q.position;
+
+        aHeli->q.velocity.y = 0.0f;
+        aHeli->q.position.y = m_airDropAltitude;
+    }
 
     aHeli->q.angularVelocity = q.angularVelocity;
     aHeli->q.angularMomentum = q.angularMomentum;
@@ -2672,6 +2683,18 @@ void Vehicle::StabilizeWeaponPitch(struct HeliData& aVehicle, const float aTimeS
     }
   
     aVehicle.stabilizedWeaponPitch = stabilizedPitch;
+}
+
+void Vehicle::ToggleAirDropTrigger()
+{
+    if (m_isAirDropTriggeredTrue == false)
+    {
+        m_isAirDropTriggeredTrue = true;
+    }
+    else
+    {
+        m_isAirDropTriggeredTrue = true;
+    }
 }
 
 void Vehicle::ToggleFireControlLaser()
