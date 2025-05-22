@@ -1085,10 +1085,15 @@ private:
   //  const DirectX::SimpleMath::Vector3 m_introPos3 = DirectX::SimpleMath::Vector3(1200.0f, 170.0f, 500.0f);
     //const DirectX::SimpleMath::Vector3 m_introTarg3 = DirectX::SimpleMath::Vector3(540.0f, 10.0f, 0.0f);
 
-    const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, 400.0f);;
+    //const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, 400.0f);
+    //const DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(475.0f, 10.0f, 0.0f);
+
+    const DirectX::SimpleMath::Vector3 m_introPos1 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_introTarg1 = DirectX::SimpleMath::Vector3(475.0f, 10.0f, 0.0f);
 
-    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, 400.0f);;
+    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(-200.0f, 350.0f, 400.0f);
+    const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(-523.0f, 215.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(475.0f, 10.0f, 0.0f);
 
     const float m_introCamStep0 = 0.05f;
@@ -1112,6 +1117,7 @@ private:
 
     const float m_gamePlayCamStep = 0.99f;
     const float m_gamePlayTargStep = 0.0099f;
+    const float m_gamePlayTargStepAlt = 0.99f;
     const float m_gamePlaySlerp = 0.99f;
 
     // multisampling

@@ -1208,16 +1208,15 @@ void Game::Update(DX::StepTimer const& aTimer)
 
             //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, m_introTarg1);
             //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, snapTargPos);
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, m_introTarg2);
-            m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, DirectX::SimpleMath::Vector3::Zero);
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
-            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-
+            m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, DirectX::SimpleMath::Vector3::Zero);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
             m_vehicle->ToggleAirDropTrigger();
         }
     }
-    /*
+    
     if (m_isStartTriggerTrue3 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger3)
@@ -1228,7 +1227,7 @@ void Game::Update(DX::StepTimer const& aTimer)
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
-    */
+    
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -6419,7 +6418,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             //TogglePause();
 
-            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
         }
     }
     if (m_kbStateTracker.pressed.D1)
