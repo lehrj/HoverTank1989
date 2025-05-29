@@ -285,18 +285,22 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF)
     {
         fx->fxType = aSfxType;
-        fx->fx = m_audioBank->CreateStreamInstance(47, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(46, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = aPos;
-        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+        fx->pos = pos;
+        fireEmitter->Position = pos;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarSpawner;
 
         fx->fx->Play(false);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON)
     {
         fx->fxType = aSfxType;
-        fx->fx = m_audioBank->CreateStreamInstance(46, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(47, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = aPos;
-        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+        fx->pos = pos;
+        fireEmitter->Position = pos;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarSpawner;
 
         fx->fx->Play(false);
     }
@@ -1160,6 +1164,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     elapsedTime;
     
     
+    /*
     if (m_isStartTriggerTrue0 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger0)
@@ -1227,7 +1232,7 @@ void Game::Update(DX::StepTimer const& aTimer)
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
-    
+    */
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -2837,13 +2842,13 @@ void Game::CalculateSpawnerData()
         if (m_isSpawnerLightOn1 == true)
         {
             // light on
-            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
             m_isSpawnerLightOnAudioTrigger1 = false;
         }
         else
         {
             // light off
-            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
             m_isSpawnerLightOnAudioTrigger1 = false;
         }
     }
@@ -2853,26 +2858,16 @@ void Game::CalculateSpawnerData()
         if (m_isSpawnerLightOn2 == true)
         {
             // light on
-            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
             m_isSpawnerLightOnAudioTrigger2 = true;
         }
         else
         {
             // light off
-            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
             m_isSpawnerLightOnAudioTrigger2 = false;
         }
     }
-    
-
-    //
-    m_debugData->PushDebugLinePositionIndicator(armBasePos1, 200.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->PushDebugLinePositionIndicator(armBasePos2, 200.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLine(m_spawnerLightPos2, lightDir2, 500.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn1 ", m_isSpawnerLightOn1, "");
-    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn2 ", m_isSpawnerLightOn2, "");
-    m_debugData->ToggleDebugOff();
 }
 
 void Game::DrawSpawner()

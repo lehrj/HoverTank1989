@@ -437,7 +437,7 @@ private:
 
     const float m_audioCurveDistanceScalarNPC = 14.0f;
     const float m_audioCurveDistanceScalarPlayer = 8.0f;
-    const float m_audioCurveDistanceScalarSpawner = 4.0f;
+    const float m_audioCurveDistanceScalarSpawner = 14.0f;
     const float m_audioCurveDistanceScalarLogo = 14.0f;
     const float m_audioCurveDistScalarMissileRocket = 14.0f;
     const float m_audioCurveDistScalarMissileFin = 14.0f;
@@ -942,12 +942,10 @@ private:
     const float m_spawnerBlastWindowOffsetZ = 51.5f;
     const float m_spawnerBlastWindowAngle = Utility::ToRadians(29.0f);
 
-
     const DirectX::SimpleMath::Vector3 m_spawnerRearScale = DirectX::SimpleMath::Vector3(m_spawnerBaseLowerDimensions.x * 0.9f, m_spawnerBaseLowerDimensions.y, m_spawnerBaseLowerDimensions.z * 0.6f);
     const DirectX::SimpleMath::Vector3 m_spawnerRearPos2 = DirectX::SimpleMath::Vector3(m_spawnerBasePos2.x, m_spawnerBasePos2.y + 11.0f, m_spawnerBasePos2.z - (m_spawnerRearScale.z * 0.2f));
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat2;
     DirectX::SimpleMath::Matrix        m_spawnerBaseRearMat1;
-
 
     const DirectX::XMVECTORF32 m_spawnerColorArms = DirectX::Colors::LightGray;
     const DirectX::XMVECTORF32 m_spawnerColorAxelCore1 = m_spawnerColorArms;
