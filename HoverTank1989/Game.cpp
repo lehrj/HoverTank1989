@@ -285,7 +285,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF)
     {
         fx->fxType = aSfxType;
-        fx->fx = m_audioBank->CreateStreamInstance(46, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(14, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = aPos;
         fx->pos = pos;
         fireEmitter->Position = pos;
@@ -296,7 +296,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON)
     {
         fx->fxType = aSfxType;
-        fx->fx = m_audioBank->CreateStreamInstance(47, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        fx->fx = m_audioBank->CreateStreamInstance(14, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = aPos;
         fx->pos = pos;
         fireEmitter->Position = pos;
@@ -2843,7 +2843,7 @@ void Game::CalculateSpawnerData()
         {
             // light on
             AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
-            m_isSpawnerLightOnAudioTrigger1 = false;
+            m_isSpawnerLightOnAudioTrigger1 = true;
         }
         else
         {
@@ -8041,6 +8041,14 @@ void Game::UpdateSpawners()
     }
 
     CalculateSpawnerData();
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn1 = ", m_isSpawnerLightOn1, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOnAudioTrigger1 = ", m_isSpawnerLightOnAudioTrigger1, "");
+
+    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn2 = ", m_isSpawnerLightOn2, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOnAudioTrigger2 = ", m_isSpawnerLightOnAudioTrigger2, "");
+    m_debugData->ToggleDebugOff();
 }
 
 #pragma endregion
