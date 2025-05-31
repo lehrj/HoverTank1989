@@ -8010,7 +8010,7 @@ void Game::UpdateSpawners()
         npcEmitter->SetOmnidirectional();
         npcEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
         npcEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
-        npcEmitter->CurveDistanceScaler = 4.0f;
+        npcEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarNPC;
         npcEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
         // npcEmitter->EnableDefaultMultiChannel(2, 1.0f);
         npcEmitter->SetPosition(m_npcController->GetNextSpawnerLoc());
@@ -8041,14 +8041,6 @@ void Game::UpdateSpawners()
     }
 
     CalculateSpawnerData();
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn1 = ", m_isSpawnerLightOn1, "");
-    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOnAudioTrigger1 = ", m_isSpawnerLightOnAudioTrigger1, "");
-
-    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOn2 = ", m_isSpawnerLightOn2, "");
-    m_debugData->DebugPushUILineWholeNumber("m_isSpawnerLightOnAudioTrigger2 = ", m_isSpawnerLightOnAudioTrigger2, "");
-    m_debugData->ToggleDebugOff();
 }
 
 #pragma endregion

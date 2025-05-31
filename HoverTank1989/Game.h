@@ -404,7 +404,8 @@ private:
 
 
     const int m_audioFxIdDebug = 44;
-    const int m_audioFxIdNPCVehicle = 25;
+    //const int m_audioFxIdNPCVehicle = 25;
+    const int m_audioFxIdNPCVehicle = 3;
     const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdPlayerVehicleHover = 29;
     const int m_audioFxIdAmbient = 44;
