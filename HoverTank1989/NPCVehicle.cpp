@@ -2769,6 +2769,10 @@ void NPCVehicle::UpdateAngularDrag(const float aTimeDelta)
     */
 }
 
+void NPCVehicle::UpdateAudio()
+{
+    m_vehicleStruct00.audioFx->volume = m_vehicleStruct00.vehicleData.audioThrottle;
+}
 
 DirectX::SimpleMath::Vector3 NPCVehicle::UpdateBodyTorqueRungeLocalNew(const float aTimeStep)
 {
@@ -3571,6 +3575,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
 
     UpdateForceTorqueVecs();
 
+    UpdateAudio();
+
     if (m_vehicleStruct00.audioFx->isDestroyTrue == false)
     {
         m_vehicleStruct00.audioFx->pos = m_vehicleStruct00.vehicleData.q.position;
@@ -3725,7 +3731,6 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     const float throttle = m_vehicleStruct00.vehicleData.controlInput.throttleInput;
     const float steering = m_vehicleStruct00.vehicleData.controlInput.steeringInput / m_vehicleStruct00.vehicleData.controlInput.steeringInputMax;
-
     const float afterBurnIdleLengthMod = 0.25f;
 
     float leftBurnLengthMod = throttle - steering + afterBurnIdleLengthMod;
@@ -3773,6 +3778,20 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     m_vehicleStruct00.npcModel.afterBurnLengthLeft = afterBurnLengthModLeft;
     m_vehicleStruct00.npcModel.afterBurnLengthRight = afterBurnLengthModRight;
+
+    // hacking in audio volume data update
+    float audioLeft = m_vehicleStruct00.npcModel.afterBurnLengthLeft - afterBurnIdleLengthMod;
+    float audioRight = m_vehicleStruct00.npcModel.afterBurnLengthRight - afterBurnIdleLengthMod;
+    float sum = (audioLeft + audioRight) / 2.0f;
+    if (sum > 1.0f)
+    {
+        sum = 1.0f;
+    }
+    else if (sum < 0.0f)
+    {
+        sum = 0.0f;
+    }
+    m_vehicleStruct00.vehicleData.audioThrottle = sum;
 
     // Anti torque alignment jet length mod
     //m_vehicleStruct00.npcModel.afterBurnLengthLeft += m_vehicleStruct00.npcModel.jetAntiTorqueLengthLeft;

@@ -288,6 +288,8 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->fx = m_audioBank->CreateStreamInstance(14, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = aPos;
         fx->pos = pos;
+        fx->volume = 1.0f;
+        fx->fx->SetVolume(1.0f);
         fireEmitter->Position = pos;
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarSpawner;
 
@@ -299,6 +301,8 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->fx = m_audioBank->CreateStreamInstance(14, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = aPos;
         fx->pos = pos;
+        fx->volume = 1.0f;
+        fx->fx->SetVolume(1.0f);
         fireEmitter->Position = pos;
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarSpawner;
 
@@ -7014,9 +7018,10 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->SetVolume(m_audioVolumeGamePlay * m_audioNPCMod);
             m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
 
-            //auto pos = m_soundFxVecTest[i]->pos;
-            //m_soundFxVecTest[i]->emitter->SetPosition(pos);
-            //m_soundFxVecTest[i]->pos = pos;
+
+            m_debugData->ToggleDebugOnOverRide();
+            //m_debugData->DebugPushUILineDecimalNumber(,"",);
+            m_debugData->ToggleDebugOff();
 
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
@@ -8018,8 +8023,8 @@ void Game::UpdateSpawners()
         npcEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
         auto pos = m_npcController->GetNextSpawnerLoc();
-        npcFx->volume = 1.0f;
-        npcFx->fx->SetVolume(1.0f);
+        npcFx->volume = 0.0f;
+        npcFx->fx->SetVolume(0.0f);
         npcFx->pos = pos;
         //npcFx->emitter->Position = pos;
         npcFx->SetEmitter(npcEmitter);

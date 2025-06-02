@@ -436,9 +436,9 @@ private:
 
     const unsigned int m_audioFxIdRocketMotor = 3;
 
-    const float m_audioCurveDistanceScalarNPC = 14.0f;
+    const float m_audioCurveDistanceScalarNPC = 19.0f;
     const float m_audioCurveDistanceScalarPlayer = 8.0f;
-    const float m_audioCurveDistanceScalarSpawner = 14.0f;
+    const float m_audioCurveDistanceScalarSpawner = 54.0f;
     const float m_audioCurveDistanceScalarLogo = 14.0f;
     const float m_audioCurveDistScalarMissileRocket = 14.0f;
     const float m_audioCurveDistScalarMissileFin = 14.0f;

@@ -489,6 +489,8 @@ struct VehicleData
     DirectX::SimpleMath::Vector3 vehicleAngularForcesSum = DirectX::SimpleMath::Vector3::Zero;
 
     DirectX::SimpleMath::Vector3 angularDrag = DirectX::SimpleMath::Vector3::Zero;
+
+    float audioThrottle = 0.0f;
 };
 
 struct VehicleStruct
@@ -667,7 +669,7 @@ private:
     void UpdateAlignment();
     void UpdateAlignment2();
     void UpdateAngularDrag(const float aTimeDelta);
-
+    void UpdateAudio();
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocalNew(const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdateBodyTorqueRungeLocalOld(const float aTimeStep);
 
