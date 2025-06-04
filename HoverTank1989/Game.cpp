@@ -1168,7 +1168,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     elapsedTime;
     
     
-    /*
+    
     if (m_isStartTriggerTrue0 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger0)
@@ -1236,7 +1236,7 @@ void Game::Update(DX::StepTimer const& aTimer)
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }
     }
-    */
+    
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -3395,7 +3395,7 @@ void Game::DrawSpawner1()
     {
         //mainLightDirection1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, -0.5f);
         //mainLightDirection1.Normalize();
-        //m_effect->SetLightDirection(1, mainLightDirection1);
+        //m_effect->SetLightDirection(1, -m_spawnerLightDirection1);
         //m_effect->DisableSpecular();
         m_effect->SetLightEnabled(0, true);
         m_effect->SetLightEnabled(1, true);
@@ -3408,6 +3408,9 @@ void Game::DrawSpawner1()
     {
         m_effect->DisableSpecular();
     }
+
+   // m_effect->SetLightDirection(1, mainLightDirection1);
+
 
     //m_effect->SetLightEnabled(0, false);
     //m_effect->SetLightEnabled(1, true);
@@ -3460,6 +3463,7 @@ void Game::DrawSpawner1()
 
     // light bars
     m_effect->SetLightDirection(0, -m_spawnerLightDirection1);
+    //m_effect->SetLightDirection(0, -m_spawnerLightDirection1);
     if (m_isSpawnerLightOn1 == true)
     {
         /*
@@ -3506,6 +3510,7 @@ void Game::DrawSpawner1()
         */
     }
     m_effect->SetLightDirection(0, m_spawnerLightDirection1);
+    //m_effect->SetLightDirection(0, -m_spawnerLightDirection1);
 
     m_effect->SetColorAndAlpha(m_spawnerColorLightHousing);
     m_effect->SetWorld(m_spawnerLightRingMat1Pos1);
@@ -3552,8 +3557,6 @@ void Game::DrawSpawner1()
     m_effect->SetWorld(m_spawnerExtenderLowerStarMat1);
     m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
     m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
-
-
 
     // extender housing 2
     m_effect->SetColorAndAlpha(m_spawnerColorGearBox);
@@ -4388,7 +4391,6 @@ void Game::DrawEndUI()
     textLinePos.y += shiftMod;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin, fontScale);
 }
-
 
 void Game::DrawIntroScene()
 {
@@ -7206,8 +7208,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_debugData->ToggleDebugOff();
             */
 
-            //auto volume = m_vehicle->GetThrottleTank();
-            auto volume = 0.0f;
+            auto volume = m_vehicle->GetThrottleTank();
+            //auto volume = 0.0f;
             auto pitch = volume;
             pitch *= 0.8f;
             pitch *= 2.0f;
@@ -7221,6 +7223,9 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
+
+            //m_soundFxVecTest[i]->fx->SetVolume(0.5f);
+            //m_soundFxVecTest[i]->volume = 0.5f;
 
             auto pos = m_vehicle->GetPos();
             //pos = m_debugAudioPos;
@@ -7264,11 +7269,13 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->emitter->EmitterAzimuths[0] = 0.0f;
             //m_soundFxVecTest[i]->emitter->EmitterAzimuths[1] = cos(m_timer.GetTotalSeconds());
 
+            //m_soundFxVecTest[i]->volume = 0.0f;
+            //m_soundFxVecTest[i]->fx->SetVolume(0.0f);
 
             //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
-            //m_debugData->ToggleDebugOnOverRide();
+            m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch", pitch, "");
 
@@ -7377,7 +7384,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             volume *= 0.6f;
             volume += 0.1f;
-
+            //m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch ", pitch, "");
 
@@ -7385,6 +7392,9 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
             
+            m_soundFxVecTest[i]->volume = 0.0f;
+            m_soundFxVecTest[i]->fx->SetVolume(0.0f);
+
             auto pos = m_vehicle->GetPos();
             m_soundFxVecTest[i]->pos = pos;
             auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
