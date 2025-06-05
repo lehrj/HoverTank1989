@@ -397,6 +397,8 @@ public:
     
     float GetThrottle() { return m_heli.controlInput.throttleInput; };
     float GetThrottleTank();
+    float GetThrottleHover();
+    float GetThrottleDrive();
 
     double GetTime() { return m_heli.time; };
     DirectX::SimpleMath::Vector3 GetVehicleRight() const { return m_heli.right; };

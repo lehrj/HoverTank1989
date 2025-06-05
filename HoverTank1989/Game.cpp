@@ -7208,7 +7208,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_debugData->ToggleDebugOff();
             */
 
-            auto volume = m_vehicle->GetThrottleTank();
+            //auto volume = m_vehicle->GetThrottleTank();
+            auto volume = m_vehicle->GetThrottleDrive();
             //auto volume = 0.0f;
             auto pitch = volume;
             pitch *= 0.8f;
@@ -7219,7 +7220,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             volume += 0.1f;
 
             volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
-
+        
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
@@ -7275,7 +7276,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
-            m_debugData->ToggleDebugOnOverRide();
+            //m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch", pitch, "");
 
@@ -7384,16 +7385,14 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             volume *= 0.6f;
             volume += 0.1f;
-            //m_debugData->ToggleDebugOnOverRide();
+           
+           // m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
             m_debugData->DebugPushUILineDecimalNumber("pitch ", pitch, "");
 
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
-            
-            m_soundFxVecTest[i]->volume = 0.0f;
-            m_soundFxVecTest[i]->fx->SetVolume(0.0f);
 
             auto pos = m_vehicle->GetPos();
             m_soundFxVecTest[i]->pos = pos;
@@ -7408,7 +7407,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
-     
             m_debugData->DebugPushUILineDecimalNumber("immersionRatio = ", immersionRatio, "");
             m_debugData->DebugPushUILineDecimalNumber("cl             =  ", cl, "");
             m_debugData->ToggleDebugOff();
