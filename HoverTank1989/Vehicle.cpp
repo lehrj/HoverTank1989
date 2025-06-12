@@ -1368,14 +1368,14 @@ float Vehicle::GetThrottleDrive()
     auto throttle = 0.0f;
 
     // float GetGlowValCenter() const { return m_playerModel.glowCenterVal; };
-    /*
+    
     throttle += abs(m_modelController->GetGlowValCenter()) + abs(m_modelController->GetGlowValLeft()) + abs(m_modelController->GetGlowValRight());
     if (throttle > 1.0f)
     {
         throttle = 1.0f;
     }
-    return throttle;
-    */
+    //return throttle;
+    
     return m_throttleVolume;
 }
 
@@ -3521,7 +3521,7 @@ void Vehicle::UpdateModelColorVals(const float aTimeStep)
     //const float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
     //float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
     float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
-    centerVal += m_heli.hoverDriveImmersionRatio;
+    //centerVal += m_heli.hoverDriveImmersionRatio;
     //centerVal *= 0.5f;
     //centerVal = 1.0f;
 
