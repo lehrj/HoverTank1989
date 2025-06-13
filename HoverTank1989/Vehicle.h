@@ -133,6 +133,9 @@ struct Rotor
 
 struct HeliData
 {
+    float audioVolHover = 0.0f;
+    float audioVolDrive = 0.0f;
+
     float altitude = 0.0f;
     DirectX::SimpleMath::Plane groundPlane;
     DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
@@ -509,8 +512,11 @@ private:
     void UpdateImpulseForces(struct HeliData& aVehicle, const float aTimeDelta);
     void UpdateInertiaTensor(struct HeliData& aVehicle, const float aTimeStep);
     void UpdateInertiaTensorOld(struct HeliData& aVehicle, const float aTimeStep);
+
+    void UpdateModelAudioVals(const float aTimeStep);
     void UpdateModelColorVals(const float aTimeStep);
     void UpdateModelColorValsNoHover(const float aTimeStep);
+
     void UpdatePendulumMotion(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     DirectX::SimpleMath::Vector3 UpdatePendulumMotion2(Utility::Torque& aTorque, DirectX::SimpleMath::Vector3& aVelocity, const float aTimeStep);
     void UpdatePhysicsPoints(struct HeliData& aVehicle, const float aTimeStep);

@@ -3516,6 +3516,11 @@ void Vehicle::UpdateInertiaTensorOld(struct HeliData& aVehicle, const float aTim
 
 }
 
+void Vehicle::UpdateModelAudioVals(const float aTimeStep)
+{
+
+}
+
 void Vehicle::UpdateModelColorVals(const float aTimeStep)
 {
     //const float centerVal = abs(m_heli.controlInput.cyclicInputPitch / m_heli.controlInput.cyclicInputMax);
@@ -4511,7 +4516,8 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_heli.testAccel = (m_heli.q.velocity.Length() - prevVelocity.Length()) / static_cast<float>(aTimeDelta);
     m_heli.testAccelVec = (m_heli.q.velocity - prevVelocity) / static_cast<float>(aTimeDelta);
 
-    UpdateModelColorVals(static_cast<float>(aTimeDelta));
+    //UpdateModelColorVals(static_cast<float>(aTimeDelta));
+    UpdateModelColorValsNoHover(static_cast<float>(aTimeDelta));
 
     UpdateResistance();
 
