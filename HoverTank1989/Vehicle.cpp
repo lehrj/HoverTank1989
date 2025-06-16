@@ -169,17 +169,8 @@ DirectX::SimpleMath::Vector3 Vehicle::CalculateBuoyancyForce(const HeliData& aVe
 
     m_heli.hoverDriveImmersionRatioPrev = m_heli.hoverDriveImmersionRatio;
     m_heli.hoverDriveImmersionRatio = immersedRatio;
-    m_heli.hoverDriveOutputAudio = m_testMaxHoverForce;
-    m_heli.hoverDriveOutputAudio = buoyancyForce.y;
-
-    
-    m_debugData->DebugPushUILineDecimalNumber("testDensity   = ", testDensity, "");
-    m_debugData->DebugPushUILineDecimalNumber("buoyancyForce = ", buoyancyForce.Length(), "");
-    m_debugData->DebugPushUILineDecimalNumber("immersedVolumeRatio   = ", immersedVolumeRatio, "");
-    m_debugData->DebugPushUILineDecimalNumber("immersedRatio         = ", immersedRatio, "");
-    m_debugData->DebugPushUILineWholeNumber("stateVal = ", stateVal, "");
-    m_debugData->ToggleDebugOff();
-
+    //m_heli.hoverDriveOutputAudio = m_testMaxHoverForce;
+    //m_heli.hoverDriveOutputAudio = buoyancyForce.y;
 
     return buoyancyForce;
 }

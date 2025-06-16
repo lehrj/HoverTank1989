@@ -7293,14 +7293,12 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER)
         {
-            //m_debugData->ToggleDebugOnOverRide();
             //auto volume = m_vehicle->GetThrottleTank();
             auto immersionRatio = m_vehicle->GetImmersionRatio();
             auto immersionRatioPrev = m_vehicle->GetImmersionRatioPrev();
               
             const float deltaMax = 0.3f * static_cast<float>(aTimer.GetElapsedSeconds());
             const float timeDelta = static_cast<float>(aTimer.GetElapsedSeconds());
-
 
             auto volume = m_vehicle->GetImmersionRatio();
             //volume = (volume + m_audioHoverVal) * 0.5f;
@@ -7317,7 +7315,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_audioHoverVal = volume;
             m_audioHoverVal1 = volume;
         
-
             ////////////////////////////////////////////////
 
             const float posKey0 = 0.0f;
@@ -7345,8 +7342,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             float cl;
             float curveDeltaRate;
             float clTarget;
-
-            
+        
             if (inputAngle < angKey1)
             {
                 cl = inputAngle * deltaKey1;
@@ -7369,7 +7365,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             ////////////////////////////////////////////////
 
-            auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
+            //auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
 
             //auto pitch = volume;
             auto pitch = cl;
@@ -7383,8 +7379,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                 pitch = -1.0f;
             }
 
-            volume *= 0.6f;
-            volume += 0.1f;
+            volume *= m_audioPlayerHoverVolMod;
+            volume += m_audioPlayerHoverVolMin;
            
            // m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
@@ -7413,7 +7409,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVEROLD)
         {
-            m_debugData->ToggleDebugOnOverRide();
             //auto volume = m_vehicle->GetThrottleTank();
             auto immersionRatio = m_vehicle->GetImmersionRatio();
             auto immersionRatioPrev = m_vehicle->GetImmersionRatioPrev();
@@ -7430,7 +7425,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                     volToUse = immersionRatioPrev - deltaMax;
                     //m_debugData->DebugPushUILineDecimalNumber("xx neg loop xx ", 0.0f, "");
                 }
-
             }
             else if (immersionRatio > immersionRatioPrev)
             {
@@ -7440,8 +7434,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                     //m_debugData->DebugPushUILineDecimalNumber("++ pos loop ++ ", 0.0f, "");
                 }
             }
-
-            //m_debugData->DebugPushUILineDecimalNumber("volToUse ", volToUse, "");
 
             /*
             if (volume - m_audioHoverVal > deltaMax)
@@ -7486,8 +7478,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_audioHoverVal3 = m_audioHoverVal2;
             m_audioHoverVal2 = m_audioHoverVal1;
 
-
-            auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
+           // auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
 
             /*
             m_audioHoverVal1 = hoverDriveOutput;
@@ -7579,7 +7570,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             //velocity += DirectX::SimpleMath::Vector3::UnitY * (m_vehicle->GetThrottleTank() * 10.0f);
 
-            auto hoverdriveMod = hoverDriveOutput / 66640.0f;
+            //auto hoverdriveMod = hoverDriveOutput / 66640.0f;
 
             m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
             m_soundFxVecTest[i]->emitter->OrientTop = m_vehicle->GetVehicleUp();
@@ -7588,27 +7579,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->Velocity = velocity;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-
-
-
-
-
-            //m_debugData->DebugPushUILineDecimalNumber("deltaMax ", deltaMax, "");
-            m_debugData->DebugPushUILineDecimalNumber("immersionRatio ", immersionRatio, "");
-            m_debugData->DebugPushUILineDecimalNumber("hoverdrive =  ", hoverDriveOutput, "");
-            m_debugData->DebugPushUILineDecimalNumber("hoverdriveMod =  ", hoverdriveMod, "");
-
-            m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal  =  ", m_audioHoverVal, "");
-            m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal1 =  ", m_audioHoverVal1, "");
-            m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal2 =  ", m_audioHoverVal2, "");
-            m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal3 =  ", m_audioHoverVal3, "");
-            m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal4 =  ", m_audioHoverVal4, "");
-            m_debugData->DebugPushUILineDecimalNumber("m_audioHoverVal5 =  ", m_audioHoverVal5, "");
-            //m_debugData->DebugPushUILineDecimalNumber("volumeModed =  ", volumeModed, "");
-            m_debugData->ToggleDebugOff();
-
-
-
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_AMBIENT)
         {

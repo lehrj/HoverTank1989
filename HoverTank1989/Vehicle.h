@@ -153,7 +153,7 @@ struct HeliData
     const float groundNormalForceRange = hoverRangeUpper + 5.0f;
     const float hoverNeutralBoyantAlt = hoverRangeMid;
 
-    float hoverDriveOutputAudio = 0.0f;
+   // float hoverDriveOutputAudio = 0.0f;
     float hoverDriveImmersionRatio = 0.0f;
     float hoverDriveImmersionRatioPrev = 0.0f;
 
@@ -241,7 +241,6 @@ struct HeliData
     DirectX::SimpleMath::Vector3 gravity = DirectX::SimpleMath::Vector3(0.0f, -9.80665f, 0.0f);
     float   mainRotorMaxRPM;
     const float   mass = 1700.0f;
-    //float   massTest = 2000.0f;
 
     Motion  q;
     float   totalResistance;
@@ -371,7 +370,7 @@ public:
 
     float GetImmersionRatioPrev() const { return m_heli.hoverDriveImmersionRatioPrev; };
     float GetImmersionRatio() const { return m_heli.hoverDriveImmersionRatio; };
-    float GetHoverDriveOutput() const { return m_heli.hoverDriveOutputAudio; };
+  //  float GetHoverDriveOutput() const { return m_heli.hoverDriveOutputAudio; };
     DirectX::SimpleMath::Vector3 GetJetThrust(const DirectX::SimpleMath::Vector3 aForward, const float aInput, const float aThrustMax);
     float GetMass() const { return m_heli.mass; };
 
