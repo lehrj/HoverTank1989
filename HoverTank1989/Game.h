@@ -388,7 +388,7 @@ private:
     const float m_audioLogoMod = 1.0f;
 
     const float m_audioPlayerDriveVolMod = 0.6f;
-    const float m_audioPlayerHoverVolMod = 0.6f;
+    const float m_audioPlayerHoverVolMod = 0.4f;
     const float m_audioPlayerHoverVolMin = 0.1f;
 
     bool m_audioTestBoolTrue = false;

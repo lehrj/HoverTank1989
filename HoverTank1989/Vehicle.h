@@ -136,6 +136,18 @@ struct HeliData
     float audioVolHover = 0.0f;
     float audioVolDrive = 0.0f;
 
+    float audioPitchHoverNew = 0.0f;
+    float audioPitchDriveNew = 0.0f;
+    float audioVolHoverNew = 0.0f;
+    float audioVolDriveNew = 0.0f;
+
+    float audioHoverVal = 0.0f;
+    float audioHoverVal1 = 0.0f;
+    float audioHoverVal2 = 0.0f;
+    float audioHoverVal3 = 0.0f;
+    float audioHoverVal4 = 0.0f;
+    float audioHoverVal5 = 0.0f;
+
     float altitude = 0.0f;
     DirectX::SimpleMath::Plane groundPlane;
     DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
@@ -401,6 +413,10 @@ public:
     float GetThrottleTank();
     float GetThrottleHover();
     float GetThrottleDrive();
+    float GetAudioVolDrive() const { return m_heli.audioVolDriveNew; };
+    float GetAudioVolHover()const { return m_heli.audioVolHoverNew; };
+    float GetAudioPitchDrive() const { return m_heli.audioVolDriveNew; };
+    float GetAudioPitchHover()const { return m_heli.audioVolHoverNew; };
 
     double GetTime() { return m_heli.time; };
     DirectX::SimpleMath::Vector3 GetVehicleRight() const { return m_heli.right; };

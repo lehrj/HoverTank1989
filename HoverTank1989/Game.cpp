@@ -7219,6 +7219,9 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             volume *= 0.9f;
             volume += 0.1f;
 
+            volume = m_vehicle->GetAudioVolDrive();
+            pitch = m_vehicle->GetAudioPitchDrive();
+
             volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
         
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
@@ -7378,6 +7381,15 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             {
                 pitch = -1.0f;
             }
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("pitch      = ", pitch, "");
+            m_debugData->DebugPushUILineDecimalNumber("volume     = ", volume, "");
+
+            m_debugData->ToggleDebugOff();
+
+            volume = m_vehicle->GetAudioVolHover();
+            pitch = m_vehicle->GetAudioPitchHover();
 
             volume *= m_audioPlayerHoverVolMod;
             volume += m_audioPlayerHoverVolMin;
