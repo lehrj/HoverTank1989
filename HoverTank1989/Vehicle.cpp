@@ -3510,39 +3510,22 @@ void Vehicle::UpdateInertiaTensorOld(struct HeliData& aVehicle, const float aTim
 void Vehicle::UpdateModelAudioVals(const float aTimeStep)
 {
     // drive
-
-    //auto volume = m_vehicle->GetThrottleDrive();
-    auto volume = m_throttleVolume;
-
-    auto pitch = volume;
+    auto throttleVol = m_throttleVolume;
+    auto pitch = throttleVol;
     pitch *= 0.8f;
     pitch *= 2.0f;
     pitch -= 1.0f;
-    volume *= 0.9f;
-    volume += 0.1f;
+    throttleVol *= 0.9f;
+    throttleVol += 0.1f;
     
-    m_heli.audioVolDriveNew = volume;
+    m_heli.audioVolDriveNew = throttleVol;
     m_heli.audioPitchDriveNew = pitch;
     //volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
 
-    /*
-    m_soundFxVecTest[i]->fx->SetPitch(pitch);
-    m_soundFxVecTest[i]->fx->SetVolume(volume);
-    m_soundFxVecTest[i]->volume = volume;
-    */
-
-
     // hover
-    //auto immersionRatio = m_vehicle->GetImmersionRatio();
     auto immersionRatio = m_heli.hoverDriveImmersionRatio;
-    //auto immersionRatioPrev = m_vehicle->GetImmersionRatioPrev();
     auto immersionRatioPrev = m_heli.audioHoverVal1;
-   
-    //const float deltaMax = 0.3f * static_cast<float>(aTimer.GetElapsedSeconds());
-    //const float timeDelta = static_cast<float>(aTimer.GetElapsedSeconds());
-
-    //auto volume = m_vehicle->GetImmersionRatio();
-    volume = m_heli.hoverDriveImmersionRatio;
+    auto hoverVol = m_heli.hoverDriveImmersionRatio;
 
     //m_audioHoverVal = volume;
 
@@ -3552,20 +3535,11 @@ void Vehicle::UpdateModelAudioVals(const float aTimeStep)
     m_heli.audioHoverVal2 = m_heli.audioHoverVal1;
     m_heli.audioHoverVal1 = m_heli.audioHoverVal;
     
-    /*
-    m_audioHoverVal5 = m_audioHoverVal4;
-    m_audioHoverVal4 = m_audioHoverVal3;
-    m_audioHoverVal3 = m_audioHoverVal2;
-    m_audioHoverVal2 = m_audioHoverVal1;
-    */
-
-    //volume = (immersionRatio + m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 6.0f;
-    volume = (immersionRatio + m_heli.audioHoverVal1 + m_heli.audioHoverVal2 + m_heli.audioHoverVal3 + m_heli.audioHoverVal4 + m_heli.audioHoverVal5) / 6.0f;
-    m_heli.audioHoverVal = volume;
+    hoverVol = (immersionRatio + m_heli.audioHoverVal1 + m_heli.audioHoverVal2 + m_heli.audioHoverVal3 + m_heli.audioHoverVal4 + m_heli.audioHoverVal5) / 6.0f;
+    m_heli.audioHoverVal = hoverVol;
     //m_heli.audioHoverVal1 = volume;
 
     ////////////////////////////////////////////////
-
     const float posKey0 = 0.0f;
     const float angKey0 = 0.0f;
     const float deltaKey0 = 0.0f;
@@ -3587,33 +3561,31 @@ void Vehicle::UpdateModelAudioVals(const float aTimeStep)
     //const float angKey4 = 18.0f;
     //const float deltaKey4 = -((posKey4 - posKey3) / (angKey4 - angKey3));
 
-    float inputAngle = immersionRatio;
+    //float inputAngle = immersionRatio;
     float cl;
     float curveDeltaRate;
     float clTarget;
 
-    if (inputAngle < angKey1)
+    if (immersionRatio < angKey1)
     {
-        cl = inputAngle * deltaKey1;
+        cl = immersionRatio * deltaKey1;
     }
-    else if (inputAngle < angKey2)
+    else if (immersionRatio < angKey2)
     {
         //cl = inputAngle * -deltaKey2;
-        const float inputAngMod = inputAngle - angKey1;
+        const float inputAngMod = immersionRatio - angKey1;
         cl = posKey1 - (inputAngMod * deltaKey2);
     }
-    else if (inputAngle < angKey3)
+    else if (immersionRatio < angKey3)
     {
-        const float inputAngMod = inputAngle - angKey2;
+        const float inputAngMod = immersionRatio - angKey2;
         cl = posKey2 - (inputAngMod * deltaKey3);
     }
     else
     {
         cl = 1.0f;
     }
-
     ////////////////////////////////////////////////
-
     pitch = cl;
     pitch = (pitch - 0.5f) * 2.0f;
     if (pitch > 1.0f)
@@ -3625,26 +3597,11 @@ void Vehicle::UpdateModelAudioVals(const float aTimeStep)
         pitch = -1.0f;
     }
 
-    //volume *= m_audioPlayerHoverVolMod;
-    //volume += m_audioPlayerHoverVolMin;
+    hoverVol *= m_audioHoverVolMod;
+    hoverVol += m_audioHoverVolMin;
 
-
-    m_heli.audioVolHoverNew = volume;
+    m_heli.audioVolHoverNew = hoverVol;
     m_heli.audioPitchHoverNew = pitch;
-    /*
-    m_soundFxVecTest[i]->fx->SetPitch(pitch);
-    m_soundFxVecTest[i]->fx->SetVolume(volume);
-    m_soundFxVecTest[i]->volume = volume;
-    */
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.audioVolHoverNew = ", m_heli.audioVolHoverNew, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.audioPitchHoverNew = ", m_heli.audioPitchHoverNew, "");
-    m_debugData->ToggleDebugOff();
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.audioVolDriveNew = ", m_heli.audioVolDriveNew, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_heli.audioPitchDriveNew = ", m_heli.audioPitchDriveNew, "");
-
-    m_debugData->ToggleDebugOff();
 }
 
 void Vehicle::UpdateModelColorVals(const float aTimeStep)

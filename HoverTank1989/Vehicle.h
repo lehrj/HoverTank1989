@@ -640,7 +640,9 @@ private:
     const float m_dragCoefficientLinearMax = 7.0f;
     
     
-    
+    const float m_audioHoverVolMod = 0.4f;
+    const float m_audioHoverVolMin = 0.1f;
+
     float m_testVal = 0.0f;
 
     const float m_testMOI = 1000.0f;

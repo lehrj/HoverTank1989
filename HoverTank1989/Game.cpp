@@ -7386,13 +7386,18 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_debugData->DebugPushUILineDecimalNumber("pitch      = ", pitch, "");
             m_debugData->DebugPushUILineDecimalNumber("volume     = ", volume, "");
 
-            m_debugData->ToggleDebugOff();
 
             volume = m_vehicle->GetAudioVolHover();
             pitch = m_vehicle->GetAudioPitchHover();
 
-            volume *= m_audioPlayerHoverVolMod;
-            volume += m_audioPlayerHoverVolMin;
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("pitch  Used    = ", pitch, "");
+            m_debugData->DebugPushUILineDecimalNumber("volume Used    = ", volume, "");
+
+            m_debugData->ToggleDebugOff();
+
+            //volume *= m_audioPlayerHoverVolMod;
+            //volume += m_audioPlayerHoverVolMin;
            
            // m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
