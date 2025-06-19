@@ -3523,9 +3523,26 @@ void Vehicle::UpdateModelAudioVals(const float aTimeStep)
     //volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
 
     // hover
-    auto immersionRatio = m_heli.hoverDriveImmersionRatio;
+    auto freqAngle = cos(((m_heli.hoverDriveImmersionRatio * m_audioHoverFreqRateMax) * aTimeStep) + m_heli.audioHoverFreqMod);
+    auto freqMod = ((m_heli.hoverDriveImmersionRatio * m_audioHoverFreqRateMax) * aTimeStep) * (Utility::GetPi() * 2.0f);
+    freqMod += m_heli.audioHoverFreqMod;
+    m_heli.audioHoverFreqMod = Utility::WrapAngle(freqMod);
+
+    auto hoverInput = m_heli.hoverDriveImmersionRatio;
+    hoverInput += freqAngle * 0.02f;
+    auto hoverVol = hoverInput;
+
+    
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("hoverVolPre  = ", hoverVol, "");
+    m_debugData->DebugPushUILineDecimalNumber("freqAngle  = ", freqAngle, "");
+    m_debugData->DebugPushUILineDecimalNumber("m_heli.audioHoverFreqMod  = ", Utility::ToDegrees(m_heli.audioHoverFreqMod), "");
+    m_debugData->ToggleDebugOff();
+
+    hoverVol -= throttleVol;
+    auto immersionRatio = hoverVol;
     auto immersionRatioPrev = m_heli.audioHoverVal1;
-    auto hoverVol = m_heli.hoverDriveImmersionRatio;
+
 
     //m_audioHoverVal = volume;
 
@@ -3602,6 +3619,10 @@ void Vehicle::UpdateModelAudioVals(const float aTimeStep)
 
     m_heli.audioVolHoverNew = hoverVol;
     m_heli.audioPitchHoverNew = pitch;
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("hoverVolPost = ", hoverVol, "");
+    m_debugData->ToggleDebugOff();
 }
 
 void Vehicle::UpdateModelColorVals(const float aTimeStep)

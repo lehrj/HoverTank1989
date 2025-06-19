@@ -148,6 +148,8 @@ struct HeliData
     float audioHoverVal4 = 0.0f;
     float audioHoverVal5 = 0.0f;
 
+    float audioHoverFreqMod = 0.0f;
+
     float altitude = 0.0f;
     DirectX::SimpleMath::Plane groundPlane;
     DirectX::SimpleMath::Vector3 buoyancyForce = DirectX::SimpleMath::Vector3::Zero;
@@ -642,7 +644,8 @@ private:
     
     const float m_audioHoverVolMod = 0.4f;
     const float m_audioHoverVolMin = 0.1f;
-
+    const float m_audioHoverFreqRateMax = 11.1f;
+    const float m_audioHoverFreqRateMin = 0.01f;
     float m_testVal = 0.0f;
 
     const float m_testMOI = 1000.0f;
