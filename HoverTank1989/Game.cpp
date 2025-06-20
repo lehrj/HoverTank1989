@@ -1167,76 +1167,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     // TODO: Add your game logic here.
     elapsedTime;
     
-    
-    
-    if (m_isStartTriggerTrue0 == false)
-    {
-        if (m_timer.GetTotalSeconds() > m_startTrigger0)
-        {
-            m_isStartTriggerTrue0 = true;
-            SetUiTextDisplay("Deploying Target Drones");
-        }
-    }
-
-    if (m_isStartTriggerTrue00 == false)
-    {
-        if (m_timer.GetTotalSeconds() > m_startTrigger00)
-        {
-            m_isStartTriggerTrue00 = true;
-            SetUiTextDisplay("Orbital drop in progress\nPlease stand by...");
-        }
-    }
-    
-    if (m_isStartTriggerTrue1 == false)
-    {
-        if (m_timer.GetTotalSeconds() > m_startTrigger1)
-        {
-            m_isStartTriggerTrue1 = true;
-            m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);   
-        }
-    }
-    if (m_isStartTriggerTrue2 == false)
-    {
-        if (m_timer.GetTotalSeconds() > m_startTrigger2)
-        {
-            m_isStartTriggerTrue2 = true;
-            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, m_gamePlayTarg);
-
-            auto snapCamPos = m_vehicle->GetPos();
-            snapCamPos.x -= 30.0f;
-            snapCamPos.y += 10.0f;
-            auto snapTargPos = m_vehicle->GetPos();
-            snapTargPos.x = 0.0f;
-            snapTargPos.y *= 0.5f;
-
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, m_introTarg1);
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, snapTargPos);
-            m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, DirectX::SimpleMath::Vector3::Zero);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
-            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-            m_vehicle->ToggleAirDropTrigger();
-        }
-    }
-    
-    if (m_isStartTriggerTrue3 == false)
-    {
-        if (m_timer.GetTotalSeconds() > m_startTrigger3)
-        {
-            m_isStartTriggerTrue3 = true;
-            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-        }
-    }
-    
+    UpdateGameplayOnramp(aTimer);
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
     {
@@ -1257,11 +1188,12 @@ void Game::Update(DX::StepTimer const& aTimer)
 
         m_vehicle->UpdateVehicle(aTimer.GetElapsedSeconds());
         m_modelController->UpdatePlayerModel(m_vehicle->GetAlignment(), m_vehicle->GetAltitude(), m_vehicle->GetPos(), m_vehicle->GetWeaponPitch(), m_vehicle->GetTurretYaw(), m_vehicle->GetGroundPlane());
-        
+
         UpdateSpawners();
-        m_npcController->UpdateNPCController(m_camera->GetCameraFrustum() , aTimer.GetElapsedSeconds());
+        m_npcController->UpdateNPCController(m_camera->GetCameraFrustum(), aTimer.GetElapsedSeconds());
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
     }
+
     UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
     m_environment->SetCameraPos(m_camera->GetPos());
@@ -1293,6 +1225,14 @@ void Game::Update(DX::StepTimer const& aTimer)
     }
 
     UpdateAudio(aTimer);
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTru00 = ", m_isStartTriggerTrue00, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue0 = ", m_isStartTriggerTrue0, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue1 = ", m_isStartTriggerTrue1, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue2 = ", m_isStartTriggerTrue2, "");
+    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue3 = ", m_isStartTriggerTrue3, "");
+    m_debugData->ToggleDebugOff();
 }
 #pragma endregion
 
@@ -2846,13 +2786,13 @@ void Game::CalculateSpawnerData()
         if (m_isSpawnerLightOn1 == true)
         {
             // light on
-            AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
             m_isSpawnerLightOnAudioTrigger1 = true;
         }
         else
         {
             // light off
-            AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
             m_isSpawnerLightOnAudioTrigger1 = false;
         }
     }
@@ -2862,13 +2802,13 @@ void Game::CalculateSpawnerData()
         if (m_isSpawnerLightOn2 == true)
         {
             // light on
-            AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
             m_isSpawnerLightOnAudioTrigger2 = true;
         }
         else
         {
             // light off
-            AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
             m_isSpawnerLightOnAudioTrigger2 = false;
         }
     }
@@ -8005,6 +7945,80 @@ void Game::UpdateAutoFire()
     if (m_fireControl->GetIsAutoFireOn() == true && m_fireControl->GetIsAutoFireTargetReadyTrue() == true && m_fireControl->GetIsFireCooldownTrue() == false && m_fireControl->GetIsAutoFireTargetValidTrue() == true)
     {
         TriggerFireWithAudio();
+    }
+}
+
+void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
+{
+    if (m_isStartTriggerTrue0 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger0)
+        {
+            m_isStartTriggerTrue0 = true;
+            SetUiTextDisplay("Deploying Target Drones");
+        }
+    }
+
+    if (m_isStartTriggerTrue00 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger00)
+        {
+            m_isStartTriggerTrue00 = true;
+            SetUiTextDisplay("Orbital drop in progress\nPlease stand by...");
+        }
+    }
+
+    if (m_isStartTriggerTrue1 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger1)
+        {
+            m_isStartTriggerTrue1 = true;
+            m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+        }
+    }
+    if (m_isStartTriggerTrue2 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger2)
+        {
+            m_isStartTriggerTrue2 = true;
+            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, m_gamePlayTarg);
+
+            auto snapCamPos = m_vehicle->GetPos();
+            snapCamPos.x -= 30.0f;
+            snapCamPos.y += 10.0f;
+            auto snapTargPos = m_vehicle->GetPos();
+            snapTargPos.x = 0.0f;
+            snapTargPos.y *= 0.5f;
+
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, m_introTarg1);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, snapTargPos);
+            m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, DirectX::SimpleMath::Vector3::Zero);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+            m_vehicle->ToggleAirDropTrigger();
+        }
+    }
+
+    if (m_isStartTriggerTrue3 == false)
+    {
+        if (m_timer.GetTotalSeconds() > m_startTrigger3)
+        {
+            m_isStartTriggerTrue3 = true;
+            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
+            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+        }
     }
 }
 

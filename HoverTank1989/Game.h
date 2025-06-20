@@ -127,7 +127,7 @@ private:
     void UpdateAudioListener(DX::StepTimer const& aTimer);
     void UpdateAutoFire();
     void UpdateInput(DX::StepTimer const& aTimer);
-
+    void UpdateGameplayOnramp(DX::StepTimer const& aTimer);
     void UpdateSpawners();
 
     // Device resources.
