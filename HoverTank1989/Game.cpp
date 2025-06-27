@@ -7958,7 +7958,6 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             SetUiTextDisplay("Deploying Target Drones");
         }
     }
-
     if (m_isStartTriggerTrue00 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger00)
@@ -7967,7 +7966,6 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             SetUiTextDisplay("Orbital drop in progress\nPlease stand by...");
         }
     }
-
     if (m_isStartTriggerTrue1 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger1)
@@ -7982,31 +7980,17 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
         if (m_timer.GetTotalSeconds() > m_startTrigger2)
         {
             m_isStartTriggerTrue2 = true;
-            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, m_gamePlayTarg);
-
             auto snapCamPos = m_vehicle->GetPos();
             snapCamPos.x -= 30.0f;
             snapCamPos.y += 10.0f;
             auto snapTargPos = m_vehicle->GetPos();
             snapTargPos.x = 0.0f;
             snapTargPos.y *= 0.5f;
-
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, m_introTarg1);
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, snapCamPos, snapTargPos);
             m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
-            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_gamePlayCamPos, DirectX::SimpleMath::Vector3::Zero);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
-            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
             m_vehicle->ToggleAirDropTrigger();
         }
     }
-
     if (m_isStartTriggerTrue3 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger3)
