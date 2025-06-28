@@ -352,6 +352,8 @@ private:
     void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCamera(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraDemo(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapCameraTransition(DX::StepTimer const& aTimeDelta);
+
     void UpdateSnapCamera2(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraMissile(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraOld(DX::StepTimer const& aTimeDelta);
