@@ -1288,7 +1288,8 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
-		UpdateSnapCamera(aTimer);
+		//UpdateSnapCamera(aTimer);
+		UpdateSnapCameraTransition(aTimer);
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMDEMO)

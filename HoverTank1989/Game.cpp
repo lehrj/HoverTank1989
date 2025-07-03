@@ -1226,7 +1226,7 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     UpdateAudio(aTimer);
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTru00 = ", m_isStartTriggerTrue00, "");
     m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue0 = ", m_isStartTriggerTrue0, "");
     m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue1 = ", m_isStartTriggerTrue1, "");
@@ -7987,7 +7987,8 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             snapTargPos.x = 0.0f;
             snapTargPos.y *= 0.5f;
             m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMTRANSITION);
             m_vehicle->ToggleAirDropTrigger();
         }
     }

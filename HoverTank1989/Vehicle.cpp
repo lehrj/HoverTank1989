@@ -3533,7 +3533,7 @@ void Vehicle::UpdateModelAudioVals(const float aTimeStep)
     auto hoverVol = hoverInput;
 
     
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("hoverVolPre  = ", hoverVol, "");
     m_debugData->DebugPushUILineDecimalNumber("freqAngle  = ", freqAngle, "");
     m_debugData->DebugPushUILineDecimalNumber("m_heli.audioHoverFreqMod  = ", Utility::ToDegrees(m_heli.audioHoverFreqMod), "");
@@ -3620,7 +3620,7 @@ void Vehicle::UpdateModelAudioVals(const float aTimeStep)
     m_heli.audioVolHoverNew = hoverVol;
     m_heli.audioPitchHoverNew = pitch;
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("hoverVolPost = ", hoverVol, "");
     m_debugData->ToggleDebugOff();
 }
