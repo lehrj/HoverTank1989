@@ -1070,7 +1070,7 @@ void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx)
     }
 }
 
-void Vehicle::FireWeapon(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_ptr<Utility::SoundFx> aRocketFx)
+void Vehicle::FireMissile(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared_ptr<Utility::SoundFx> aRocketFx)
 {
     if (m_fireControl->GetIsCoolDownActive() == false)
     {

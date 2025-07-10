@@ -7934,7 +7934,7 @@ void Game::TriggerFireWithAudio()
     fireEmitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
     fireFx->SetEmitter(fireEmitter);
 
-    m_vehicle->FireWeapon(fireFx, rocketFx);
+    m_vehicle->FireMissile(fireFx, rocketFx);
 
     m_soundFxVecTest.push_back(fireFx);
     m_soundFxVecTest.push_back(rocketFx);
