@@ -5155,11 +5155,11 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     {      
         recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
         recoilImpulseForce.currentTime = 0.0f;
-        recoilImpulseForce.totalTime = 0.1f;
+        recoilImpulseForce.totalTime = m_missileConsts.recoilImpulseTimeMax;
         recoilImpulseForce.currentMagnitude = 0.0f;
         recoilImpulseForce.currentTorqueMagnitude = 0.0f;
-        recoilImpulseForce.torqueForceMod = 1.0f;
-        recoilImpulseForce.maxMagnitude = 5500.0f;
+        recoilImpulseForce.torqueForceMod = m_missileConsts.recoilTorqueMod;
+        recoilImpulseForce.maxMagnitude = m_missileConsts.recoilMagnitudeMax;
         recoilImpulseForce.directionNorm = aDirectionNorm;
         recoilImpulseForce.directionNorm.Normalize();
         recoilImpulseForce.isActive = true;
