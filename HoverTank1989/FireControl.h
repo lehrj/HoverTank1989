@@ -804,9 +804,9 @@ struct MissileConsts
     const bool isGravityOn = true;
 
     // recoil force consts
-    const float recoilImpulseTimeMax = 0.1f;
+    const float recoilImpulseTimeMax = 0.3f;
     const float recoilTorqueMod = 1.0f;
-    const float recoilMagnitudeMax = 5500.0f;
+    const float recoilMagnitudeMax = 7500.0f;
 };
 
 enum class ExplosionType

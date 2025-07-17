@@ -5153,7 +5153,7 @@ Utility::ImpulseForce FireControl::GetRecoilImpulseForce(DirectX::SimpleMath::Ve
     }
     else  if (m_currentAmmoType == AmmoType::AMMOTYPE_GUIDEDMISSILE)
     {      
-        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
+        recoilImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
         recoilImpulseForce.currentTime = 0.0f;
         recoilImpulseForce.totalTime = m_missileConsts.recoilImpulseTimeMax;
         recoilImpulseForce.currentMagnitude = 0.0f;

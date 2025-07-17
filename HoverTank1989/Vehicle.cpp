@@ -1143,7 +1143,7 @@ void Vehicle::FireMissile(std::shared_ptr<Utility::SoundFx> aFireFx, std::shared
 
         DirectX::SimpleMath::Vector3 weaponForceNorm = launchDir;
         weaponForceNorm.Normalize();
-        recoil.torqueForceNorm = weaponForceNorm * 15.0f;
+        recoil.torqueForceNorm = weaponForceNorm;
         recoil.directionNorm = -launchDir;
         if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         {
