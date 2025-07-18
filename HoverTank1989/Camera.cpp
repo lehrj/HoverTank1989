@@ -1320,15 +1320,26 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
-	//m_debugData->ToggleDebugOnOverRide();
-	m_debugData->DebugPushUILineDecimalNumber("m_forwardAudio.x = ", m_forwardAudio.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_forwardAudio.y = ", m_forwardAudio.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_forwardAudio.z = ", m_forwardAudio.z, "");
+	m_debugData->ToggleDebugOnOverRide();
 
-	m_debugData->DebugPushUILineDecimalNumber("m_upAudio.x = ", m_upAudio.x, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_upAudio.y = ", m_upAudio.y, "");
-	m_debugData->DebugPushUILineDecimalNumber("m_upAudio.z = ", m_upAudio.z, "");
+	if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAM ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMTRANSITION)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAMTRANSITION ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMDEMO)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAMDEMO ", 0, "");
+	}
+	else
+	{
+		m_debugData->DebugPushUILineWholeNumber("NULL ", 0, "");
+	}
 
+	m_debugData->PushDebugLinePositionIndicator(m_target, 10.0f, 0.0f, DirectX::Colors::Red);
 	m_debugData->ToggleDebugOff();
 	
 	m_camVelocity = (m_position - posPrev) / aTimer.GetElapsedSeconds();
@@ -2795,6 +2806,10 @@ void Camera::UpdateSnapCameraTransition(DX::StepTimer const& aTimeDelta)
 
 	m_position = camPos;
 	m_target = targPos;
+
+	//m_snapTargPos = m_target;
+	//m_snapCamPos = m_position;
+
 }
 
 void Camera::UpdateSnapCamera2(DX::StepTimer const& aTimeDelta)

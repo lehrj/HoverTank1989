@@ -7987,7 +7987,8 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             snapTargPos.x = 0.0f;
             snapTargPos.y *= 0.5f;
             m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
-            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+            //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_camera->GetPos(), m_camera->GetTargetPos());
+           
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMTRANSITION);
             m_vehicle->ToggleAirDropTrigger();
         }
