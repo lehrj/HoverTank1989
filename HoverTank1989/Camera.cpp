@@ -431,6 +431,23 @@ DirectX::SimpleMath::Vector3 Camera::GetSwingTargPos(DirectX::SimpleMath::Vector
 	return newTargetPosition;
 }
 
+
+
+DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldCamPos()
+{
+	DirectX::SimpleMath::Vector3 camPos = DirectX::SimpleMath::Vector3(-23.0f, 0.0f, 0.0f); + (m_snapZoomModPos * m_fovZoomPercent);
+	camPos += m_vehicleFocus->GetPos();
+	return camPos;
+}
+
+DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldTargPos()
+{
+	DirectX::SimpleMath::Vector3 targPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -4.0f); +(m_snapZoomModPos * m_fovZoomPercent);
+	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetAlignment());
+	targPos += m_vehicleFocus->GetPos();
+	return targPos;
+}
+
 void Camera::InitializeOrthoganalMatrix()
 {
 	m_orthogonalMatrix = DirectX::SimpleMath::Matrix::CreateOrthographic((float)m_clientWidth, (float)m_clientHeight, m_nearPlane, m_farPlane);

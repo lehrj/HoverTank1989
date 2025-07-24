@@ -189,6 +189,9 @@ private:
 
     void DrawUI();
 
+    DirectX::SimpleMath::Vector3 GetVehicleHomeWorldCamPos();
+    DirectX::SimpleMath::Vector3 GetVehicleHomeWorldTargPos();
+
     void InitializeOrthoganalMatrix(); //Pavel
     void InitializeProjectionMatrix(); //Pavel
     void InitializeViewMatrix(); //Pavel
