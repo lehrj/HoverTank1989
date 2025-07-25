@@ -6384,7 +6384,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             //TogglePause();
 
-            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_camera->GetGamePlayDefaultCamPos(), m_camera->GetGamePlayDefaultTargPos());
         }
     }
     if (m_kbStateTracker.pressed.D1)
@@ -8001,7 +8002,9 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
-            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
+            m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_camera->GetGamePlayDefaultCamPos(), m_camera->GetGamePlayDefaultTargPos());
+
             //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
         }

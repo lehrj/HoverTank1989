@@ -91,6 +91,10 @@ public:
     DirectX::SimpleMath::Vector3 GetUpAudio() const { return m_upAudio; };
 
     DirectX::BoundingFrustum GetCameraFrustum() const { return m_boundingFrustum; };
+
+    DirectX::SimpleMath::Vector3 GetGamePlayDefaultCamPos() const { return m_gamePlayDefaultCamPos; };
+    DirectX::SimpleMath::Vector3 GetGamePlayDefaultTargPos() const { return m_gamePlayDefaultTarg; };
+
     DirectX::SimpleMath::Vector3 GetHomePos() const { return m_homePosition; };
     float GetPitch() const { return m_pitch; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_position; };
@@ -450,7 +454,8 @@ private:
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 3.0f, -4.0f);
     const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 85.0f, -4.0f);
 
-
+    const DirectX::SimpleMath::Vector3 m_gamePlayDefaultCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_gamePlayDefaultTarg = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
 
     DirectX::SimpleMath::Vector3 m_snapPosNorm = DirectX::SimpleMath::Vector3(-1.0f, 1.0f, 0.0f);
     DirectX::SimpleMath::Vector3 m_snapTargNorm = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);

@@ -442,7 +442,7 @@ DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldCamPos()
 
 DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldTargPos()
 {
-	DirectX::SimpleMath::Vector3 targPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -4.0f); +(m_snapZoomModPos * m_fovZoomPercent);
+	DirectX::SimpleMath::Vector3 targPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f); +(m_snapZoomModPos * m_fovZoomPercent);
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetAlignment());
 	targPos += m_vehicleFocus->GetPos();
 	return targPos;
@@ -1356,7 +1356,11 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		m_debugData->DebugPushUILineWholeNumber("NULL ", 0, "");
 	}
 
-	m_debugData->PushDebugLinePositionIndicator(m_target, 10.0f, 0.0f, DirectX::Colors::Red);
+	//m_debugData->PushDebugLinePositionIndicator(m_target, 10.0f, 0.0f, DirectX::Colors::Red);
+
+	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldCamPos(), 10.0f, 0.0f, DirectX::Colors::Red);
+	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldTargPos(), 10.0f, 0.0f, DirectX::Colors::Blue);
+
 	m_debugData->ToggleDebugOff();
 	
 	m_camVelocity = (m_position - posPrev) / aTimer.GetElapsedSeconds();

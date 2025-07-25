@@ -1116,8 +1116,9 @@ private:
     const float m_introSlerp2 = 0.9f;
 
     //const DirectX::SimpleMath::Vector3 m_gamePlayCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_gamePlayCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_gamePlayTarg = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_gamePlayCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
+    //const DirectX::SimpleMath::Vector3 m_gamePlayTarg = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
+
     //const float m_gamePlayCamStep = 0.16f;
     //const float m_gamePlayTargStep = 0.16f;
     //const float m_gamePlaySlerp = 0.16f;
