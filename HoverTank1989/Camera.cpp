@@ -435,14 +435,14 @@ DirectX::SimpleMath::Vector3 Camera::GetSwingTargPos(DirectX::SimpleMath::Vector
 
 DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldCamPos()
 {
-	DirectX::SimpleMath::Vector3 camPos = DirectX::SimpleMath::Vector3(-23.0f, 0.0f, 0.0f); + (m_snapZoomModPos * m_fovZoomPercent);
+	DirectX::SimpleMath::Vector3 camPos = m_gamePlayDefaultCamPos + (m_snapZoomModPos * m_fovZoomPercent);
 	camPos += m_vehicleFocus->GetPos();
 	return camPos;
 }
 
 DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldTargPos()
 {
-	DirectX::SimpleMath::Vector3 targPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f); +(m_snapZoomModPos * m_fovZoomPercent);
+	DirectX::SimpleMath::Vector3 targPos = m_gamePlayDefaultTarg +(m_snapZoomModPos * m_fovZoomPercent);
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetAlignment());
 	targPos += m_vehicleFocus->GetPos();
 	return targPos;

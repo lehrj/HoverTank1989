@@ -6383,8 +6383,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //TogglePause();
-
-            //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStepAlt, m_gamePlaySlerp, m_camera->GetGamePlayDefaultCamPos(), m_camera->GetGamePlayDefaultTargPos());
         }
     }
