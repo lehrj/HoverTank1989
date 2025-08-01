@@ -442,6 +442,17 @@ DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldCamPos()
 
 DirectX::SimpleMath::Vector3 Camera::GetVehicleHomeWorldTargPos()
 {
+	auto targPos2 = m_snapTargPos;
+
+	targPos2 = DirectX::SimpleMath::Vector3::Transform(targPos2, m_vehicleFocus->GetTargetingMatrix());
+	targPos2 = DirectX::SimpleMath::Vector3::Transform(targPos2, m_snapTargetQuat);
+
+	targPos2 += m_vehicleFocus->GetPos();
+	//targPos2 = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos2, m_snapSmoothStepTarg * m_rampUpVal);
+	//targPos2 = DirectX::SimpleMath::Vector3::SmoothStep(m_snapTargPrev, targPos2, 1.0f);
+	m_debugData->PushDebugLinePositionIndicator(targPos2, 4.0f, 0.0f, DirectX::Colors::White);
+
+	////////////////////////
 	DirectX::SimpleMath::Vector3 targPos = m_gamePlayDefaultTarg +(m_snapZoomModPos * m_fovZoomPercent);
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetAlignment());
 	targPos += m_vehicleFocus->GetPos();
@@ -1305,8 +1316,8 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
-		//UpdateSnapCamera(aTimer);
-		UpdateSnapCameraTransition(aTimer);
+		UpdateSnapCamera(aTimer);
+		//UpdateSnapCameraTransition(aTimer);
 		//m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(m_position, m_target, m_up);
 	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMDEMO)
@@ -1359,7 +1370,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	//m_debugData->PushDebugLinePositionIndicator(m_target, 10.0f, 0.0f, DirectX::Colors::Red);
 
 	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldCamPos(), 10.0f, 0.0f, DirectX::Colors::Red);
-	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldTargPos(), 10.0f, 0.0f, DirectX::Colors::Blue);
+	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldTargPos(), 10.0f, 0.0f, DirectX::Colors::Green);
 
 	m_debugData->ToggleDebugOff();
 	
@@ -2827,9 +2838,14 @@ void Camera::UpdateSnapCameraTransition(DX::StepTimer const& aTimeDelta)
 
 	m_position = camPos;
 	m_target = targPos;
-
 	//m_snapTargPos = m_target;
 	//m_snapCamPos = m_position;
+
+
+	m_debugData->ToggleDebugOnOverRide();
+	m_debugData->PushDebugLinePositionIndicator(m_position, 5.0f, 0.0f, DirectX::Colors::Orange);
+	m_debugData->PushDebugLinePositionIndicator(m_target, 5.0f, 0.0f, DirectX::Colors::Yellow);
+	m_debugData->ToggleDebugOff();
 
 }
 
