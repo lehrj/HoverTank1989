@@ -2727,7 +2727,7 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 
 	//auto targPos = m_snapTargBase;
 	auto targPos = m_snapTargPos;
-
+	targPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
 
@@ -2823,7 +2823,6 @@ void Camera::UpdateSnapCameraTransition(DX::StepTimer const& aTimeDelta)
 	camPos = DirectX::SimpleMath::Vector3::SmoothStep(m_snapPosPrev, camPos, m_snapSmoothStepCam * m_rampUpVal);
 
 	auto targPos = m_snapTargPos;
-
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
 
