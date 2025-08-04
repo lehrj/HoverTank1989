@@ -7988,7 +7988,8 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
             //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_camera->GetPos(), m_camera->GetTargetPos());
            
-            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMTRANSITION);
+            //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMTRANSITION);
+            m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMSYNC);
             m_vehicle->ToggleAirDropTrigger();
         }
     }
@@ -7997,6 +7998,9 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
         if (m_timer.GetTotalSeconds() > m_startTrigger3)
         {
             m_isStartTriggerTrue3 = true;
+
+            
+
             //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
@@ -8005,6 +8009,8 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
 
             //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+
+            
         }
     }
 }

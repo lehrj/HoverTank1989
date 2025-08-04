@@ -1310,6 +1310,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 			UpdateMissileSteadyCam(aTimer);
 		}
 	}
+	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMSYNC)
+	{
+		UpdateSnapCameraSync(aTimer);
+	}
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMTRANSITION)
 	{
 		UpdateSnapCameraTransition(aTimer);
@@ -1348,6 +1352,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 
 	m_fireControl->SetCurrentCameraPos(m_position);
 
+
 	m_debugData->ToggleDebugOnOverRide();
 
 	if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
@@ -1373,7 +1378,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldTargPos(), 10.0f, 0.0f, DirectX::Colors::Green);
 
 	m_debugData->ToggleDebugOff();
-	
+
 	m_camVelocity = (m_position - posPrev) / aTimer.GetElapsedSeconds();
 }
 
@@ -2795,8 +2800,50 @@ void Camera::UpdateSnapCameraDemo(DX::StepTimer const& aTimeDelta)
 
 }
 
+void Camera::UpdateSnapCameraSync(DX::StepTimer const& aTimeDelta)
+{
+	m_syncTimer += static_cast<float>(aTimeDelta.GetElapsedSeconds());
+	if (m_syncTimer >= m_syncTimerMax)
+	{
+		m_isSyncResetTrue = true;
+	}
+
+	if (m_isSyncResetTrue == true)
+	{
+		m_isSyncResetTrue = false;
+		//m_cameraState == CameraState::CAMERASTATE_SNAPCAMTRANSITION;
+		m_cameraState == CameraState::CAMERASTATE_SNAPCAM;
+		m_syncTimer = 0.0f;
+
+		m_snapSlerp = 0.99f;
+		m_snapSmoothStepCam = 0.99f;
+		m_snapSmoothStepTarg = 0.99f;
+	}
+	else
+	{
+		float ratio = m_syncTimer / m_syncTimerMax;
+		float invsRatio = 1.0f - ratio;
+		DirectX::SimpleMath::Vector3 camUpdate = DirectX::SimpleMath::Vector3::SmoothStep(m_position, GetVehicleHomeWorldCamPos(), ratio);
+		DirectX::SimpleMath::Vector3 targUpdate = DirectX::SimpleMath::Vector3::SmoothStep(m_target, GetVehicleHomeWorldTargPos(), ratio);
+
+		DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camUpdate, targUpdate, DirectX::SimpleMath::Vector3::UnitY);
+		m_viewMatrix = camMat;
+		m_snapPosPrev = camUpdate;
+		m_snapTargPrev = targUpdate;
+		m_position = camUpdate;
+		m_target = targUpdate;
+	}
+}
+
 void Camera::UpdateSnapCameraTransition(DX::StepTimer const& aTimeDelta)
 {
+	m_syncTimer += static_cast<float>(aTimeDelta.GetElapsedSeconds());
+	if (m_syncTimer >= m_syncTimerMax)
+	{
+		m_isSyncResetTrue = true;
+	}
+
+
 	auto prePos = m_position;
 	auto preTarg = m_target;
 

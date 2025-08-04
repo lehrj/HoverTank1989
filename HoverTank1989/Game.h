@@ -575,11 +575,19 @@ private:
     const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
-    const float m_startTrigger0 = 4.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger00 = 5.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger1 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+
+  //  const float m_startTrigger0 = 4.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+  //  const float m_startTrigger00 = 5.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+  //  const float m_startTrigger1 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+  //  const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+  //  const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+
+    const float m_startTrigger0 = 14.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger00 = 15.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger2 = 19.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger3 = 21.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
 
     const float                         m_fogGap1 = 0.0;
