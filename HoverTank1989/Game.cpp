@@ -4352,7 +4352,8 @@ void Game::DrawIntroScene()
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
-    const float ravenStart = fadeInStart2 - 0.2f;
+    //const float ravenStart = fadeInStart2 - 0.2f;
+    const float ravenStart = fadeInStart2 - 2.0f;
     const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
 
     const float fadeInEnd1 = startDelay + fadeDuration;
@@ -4377,6 +4378,17 @@ void Game::DrawIntroScene()
     float fadeOutEnd4 = fadeOutStart4 + 0.1f;
 
     m_gamePlayStartOffSetTimer = fadeOutEnd4;
+
+    if (timeStamp > ravenStart && m_isBMWLogoAudioTriggerTrue1 == false)
+    {
+        m_audioEngine->SetReverb(m_bMWAudioReverb);
+        //m_audioEngine->SetReverb(Reverb_Mountains);
+        m_isBMWLogoAudioTriggerTrue1 = true;
+
+        const auto pos = -1.0f * m_lighting->GetLightDir() * m_audioRavenDistance;
+        AudioCreateSFX3D(pos, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
+    }
+
 
     if (timeStamp < fadeInStart1)
     {
@@ -4528,12 +4540,14 @@ void Game::DrawIntroScene()
     ///////////////////////////////
     else if (timeStamp < ravenStart && m_isBMWLogoAudioTriggerTrue1 == false)
     {
+        /*
         m_audioEngine->SetReverb(m_bMWAudioReverb);
         //m_audioEngine->SetReverb(Reverb_Mountains);
         m_isBMWLogoAudioTriggerTrue1 = true;
 
         const auto pos = -1.0f * m_lighting->GetLightDir() * m_audioRavenDistance;
         AudioCreateSFX3D(pos, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
+        */
     }
     else if (timeStamp < fadeInStart2)
     {
@@ -6297,7 +6311,6 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_vehicle->ToggleFireControlLaser();
         }
     }
-    //if (kb.Space)
     if (m_kbStateTracker.pressed.Space)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
@@ -6920,9 +6933,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON)
         {
-            //createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-            createdFx->fx = m_audioBank->CreateStreamInstance(15, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
+            createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
             createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
             createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
             createdFx->emitter->CurveDistanceScaler = m_audioDistanceBeacon;
@@ -6932,9 +6943,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (createdFx->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)
         {
-            //createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_5, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-            createdFx->fx = m_audioBank->CreateStreamInstance(16, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-
+            createdFx->fx = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BEACON_5, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
             createdFx->emitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
             createdFx->emitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
             createdFx->emitter->CurveDistanceScaler = m_audioDistanceBeacon;
@@ -7321,11 +7330,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                 pitch = -1.0f;
             }
 
-            //m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("pitch      = ", pitch, "");
-            m_debugData->DebugPushUILineDecimalNumber("volume     = ", volume, "");
-
-
             volume = m_vehicle->GetAudioVolHover();
             pitch = m_vehicle->GetAudioPitchHover();
 
@@ -7337,11 +7341,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             //volume *= m_audioPlayerHoverVolMod;
             //volume += m_audioPlayerHoverVolMin;
-           
-           // m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
-            m_debugData->DebugPushUILineDecimalNumber("pitch ", pitch, "");
-
+            
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;

@@ -507,9 +507,9 @@ private:
     const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
-    //const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
+    //const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
 
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
@@ -583,8 +583,8 @@ private:
     //const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
   //  const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
-    const float m_startTrigger0 = 14.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger00 = 15.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger0 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger00 = 12.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 19.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger3 = 21.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
@@ -656,7 +656,9 @@ private:
 
     // 3D shapes
     //const float                                  m_spawnerZOffSet = 0.3f;
-    const float                                  m_spawnerZOffSet = 0.5f;
+    //const float                                  m_spawnerZOffSet = 0.5f;
+    const float                                  m_spawnerZOffSet = 0.7f;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCube;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinder;
     std::unique_ptr<DirectX::GeometricPrimitive> m_shapeNormCylinderGear;

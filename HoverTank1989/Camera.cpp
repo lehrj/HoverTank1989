@@ -127,13 +127,15 @@ void Camera::CycleMissileTrackState()
 		//m_fireControl->LaserMissileToggleOff();
 		m_fireControl->LaserMissileSizeModOff();
 	}
+	/*
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC;
 		//m_fireControl->LaserMissileToggleOn();
 		m_fireControl->LaserMissileSizeModOn();
 	}
-	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC)
+	*/
+	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR;
 	}
@@ -1353,7 +1355,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	m_fireControl->SetCurrentCameraPos(m_position);
 
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 
 	if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
@@ -1367,15 +1369,17 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	{
 		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAMDEMO ", 0, "");
 	}
+	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMSYNC)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAMSYNC ", 0, "");
+	}
 	else
 	{
 		m_debugData->DebugPushUILineWholeNumber("NULL ", 0, "");
 	}
 
-	//m_debugData->PushDebugLinePositionIndicator(m_target, 10.0f, 0.0f, DirectX::Colors::Red);
-
-	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldCamPos(), 10.0f, 0.0f, DirectX::Colors::Red);
-	m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldTargPos(), 10.0f, 0.0f, DirectX::Colors::Green);
+	//m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldCamPos(), 10.0f, 0.0f, DirectX::Colors::Red);
+	//m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldTargPos(), 10.0f, 0.0f, DirectX::Colors::Green);
 
 	m_debugData->ToggleDebugOff();
 
@@ -2732,7 +2736,7 @@ void Camera::UpdateSnapCamera(DX::StepTimer const& aTimeDelta)
 
 	//auto targPos = m_snapTargBase;
 	auto targPos = m_snapTargPos;
-	targPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	//targPos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_vehicleFocus->GetTargetingMatrix());
 	targPos = DirectX::SimpleMath::Vector3::Transform(targPos, m_snapTargetQuat);
 

@@ -553,7 +553,7 @@ private:
     void RampUpUpdate(DX::StepTimer const& aTimer);
 
 
-    const float m_syncTimerMax = 7.0f;
+    const float m_syncTimerMax = 12.0f;
     float m_syncTimer = 0.0f;
     bool m_isSyncResetTrue = false;
 

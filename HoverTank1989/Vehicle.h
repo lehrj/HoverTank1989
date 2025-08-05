@@ -418,7 +418,8 @@ public:
     float GetAudioVolDrive() const { return m_heli.audioVolDriveNew; };
     float GetAudioVolHover()const { return m_heli.audioVolHoverNew; };
     float GetAudioPitchDrive() const { return m_heli.audioVolDriveNew; };
-    float GetAudioPitchHover()const { return m_heli.audioVolHoverNew; };
+    //float GetAudioPitchHover()const { return m_heli.audioVolHoverNew; };
+    float GetAudioPitchHover()const { return m_heli.audioPitchHoverNew; };
 
     double GetTime() { return m_heli.time; };
     DirectX::SimpleMath::Vector3 GetVehicleRight() const { return m_heli.right; };
@@ -642,8 +643,10 @@ private:
     const float m_dragCoefficientLinearMax = 7.0f;
     
     
+    //const float m_audioHoverVolMod = 0.4f;
+    //const float m_audioHoverVolMin = 0.1f;
     const float m_audioHoverVolMod = 0.4f;
-    const float m_audioHoverVolMin = 0.1f;
+    const float m_audioHoverVolMin = 0.01f;
     const float m_audioHoverFreqRateMax = 11.1f;
     const float m_audioHoverFreqRateMin = 0.01f;
     float m_testVal = 0.0f;
