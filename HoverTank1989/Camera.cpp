@@ -23,8 +23,8 @@ Camera::Camera(int aWidth, int aHeight)
 	m_homePitch = -0.053f;
 	m_homeYaw = 0.0f;
 
-	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_FOLLOW;
-	m_missileTrackStatePrevious = MissileTrackState::MISSILETRACKSTATE_FOLLOW;
+	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_SIDE;
+	m_missileTrackStatePrevious = MissileTrackState::MISSILETRACKSTATE_SIDE;
 
 	//m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 	m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
