@@ -7108,7 +7108,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //auto pos = DirectX::SimpleMath::Vector3(3.0f, -1.0f, 0.0f);
             auto pos = m_audioRavenOffset;
       
-            pos = DirectX::SimpleMath::Vector3::Transform(pos, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, - m_lighting->GetLightAngle()));
+            pos = DirectX::SimpleMath::Vector3::Transform(pos, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX,- m_lighting->GetLightAngle() + Utility::ToRadians(35.0f)));
 
             auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
 
@@ -7119,6 +7119,11 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->Velocity = velocity;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->PushTestDebugBetweenPoints(DirectX::SimpleMath::Vector3::Zero, pos, DirectX::Colors::Green);
+
+            m_debugData->ToggleDebugOff();
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
         {
