@@ -7089,27 +7089,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
         {
-            /*
-             const auto pos = -1.0f * m_lighting->GetLightDir() * m_audioRavenDistance;
-            const auto pos = -1.0f * m_lighting->GetLightDir() * m_audioRavenDistance;
-            m_soundFxVecTest[i]->emitter->SetPosition(pos);
-            m_soundFxVecTest[i]->pos = pos;
-
-            float soundDuration = (m_audioBank->GetSampleDurationMS(m_audioFxIdRaven)) * 0.001f;
-            m_audioDebugRavenTimer += aTimer.GetElapsedSeconds();
-            float pan = m_audioDebugRavenTimer / soundDuration;
-
-            auto pos = DirectX::SimpleMath::Vector3::UnitY * m_audioRavenDistance;
-            pos.Transform(pos, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, m_lighting->GetLightAngle()));
-
-            */
-
-            //auto pos = DirectX::SimpleMath::Vector3::UnitY * m_audioRavenDistance;
-            //auto pos = DirectX::SimpleMath::Vector3(3.0f, -1.0f, 0.0f);
             auto pos = m_audioRavenOffset;
-      
             pos = DirectX::SimpleMath::Vector3::Transform(pos, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX,- m_lighting->GetLightAngle() + Utility::ToRadians(35.0f)));
-
             auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
 
             m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
@@ -7119,11 +7100,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->Velocity = velocity;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->PushTestDebugBetweenPoints(DirectX::SimpleMath::Vector3::Zero, pos, DirectX::Colors::Green);
-
-            m_debugData->ToggleDebugOff();
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
         {
