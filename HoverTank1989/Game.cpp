@@ -4276,7 +4276,7 @@ void Game::DrawDebugDataUI()
     textLinePos.y += 30;
     */
 
-    /*
+    
 
     std::string textLine = "Time   " + std::to_string(m_timer.GetTotalSeconds());
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
@@ -4284,6 +4284,7 @@ void Game::DrawDebugDataUI()
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
 
+    /*
     int npcCount = m_npcController->GetNpcCount();
     textLine = "NPC count = " + std::to_string(npcCount);
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;

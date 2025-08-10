@@ -68,9 +68,9 @@ struct ControlInput
     const float yawPedalDecayRate = 100.0f;
     const float yawPedalInputMax = 1.0f;
     const float yawPedalInputMin = -1.0f;
-    //const float yawPedalInputRate = 1.15f;
+    const float yawPedalInputRate = 1.15f;
     //const float yawPedalInputRate = 0.5f;
-    const float yawPedalInputRate = 1.0f;
+    //const float yawPedalInputRate = 1.0f;
 
     float weaponPitch;
     //const float weaponPitchInputRate = 0.7f;
@@ -84,8 +84,8 @@ struct ControlInput
     //const float turretYawInputRate = 0.3f;
     const float turretYawMax = Utility::ToRadians(110.0f);
     const float turretYawMin = Utility::ToRadians(-110.0f);
-    const float turretYawInputRate = 0.4f;
-    //const float turretYawInputRate = 0.1f;
+    //const float turretYawInputRate = 0.4f;
+    const float turretYawInputRate = 0.1f;
 };
 
 struct Motion

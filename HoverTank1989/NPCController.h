@@ -132,8 +132,8 @@ private:
     const DirectX::SimpleMath::Vector3 m_startHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
     //float m_spawnerCooldown = 3.0f;
-    float m_spawnerCooldown = 0.3f;
-    const float m_spawnerCooldownTime = 3.5f;
+    float m_spawnerCooldown = 0.7f;
+    const float m_spawnerCooldownTime = 4.0f;
 
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;

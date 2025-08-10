@@ -2828,8 +2828,8 @@ void Camera::UpdateSnapCameraSync(DX::StepTimer const& aTimeDelta)
 		float ratio = m_syncTimer / m_syncTimerMax;
 		float invsRatio = 1.0f - ratio;
 		DirectX::SimpleMath::Vector3 camUpdate = DirectX::SimpleMath::Vector3::SmoothStep(m_position, GetVehicleHomeWorldCamPos(), ratio);
-		DirectX::SimpleMath::Vector3 targUpdate = DirectX::SimpleMath::Vector3::SmoothStep(m_target, GetVehicleHomeWorldTargPos(), ratio);
-
+		//DirectX::SimpleMath::Vector3 targUpdate = DirectX::SimpleMath::Vector3::SmoothStep(m_target, GetVehicleHomeWorldTargPos(), ratio);
+		DirectX::SimpleMath::Vector3 targUpdate = DirectX::SimpleMath::Vector3::SmoothStep(m_target, GetVehicleHomeWorldTargPos(), ratio * 0.5f);
 		DirectX::SimpleMath::Matrix camMat = DirectX::SimpleMath::Matrix::CreateLookAt(camUpdate, targUpdate, DirectX::SimpleMath::Vector3::UnitY);
 		m_viewMatrix = camMat;
 		m_snapPosPrev = camUpdate;

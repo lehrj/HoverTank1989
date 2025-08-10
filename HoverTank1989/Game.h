@@ -442,6 +442,7 @@ private:
 
     const float m_audioCurveDistanceScalarNPC = 19.0f;
     const float m_audioCurveDistanceScalarPlayer = 8.0f;
+    //const float m_audioCurveDistanceScalarSpawner = 54.0f;
     const float m_audioCurveDistanceScalarSpawner = 54.0f;
     const float m_audioCurveDistanceScalarLogo = 14.0f;
     const float m_audioCurveDistScalarMissileRocket = 14.0f;
@@ -576,19 +577,19 @@ private:
     const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
-  //  const float m_startTrigger0 = 4.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-  //  const float m_startTrigger00 = 5.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-  //  const float m_startTrigger1 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-  //  const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    //const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-  //  const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-
+    /*
     const float m_startTrigger0 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger00 = 12.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger00 = 13.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 19.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger3 = 21.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    */
 
+    const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger2 = 22.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;
