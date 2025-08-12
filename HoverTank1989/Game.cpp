@@ -2786,13 +2786,19 @@ void Game::CalculateSpawnerData()
         if (m_isSpawnerLightOn1 == true)
         {
             // light on
-            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            }
             m_isSpawnerLightOnAudioTrigger1 = true;
         }
         else
         {
             // light off
-            //AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                AudioCreateSFX3D(m_spawnerPos, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            }
             m_isSpawnerLightOnAudioTrigger1 = false;
         }
     }
@@ -2802,13 +2808,19 @@ void Game::CalculateSpawnerData()
         if (m_isSpawnerLightOn2 == true)
         {
             // light on
-            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSON);
+            }
             m_isSpawnerLightOnAudioTrigger2 = true;
         }
         else
         {
             // light off
-            //AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                AudioCreateSFX3D(m_spawnerPos2, Utility::SoundFxType::SOUNDFXTYPE_SPAWNERLIGHTSOFF);
+            }
             m_isSpawnerLightOnAudioTrigger2 = false;
         }
     }
