@@ -16,6 +16,10 @@ YouTube trailer of NPC prototypes here : https://youtu.be/8a0KPadDvUc
 
 Autonomous figure 8 track racing with NPC hovercrafts shows off their ability to navigate the track via waypoints while attempting to avoid other NPCs. The center crossover point ensures that this is not always possible to demonstrate the vehicle collision physics. The NPC hovercrafts have the ability to jump with their thrusters which is unlocked midway through the video. The NPCs will use the jump boost to avoid or pass other vehicles
 
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/NpcSpawner.gif">
+</p>
+
 ## Work in progress: Guided Missiles
 
 <p align="center">
