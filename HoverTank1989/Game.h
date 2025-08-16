@@ -508,9 +508,9 @@ private:
     const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
+ //   const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
-    //const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
 
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
@@ -568,14 +568,14 @@ private:
     //const float m_startTrigger2 = 19.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger3 = 21.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
-    /*
+    
     const float m_startTrigger0 = 4.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger00 = 6.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger00 = 7.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger1 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    */
+    
 
     /*
     const float m_startTrigger0 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
@@ -585,11 +585,13 @@ private:
     const float m_startTrigger3 = 21.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
+    /*
     const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 22.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    */
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;

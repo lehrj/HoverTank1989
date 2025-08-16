@@ -4969,6 +4969,7 @@ bool FireControl::GetIsMissileExplodingTrue() const
 {
     //if (m_missileVec[m_currentTargetID].guidance.isExplodingTrue == false)
     //if (m_missileVec[m_missileVec.size()-1].guidance.isExplodingTrue == false)
+    /*
     if (m_missileVec[m_missileVec.size() - 1].guidance.targetDistance > 100.0f)
     {
         return false;
@@ -4977,9 +4978,30 @@ bool FireControl::GetIsMissileExplodingTrue() const
     {
         return true;
     }
+    */
+
+    bool isFoundTrue = false;
+    bool isExplodingTrue = false;
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+    {
+        if (m_missileVec[i].guidance.uniqueId == m_camTrackMissileId)
+        {
+            isFoundTrue = true;
+            if (m_missileVec[i].guidance.targetDistance < 100.0f)
+            {
+                isExplodingTrue = true;
+            }
+        }
+    }
+
+    if (isFoundTrue == false)
+    {
+        isExplodingTrue = true;
+    }
+    return isExplodingTrue;
 }
 
-void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const
+void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget, bool isFoundTrue) const
 {
     if (m_missileVec.size() > 0)
     {
@@ -4990,7 +5012,13 @@ void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignme
         for (unsigned int i = 0; i < m_missileVec.size(); ++i)
         {
             if (m_missileVec[i].projectileData.isDeleteTrue == false && m_missileVec[i].guidance.uniqueId == m_camTrackMissileId)
+            //if (m_missileVec[i].guidance.uniqueId == m_camTrackMissileId)
             {
+                if (isIdFound == true)
+                {
+                    int testBreak = 0;
+                    testBreak++;
+                }
                 idIndex = i;
                 isIdFound = true;
                 validIds.push_back(m_missileVec[i].guidance.uniqueId);
@@ -5001,6 +5029,11 @@ void FireControl::GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignme
         if (isIdFound == true)
         {
             missileId = idIndex;
+        }
+        else
+        {
+            int testBreak = 0;
+            testBreak++;
         }
         /*
         if (m_missileVec.size() >= 2)
@@ -15670,4 +15703,45 @@ bool FireControl::GetIsAutoFireTargetValidTrue()
     {
         return false;
     }
+}
+
+
+void FireControl::SetMissileCamID()
+{
+    int testVal = 0;
+    int testVal2 = 0;
+    for (int i = 0; i < m_missileVec.size(); ++i)
+    {
+        if ( m_missileVec[i].guidance.uniqueId > testVal)
+        {
+            testVal = m_missileVec[i].guidance.uniqueId;
+            testVal2 = i;
+        }
+    }
+    m_camTrackMissileId = testVal;
+    m_camTrackMissileId = m_missileVec[m_missileVec.size() - 2].guidance.uniqueId;;
+}
+
+
+bool FireControl::GetIsCameraTrackedMissileExplodingTrue() const
+{
+    bool isExplodingTrue = false;
+    bool isFound = false;
+    for (unsigned int i = 0; i < m_missileVec.size(); ++i)
+    {
+        if (m_missileVec[i].guidance.uniqueId == m_cameraTrackedMissileID)
+        {
+            isFound = true;
+            if (m_missileVec[i].guidance.isExplodingTrue == true)
+            {
+                isExplodingTrue = true;
+            }
+        }
+    }
+
+    if (isFound == false)
+    {
+        isExplodingTrue = true;
+    }
+    return isExplodingTrue;
 }

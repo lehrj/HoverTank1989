@@ -1451,7 +1451,8 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
 		DirectX::SimpleMath::Vector3 camTargetPos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Vector3 missileTargetPos = DirectX::SimpleMath::Vector3::Zero;
-		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, missileTargetPos);
+		bool isMissileFoundTrue = false;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, missileTargetPos, isMissileFoundTrue);
 		
 		const DirectX::SimpleMath::Vector3 missileTargetPosWorld = missileTargetPos;
 		const DirectX::SimpleMath::Vector3 missilePosWorld = missilePos;
@@ -1594,7 +1595,8 @@ void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
 		DirectX::SimpleMath::Vector3 targetPos = DirectX::SimpleMath::Vector3::Zero;
-		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos);
+		bool isMissileFoundTrue = false;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos, isMissileFoundTrue);
 
 		DirectX::SimpleMath::Quaternion invMissileAlignQuat = missileAlignQuat;
 		invMissileAlignQuat.Inverse(invMissileAlignQuat);
@@ -1791,8 +1793,8 @@ void Camera::UpdateMissileTrackCam(DX::StepTimer const& aTimer)
 void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 {
 	m_missileExplosionTimer += aTimer.GetElapsedSeconds();
-
 	m_missileExplosionCampPosTime += aTimer.GetElapsedSeconds();
+
 	if (m_missileExplosionCampPosTime >= m_missileExplosionCamPosTimeMax)
 	{
 		m_missileExplosionCampPosTime = m_missileExplosionCamPosTimeMax;
@@ -1805,6 +1807,14 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
 		//m_missileTrackState = m_missileTrackStatePrevious;
 	}
+	/*
+	else if (m_fireControl->GetIsCameraTrackedMissileExplodingTrue() == true)
+	{
+		//m_missileExplosionTimer = 0.0f;
+		//m_cameraState = CameraState::CAMERASTATE_RETURN;
+		//m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
+	}
+	*/
 	else
 	{
 		const float ratio = m_missileExplosionCampPosTime / m_missileExplosionCamPosTimeMax;
@@ -1814,7 +1824,8 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
 		DirectX::SimpleMath::Vector3 camTargetPos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Vector3 missileTargetPos = DirectX::SimpleMath::Vector3::Zero;
-		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, missileTargetPos);
+		bool isMissileFoundTrue = false;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, missileTargetPos, isMissileFoundTrue);
 
 		const DirectX::SimpleMath::Vector3 missileTargetPosWorld = missileTargetPos;
 		const DirectX::SimpleMath::Vector3 missilePosWorld = missilePos;
@@ -1824,7 +1835,6 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 
 		auto targPosPrev = m_target;
 		auto camPosPrev = m_position;
-
 
 		auto camBase = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.6f);
 		auto targBase = DirectX::SimpleMath::Vector3(1.5f, 0.0f, 0.0f);
@@ -1845,8 +1855,6 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		camTargetPos = targWorld;
 		camPos = camWorld;
 
-
-
 		auto testPos = (m_position * ratio) + (camPos * invRatio);
 		camPos = testPos;
 		//camPos = m_position;
@@ -1854,20 +1862,12 @@ void Camera::UpdateMissileExplodingCam(DX::StepTimer const& aTimer)
 		//camTargetPos = DirectX::SimpleMath::Vector3::SmoothStep(targPosPrev, missileTargetPos, 0.025f);
 
 		//camTargetPos = missileTargetPos;
-
 		m_snapPosPrev = camPos;
 		m_snapTargPrev = camTargetPos;
 
 		m_position = camPos;
 		m_target = camTargetPos;
 		m_viewMatrix = DirectX::SimpleMath::Matrix::CreateLookAt(camPos, camTargetPos, camUp);
-
-		/*
-		m_debugData->ToggleDebugOnOverRide();
-		m_debugData->DebugPushUILineDecimalNumber("ratio = ", ratio, "");
-		m_debugData->DebugPushUILineDecimalNumber("invRatio = ", invRatio, "");
-		m_debugData->ToggleDebugOff();
-		*/
 	}
 }
 
@@ -1878,7 +1878,8 @@ void Camera::UpdateMissileTrackFromVehicleCam(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
 		DirectX::SimpleMath::Vector3 targetPos = DirectX::SimpleMath::Vector3::Zero;
-		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos);
+		bool isMissileFoundTrue = false;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos, isMissileFoundTrue);
 
 		DirectX::SimpleMath::Quaternion invMissileAlignQuat = missileAlignQuat;
 		invMissileAlignQuat.Inverse(invMissileAlignQuat);
@@ -1931,7 +1932,8 @@ void Camera::UpdateFollowMissile(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
 		DirectX::SimpleMath::Vector3 targetPos = DirectX::SimpleMath::Vector3::Zero;
-		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos);
+		bool isMissileFoundTrue = false;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos, isMissileFoundTrue);
 
 		DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
 		DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
@@ -2035,7 +2037,8 @@ void Camera::UpdateFollowMissile2(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
 		DirectX::SimpleMath::Vector3 targetPos = DirectX::SimpleMath::Vector3::Zero;
-		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos);
+		bool isMissileFoundTrue = false;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos, isMissileFoundTrue);
 
 		DirectX::SimpleMath::Quaternion turretPitchQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitZ, m_vehicleFocus->GetWeaponPitch());
 		DirectX::SimpleMath::Quaternion turretYawQuat = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitY, m_vehicleFocus->GetTurretYaw());
@@ -2130,7 +2133,8 @@ void Camera::UpdateFollowMissile3(DX::StepTimer const& aTimer)
 		DirectX::SimpleMath::Vector3 missilePos = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Quaternion missileAlignQuat = DirectX::SimpleMath::Quaternion::Identity;
 		DirectX::SimpleMath::Vector3 targetPos = DirectX::SimpleMath::Vector3::Zero;
-		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos);
+		bool isMissileFoundTrue = false;
+		m_fireControl->GetCameraMissileData(missileAlignQuat, missilePos, targetPos, isMissileFoundTrue);
 
 		DirectX::SimpleMath::Quaternion currentQuat = DirectX::SimpleMath::Quaternion::Identity;
 

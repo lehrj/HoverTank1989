@@ -786,8 +786,9 @@ struct MissileConsts
     //const float tailThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
     const float tailThickness = tailChord * 0.11f;
 
-    const float cooldown = 3.0f;
-    
+    //const float cooldown = 3.0f;
+    const float cooldown = 1.0f;
+
     const int selectFirePattern = 2;
 
     const bool useAdvancedMoiTensorTrue = false;
@@ -998,7 +999,7 @@ public:
     bool GetIsMissileActiveTrue() const;
     bool GetIsMissileExplodingTrue() const;
 
-    void GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget) const;
+    void GetCameraMissileData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget, bool isFoundTrue) const;
     void GetCameraTrackAllData(DirectX::SimpleMath::Quaternion& aAlignment, DirectX::SimpleMath::Vector3& aPos, DirectX::SimpleMath::Vector3& aTarget, DirectX::SimpleMath::Vector3& aUp) const;
     Utility::ImpulseForce GetRecoilImpulseForce(DirectX::SimpleMath::Vector3 aDirectionNorm);
     
@@ -1011,6 +1012,9 @@ public:
     bool GetIsAutoFireOn() { return m_isAutoFireOn; };
     bool GetIsAutoFireTargetReadyTrue() { return m_targetControl.isTargetOnDeckTrue; };
     bool GetIsAutoFireTargetValidTrue();
+
+    bool GetIsCameraTrackedMissileExplodingTrue() const;
+
     bool GetIsFireCooldownTrue() { return m_isCoolDownActive; };
     
     bool GetIsTargetingLaserOn() { return m_isTargetingLaserOn; };
@@ -1022,6 +1026,7 @@ public:
     void PushVehicleExplosion(const DirectX::SimpleMath::Vector3 aPos, const int aVehicleId);
     void SetDebugData(std::shared_ptr<DebugData> aDebugPtr);
     void SetNPCController(std::shared_ptr<NPCController> aNPCController);
+    void SetMissileCamID();
 
     void ToggleAutoFire();
     void ToggleTargetingLaser();

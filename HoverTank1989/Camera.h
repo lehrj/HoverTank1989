@@ -505,9 +505,12 @@ private:
 
 
     const float m_missileExplosionTimeMax = 2.0f;
+    //const float m_missileExplosionTimeMax = 5.5f;
     float m_missileExplosionTimer = 0.0f;
 
     const float m_missileExplosionCamPosTimeMax = 0.5f;
+    //const float m_missileExplosionCamPosTimeMax = 1.5f;
+
     float m_missileExplosionCampPosTime = 0.0f;
 
     DirectX::SimpleMath::Vector3 m_panTargPos = DirectX::SimpleMath::Vector3(700.0f, 100.0f, 0.0f);
