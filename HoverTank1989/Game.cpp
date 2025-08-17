@@ -655,7 +655,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         //DirectX::XMFLOAT4 baseColorMax(0.2f, 0.2f, 0.5f, 1.0f);
         DirectX::XMFLOAT4 baseColorMax(0.3f, 0.3f, 0.4f, 1.0f);
 
-        const float baseElevationTreeLine = 0.7f;
+        const float baseElevationTreeLine = m_terrainTreeLineStart;
 
         if (elevationPercentage > baseElevationTreeLine)
         {
@@ -709,7 +709,6 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         {
             aTerrain.terrainVertexArrayBase[i].color = baseColor;
         }
-
 
         if (i > m_spawnerTerrainFadeStartRow1Spawn1 && i < m_spawnerTerrainFadeEndRow1Spawn1)
         {
@@ -780,8 +779,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
             if (i == 2165)
             {
                 aTerrain.terrainVertexArrayBase[i].color = spawnerPatchColor;
-            }
-            
+            }   
         }
         
         if (aTerrain.terrainVertexArray[i].position.y >= maxY)
