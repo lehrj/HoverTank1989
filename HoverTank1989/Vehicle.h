@@ -85,7 +85,8 @@ struct ControlInput
     //const float turretYawInputRate = 0.3f;
     const float turretYawMax = Utility::ToRadians(110.0f);
     const float turretYawMin = Utility::ToRadians(-110.0f);
-    const float turretYawInputRate = 0.4f;
+    //const float turretYawInputRate = 0.4f;
+    const float turretYawInputRate = 0.2f;
     //const float turretYawInputRate = 0.1f;
 };
 
