@@ -440,7 +440,8 @@ private:
 
     const unsigned int m_audioFxIdRocketMotor = 3;
 
-    const float m_audioCurveDistanceScalarNPC = 19.0f;
+    //const float m_audioCurveDistanceScalarNPC = 19.0f;
+    const float m_audioCurveDistanceScalarNPC = 9.0f;
     const float m_audioCurveDistanceScalarPlayer = 8.0f;
     //const float m_audioCurveDistanceScalarSpawner = 54.0f;
     const float m_audioCurveDistanceScalarSpawner = 54.0f;
@@ -636,7 +637,6 @@ private:
     const float m_terrainTreeLineStart = 0.7f;
     const float m_startTerrainMaxY = 0.347000033f;
     const float m_gameTerrainMaxY = 396.0f;
-
     float m_skyRotation = 0.0f;
 
     double m_testTimer = 0.0;

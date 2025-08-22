@@ -6994,18 +6994,16 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState != GameState::GAMESTATE_GAMEPLAY)
             {
-                m_soundFxVecTest[i]->fx->SetVolume(0.0f);;
+                m_soundFxVecTest[i]->fx->SetVolume(0.0f);
                 m_soundFxVecTest[i]->volume = 0.0f;
             }
+            else
+            {
 
-            m_soundFxVecTest[i]->fx->SetVolume(m_audioVolumeGamePlay * m_audioNPCMod);
-            m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
-
-
-            m_debugData->ToggleDebugOnOverRide();
-            //m_debugData->DebugPushUILineDecimalNumber(,"",);
-            m_debugData->ToggleDebugOff();
-
+                const float volume = m_soundFxVecTest[i]->volume * (m_audioVolumeGamePlay * m_audioNPCMod);
+                m_soundFxVecTest[i]->fx->SetVolume(volume);
+                m_soundFxVecTest[i]->volume = volume;
+            }
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
@@ -7213,7 +7211,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->volume = 0.0f;
             //m_soundFxVecTest[i]->fx->SetVolume(0.0f);
 
-            //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+            m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
             //m_debugData->ToggleDebugOnOverRide();
@@ -7330,7 +7328,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             //volume *= m_audioPlayerHoverVolMod;
             //volume += m_audioPlayerHoverVolMin;
-            
+
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
@@ -7531,9 +7529,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->emitter->SetPosition(pos);
             //m_soundFxVecTest[i]->pos = pos;
 
-
             m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
-
        
             //m_soundFxVecTest[i]->emitter->SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUp());
             //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());

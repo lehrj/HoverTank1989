@@ -2772,6 +2772,7 @@ void NPCVehicle::UpdateAngularDrag(const float aTimeDelta)
 void NPCVehicle::UpdateAudio()
 {
     m_vehicleStruct00.audioFx->volume = m_vehicleStruct00.vehicleData.audioThrottle;
+    m_vehicleStruct00.audioFx->fx->SetVolume(m_vehicleStruct00.vehicleData.audioThrottle);
 }
 
 DirectX::SimpleMath::Vector3 NPCVehicle::UpdateBodyTorqueRungeLocalNew(const float aTimeStep)
