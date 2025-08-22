@@ -86,7 +86,7 @@ struct ControlInput
     const float turretYawMax = Utility::ToRadians(110.0f);
     const float turretYawMin = Utility::ToRadians(-110.0f);
     //const float turretYawInputRate = 0.4f;
-    const float turretYawInputRate = 0.2f;
+    const float turretYawInputRate = 0.3f;
     //const float turretYawInputRate = 0.1f;
 };
 
@@ -659,8 +659,8 @@ private:
     DirectX::SimpleMath::Quaternion m_angQuatStep = DirectX::SimpleMath::Quaternion::Identity;
 
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
-
+    //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-200.0f, 15.0f, -400.0f); // demo
     float m_throttleVolume = 0.0f;
 
     float m_testMaxHoverForce = 0.0f;
@@ -673,4 +673,3 @@ private:
     bool m_isAirDropTriggeredTrue = false;
     const float m_airDropAltitude = 250.0f;
 };
-

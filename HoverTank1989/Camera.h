@@ -250,7 +250,8 @@ private:
 
     const float                     m_fov = DirectX::XM_PI / 4.f;
     float                           m_fovMod = 1.0f;
-    const float                     m_fovModDelta = 1.0f;
+    //const float                     m_fovModDelta = 1.0f;
+    const float                     m_fovModDelta = 0.69f;
     //const float                     m_fovMax = DirectX::XM_PI / 2.f;
     //const float                     m_fovMin = DirectX::XM_PI / 8.f;
     const float                     m_fovMax = 1.0f;
@@ -265,7 +266,7 @@ private:
     const float                     m_frustumPlanePaddingVertical = Utility::ToRadians(15.0f);
     const float                     m_frustumPlanePaddingHorizontal = Utility::ToRadians(2.0f);
 
-    float                           m_posTravelSpeed = 124.0f;
+    float                           m_posTravelSpeed = 24.0f;
     const float                     m_freeLookSpeedDelta = 6.0f;
     const float                     m_freeLookSpeedMax = 550.0f;
     const float                     m_freeLookSpeedMin = 1.0f;

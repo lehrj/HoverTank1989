@@ -124,17 +124,7 @@ void Camera::CycleMissileTrackState()
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_SIDE)
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
-		//m_fireControl->LaserMissileToggleOff();
-		m_fireControl->LaserMissileSizeModOff();
 	}
-	/*
-	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
-	{
-		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC;
-		//m_fireControl->LaserMissileToggleOn();
-		m_fireControl->LaserMissileSizeModOn();
-	}
-	*/
 	else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
 	{
 		m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR;
@@ -1290,9 +1280,11 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 			//m_cameraState = CameraState::CAMERASTATE_RETURN;
 			m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_REARVIEW;
 			//m_missileTrackState = m_missileTrackStatePrevious;
+			m_fireControl->LaserMissileSizeModOn();
 		}
 		else if (m_fireControl->GetIsMissileExplodingTrue() == true)
 		{
+			m_fireControl->LaserMissileSizeModOn();
 			UpdateMissileExplodingCam(aTimer);
 		}
 		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_FOLLOW)
@@ -1444,6 +1436,7 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 		//m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 		m_cameraState = CameraState::CAMERASTATE_RETURN;
 		ResetSmoothStepVal();
+		m_fireControl->LaserMissileSizeModOn();
 	}
 	else
 	{
@@ -1506,6 +1499,7 @@ void Camera::UpdateMissileSteadyCam(DX::StepTimer const& aTimer)
 		}
 		else if (m_missileTrackState == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
 		{
+			m_fireControl->LaserMissileSizeModOff();
 			DirectX::SimpleMath::Vector3 testVec = missilePosWorld;
 
 			DirectX::SimpleMath::Vector3 vecToTarget = missileTargetPosWorld - missilePosWorld;
