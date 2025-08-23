@@ -243,6 +243,15 @@
     <Image Include="Art\HeightMaps\heightmapMissileDemoBumpy.bmp">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\Textures\cloudSkyTexture.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\cloudSkySpecular.jpg">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\cloudSkyNormal.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

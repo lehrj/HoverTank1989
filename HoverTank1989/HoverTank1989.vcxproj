@@ -239,6 +239,7 @@
     <Image Include="Art\HeightMaps\heightmapStartScreen.bmp" />
     <Image Include="Art\Models\Cup\cup.jpg" />
     <Image Include="Art\NormalMaps\blankNormal.jpg" />
+    <Image Include="Art\NormalMaps\cloudSkyNormal.png" />
     <Image Include="Art\NormalMaps\JIscratchLogoNorm0.png" />
     <Image Include="Art\NormalMaps\JIscratchLogoNorm1.png" />
     <Image Include="Art\NormalMaps\JIscratchLogoNorm2.png" />
@@ -254,6 +255,7 @@
     <Image Include="Art\NormalMaps\rust_normal.jpg" />
     <Image Include="Art\NormalMaps\TestOP.png" />
     <Image Include="Art\SpecularMaps\blankSpecular.jpg" />
+    <Image Include="Art\SpecularMaps\cloudSkySpecular.jpg" />
     <Image Include="Art\SpecularMaps\JIscratchLogoSpec0.png" />
     <Image Include="Art\SpecularMaps\JIscratchLogoSpec1.png" />
     <Image Include="Art\SpecularMaps\JIscratchLogoSpec2.png" />
@@ -273,6 +275,7 @@
     <Image Include="Art\Textures\Chacter2SpriteSheet.png" />
     <Image Include="Art\Textures\ChacterSpriteSheet.png" />
     <Image Include="Art\Textures\CharacterBackground.png" />
+    <Image Include="Art\Textures\cloudSkyTexture.jpg" />
     <Image Include="Art\Textures\EnvironmentSelectAlien.jpg" />
     <Image Include="Art\Textures\EnvironmentSelectBreezy.png" />
     <Image Include="Art\Textures\EnvironmentSelectCalm.png" />

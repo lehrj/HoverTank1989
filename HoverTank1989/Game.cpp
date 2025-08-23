@@ -649,12 +649,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         baseColor.z = 0.0f;
 
         // cap color
-        //DirectX::XMFLOAT4 baseColorMax(0.0f, 0.584313798f, 0.0f, 1.0f); 
-        //DirectX::XMFLOAT4 baseColorMax(0.2f, 0.2f, 0.3f, 1.0f);
-        //DirectX::XMFLOAT4 baseColorMax(0.4f, 0.4f, 0.4f, 1.0f);
-        //DirectX::XMFLOAT4 baseColorMax(0.2f, 0.2f, 0.5f, 1.0f);
-        DirectX::XMFLOAT4 baseColorMax(0.3f, 0.3f, 0.4f, 1.0f);
-
+        DirectX::XMFLOAT4 baseColorMax = m_terrainBaseColorCap;
         const float baseElevationTreeLine = m_terrainTreeLineStart;
 
         if (elevationPercentage > baseElevationTreeLine)
@@ -5128,22 +5123,20 @@ void Game::DrawSky()
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
-    m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
+    m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
 }
 
 void Game::DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
     //m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
-    m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
+    m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 5.39f;
     DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
     rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
-
-
     //rotMat = DirectX::SimpleMath::Matrix::Identity;
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 2.0f), m_textureSky.Get());
     //m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
-    m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 0.9f), m_textureSky.Get());
+    m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
     aEffect->EnableDefaultLighting();
     aEffect->SetNormalTexture(m_normalMapSky.Get());
     aEffect->SetSpecularTexture(m_specularSky.Get());
@@ -7109,94 +7102,24 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
         {
-            /*
-            auto pos = m_vehicle->GetPos();
-
-            m_soundFxVecTest[i]->emitter->SetPosition(pos);
-            m_soundFxVecTest[i]->pos = pos;
-
-            auto volume = m_vehicle->GetThrottleTank();
-            auto pitch = volume;
-            pitch *= 0.8f;
-            pitch *= 2.0f;
-            pitch -= 1.0f;
-          //  pitch = volume;
-            volume *= 0.9f;
-            volume += 0.1f;
-
-            volume *= m_audioVolumeGamePlay * m_audioPlayerNPCMod;
-            volume = 1.0f;
-            pitch = 1.0f;
-
-            m_soundFxVecTest[i]->fx->SetPitch(pitch);
-            m_soundFxVecTest[i]->fx->SetVolume(volume);
-            m_soundFxVecTest[i]->volume = volume;
-
-            //m_soundFxVecTest[i]->emitter->SetVelocity(m_vehicle->GetVelocity());
-            
-            m_soundFxVecTest[i]->emitter->SetOrientation(m_vehicle->GetForward(), m_vehicle->GetVehicleUp());
-          //  m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
-
-            //m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("volume ", volume, "");
-            m_debugData->DebugPushUILineDecimalNumber("pitch  ", pitch, "");
-            m_debugData->ToggleDebugOff();
-            */
-
-            //auto volume = m_vehicle->GetThrottleTank();
             auto volume = m_vehicle->GetThrottleDrive();
-            //auto volume = 0.0f;
             auto pitch = volume;
             pitch *= 0.8f;
             pitch *= 2.0f;
             pitch -= 1.0f;
-            //  pitch = volume;
             volume *= 0.9f;
             volume += 0.1f;
 
             volume = m_vehicle->GetAudioVolDrive();
             pitch = m_vehicle->GetAudioPitchDrive();
-
             volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
-        
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
 
-            //m_soundFxVecTest[i]->fx->SetVolume(0.5f);
-            //m_soundFxVecTest[i]->volume = 0.5f;
-
             auto pos = m_vehicle->GetPos();
-            //pos = m_debugAudioPos;
-
             m_soundFxVecTest[i]->pos = pos;
-
-            //m_soundFxVecTest[i]->emitter->SetOrientation(m_vehicle->GetForward(), m_vehicle->GetVehicleUp());
-            //m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
-
             auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
-            
-            auto posLocal = pos;
-            //posLocal = posLocal - m_listener.Position;
-            auto invMat = DirectX::SimpleMath::Matrix::CreateLookAt(m_listener.Position, pos, m_listener.OrientTop);
-            invMat.Invert(invMat);
-            posLocal = DirectX::SimpleMath::Vector3::Transform(posLocal,invMat);
-            auto testPos = posLocal;
-            //testPos.y = 0.0f;
-
-           // posLocal = testPos;
-            testPos.Normalize();
-            
-            auto testVec = m_camera->GetForwardAudio();
-            testVec.y = 0.0f;
-            testVec.Normalize();
-            //float angle = Utility::GetAngleBetweenVectors(testPos, DirectX::SimpleMath::Vector3::UnitZ);
-            float angle = Utility::GetAngleBetweenVectors(testVec, DirectX::SimpleMath::Vector3::UnitX);
-            //posLocal = DirectX::SimpleMath::Vector3::Transform(posLocal, DirectX::SimpleMath::Matrix::CreateLookAt(m_listener.Position, pos, m_listener.OrientTop));
-            //posLocal += m_listener.Position;
-
-            auto posWorld = posLocal;
-            posWorld = DirectX::SimpleMath::Vector3::Transform(posWorld, DirectX::SimpleMath::Matrix::CreateLookAt(DirectX::SimpleMath::Vector3::Zero, m_camera->GetForwardAudio(), m_camera->GetUpAudio()));
 
             m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
             m_soundFxVecTest[i]->emitter->OrientTop = m_vehicle->GetVehicleUp();
@@ -7204,30 +7127,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->Position = pos;
             m_soundFxVecTest[i]->emitter->Velocity = velocity;
 
-            auto angle2 = Utility::ToRadians(180.0f) - angle;
-            //m_soundFxVecTest[i]->emitter->EmitterAzimuths[0] = 0.0f;
-            //m_soundFxVecTest[i]->emitter->EmitterAzimuths[1] = cos(m_timer.GetTotalSeconds());
-
-            //m_soundFxVecTest[i]->volume = 0.0f;
-            //m_soundFxVecTest[i]->fx->SetVolume(0.0f);
-
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-
-            //m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("volume", volume, "");
-            m_debugData->DebugPushUILineDecimalNumber("pitch", pitch, "");
-
-            m_debugData->DebugPushUILineDecimalNumber("posLocal.x ", posLocal.x, "");
-            m_debugData->DebugPushUILineDecimalNumber("posLocal.y ", posLocal.y, "");
-            m_debugData->DebugPushUILineDecimalNumber("posLocal.z ", posLocal.z, "");
-            m_debugData->DebugPushUILineDecimalNumber("angle   ", angle, "");
-            m_debugData->DebugPushUILineDecimalNumber("angleD  ", Utility::ToDegrees(angle), "");
-            m_debugData->DebugPushUILineDecimalNumber("angleD2 ", Utility::ToDegrees(angle2), "");
-            m_debugData->PushDebugLinePositionIndicator(posLocal, 5.0f, 0.0f, DirectX::Colors::Red);
-            m_debugData->PushTestDebugBetweenPoints(m_vehicle->GetPos(), posLocal, DirectX::Colors::Yellow);
-            m_debugData->ToggleDebugOff();
-
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER)
         {
