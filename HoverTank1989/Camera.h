@@ -254,8 +254,10 @@ private:
     const float                     m_fovModDelta = 0.69f;
     //const float                     m_fovMax = DirectX::XM_PI / 2.f;
     //const float                     m_fovMin = DirectX::XM_PI / 8.f;
-    const float                     m_fovMax = 1.0f;
-    const float                     m_fovMin = 0.3f;
+    const float                     m_fovMax = DirectX::XM_PI / DirectX::XM_PI;
+    const float                     m_fovMin = DirectX::XM_PI / 10.0f;
+    //const float                     m_fovMax = 1.0f;
+    //const float                     m_fovMin = 0.3f;
     float                           m_fovZoomPercent = 0.0f;
 
     DirectX::SimpleMath::Matrix     m_viewMatrix;
@@ -360,6 +362,7 @@ private:
     void UpdateSpringCameraPlayer4(DX::StepTimer const& aTimeDelta);
     void UpdateSpringCameraPlayerLastUsed(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCamera(DX::StepTimer const& aTimeDelta);
+    void UpdateSnapCameraTest(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraDemo(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraSync(DX::StepTimer const& aTimeDelta);
     void UpdateSnapCameraTransition(DX::StepTimer const& aTimeDelta);
@@ -444,7 +447,7 @@ private:
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-3.0f, 0.3f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 6.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
-    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 93.0f, 0.0f);
+    const DirectX::SimpleMath::Vector3 m_snapPosBase = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
 
     //const DirectX::SimpleMath::Vector3 m_snapZoomModPos = DirectX::SimpleMath::Vector3(-14.0f, 3.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_snapZoomModPos = DirectX::SimpleMath::Vector3(7.0f, .5f, 0.0f);
@@ -455,7 +458,8 @@ private:
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 0.5f, -4.0f);
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 3.0f, -4.0f);
     //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 3.0f, -4.0f);
-    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 85.0f, -4.0f);
+    //const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 85.0f, -4.0f);
+    const DirectX::SimpleMath::Vector3 m_snapTargBase = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.0f);
 
     const DirectX::SimpleMath::Vector3 m_gamePlayDefaultCamPos = DirectX::SimpleMath::Vector3(-23.0f, 3.0f, 0.0f);
     const DirectX::SimpleMath::Vector3 m_gamePlayDefaultTarg = DirectX::SimpleMath::Vector3(0.0f, 3.0f, 0.0f);
@@ -476,18 +480,10 @@ private:
     const float m_smoothStepToMissile = 0.1f;
     const float m_smoothStepToVehicle = 0.2f;
 
-    /*
     const float m_smoothStepTarget = 0.1f;
     const float m_smoothStepSnapCamPos = 0.1f;
     const float m_slerpSnapTargQuat = 0.01f;
     const float m_slerSnapQuat = 0.01f;
-    */
-    const float m_smoothStepTarget = 0.1f;
-    const float m_smoothStepSnapCamPos = 0.1f;
-    const float m_slerpSnapTargQuat = 0.01f;
-    const float m_slerSnapQuat = 0.01f;
-
-
 
     const float m_slerpSnapCam = 0.1f;
     const float m_slerpSnapTarg = 0.1f;
@@ -503,7 +499,6 @@ private:
 
     const float m_missileReturnPauseDelay = 1.0f;
     float m_missileReturnPauseTimer = 0.0f;
-
 
     const float m_missileExplosionTimeMax = 2.0f;
     //const float m_missileExplosionTimeMax = 5.5f;

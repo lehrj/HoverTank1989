@@ -64,30 +64,31 @@ struct ControlInput
 
     bool        yawPedalIsPressed;
     float       yawPedalInput;
-    //const float yawPedalDecayRate = 1.2f;
-    //const float yawPedalDecayRate = 100.0f;
-    const float yawPedalDecayRate = 23.0f;
+    const float yawPedalDecayRate = 0.9f;
     const float yawPedalInputMax = 1.0f;
     const float yawPedalInputMin = -1.0f;
-    //const float yawPedalInputRate = 1.15f;
     const float yawPedalInputRate = 0.5f;
-    //const float yawPedalInputRate = 1.0f;
 
     float weaponPitch;
-    //const float weaponPitchInputRate = 0.7f;
-    //const float weaponPitchInputRate = 0.2f;
     const float weaponPitchMax = Utility::ToRadians(21.0f);
     const float weaponPitchMin = Utility::ToRadians(-10.0f);
     const float weaponPitchInputRate = 0.4f;
 
     float turretYaw;
-    //const float turretYawInputRate = 0.7f;
-    //const float turretYawInputRate = 0.3f;
+    float turretYawDelta = 0.0f;
+    float turretYawInput = 0.0f;
+    float turretYawRampTimer = 0.0f;
+    float turretYawRampUpTimer = 0.0f;
+    float turretYawRampDownTimer = 0.0f;
+    const float turretYawRampUpTimerMax = 1.0f;
+    const float turretYawRampDownTimerMax = 1.0f;
+
+    bool isTurretYawClockWiseTrue = false;
+    bool isTurretYawPressedTrue = false;
+    const float turretYawDecayRate = 0.3f;
     const float turretYawMax = Utility::ToRadians(110.0f);
     const float turretYawMin = Utility::ToRadians(-110.0f);
-    //const float turretYawInputRate = 0.4f;
     const float turretYawInputRate = 0.3f;
-    //const float turretYawInputRate = 0.1f;
 };
 
 struct Motion
@@ -420,7 +421,6 @@ public:
     float GetAudioVolDrive() const { return m_heli.audioVolDriveNew; };
     float GetAudioVolHover()const { return m_heli.audioVolHoverNew; };
     float GetAudioPitchDrive() const { return m_heli.audioVolDriveNew; };
-    //float GetAudioPitchHover()const { return m_heli.audioVolHoverNew; };
     float GetAudioPitchHover()const { return m_heli.audioPitchHoverNew; };
 
     double GetTime() { return m_heli.time; };
@@ -431,8 +431,7 @@ public:
     DirectX::SimpleMath::Matrix GetTargetingMatrix() const { return m_modelController->GetTargetingMatrix(); };
     DirectX::SimpleMath::Matrix GetTensorTest() const { return m_heli.localInertiaMatrixTest; };
     float GetTurretYaw() const { return m_heli.controlInput.turretYaw; };
-    //float GetWeaponPitch() const { return m_heli.controlInput.weaponPitch; };
-    float GetWeaponPitch() const { return m_heli.stabilizedWeaponPitch; };
+    float GetWeaponPitch() const { return m_heli.stabilizedWeaponPitch; }; // use m_heli.controlInput.weaponPitch non-stabilized alt
 
     float GetTurretYawTest() const { return m_heli.controlInput.turretYaw; };
     DirectX::SimpleMath::Vector3 GetWeaponDirTest() const { return m_modelController->GetWeaponDirLocal(); };
@@ -456,7 +455,7 @@ public:
     void InputDecayNew(const double aTimeDelta);
     void InputJet(const float aJetInput);
     void InputThrottle(const float aThrottleInput);
-    void InputTurretYaw(const float aTurretYawInput);
+    void InputTurretYaw(const float aTurretYawInput, const float aTimer);
     void InputYawPedal(const float aYawInput);
     void InputWeaponPitch(const float aPitchInput);
 

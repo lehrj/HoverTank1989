@@ -3306,8 +3306,7 @@ void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const Direc
                 DirectX::SimpleMath::Vector3 rightCross = forwardToTargNorm.Cross(DirectX::SimpleMath::Vector3::UnitY);
                 DirectX::SimpleMath::Vector3 testUp = rightCross.Cross(forwardToTargNorm);
 
-                posOffset = DirectX::SimpleMath::Vector3(0.0f, 2.0f, 0.0f);
-                
+                posOffset = m_missileConsts.laserPosOffSet;
                 DirectX::SimpleMath::Matrix worldBodyMatrix = DirectX::SimpleMath::Matrix::Identity;
                 worldBodyMatrix *= scaleMat;
                 worldBodyMatrix *= scaleTransOffsetMat;

@@ -1171,6 +1171,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_isPauseOn = false;
     }
 
+    UpdateInput(aTimer);
     if (m_isPauseOn == false)
     {
         m_debugData->DebugClearUI();
@@ -1187,7 +1188,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_vehicle->UpdateVehicleFireControl(aTimer.GetElapsedSeconds());
     }
 
-    UpdateInput(aTimer);
+    //UpdateInput(aTimer);
     m_camera->UpdateCamera(aTimer);
     m_environment->SetCameraPos(m_camera->GetPos());
     m_lighting->SetTargPos(m_camera->GetTargetPos());
@@ -1287,7 +1288,7 @@ void Game::Render()
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
-        //DrawSky();
+        DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         /*
@@ -1532,13 +1533,17 @@ void Game::CreateDeviceDependentResources()
     // TODO: Initialize device dependent objects here (independent of window size).
     device;
 
+    
     // sky texture
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/cloudSkyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
     // sky normal
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/skyNormal.png", nullptr, m_normalMapSky.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/skyNormal.png", nullptr, m_normalMapSky.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/cloudSkyNormal.png", nullptr, m_normalMapSky.ReleaseAndGetAddressOf()));
     // sky specular
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/skySpecular.png", nullptr, m_specularSky.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/skySpecular.png", nullptr, m_specularSky.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/cloudSkySpecular.jpg", nullptr, m_specularSky.ReleaseAndGetAddressOf()));
 
     // metal tests
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureMetalTest1.ReleaseAndGetAddressOf()));
@@ -5120,9 +5125,11 @@ void Game::DrawLogoScreen()
 void Game::DrawSky()
 {
     m_skyRotation += static_cast<float>(m_timer.GetElapsedSeconds()) * 0.19f;
-    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
-    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
-    rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
+    //DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(-m_skyRotation));
+    DirectX::SimpleMath::Matrix rotMat = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-m_skyRotation));
+    //rotMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(Utility::ToRadians(30.0f));
+    //rotMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(30.0f));
+
     m_skyShape->Draw(rotMat, m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix(), DirectX::SimpleMath::Vector4(1.0, 1.0, 1.0, 1.0f), m_textureSky.Get());
 }
 
@@ -6179,7 +6186,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             const float zoom = m_camera->GetZoom();
             const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
-            m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()) * zoomMod);
+            m_vehicle->InputTurretYaw(static_cast<float>(aTimer.GetElapsedSeconds()) * zoomMod, static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad2)
@@ -6197,7 +6204,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             const float zoom = m_camera->GetZoom();
             const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
-            m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()) * zoomMod);
+            m_vehicle->InputTurretYaw(static_cast<float>(-aTimer.GetElapsedSeconds()) * zoomMod, static_cast<float>(aTimer.GetElapsedSeconds()));
         }
     }
     if (kb.NumPad4)
@@ -6650,7 +6657,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             {
                 const float zoom = m_camera->GetZoom();
                 const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
-                m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal * zoomMod);
+                m_vehicle->InputTurretYaw(-pad.thumbSticks.rightX * m_gamePadInputRateTurretHorizontal * zoomMod, static_cast<float>(aTimer.GetElapsedSeconds()));
             }
         }
         if (pad.thumbSticks.rightY > m_gamePadInputDeadZone)

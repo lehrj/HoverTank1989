@@ -698,6 +698,7 @@ struct MissileConsts
     const float laserDiameterModMin = 5.0f;
     const float laserModRangeMin = 200.0f;
     const float laserModRangeMax = 500.0f;
+    const DirectX::SimpleMath::Vector3 laserPosOffSet = DirectX::SimpleMath::Vector3(0.0f, 2.0f, 0.0f);
 
     /*
     const float finDeployDelay = 5.2f;

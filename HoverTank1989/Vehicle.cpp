@@ -1984,6 +1984,7 @@ void Vehicle::InputDecay(const double aTimeDelta)
 {
     const float timeDelta = static_cast<float>(aTimeDelta);
 
+    // Cyclic Pitch Decay
     if (m_heli.controlInput.cyclicInputPitchIsPressed == false)
     {
         // Cyclic Pitch Decay
@@ -2104,7 +2105,72 @@ void Vehicle::InputDecay(const double aTimeDelta)
             m_heli.controlInput.yawPedalInput = 0.0f;
         }
     }
+    
+    float preYaw = m_heli.controlInput.turretYaw;
+    float yawInputUpdate = 0.0f;
+    float decayDelta = 0.0f;
+    if (m_heli.controlInput.isTurretYawPressedTrue == false)
+    {
+        //float ramp = m_heli.controlInput.turretYaw * m_heli.controlInput.turretYawRampDownTimerMax;
+        m_heli.controlInput.turretYawRampDownTimer -= aTimeDelta;
+        if (m_heli.controlInput.turretYawRampDownTimer < 0.0f)
+        {
+            m_heli.controlInput.turretYawRampDownTimer = 0.0f;
+        }
 
+        m_heli.controlInput.turretYawRampUpTimer -= aTimeDelta;
+        if (m_heli.controlInput.turretYawRampUpTimer < 0.0f)
+        {
+            m_heli.controlInput.turretYawRampUpTimer = 0.0f;
+        }
+
+        if (m_heli.controlInput.turretYawRampDownTimer > 0.0f)
+        {
+            if (m_heli.controlInput.isTurretYawClockWiseTrue == true)
+            {
+                //m_heli.controlInput.turretYaw -= (m_heli.controlInput.turretYawInputRate * m_heli.controlInput.turretYawRampDownTimer * m_heli.controlInput.turretYawRampUpTimer) * timeDelta;
+                //m_heli.controlInput.turretYaw -= (timeDelta * m_heli.controlInput.turretYawRampDownTimer);
+                //m_heli.controlInput.turretYaw -= (m_heli.controlInput.turretYawInputRate * m_heli.controlInput.turretYawRampUpTimer * timeDelta) * (timeDelta * m_heli.controlInput.turretYawRampDownTimer);
+                //m_heli.controlInput.turretYaw -= (m_heli.controlInput.turretYawInputRate * timeDelta) * (timeDelta * (m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+                yawInputUpdate = -(m_heli.controlInput.turretYawInputRate * timeDelta) * (timeDelta * (m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+                yawInputUpdate = - (timeDelta * (m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+                yawInputUpdate = -(m_heli.controlInput.turretYawInputRate * timeDelta) * ((m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+                
+                m_heli.controlInput.turretYawDelta *= m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax;
+                yawInputUpdate = m_heli.controlInput.turretYawDelta * timeDelta;
+                m_heli.controlInput.turretYaw -= yawInputUpdate;
+            }
+            if (m_heli.controlInput.isTurretYawClockWiseTrue == false)
+            {
+                //m_heli.controlInput.turretYaw += (m_heli.controlInput.turretYawInputRate * m_heli.controlInput.turretYawRampDownTimer * m_heli.controlInput.turretYawRampUpTimer) * timeDelta;
+                //m_heli.controlInput.turretYaw += (timeDelta * m_heli.controlInput.turretYawRampDownTimer);
+                //m_heli.controlInput.turretYaw += (m_heli.controlInput.turretYawInputRate * m_heli.controlInput.turretYawRampUpTimer * timeDelta) * (timeDelta * m_heli.controlInput.turretYawRampDownTimer);
+                //m_heli.controlInput.turretYaw += (m_heli.controlInput.turretYawInputRate * timeDelta) * (timeDelta * (m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+                yawInputUpdate = (m_heli.controlInput.turretYawInputRate * timeDelta) * (timeDelta * (m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+                yawInputUpdate =  (timeDelta * (m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+                yawInputUpdate = (m_heli.controlInput.turretYawInputRate * timeDelta) * ((m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+
+                m_heli.controlInput.turretYawDelta *= m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax;
+                yawInputUpdate = m_heli.controlInput.turretYawDelta * timeDelta;
+                m_heli.controlInput.turretYaw -= yawInputUpdate;
+            }
+        }
+        else
+        {
+            m_heli.controlInput.turretYawDelta = 0.0f;
+        }
+    }
+        
+    decayDelta = ( (m_heli.controlInput.turretYawRampDownTimer / m_heli.controlInput.turretYawRampDownTimerMax));
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("yawInputUpdate rads = ", yawInputUpdate, "");
+    m_debugData->DebugPushUILineDecimalNumber("yawInputUpdate degs = ",Utility::ToDegrees(yawInputUpdate), "");
+    m_debugData->DebugPushUILineDecimalNumber("decayDelta rads = ", decayDelta, "");
+    m_debugData->DebugPushUILineDecimalNumber("decayDelta degs = ", Utility::ToDegrees(decayDelta), "");
+    m_debugData->ToggleDebugOff();
+
+
+    m_heli.controlInput.isTurretYawPressedTrue = false;
     m_heli.controlInput.cyclicInputPitchIsPressed = false;
     m_heli.controlInput.cyclicInputRollIsPressed = false;
     m_heli.controlInput.jetInputIsPressed = false;
@@ -2176,7 +2242,7 @@ void Vehicle::InputDecayNew(const double aTimeDelta)
         }
     }
 
-    /*
+    
     // Jet Decay
     if (m_heli.controlInput.jetInputIsPressed == false)
     {
@@ -2237,12 +2303,6 @@ void Vehicle::InputDecayNew(const double aTimeDelta)
             m_heli.controlInput.yawPedalInput = 0.0f;
         }
     }
-
-    m_heli.controlInput.cyclicInputPitchIsPressed = false;
-    m_heli.controlInput.cyclicInputRollIsPressed = false;
-    m_heli.controlInput.jetInputIsPressed = false;
-    m_heli.controlInput.yawPedalIsPressed = false;
-    */
 }
 
 void Vehicle::InputJet(const float aJetInput)
@@ -2263,9 +2323,40 @@ void Vehicle::InputJet(const float aJetInput)
     }
 }
 
-void Vehicle::InputTurretYaw(const float aTurretYawInput)
+void Vehicle::InputTurretYaw(const float aTurretYawInput, const float aTimer)
 {
-    const float updatedTurretYaw = (aTurretYawInput * m_heli.controlInput.turretYawInputRate) + m_heli.controlInput.turretYaw;
+    m_heli.controlInput.isTurretYawPressedTrue = true;
+    const float preYaw = m_heli.controlInput.turretYaw;
+    if (aTurretYawInput < 0.0f)
+    {
+        m_heli.controlInput.isTurretYawClockWiseTrue = true;
+    }
+    if (aTurretYawInput > 0.0f)
+    {
+        m_heli.controlInput.isTurretYawClockWiseTrue = false;
+    }
+
+
+    m_heli.controlInput.turretYawRampTimer += aTimer;
+    if (m_heli.controlInput.turretYawRampTimer > m_heli.controlInput.turretYawRampUpTimerMax)
+    {
+        m_heli.controlInput.turretYawRampTimer = m_heli.controlInput.turretYawRampUpTimerMax;
+    }
+
+    m_heli.controlInput.turretYawRampUpTimer += aTimer;
+    if (m_heli.controlInput.turretYawRampUpTimer > m_heli.controlInput.turretYawRampUpTimerMax)
+    {
+        m_heli.controlInput.turretYawRampUpTimer = m_heli.controlInput.turretYawRampUpTimerMax;
+    }
+
+    m_heli.controlInput.turretYawRampDownTimer += aTimer;
+    if (m_heli.controlInput.turretYawRampDownTimer > m_heli.controlInput.turretYawRampDownTimerMax)
+    {
+        m_heli.controlInput.turretYawRampDownTimer = m_heli.controlInput.turretYawRampDownTimerMax;
+    }
+
+    //const float updatedTurretYaw = (aTurretYawInput * m_heli.controlInput.turretYawInputRate) + m_heli.controlInput.turretYaw;
+    const float updatedTurretYaw = (aTurretYawInput * m_heli.controlInput.turretYawInputRate * m_heli.controlInput.turretYawRampUpTimer) + m_heli.controlInput.turretYaw;
     if (updatedTurretYaw > m_heli.controlInput.turretYawMax)
     {
         m_heli.controlInput.turretYaw = m_heli.controlInput.turretYawMax;
@@ -2277,11 +2368,19 @@ void Vehicle::InputTurretYaw(const float aTurretYawInput)
     else if (updatedTurretYaw < m_heli.controlInput.inputDeadZone && updatedTurretYaw > -m_heli.controlInput.inputDeadZone)
     {
         m_heli.controlInput.turretYaw = 0.0f;
+        m_heli.controlInput.turretYawDelta = 0.0f;
     }
     else
     {
+        float yawDelta = m_heli.controlInput.turretYaw - updatedTurretYaw / aTimer;
+        m_heli.controlInput.turretYawDelta = yawDelta;
+
         m_heli.controlInput.turretYaw = updatedTurretYaw;
+
     }
+
+    const float postYaw = m_heli.controlInput.turretYaw;
+    m_heli.controlInput.turretYawDelta = (preYaw - postYaw) / aTimer;
 }
 
 void Vehicle::InputThrottle(const float aThrottleInput)
@@ -4657,87 +4756,7 @@ void Vehicle::UpdateVehicle(const double aTimeDelta)
     m_heli.angularRadsPerSec = angRadsPerSecond;
     m_testAngularRotationPerSecond = angRadsPerSecond;
 
-
-    /*
-    DirectX::SimpleMath::Vector3 postVel = m_heli.q.velocity;
-    auto deltaVel = (postVel - prevVelocity) / aTimeDelta;
-
-    float speed1 = m_heli.q.velocity.Length();
-    //speed1 *= aTimeDelta;
-    speed1 *= 2.237f;
-
-    auto front = DirectX::SimpleMath::Vector3(m_inertiaModelX, 0.0f, 0.0f);
-    auto left = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_inertiaModelZ);
-    auto back = DirectX::SimpleMath::Vector3(-m_inertiaModelX, 0.0f, 0.0f);
-    auto top = DirectX::SimpleMath::Vector3(0.0f, m_inertiaModelY, 0.0f);
-    auto leftFront = DirectX::SimpleMath::Vector3(m_inertiaModelX, 0.0f, m_inertiaModelZ);
-
-    front += m_heli.q.position;
-    left += m_heli.q.position;
-    back += m_heli.q.position;
-    top += m_heli.q.position;
-    leftFront += m_heli.q.position;
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("Alt : ", m_heli.altitude, "");
-    m_debugData->DebugPushUILineDecimalNumber("speed : ", speed1, "");
-    m_debugData->DebugPushUILineDecimalNumber("deltaVel : ", deltaVel.Length(), "");
-    m_debugData->PushDebugLine(m_heli.q.position, deltaVel, 7.0f, 0.0f, DirectX::Colors::Purple);
-
-    m_debugData->DebugPushUILineDecimalNumber("m_gravTimer     : ", m_gravTimer, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_gravTimerLast : ", m_gravTimerLast, "");
-    m_debugData->DebugPushUILineDecimalNumber("m_gravVelocity : ", m_gravVelocity, "");
-
-    m_debugData->PushDebugLinePositionIndicator(front, 1.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLinePositionIndicator(left, 1.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLinePositionIndicator(back, 1.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLinePositionIndicator(top, 1.0f, 0.0f, DirectX::Colors::Yellow);
-    m_debugData->PushDebugLinePositionIndicator(leftFront, 1.0f, 0.0f, DirectX::Colors::Yellow);
-
-    m_debugData->ToggleDebugOff();
-    */
-
     m_gravTimer += aTimeDelta;
-
-    /*
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosLeft(), m_modelController->GetMissileTubeTurretLocalLeftDir(), 10.0f, 0.0f, DirectX::Colors::Lime);
-    m_debugData->PushDebugLine(m_modelController->GetMissileTubePosRight(), m_modelController->GetMissileTubeTurretLocalRightDir(), 10.0f, 0.0f, DirectX::Colors::Yellow);
-    
-    auto front = DirectX::SimpleMath::Vector3(m_inertiaModelX, 0.0f, 0.0f);
-    front = DirectX::SimpleMath::Vector3::Transform(front, m_heli.alignment);
-    front += m_heli.q.position;
-
-    auto back = DirectX::SimpleMath::Vector3(-m_inertiaModelX, 0.0f, 0.0f);
-    back = DirectX::SimpleMath::Vector3::Transform(back, m_heli.alignment);
-    back += m_heli.q.position;
-
-    auto right = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_inertiaModelZ);
-    right = DirectX::SimpleMath::Vector3::Transform(right, m_heli.alignment);
-    right += m_heli.q.position;
-
-    auto left = DirectX::SimpleMath::Vector3(0.0f, 0.0f, - m_inertiaModelZ);
-    left = DirectX::SimpleMath::Vector3::Transform(left, m_heli.alignment);
-    left += m_heli.q.position;
-
-    auto top = DirectX::SimpleMath::Vector3(0.0f, m_inertiaModelY, 0.0f);
-    top = DirectX::SimpleMath::Vector3::Transform(top, m_heli.alignment);
-    top += m_heli.q.position;
-
-    auto bottom = DirectX::SimpleMath::Vector3(0.0f, - m_inertiaModelY, 0.0f);
-    bottom = DirectX::SimpleMath::Vector3::Transform(bottom, m_heli.alignment);
-    bottom += m_heli.q.position;
-
-    m_debugData->PushDebugLinePositionIndicator(front, 3.0f, 0.0f, DirectX::Colors::White);
-    m_debugData->PushDebugLinePositionIndicator(right, 3.0f, 0.0f, DirectX::Colors::White);
-    m_debugData->PushDebugLinePositionIndicator(top, 3.0f, 0.0f, DirectX::Colors::White);
-
-    m_debugData->PushDebugLinePositionIndicator(back, 3.0f, 0.0f, DirectX::Colors::White);
-    m_debugData->PushDebugLinePositionIndicator(left, 3.0f, 0.0f, DirectX::Colors::White);
-    m_debugData->PushDebugLinePositionIndicator(bottom, 3.0f, 0.0f, DirectX::Colors::White);
-
-    m_debugData->ToggleDebugOff();
-    */
 }
 
 void Vehicle::UpdateVehicleFireControl(const double aTimeDelta)
