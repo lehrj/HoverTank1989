@@ -1035,7 +1035,8 @@ void NPCController::CheckTargetingLaser(DirectX::SimpleMath::Ray aRay, float& aD
     if (isTargetHit == true)
     {
         //m_npcVec[targetIndex]->SetIsTargetedTrue();
-        m_npcVec[targetIndex]->SetIsPlayerTargetedTrue();
+        //m_npcVec[targetIndex]->SetIsPlayerTargetedTrue();
+        m_npcVec[targetIndex]->SetIsPlayerTargetedTrue(m_player->GetPos());     
     }
 
     aDistance = distanceToTarget;
@@ -1540,7 +1541,7 @@ void NPCController::UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vec
     }
 }
 
-bool NPCController::UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward)
+bool NPCController::UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward, const DirectX::SimpleMath::Vector3 aLaserPos)
 {
     int idIndex = -1;
     bool isIdFound = false;
@@ -1564,7 +1565,49 @@ bool NPCController::UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath:
         isIdFound = true;
         aPosition = m_npcVec[idIndex]->GetPos();
         aVelocity = m_npcVec[idIndex]->GetVelocity();
-        m_npcVec[idIndex]->SetIsMissileTargetedTrue();
+        //m_npcVec[idIndex]->SetIsMissileTargetedTrue();
+        m_npcVec[idIndex]->SetIsMissileTargetedTrue(aLaserPos);
+    }
+    else
+    {
+        isIdFound = false;
+        int testBreak = 0;
+        ++testBreak;
+    }
+    return isIdFound;
+}
+
+bool NPCController::UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward, const DirectX::SimpleMath::Vector3 aLaserPos, const bool aIsLaserOn)
+{
+    int idIndex = -1;
+    bool isIdFound = false;
+    for (int i = 0; i < m_npcVec.size(); ++i)
+    {
+        if (m_npcVec[i]->GetID() == aId)
+        {
+            if (idIndex == -1)
+            {
+                idIndex = i;
+            }
+            else
+            {
+                int testBreak = 0;
+                ++testBreak;
+            }
+        }
+    }
+    if (idIndex != -1)
+    {
+        isIdFound = true;
+        aPosition = m_npcVec[idIndex]->GetPos();
+        aVelocity = m_npcVec[idIndex]->GetVelocity();
+        //m_npcVec[idIndex]->SetIsMissileTargetedTrue();
+        //m_npcVec[idIndex]->SetIsMissileTargetedTrue(aLaserPos);
+
+        if (aIsLaserOn == true)
+        {
+            m_npcVec[idIndex]->SetIsMissileTargetedTrue(aLaserPos);
+        }
     }
     else
     {

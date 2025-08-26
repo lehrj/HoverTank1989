@@ -94,7 +94,10 @@ public:
     void UpdateLoadQueue(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, const double aTimeDelta);
     void UpdateLoadQueueWithAudio(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext, std::shared_ptr<NPCController> aNpcController, std::shared_ptr<Utility::SoundFx> aAudioFx);
     void UpdateMissleGuidance(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward);
-    bool UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward);
+    //bool UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward);
+    bool UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward, const DirectX::SimpleMath::Vector3 aLaserPos);
+    bool UpdateMissleGuidanceBool(const int aId, DirectX::SimpleMath::Vector3& aPosition, DirectX::SimpleMath::Vector3& aVelocity, DirectX::SimpleMath::Vector3& aForward, const DirectX::SimpleMath::Vector3 aLaserPos, const bool aIsLaserOn);
+
     void UpdateNPCs(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta);
     void UpdateNPCController(const DirectX::BoundingFrustum& aFrustum, const double aTimeDelta);
     void UpdateSpawner(const double aTimeDelta);
@@ -139,6 +142,7 @@ private:
     bool m_isSpawnerReady = false;
 
     const int m_spawnCountMax = 18;
+    //const int m_spawnCountMax = 1;
 
     int m_spawnCount = 0;
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
@@ -146,8 +150,12 @@ private:
     const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 835.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
+    //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 0.0f);
+
     //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -900.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -835.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeadingAlt = DirectX::SimpleMath::Vector3::UnitZ;
+
+    //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(0.0f, 10.0f, -10.0f);
 };
 

@@ -80,6 +80,8 @@ enum class NPCType
 
 struct NPCModel
 {
+    std::vector<DirectX::SimpleMath::Vector3> laserLightPosVec;
+
     DirectX::SimpleMath::Vector4 color1;
     DirectX::SimpleMath::Vector4 color2;
     DirectX::SimpleMath::Vector4 color3;
@@ -198,9 +200,13 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix2;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix2;
 
-    std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;
+    //std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;
+    std::unique_ptr<DirectX::GeometricPrimitive>    interiorShadowShape;
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
+    DirectX::SimpleMath::Matrix localInteriorShadowLeftMatrix;
+    DirectX::SimpleMath::Matrix worldInteriorShadowLeftMatrix;
+
     DirectX::SimpleMath::Matrix localInteriorShadowRightMatrix;
     DirectX::SimpleMath::Matrix worldInteriorShadowRightMatrix;
 
@@ -602,8 +608,10 @@ public:
 
     //void SetIsTargetedTrue() { m_vehicleStruct00.vehicleData.isTargetedTrue = true; };
     //void SetIsTargetedTrue() { m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; };
-    void SetIsPlayerTargetedTrue() { m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; };
-    void SetIsMissileTargetedTrue() { m_vehicleStruct00.vehicleData.isMissileTargetedTrue = true; };
+    //void SetIsPlayerTargetedTrue() { m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; };
+    void SetIsPlayerTargetedTrue(const DirectX::SimpleMath::Vector3 aPos);
+    //void SetIsMissileTargetedTrue() { m_vehicleStruct00.vehicleData.isMissileTargetedTrue = true; };
+    void SetIsMissileTargetedTrue(const DirectX::SimpleMath::Vector3 aPos);
     void SetIsMissileDetonationTrue() { m_vehicleStruct00.vehicleData.isMissileDetonationTrue = true; };
 
     void SetPos(const DirectX::SimpleMath::Vector3 aPos) { m_vehicleStruct00.vehicleData.q.position = aPos; };

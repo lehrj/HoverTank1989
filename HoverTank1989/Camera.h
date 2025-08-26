@@ -254,8 +254,11 @@ private:
     const float                     m_fovModDelta = 0.69f;
     //const float                     m_fovMax = DirectX::XM_PI / 2.f;
     //const float                     m_fovMin = DirectX::XM_PI / 8.f;
+    //const float                     m_fovMax = DirectX::XM_PI / DirectX::XM_PI;
+    //const float                     m_fovMin = DirectX::XM_PI / 10.0f;
     const float                     m_fovMax = DirectX::XM_PI / DirectX::XM_PI;
-    const float                     m_fovMin = DirectX::XM_PI / 10.0f;
+    const float                     m_fovMin = DirectX::XM_PI / 24.0f;
+
     //const float                     m_fovMax = 1.0f;
     //const float                     m_fovMin = 0.3f;
     float                           m_fovZoomPercent = 0.0f;
@@ -558,4 +561,3 @@ private:
 
 
 };
-

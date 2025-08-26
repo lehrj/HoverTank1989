@@ -15044,9 +15044,9 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
 
     m_npcController->UpdateMissleGuidance(aMissile.guidance.targetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
 
-    if (m_npcController->UpdateMissleGuidanceBool(aMissile.guidance.targetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward) == false)
+    if (m_npcController->UpdateMissleGuidanceBool(aMissile.guidance.targetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward, aMissile.projectileData.q.position, aMissile.guidance.isTargetingLaserOn) == false)
     {
-        if (m_npcController->UpdateMissleGuidanceBool(m_currentTargetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward) == false)
+        if (m_npcController->UpdateMissleGuidanceBool(m_currentTargetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward, aMissile.projectileData.q.position, aMissile.guidance.isTargetingLaserOn) == false)
         {
             aMissile.guidance.isExplodingTrue = true;
             CreateExplosion(aMissile.projectileData.q.position, aMissile.projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);

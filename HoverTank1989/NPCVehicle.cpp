@@ -674,26 +674,54 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
+    DirectX::SimpleMath::Vector4 interiorColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+
     DirectX::SimpleMath::Vector4 targetColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 targetColorMissile = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     targetColorMissile = targetColor;
 
+    DirectX::SimpleMath::Vector4 finColor = jetHousingShellColor;
+    DirectX::SimpleMath::Vector4 jetBaseColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);;
     if (m_vehicleStruct00.vehicleData.isPlayerTargetedTrue == true)
     {
+        
         color = targetColor;
         mainBodyColor = targetColor;
         jetHousingColor = targetColor;
         ventColor = targetColor;
+        //ventColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         eyeColor = targetColor;
+        
+        eyeColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        interiorColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        rearColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        jetHousingShellColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        steeringColor = targetColor;
+
+        finColor = targetColor;
+        finColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        forwardColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        skirtColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        jetBaseColor = DirectX::Colors::White;
+
+        testShadow = DirectX::Colors::White;
+        testHighlight = targetColor;
+
+        testShadow = targetColor;
+        testHighlight = DirectX::Colors::White;
     }
 
     if (m_vehicleStruct00.vehicleData.isMissileTargetedTrue == true)
     {
+        /*
         color = targetColorMissile;
         mainBodyColor = targetColorMissile;
         jetHousingColor = targetColorMissile;
         ventColor = targetColorMissile;
         eyeColor = targetColorMissile;
+        */
     }
 
    /*
@@ -724,6 +752,44 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::SimpleMath::Vector3 mainLightDirection2;
     m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
     
+
+    if (m_vehicleStruct00.vehicleData.isPlayerTargetedTrue == true)
+    {
+        //mainLightDirection0 *= -1.0f;
+        //mainLightDirection1 *= -1.0f;
+        //mainLightDirection2 *= -1.0f;
+    }
+
+    for (unsigned int i = 0; i < m_vehicleStruct00.npcModel.laserLightPosVec.size(); ++i)
+    {
+        auto laserDir = m_vehicleStruct00.vehicleData.q.position - m_vehicleStruct00.npcModel.laserLightPosVec[i];
+        laserDir.Normalize();
+
+        if (i == 0)
+        {
+            mainLightDirection0 = laserDir;
+        }
+        else if (i == 1)
+        {
+            mainLightDirection1 = laserDir;
+        }
+        else if (i == 2)
+        {
+            mainLightDirection2 = laserDir;
+        }
+        else
+        {
+            i = m_vehicleStruct00.npcModel.laserLightPosVec.size();
+        }
+    }
+
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, mainLightDirection0, 20.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, mainLightDirection1, 20.0f, 0.0f, DirectX::Colors::Yellow);
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, mainLightDirection2, 20.0f, 0.0f, DirectX::Colors::Green);
+
+    m_debugData->ToggleDebugOff();
+
     aEffect->SetLightDirection(0, mainLightDirection0);
     aEffect->SetLightDirection(1, mainLightDirection1);
     aEffect->SetLightDirection(2, mainLightDirection2);
@@ -754,7 +820,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     m_vehicleStruct00.npcModel.jetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldBaseJetHousingMatrix);
-    aEffect->SetColorAndAlpha(jetHousingShellColor);
+    aEffect->SetColorAndAlpha(jetBaseColor);
     m_vehicleStruct00.npcModel.baseJetHousingShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldBaseJetShadowMatrix);
@@ -904,25 +970,30 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     aEffect->SetColorAndAlpha(ventColor);
     m_vehicleStruct00.npcModel.wingShape->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldWingFinLeftMatrix);
-    aEffect->SetColorAndAlpha(jetHousingShellColor);
+    aEffect->SetColorAndAlpha(finColor);
     m_vehicleStruct00.npcModel.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldWingFinRightMatrix);
-    aEffect->SetColorAndAlpha(jetHousingShellColor);
+    aEffect->SetColorAndAlpha(finColor);
     m_vehicleStruct00.npcModel.wingFinShape->Draw(aEffect.get(), aInputLayout.Get());
 
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldSteeringMatrix);
     aEffect->SetColorAndAlpha(steeringColor);
     m_vehicleStruct00.npcModel.steeringShape->Draw(aEffect.get(), aInputLayout.Get());
 
+    // interior shadows
+    if (m_vehicleStruct00.vehicleData.isPlayerTargetedTrue == false)
+    {
+        aEffect->SetWorld(m_vehicleStruct00.npcModel.worldInteriorShadowLeftMatrix);
+        aEffect->SetColorAndAlpha(interiorColor);
+        m_vehicleStruct00.npcModel.interiorShadowShape->Draw(aEffect.get(), aInputLayout.Get());
+        aEffect->SetWorld(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix);
+        aEffect->SetColorAndAlpha(interiorColor);
+        m_vehicleStruct00.npcModel.interiorShadowShape->Draw(aEffect.get(), aInputLayout.Get());
+    }
+
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldVentMatrix1);
     aEffect->SetColorAndAlpha(ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(aEffect.get(), aInputLayout.Get());
-    aEffect->SetWorld(m_vehicleStruct00.npcModel.worldModelMatrix);
-    aEffect->SetColorAndAlpha(DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.modelShape->Draw(aEffect.get(), aInputLayout.Get());
-    aEffect->SetWorld(m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix);
-    aEffect->SetColorAndAlpha(DirectX::Colors::Black);
-    m_vehicleStruct00.npcModel.modelShape->Draw(aEffect.get(), aInputLayout.Get());
     aEffect->SetWorld(m_vehicleStruct00.npcModel.worldVentMatrix2);
     aEffect->SetColorAndAlpha(ventColor);
     m_vehicleStruct00.npcModel.ventShape->Draw(aEffect.get(), aInputLayout.Get());
@@ -1000,7 +1071,6 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     //m_vehicleStruct00.vehicleData.isTargetedTrue = false;
     m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = false;
     m_vehicleStruct00.vehicleData.isMissileTargetedTrue = false;
-
 }
 
 
@@ -1382,7 +1452,7 @@ DirectX::SimpleMath::Vector3 NPCVehicle::GetSlopeForce(const DirectX::SimpleMath
 void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceContext1> aContext,
     NPCModel& aModel, VehicleHardPoints& aHardPoints, const DirectX::SimpleMath::Vector3 aDimensions)
 {
-
+    aModel.laserLightPosVec.clear();
     const float low = 0.0f;
     const float high = 1.0f;
     float x = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
@@ -1425,6 +1495,9 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.bodyMainShadowTranslationMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(baseShadowSize.x * 0.04f, baseShadowSize.y * 0.45f, 0.0f));
     aModel.worldBodyMainShadowMatrix = aModel.localBodyMainShadowMatrix;
 
+    aModel.localModelMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localModelMatrix *= centerMassTranslation;
+
     DirectX::SimpleMath::Vector3 mainBodySize = aDimensions;
     mainBodySize.x -= zFightOffset * 2.0f;
     mainBodySize.y -= (zFightOffset * 10.0f) * 2.0f;
@@ -1434,33 +1507,47 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     mainBodySize.x -= mainBodyOffset;
     const float mainBodyCutOff = 3.0f;
     mainBodySize.x -= mainBodyCutOff;
-    aModel.modelShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), mainBodySize);
+    aModel.interiorShadowShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), mainBodySize);
     const float ventShadowAngle = Utility::ToRadians(-3.5f);
     DirectX::SimpleMath::Vector3 mainBodyTranslation(-(mainBodyOffset * 0.5f) + (mainBodyCutOff * 0.5f), 0.0f, 0.0f);
     mainBodyTranslation.z = -mainBodySize.z * 0.5f;
+
+    const float intShadowScaleX = 0.95f;
+    const float intShadowScaleY = 0.9f;
+    const float intShadowScaleZ = 0.8f;
 
     DirectX::SimpleMath::Vector3 shadowTranslation = mainBodyTranslation;
     shadowTranslation.x += mainBodySize.z - (mainBodySize.z * cos(ventShadowAngle));
     shadowTranslation.x += -0.2f;
     shadowTranslation.z += -0.205f;
-    aModel.localModelMatrix = DirectX::SimpleMath::Matrix::Identity;
-    aModel.localModelMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(ventShadowAngle);
-    aModel.localModelMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(shadowTranslation);
-    aModel.localModelMatrix *= centerMassTranslation;
-    aModel.worldModelMatrix = aModel.localModelMatrix;
 
+    aModel.localInteriorShadowLeftMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localInteriorShadowLeftMatrix = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(intShadowScaleX, intShadowScaleY, intShadowScaleZ));
+    aModel.localInteriorShadowLeftMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(ventShadowAngle);
+    //shadowTranslation.z *= -1.0f;
+    aModel.localInteriorShadowLeftMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(shadowTranslation);
+    aModel.localInteriorShadowLeftMatrix *= centerMassTranslation;
+    aModel.worldInteriorShadowLeftMatrix = aModel.localInteriorShadowLeftMatrix;
+
+    shadowTranslation.z *= -1.0f;
     aModel.localInteriorShadowRightMatrix = DirectX::SimpleMath::Matrix::Identity;
+    aModel.localInteriorShadowRightMatrix = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(intShadowScaleX, intShadowScaleY, intShadowScaleZ));
     aModel.localInteriorShadowRightMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(-ventShadowAngle);
-    shadowTranslation.z *= -1.0f;;
+   
     aModel.localInteriorShadowRightMatrix *= DirectX::SimpleMath::Matrix::CreateTranslation(shadowTranslation);
     aModel.localInteriorShadowRightMatrix *= centerMassTranslation;
     aModel.worldInteriorShadowRightMatrix = aModel.localInteriorShadowRightMatrix;
 
     // rear body
     DirectX::SimpleMath::Vector3 rearBodySize = aDimensions;
+    //rearBodySize.x *= 0.3f;
+    //rearBodySize.y *= 0.95f;
+    //rearBodySize.z *= 1.03f;
+
     rearBodySize.x *= 0.3f;
     rearBodySize.y *= 0.95f;
-    rearBodySize.z *= 1.03f;
+    rearBodySize.z *= 1.1f;
+
     float rearBodyOffset = 2.0f;
     rearBodySize.x -= rearBodyOffset;
     rearBodyOffset = 4.0f;
@@ -1738,7 +1825,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     skirtSize.y *= 0.5f;
     skirtSize.z *= 1.01f;
     DirectX::SimpleMath::Vector3 skirtTranslation;
-    skirtTranslation.x = -0.3f;
+    //skirtTranslation.x = -0.3f;
+    skirtTranslation.x = 0.0f;
     skirtTranslation.y = (-aDimensions.y * 0.5f) + (skirtSize.y * 0.5f) - zFightOffset;
     skirtTranslation.z = 0.0f;
     aModel.skirtShape = DirectX::GeometricPrimitive::CreateBox(aContext.Get(), skirtSize);
@@ -1786,7 +1874,8 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     DirectX::SimpleMath::Vector3 eyeSize;
     eyeSize.x = 2.f;
     eyeSize.y = 1.0f;
-    eyeSize.z = 0.3f;
+    //eyeSize.z = 0.3f;
+    eyeSize.z = 0.5f;
     DirectX::SimpleMath::Vector3 eyeLeftTranslation = noseConeTranslation;
     eyeLeftTranslation.x = aDimensions.x * 0.5f;
     eyeLeftTranslation.x += -1.055f;
@@ -1977,13 +2066,19 @@ void NPCVehicle::InitializeNPCModelStruct(Microsoft::WRL::ComPtr<ID3D11DeviceCon
     aModel.worldThrottleMatrix = aModel.localThrottleMatrix;
 
     DirectX::SimpleMath::Vector3 forwardShapeSize = aDimensions;
-    forwardShapeSize.x *= 0.85f;
-    forwardShapeSize.y *= 0.52f;
+    //forwardShapeSize.x *= 0.85f;
+    //forwardShapeSize.y *= 0.52f;
+    //forwardShapeSize.z *= 1.05f;
+
+    forwardShapeSize.x *= 0.75f;
+    forwardShapeSize.y *= 0.55f;
     forwardShapeSize.z *= 1.05f;
+
     aModel.forwardShape = DirectX::GeometricPrimitive::CreateCylinder(aContext.Get(), forwardShapeSize.y, forwardShapeSize.x, 3);
     DirectX::SimpleMath::Vector3 forwardShapeTranslation;
     forwardShapeTranslation.x = (aDimensions.x * 0.5f) - (forwardShapeSize.x * 0.292f);
-    forwardShapeTranslation.y = aDimensions.y * 0.26f;
+    //forwardShapeTranslation.y = aDimensions.y * 0.26f;
+    forwardShapeTranslation.y = forwardShapeSize.y * 0.5f;
     forwardShapeTranslation.z = 0.0f;
     aModel.localForwardMatrix = DirectX::SimpleMath::Matrix::Identity;
     aModel.localForwardMatrix *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-30.0f));
@@ -2604,6 +2699,20 @@ void NPCVehicle::SetCollisionVal(const bool aIsCollisionTrue)
 void NPCVehicle::SetDebugData(std::shared_ptr<DebugData> aDebugPtr)
 {
     m_debugData = aDebugPtr;
+}
+
+void NPCVehicle::SetIsPlayerTargetedTrue(const DirectX::SimpleMath::Vector3 aPos)
+{
+    m_vehicleStruct00.vehicleData.isPlayerTargetedTrue = true; 
+    auto laserPos = aPos;
+    m_vehicleStruct00.npcModel.laserLightPosVec.push_back(laserPos);
+}
+
+void NPCVehicle::SetIsMissileTargetedTrue(const DirectX::SimpleMath::Vector3 aPos)
+{
+    m_vehicleStruct00.vehicleData.isMissileTargetedTrue = true;
+    auto laserPos = aPos;
+    m_vehicleStruct00.npcModel.laserLightPosVec.push_back(laserPos);
 }
 
 void NPCVehicle::SetNpcType(NPCType aNPCType)
@@ -3596,6 +3705,8 @@ void NPCVehicle::UpdateNPC(const double aTimeDelta)
         //m_vehicleStruct00.audioFx->emitter->SetPosition(m_vehicleStruct00.vehicleData.q.position);
         //m_vehicleStruct00.audioFx->emitter->SetVelocity(m_vehicleStruct00.vehicleData.q.velocity);
     }
+    
+    m_vehicleStruct00.npcModel.laserLightPosVec.clear();
 }
 
 void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
@@ -3604,6 +3715,10 @@ void NPCVehicle::UpdateNPCModel(const double aTimeDelta)
 
     m_vehicleStruct00.npcModel.worldModelMatrix = m_vehicleStruct00.npcModel.localModelMatrix;
     m_vehicleStruct00.npcModel.worldModelMatrix *= updateMat;
+
+    m_vehicleStruct00.npcModel.worldInteriorShadowLeftMatrix = m_vehicleStruct00.npcModel.localInteriorShadowLeftMatrix;
+    m_vehicleStruct00.npcModel.worldInteriorShadowLeftMatrix *= updateMat;
+
     m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix = m_vehicleStruct00.npcModel.localInteriorShadowRightMatrix;
     m_vehicleStruct00.npcModel.worldInteriorShadowRightMatrix *= updateMat;
 
