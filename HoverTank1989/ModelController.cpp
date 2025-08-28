@@ -123,7 +123,7 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetLightDirection(0, defaultLightDir0);
     aEffect->SetLightDirection(1, defaultLightDir1);
     aEffect->SetLightDirection(2, defaultLightDir2);
-
+    
     aModel.turretModel->Draw(deviceContext, states, aModel.turretWorldMatrix, aView, aProjection);
     aModel.barrelModel->Draw(deviceContext, states, aModel.barrelWorldMatrix, aView, aProjection);
    

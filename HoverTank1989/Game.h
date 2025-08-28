@@ -575,12 +575,19 @@ private:
     //const float m_startTrigger3 = 21.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
     
-    const float m_startTrigger0 = 4.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger0 = 4.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    ////const float m_startTrigger00 = 6.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger00 = 7.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger1 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    //const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+
+    const float m_startTrigger0 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger00 = 6.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger00 = 7.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger1 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger00 = 1.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger1 = 1.2f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger2 = 2.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
+    const float m_startTrigger3 = 3.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     
 
     /*
@@ -713,18 +720,15 @@ private:
     DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
     DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(600.0f, 0.0f, -900.0f);
 
-    // axels and gearbox
+    // axels 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat;
     DirectX::SimpleMath::Matrix                  m_spawnerMainAxelMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerMainAxelMat2;
-
     DirectX::SimpleMath::Quaternion              m_spawnerMainAxelQuat1 = DirectX::SimpleMath::Quaternion::Identity;
     DirectX::SimpleMath::Quaternion              m_spawnerMainAxelQuat2 = DirectX::SimpleMath::Quaternion::Identity;
-
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions = DirectX::SimpleMath::Vector3(70.0f, 20.0f, 20.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
-
     const DirectX::SimpleMath::Vector3           m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
 
     const DirectX::SimpleMath::Vector3           m_spawnerMainAxelPos1 = DirectX::SimpleMath::Vector3(m_spawnerPos.x, m_spawnerPos.y + 15.0f, m_spawnerPos.z - 25.0f);
@@ -732,18 +736,72 @@ private:
 
     // gearbox
     const DirectX::SimpleMath::Vector3           m_spawneGearboxDimensions = DirectX::SimpleMath::Vector3(40.0f, 18.5f, 54.0f);
+    const DirectX::SimpleMath::Vector3           m_spawneGearboxDimensionsDual = DirectX::SimpleMath::Vector3(40.0f, 16.0f, 4.0f);
+    std::unique_ptr<DirectX::GeometricPrimitive> m_shapeGearbox;
+    const float m_spawnerGearboxOffsetX = 5.0f;
+    const float m_spawnerGearboxOffsetY = - m_spawneGearboxDimensionsDual.y * 0.54f;
+    //const float m_spawnerGearboxOffsetZ = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f) - (m_spawneGearboxDimensionsDual.x * 1.0f);
+    const float m_spawnerGearboxOffsetZ = 25.0f;
+
     DirectX::SimpleMath::Matrix                  m_spawnerGearBoxMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerGearBoxMat2;
+    DirectX::SimpleMath::Matrix                  m_spawnerGearBoxPortMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerGearBoxPortMat2;
+    DirectX::SimpleMath::Matrix                  m_spawnerGearBoxStarMat1;
+    DirectX::SimpleMath::Matrix                  m_spawnerGearBoxStarMat2;
+
+
     const DirectX::SimpleMath::Vector3           m_spawnerGearboxOffset = DirectX::SimpleMath::Vector3(0.0f, -10.0f, 5.0f);
+    //const DirectX::SimpleMath::Vector3           m_spawnerGearboxOffset = DirectX::SimpleMath::Vector3(0.0f, -10.0f, -8.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerGearboxPos1 = DirectX::SimpleMath::Vector3(m_spawnerMainAxelPos1.x + m_spawnerGearboxOffset.x,
         m_spawnerMainAxelPos1.y + m_spawnerGearboxOffset.y, m_spawnerMainAxelPos1.z - m_spawnerGearboxOffset.z);
     const DirectX::SimpleMath::Vector3           m_spawnerGearboxPos2 = DirectX::SimpleMath::Vector3(m_spawnerMainAxelPos2.x + m_spawnerGearboxOffset.x,
         m_spawnerMainAxelPos2.y + m_spawnerGearboxOffset.y, m_spawnerMainAxelPos2.z + m_spawnerGearboxOffset.z);
 
+    // dual axels
+    const DirectX::SimpleMath::Vector3           m_spawnerMainGearDimensions = DirectX::SimpleMath::Vector3(15.0f, 21.0f, 20.0f);
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerMainAxelShape;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerMainAxelCoreShape;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelDualShape2;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelCoreDualShape2;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelDualShape3;
+    std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelCoreDualShape3;
+
+    const float m_spawnerAxelHeight2 = 10.0f;
+    const float m_spawnerAxelDiameter2 = 10.0f;
+
+    const float m_spawnerAxelHeight3 = 10.0f;
+    const float m_spawnerAxelDiameter3 = 5.0f;
+
+    const DirectX::SimpleMath::Vector3           m_spawnerSecondAxelPos2 = DirectX::SimpleMath::Vector3(m_spawnerMainAxelPos2.x, m_spawnerMainAxelPos2.y -6.0f, m_spawnerMainAxelPos2.z + 14.0f);
+    const DirectX::SimpleMath::Vector3           m_spawnerThirdAxelPos2 = DirectX::SimpleMath::Vector3(m_spawnerMainAxelPos2.x, m_spawnerMainAxelPos2.y - 4.0f, m_spawnerMainAxelPos2.z + 22.0f);
+
+    const float m_spawnerMainGearOffsetX = 5.0f;
+    const float m_spawnerMainGearOffsetY = 15.0;
+    const float m_spawnerMainGearOffsetZ = 27.0f;
+   
+    DirectX::SimpleMath::Matrix                  m_spawnerMainGearPortMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerMainGearStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerMainGearPortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerMainGearStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerSecondGearPortMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerSecondGearStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerSecondGearPortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerSecondGearStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+
+    DirectX::SimpleMath::Matrix                  m_spawnerThirdGearPortMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerThirdGearStarMat1 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerThirdGearPortMat2 = DirectX::SimpleMath::Matrix::Identity;
+    DirectX::SimpleMath::Matrix                  m_spawnerThirdGearStarMat2 = DirectX::SimpleMath::Matrix::Identity;
+
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape2;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat2;
     DirectX::SimpleMath::Vector3                 m_spawnerAxel2PosSpawner1 = DirectX::SimpleMath::Vector3(600.0f, 9.0f, 861.0f);
     DirectX::SimpleMath::Vector3                 m_spawnerAxel2PosSpawner2 = DirectX::SimpleMath::Vector3(600.0f, 9.0f, -861.0f);
+    //DirectX::SimpleMath::Vector3                 m_spawnerAxel2PosSpawner1 = DirectX::SimpleMath::Vector3(600.0f, 8.5f, 888.5f);
+    //DirectX::SimpleMath::Vector3                 m_spawnerAxel2PosSpawner2 = DirectX::SimpleMath::Vector3(600.0f, 8.5f, -888.5f);
     DirectX::SimpleMath::Matrix                  m_spawnerAxel2Spawner1 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Matrix                  m_spawnerAxel2Spawner2 = DirectX::SimpleMath::Matrix::Identity;
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions2 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
@@ -753,6 +811,8 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerAxel3Spawner2 = DirectX::SimpleMath::Matrix::Identity;
     DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner1 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, 853.0f);
     DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner2 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, -853.0f);
+    //DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner1 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, 895.5f);
+    //DirectX::SimpleMath::Vector3                 m_spawnerAxel3PosSpawner2 = DirectX::SimpleMath::Vector3(600.0f, 11.0f, -895.5f);
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions3 = DirectX::SimpleMath::Vector3(65.0f, 20.0f, 20.0f);
 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShaftShape;
@@ -783,7 +843,8 @@ private:
     const float                                  m_spawnerExtenderBaseHorizontalOffset = m_spawnerDoorDimensions.x * 0.5f;
     float                                        m_spawnerExtenderMod1 = 0.0f;
     float                                        m_spawnerExtenderMod2 = 0.0f;
-    const float                                  m_spawnerExtenderDistanceMax = 11.0f;
+    //const float                                  m_spawnerExtenderDistanceMax = 11.0f;
+    const float                                  m_spawnerExtenderDistanceMax = 13.0f;
     const float                                  m_spawnerExtenderDeployTime = 1.0f;
 
     DirectX::SimpleMath::Matrix                  m_spawnerExtenderUpperPortMat1 = DirectX::SimpleMath::Matrix::Identity;
