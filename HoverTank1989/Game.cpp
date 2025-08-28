@@ -4107,16 +4107,11 @@ void Game::DrawSpawner1to2()
     m_effect->SetWorld(m_spawnerBaseLowerMat2);
     m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
  
-    // rear base second floor 1
+    // rear base second floor 2
     m_effect->SetColorAndAlpha(m_spawnerColorStackSecondFloor);
     m_effect->SetWorld(m_spawnerBaseRearMat2);
     m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
     //m_spawnerBaseRoofShape->Draw(m_spawnerBaseRearMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorStackSecondFloor);
-
-    // inner back shadow1
-    m_effect->SetColorAndAlpha(m_spawnerColorInterior);
-    m_effect->SetWorld(m_spawnerInnerBackShadowMat2);
-    //m_spawnerInnerBackShadowShape->Draw(m_spawnerInnerBackShadowMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorInterior);
 
     // shadows
     if (m_isSpawnerLightOn2 == true)
@@ -4181,6 +4176,11 @@ void Game::DrawSpawner1to2()
     m_effect->SetColorAndAlpha(m_spawnerColorInterior);
     m_effect->SetWorld(m_spawnerShellInteriorMat2);
     m_spawnerOuterShape->Draw(m_effect.get(), m_inputLayout.Get());
+
+    // inner back shadow2
+    m_effect->SetColorAndAlpha(m_spawnerColorInterior);
+    m_effect->SetWorld(m_spawnerInnerBackShadowMat2);
+    m_spawnerInnerBackShadowShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     m_effect->SetSpecularColor(m_spawnerColorLightOff);
 }
@@ -6294,6 +6294,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         //m_npcController->DebugToggleAI();
         //m_camera->TransitionToNpcSpringCamera();
+
+        m_isDemoTriggerTrue0 = true;
     }
     if (m_kbStateTracker.pressed.Y)
     {
@@ -7249,6 +7251,12 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             volume = m_vehicle->GetAudioVolDrive();
             pitch = m_vehicle->GetAudioPitchDrive();
             volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("drive  pitch  = ", pitch, "");
+            m_debugData->DebugPushUILineDecimalNumber("drive  volume = ", volume, "");
+            m_debugData->ToggleDebugOff();
+
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
@@ -7356,6 +7364,12 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             volume = m_vehicle->GetAudioVolHover();
             pitch = m_vehicle->GetAudioPitchHover();
+            volume *= m_audioPlayerHoverMod;
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("hover pitch  = ", pitch, "");
+            m_debugData->DebugPushUILineDecimalNumber("hover volume = ", volume, "");
+            m_debugData->ToggleDebugOff();
 
             //m_debugData->ToggleDebugOnOverRide();
             m_debugData->DebugPushUILineDecimalNumber("pitch  Used    = ", pitch, "");
@@ -7618,9 +7632,14 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                     m_soundFxVecTest[i]->fx->Stop();
                     m_soundFxVecTest[i]->isDestroyTrue = true;
                 }
+                else if (m_soundFxVecTest[i]->volume > 1.0f)
+                {
+                    m_soundFxVecTest[i]->volume = 1.0f;
+                    m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume * m_audioLockToneVolMod);
+                }
                 else
                 {
-                    m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume);
+                    m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume* m_audioLockToneVolMod);
                 }
             }
             else
@@ -7630,13 +7649,16 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                 {
                     m_soundFxVecTest[i]->volume = 1.0f;
                 }
-                m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume);
+                m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume * m_audioLockToneVolMod);
             }
 
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+
+            m_debugData->ToggleDebugOnOverRide();
+            m_debugData->DebugPushUILineDecimalNumber("m_soundFxVecTest[i]->volume = ", m_soundFxVecTest[i]->volume, "");
+            m_debugData->ToggleDebugOff();
         }
-        
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON || 
                     m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)
         {
@@ -7982,6 +8004,12 @@ void Game::UpdateAutoFire()
 
 void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
 {
+    if (m_isDemoTriggerTrue0 == true)
+    {
+        m_isDemoTriggerTrue0 = false;
+        SetUiTextDisplay("Deploying Target Drones");
+
+    }
     if (m_isStartTriggerTrue0 == false)
     {
         if (m_timer.GetTotalSeconds() > m_startTrigger0)

@@ -370,6 +370,7 @@ private:
     //const float m_audioDistanceRocketLoopable = 14.0f;
     const float m_audioDistanceRocketLoopable = 75.0f;
     const float m_audioLockToneFadeRate = 5.0f;
+    const float m_audioLockToneVolMod = 1.0f;
 
     float                                       m_musicFadeOutTimer = 0.0f;
     const float                                 m_musicFadeOutDuration = 5.0f;
@@ -382,7 +383,9 @@ private:
     float m_audioVolumeTimer = 0.0f;
 
     const float m_audioAmbientMod = 1.0f;
-    const float m_audioPlayerVehicleMod = 1.0f;
+    const float m_audioPlayerVehicleMod = 0.2f;
+    const float m_audioPlayerHoverMod = 0.5f;
+    const float m_audioPlayerDriveMod = 1.0f;
     const float m_audioNPCMod = 1.0f;
     const float m_audioSpawnerMod = 1.0f;
     const float m_audioLogoMod = 1.0f;
@@ -521,6 +524,8 @@ private:
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
+
+    bool m_isDemoTriggerTrue0 = false;
 
     bool m_isStartTriggerTrue0 = false;
     bool m_isStartTriggerTrue00 = false;
@@ -729,7 +734,8 @@ private:
     DirectX::SimpleMath::Quaternion              m_spawnerMainAxelQuat2 = DirectX::SimpleMath::Quaternion::Identity;
     const DirectX::SimpleMath::Vector3           m_spawnerAxelDimensions = DirectX::SimpleMath::Vector3(70.0f, 20.0f, 20.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerAxelOffset = DirectX::SimpleMath::Vector3(0.0f, 15.0f, 25.0f);
-    const DirectX::SimpleMath::Vector3           m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
+    //const DirectX::SimpleMath::Vector3           m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerAxelOffset.z + (m_spawnerAxelDimensions.z * 0.5f));
+    const DirectX::SimpleMath::Vector3           m_spawnerShadowOffset = DirectX::SimpleMath::Vector3(0.0f, 0.0f, -15.0f);
 
     const DirectX::SimpleMath::Vector3           m_spawnerMainAxelPos1 = DirectX::SimpleMath::Vector3(m_spawnerPos.x, m_spawnerPos.y + 15.0f, m_spawnerPos.z - 25.0f);
     const DirectX::SimpleMath::Vector3           m_spawnerMainAxelPos2 = DirectX::SimpleMath::Vector3(m_spawnerPos.x, m_spawnerPos.y + 15.0f, m_spawnerPos2.z + 25.0f);

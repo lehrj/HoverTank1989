@@ -6483,7 +6483,7 @@ bool FireControl::GetIsMissileExplodingTrue() const
         if (m_missileVec[i].guidance.uniqueId == m_camTrackMissileId)
         {
             isFoundTrue = true;
-            if (m_missileVec[i].guidance.targetDistance < 100.0f)
+            if (m_missileVec[i].guidance.targetDistance < m_missileConsts.cameraChaangeRange)
             {
                 isExplodingTrue = true;
             }

@@ -644,7 +644,8 @@ struct MissileConsts
     const float angularDragMod = 0.8f;
 
     const float detonationRange = 10.0f;
-    const float detonationDrawDelay = 0.25f;
+    const float detonationDrawDelay = 2.25f;
+    const float cameraChaangeRange = 140.0f;
     const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
 
     const float explosionRadiusInitial = dimensions.z * 2.0f;

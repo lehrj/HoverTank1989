@@ -88,7 +88,7 @@ struct ControlInput
     const float turretYawDecayRate = 0.3f;
     const float turretYawMax = Utility::ToRadians(110.0f);
     const float turretYawMin = Utility::ToRadians(-110.0f);
-    const float turretYawInputRate = 0.3f;
+    const float turretYawInputRate = 0.4f;
 };
 
 struct Motion
@@ -660,7 +660,7 @@ private:
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-500.0f, 15.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-200.0f, 15.0f, -400.0f); // demo
-    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-200.0f, 15.0f, 0.0f); 
+    const DirectX::SimpleMath::Vector3 m_startPos = DirectX::SimpleMath::Vector3(-100.0f, 15.0f, 200.0f); 
 
     float m_throttleVolume = 0.0f;
 

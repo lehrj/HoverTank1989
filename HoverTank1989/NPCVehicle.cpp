@@ -657,8 +657,9 @@ void NPCVehicle::DebugToggleAI()
 void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
     DirectX::SimpleMath::Vector4 color = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
     DirectX::SimpleMath::Vector4 mainBodyColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-    DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);     ////
+
     DirectX::SimpleMath::Vector4 rearColor = DirectX::SimpleMath::Vector4(0.3f, 0.3f, 0.3f, 1.0f);
     DirectX::SimpleMath::Vector4 skirtColor = DirectX::SimpleMath::Vector4(0.4f, 0.4f, 0.4f, 1.0f);
     DirectX::SimpleMath::Vector4 steeringColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -674,8 +675,6 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::SimpleMath::Vector4 testShadow = DirectX::SimpleMath::Vector4(-0.5f, -0.5f, -0.5f, 1.0f);
     DirectX::SimpleMath::Vector4 testHighlight = DirectX::SimpleMath::Vector4(0.9f, 0.9f, 0.9f, 1.0f);
 
-    DirectX::SimpleMath::Vector4 interiorColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-
     DirectX::SimpleMath::Vector4 targetColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     DirectX::SimpleMath::Vector4 targetColorMissile = DirectX::SimpleMath::Vector4(0.0f, 1.0f, 0.0f, 1.0f);
     targetColorMissile = targetColor;
@@ -683,11 +682,18 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     DirectX::SimpleMath::Vector4 finColor = jetHousingShellColor;
     DirectX::SimpleMath::Vector4 jetBaseColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
+    //DirectX::SimpleMath::Vector4 noseColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 noseColor = jetHousingShellColor;
+    //DirectX::SimpleMath::Vector4 forwardColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);     ////
+    DirectX::SimpleMath::Vector4 forwardColor = jetHousingShellColor;
+
+    //DirectX::SimpleMath::Vector4 interiorColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+    DirectX::SimpleMath::Vector4 interiorColor = jetHousingShellColor;
 
     DirectX::SimpleMath::Vector3 mainLightDirection0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
     DirectX::SimpleMath::Vector3 mainLightDirection1 = DirectX::SimpleMath::Vector3(0.7198464, 0.3420201, 0.6040227);
     DirectX::SimpleMath::Vector3 mainLightDirection2 = DirectX::SimpleMath::Vector3(0.4545195, -0.7660444, 0.4545195);
-    m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
+    //m_environment->GetLightDirectionalVectors(mainLightDirection0, mainLightDirection1, mainLightDirection2);
 
     DirectX::SimpleMath::Vector4 specular0 = DirectX::SimpleMath::Vector4(1.0f, 0.9607844f, 0.8078432f, 1.0f);
     DirectX::SimpleMath::Vector4 specular1 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -699,9 +705,9 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 
     DirectX::SimpleMath::Vector4 ambientColor = DirectX::SimpleMath::Vector4(0.05333332f, 0.09882354f, 0.1819608f, 1.0f);
 
-    if (m_vehicleStruct00.vehicleData.isPlayerTargetedTrue == true  && 1 == 0)
+    if (m_vehicleStruct00.vehicleData.isPlayerTargetedTrue == true || m_vehicleStruct00.vehicleData.isMissileTargetedTrue == true)
     {
-        
+        /*
         color = targetColor;
         mainBodyColor = targetColor;
         jetHousingColor = targetColor;
@@ -727,8 +733,8 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 
         testShadow = targetColor;
         testHighlight = DirectX::Colors::White;
-        
-        //ambientColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        */
+        //ambientColor = DirectX::SimpleMath::Vector4(0.8f, 0.0f, 0.0f, 1.0f);
     }
 
     if (m_vehicleStruct00.vehicleData.isMissileTargetedTrue == true)
@@ -766,28 +772,33 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
 
     aEffect->EnableDefaultLighting();
 
+    DirectX::SimpleMath::Vector4 diffuseAltColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    //DirectX::SimpleMath::Vector4 diffuseAltColor = DirectX::SimpleMath::Vector4(0.545098066f, 0.f, 0.f, 1.f);
+    DirectX::SimpleMath::Vector4 specularAltColor = DirectX::SimpleMath::Vector4(0.7f, 0.3f, 0.3f, 1.0f);
+
     for (unsigned int i = 0; i < m_vehicleStruct00.npcModel.laserLightPosVec.size(); ++i)
     {
         auto laserDir = m_vehicleStruct00.vehicleData.q.position - m_vehicleStruct00.npcModel.laserLightPosVec[i];
         laserDir.Normalize();
-
-        if (i == 0)
+        aEffect->SetSpecularPower(16.0f);
+        //ambientColor = DirectX::SimpleMath::Vector4(0.8f, 0.0f, 0.0f, 1.0f);
+        if (i == 2)
         {
             mainLightDirection0 = laserDir;
-            specular0 = targetColor;
-            diffuse0 = targetColor;   
+            specular0 = specularAltColor;
+            diffuse0 = diffuseAltColor;
         }
         else if (i == 1)
         {
             mainLightDirection1 = laserDir;
-            specular1 = targetColor;
-            diffuse1 = targetColor;
+            //specular1 = specularAltColor;
+            //diffuse1 = diffuseAltColor;
         }
-        else if (i == 2)
+        else if (i == 0)
         {
             mainLightDirection2 = laserDir;
-            specular2 = targetColor;
-            diffuse2 = targetColor;
+            specular2 = specularAltColor;
+            diffuse2 = diffuseAltColor;
         }
         else
         {
@@ -795,11 +806,12 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
         }
     }
 
+
     //mainLightDirection0 *= -1.0f;
     //mainLightDirection1 *= -1.0f;
     //mainLightDirection2 *= -1.0f;
 
-    aEffect->SetAmbientLightColor(ambientColor);
+    //aEffect->SetAmbientLightColor(ambientColor);
 
     aEffect->SetLightSpecularColor(0, specular0);
     aEffect->SetLightDiffuseColor(0, diffuse0);
@@ -809,7 +821,7 @@ void NPCVehicle::DrawNPC(const DirectX::SimpleMath::Matrix aView, const DirectX:
     aEffect->SetLightDiffuseColor(2, diffuse2);
 
     //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, mainLightDirection0, 20.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, mainLightDirection0, 20.0f, 0.0f, DirectX::Colors::Lavender);
     m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, mainLightDirection1, 20.0f, 0.0f, DirectX::Colors::Yellow);
     m_debugData->PushDebugLine(m_vehicleStruct00.vehicleData.q.position, mainLightDirection2, 20.0f, 0.0f, DirectX::Colors::Green);
     m_debugData->ToggleDebugOff();
