@@ -383,12 +383,11 @@ private:
     float m_audioVolumeTimer = 0.0f;
 
     const float m_audioAmbientMod = 1.0f;
-    const float m_audioPlayerVehicleMod = 0.2f;
     const float m_audioPlayerHoverMod = 0.5f;
-    const float m_audioPlayerDriveMod = 1.0f;
-    const float m_audioNPCMod = 1.0f;
-    const float m_audioSpawnerMod = 1.0f;
-    const float m_audioLogoMod = 1.0f;
+    const float m_audioPlayerDriveMod = 0.3f;
+    const float m_audioNPCMod = 0.7f;
+    const float m_audioSpawnerMod = 0.0f;
+    const float m_audioLogoMod = 0.0f;
 
     const float m_audioPlayerDriveVolMod = 0.6f;
     const float m_audioPlayerHoverVolMod = 0.4f;

@@ -7250,12 +7250,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             volume = m_vehicle->GetAudioVolDrive();
             pitch = m_vehicle->GetAudioPitchDrive();
-            volume *= m_audioVolumeGamePlay * m_audioPlayerVehicleMod;
-
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("drive  pitch  = ", pitch, "");
-            m_debugData->DebugPushUILineDecimalNumber("drive  volume = ", volume, "");
-            m_debugData->ToggleDebugOff();
+            volume *= m_audioVolumeGamePlay * m_audioPlayerDriveMod;
 
             m_soundFxVecTest[i]->fx->SetPitch(pitch);
             m_soundFxVecTest[i]->fx->SetVolume(volume);
@@ -7365,17 +7360,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             volume = m_vehicle->GetAudioVolHover();
             pitch = m_vehicle->GetAudioPitchHover();
             volume *= m_audioPlayerHoverMod;
-
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("hover pitch  = ", pitch, "");
-            m_debugData->DebugPushUILineDecimalNumber("hover volume = ", volume, "");
-            m_debugData->ToggleDebugOff();
-
-            //m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("pitch  Used    = ", pitch, "");
-            m_debugData->DebugPushUILineDecimalNumber("volume Used    = ", volume, "");
-
-            m_debugData->ToggleDebugOff();
 
             //volume *= m_audioPlayerHoverVolMod;
             //volume += m_audioPlayerHoverVolMin;
@@ -7655,9 +7639,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("m_soundFxVecTest[i]->volume = ", m_soundFxVecTest[i]->volume, "");
-            m_debugData->ToggleDebugOff();
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON || 
                     m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)
