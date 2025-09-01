@@ -516,10 +516,10 @@ private:
     const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
- //   const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
+   // const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
-
+    //const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 0.4f;
     const float                         m_logoDisplayGap = 0.35f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
@@ -586,6 +586,8 @@ private:
     //const float m_startTrigger2 = 9.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
+    
+    
     const float m_startTrigger0 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger00 = 6.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger00 = 1.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
@@ -721,9 +723,10 @@ private:
     DirectX::SimpleMath::Matrix                  m_spawnerShellInteriorMat1;
     DirectX::SimpleMath::Matrix                  m_spawnerShellInteriorMat2;
 
-    DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
-    DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(600.0f, 0.0f, -900.0f);
-
+    //DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 0.0f, 900.0f);
+    //DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(600.0f, 0.0f, -900.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 75.0f, 900.0f);
+    DirectX::SimpleMath::Vector3                 m_spawnerPos2 = DirectX::SimpleMath::Vector3(600.0f, 75.0f, -900.0f);
     // axels 
     std::unique_ptr<DirectX::GeometricPrimitive> m_spawnerAxelShape;
     DirectX::SimpleMath::Matrix                  m_spawnerAxelMat;
@@ -1157,6 +1160,11 @@ private:
     const float m_missileRangeHeight = 0.5f;
     const DirectX::SimpleMath::Vector3 m_missileRangePos1 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, (m_missileRangeDistance * 0.5f));
     const DirectX::SimpleMath::Vector3 m_missileRangePos2 = DirectX::SimpleMath::Vector3(m_missileRangeDepth, m_missileRangeHeight, -(m_missileRangeDistance * 0.5f));
+
+
+    //const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f);
+    //const DirectX::SimpleMath::Vector3 m_introTarg0 = DirectX::SimpleMath::Vector3(340.0f, 10.0f, 0.0f);
+
 
     const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(1000.0f, 170.0f, 900.0f);
     //const DirectX::SimpleMath::Vector3 m_introPos0 = DirectX::SimpleMath::Vector3(800.0f, 120.0f, 1100.0f);

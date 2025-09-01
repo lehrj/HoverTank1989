@@ -4147,8 +4147,9 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
             sphereMat *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(plumeflickerScaleWidth, plumeflickerScaleWidth, plumeflickerScaleWidth));
 
             plumeConeScale = plumeflickerScaleWidth;
-
+           
             flickerPlumeColor = DirectX::Colors::Red;
+            flickerPlumeColor = m_ammoMissile.modelData.plumeColorAlt;
         }
         else
         {
@@ -6483,7 +6484,7 @@ bool FireControl::GetIsMissileExplodingTrue() const
         if (m_missileVec[i].guidance.uniqueId == m_camTrackMissileId)
         {
             isFoundTrue = true;
-            if (m_missileVec[i].guidance.targetDistance < m_missileConsts.cameraChaangeRange)
+            if (m_missileVec[i].guidance.targetDistance < m_missileConsts.cameraChangeRange)
             {
                 isExplodingTrue = true;
             }

@@ -532,11 +532,16 @@ private:
     //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 1075.0f);
     //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(840.0f, 66.0f, 690.0f);
 
-    DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(700.0f, 10.0f, -900.0f);
-    DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(200.0f, 66.0f, -700.0f);
-
-    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 1000.0f);
+    ///DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 1000.0f);
     //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(880.0f, 66.0f, 690.0f);
+     
+    //DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(700.0f, 10.0f, -900.0f);
+    //DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(200.0f, 66.0f, -700.0f);
+    DirectX::SimpleMath::Vector3 m_snapTargPos = DirectX::SimpleMath::Vector3(700.0f, 10.0f, -675.0f);
+    DirectX::SimpleMath::Vector3 m_snapCamPos = DirectX::SimpleMath::Vector3(200.0f, 126.0f, -525.0f);
+
+
+
 
     float m_snapSmoothStepCam = 0.1f;
     float m_snapSmoothStepTarg = 0.09f;

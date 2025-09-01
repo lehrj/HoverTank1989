@@ -200,7 +200,6 @@ struct NPCModel
     DirectX::SimpleMath::Matrix localJetIntakeCoverRightMatrix2;
     DirectX::SimpleMath::Matrix worldJetIntakeCoverRightMatrix2;
 
-    //std::unique_ptr<DirectX::GeometricPrimitive>    modelShape;
     std::unique_ptr<DirectX::GeometricPrimitive>    interiorShadowShape;
     DirectX::SimpleMath::Matrix localModelMatrix;
     DirectX::SimpleMath::Matrix worldModelMatrix;
@@ -411,8 +410,9 @@ struct JumpData
 
     float jumpCoolDownTimer = 0.0f;
     const float jumpCoolDownTotal = 8.0f;
-    const float jumpVelocity = 25000.0f;
-    const float impulseBurnTimeTotal = 1.0f;
+    //const float jumpVelocity = 25000.0f;
+    //const float impulseBurnTimeTotal = 1.0f;
+    const float impulseBurnTimeTotal = 1.4f;
     float impulseBurnTimer = 0.0f;
 
     Utility::ImpulseForce impulseBurnForce;
@@ -522,6 +522,7 @@ public:
     NPCVehicle();
     void ActivateAi();
     bool ActivateJump();
+    bool ActivateJumpOldFig8();
     void ActivateNPC();
     void CalculateImpactForce(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
     void CalculateImpactForceFromProjectile(const Utility::ImpactForce aImpactForce, const DirectX::SimpleMath::Vector3 aImpactPos);
@@ -688,6 +689,7 @@ private:
     void UpdateImpulseForces(const float aTimeDelta);
     void UpdateJetCounterTorqueData(const float aTimeDelta);
     void UpdateJumpData(JumpData& aJumpData, const float aTimeDelta);
+    void UpdateJumpDataOldFig8(JumpData& aJumpData, const float aTimeDelta);
     void UpdateNPCModel(const double aTimeDelta);
     void UpdateVehicleForces(const float aTimeStep);
 
@@ -764,6 +766,15 @@ private:
     const bool m_isAiOn = true;
 
     const float m_spawnerDelay = 0.0f;
+
+    bool m_isSpawnJumpTriggerTrue = false;
+    bool m_isSpawnJumpActiveTrue = false;
+    float m_spawnJumpTimer = 0.0f;
+    const float m_spawnerJumpTimerMax = 6.3f;
+    const float m_jumpHeightTarget = 54.0f;
+    const float m_jumpLandingStartHeight = 0.0f;
+    const float m_jumpDeccelForceLimit = 35000.0f;
+    void SpawnerJumpUpdate(const float aTimeDelta);
 
 public:
     void ResetDebugPauseToggle() { m_isDebugPauseToggleTrue = false; };

@@ -147,13 +147,15 @@ private:
     int m_spawnCount = 0;
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 800.0f);
-    const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 835.0f);
+    //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 835.0f);
+    const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 85.0f, 835.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(0.0f, 10.0f, 0.0f);
 
     //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -900.0f);
-    const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -835.0f);
+    //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 10.0f, -835.0f);
+    const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(600.0f, 85.0f, -835.0f);
     const DirectX::SimpleMath::Vector3 m_spawnerHeadingAlt = DirectX::SimpleMath::Vector3::UnitZ;
 
     //const DirectX::SimpleMath::Vector3 m_spawnerPosAlt = DirectX::SimpleMath::Vector3(0.0f, 10.0f, -10.0f);

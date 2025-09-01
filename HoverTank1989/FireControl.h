@@ -510,6 +510,7 @@ struct MissileModel
 
     const DirectX::SimpleMath::Vector4 bodyColor = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 plumeColor = DirectX::SimpleMath::Vector4(1.000000000f, 0.270588249f, 0.000000000f, 1.40000000f);
+    const DirectX::SimpleMath::Vector4 plumeColorAlt = DirectX::SimpleMath::Vector4(1.f, 0.647058845f, 0.f, 1.f);
     const DirectX::SimpleMath::Vector4 testColor = DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     const DirectX::SimpleMath::Vector4 finColor1 = DirectX::SimpleMath::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
     const DirectX::SimpleMath::Vector4 finColor1Alt = DirectX::SimpleMath::Vector4(1.f, 0.647058845f, 0.f, 1.f);
@@ -645,7 +646,7 @@ struct MissileConsts
 
     const float detonationRange = 10.0f;
     const float detonationDrawDelay = 2.25f;
-    const float cameraChaangeRange = 140.0f;
+    const float cameraChangeRange = 140.0f;
     const DirectX::SimpleMath::Vector3 dimensions = DirectX::SimpleMath::Vector3(1.1f, 0.127f, 0.127f);
 
     const float explosionRadiusInitial = dimensions.z * 2.0f;
@@ -788,8 +789,8 @@ struct MissileConsts
     //const float tailThickness = ((dimensions.x * 0.3f) * 0.2f) * 0.3f;
     const float tailThickness = tailChord * 0.11f;
 
-    //const float cooldown = 3.0f;
-    const float cooldown = 1.0f;
+    const float cooldown = 3.0f;
+    //const float cooldown = 1.0f;
 
     const int selectFirePattern = 2;
 
@@ -1459,7 +1460,7 @@ private:
     bool m_isTubeRippleFireTrue = true;
     bool m_isTubeDualFireTrue = true;
     MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
-    bool m_isDualFireCoolDownOverRideTrue = false;
+    bool m_isDualFireCoolDownOverRideTrue = true;
 
     bool m_isAutoFireOn = false;
 

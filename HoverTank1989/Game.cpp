@@ -1296,7 +1296,7 @@ void Game::Render()
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
-        DrawSky();
+        //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         /*
@@ -6491,8 +6491,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->Jump();
-            //m_fireControl->ToggleAutoFire();
+            //m_vehicle->Jump();
+            m_fireControl->ToggleAutoFire();
         }
     }
     if (m_kbStateTracker.pressed.K)
@@ -7977,6 +7977,13 @@ void Game::TriggerFireWithAudio()
 
 void Game::UpdateAutoFire()
 {
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireOn() ", m_fireControl->GetIsAutoFireOn(), "");
+    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireTargetReadyTrue() ", m_fireControl->GetIsAutoFireTargetReadyTrue(), "");
+    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsFireCooldownTrue() ", m_fireControl->GetIsFireCooldownTrue(), "");
+    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireTargetValidTrue() ", m_fireControl->GetIsAutoFireTargetValidTrue(), "");
+    m_debugData->ToggleDebugOff();
+
     if (m_fireControl->GetIsAutoFireOn() == true && m_fireControl->GetIsAutoFireTargetReadyTrue() == true && m_fireControl->GetIsFireCooldownTrue() == false && m_fireControl->GetIsAutoFireTargetValidTrue() == true)
     {
         TriggerFireWithAudio();
