@@ -4646,9 +4646,9 @@ void NPCVehicle::SpawnerJumpUpdate(const float aTimeDelta)
         if (m_spawnJumpTimer >= m_spawnerJumpTimerMax)
         {
             m_isSpawnJumpTriggerTrue = true;
-            m_vehicleStruct00.vehicleData.jumpData.isJumpReady = true;
-            m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked = true;
-            bool testJump = ActivateJump();
+            //m_vehicleStruct00.vehicleData.jumpData.isJumpReady = true;
+            //m_vehicleStruct00.vehicleData.jumpData.isJumpUnlocked = true;
+            //bool testJump = ActivateJump();
         }
     }
 }
