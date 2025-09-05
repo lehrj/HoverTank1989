@@ -4624,22 +4624,26 @@ void Game::DrawIntroScene()
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
     const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
     const float fadeInStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
 
     const float fadeInEnd1 = startDelay + fadeDuration;
     //const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
     const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDurationBmwIn;
     const float fadeInEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
     const float fadeInEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
 
     const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
     const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
     const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod;
     const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
 
     const float fadeOutEnd1 = startDelay + logoDisplayDuration;
     const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
     const float fadeOutEnd3 = fadeOutStart3 + 2.0f;
     const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
 
     //const float fadeInStart4 = fadeOutEnd3 + 0.05f;
     //const float fadeInEnd4 = fadeInStart4 + 0.1f;
