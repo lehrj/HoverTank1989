@@ -292,6 +292,8 @@
     <Image Include="Art\Textures\rust_texture.jpg" />
     <Image Include="Art\Textures\skyTexture.jpg" />
     <Image Include="Art\Textures\TestOP.png" />
+    <Image Include="Art\Textures\textureBluePrint.png" />
+    <Image Include="Art\Textures\textureTopAttack.png" />
     <Image Include="Art\Textures\textureUV.png" />
     <Image Include="directx.ico" />
   </ItemGroup>

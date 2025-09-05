@@ -1228,6 +1228,83 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     UpdateAudio(aTimer);
 
+
+    m_debugData->ToggleDebugOnOverRide();
+    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+    {
+        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_GAMEPLAY = ", 1, "");
+    }
+    else if (m_currentGameState == GameState::GAMESTATE_GAMEPLAYSTART)
+    {
+        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_GAMEPLAYSTART = ", 1, "");
+    }
+    else if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
+    {
+        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_STARTSCREEN = ", 1, "");
+    }
+    else if (m_currentGameState == GameState::GAMESTATE_LOADSCREEN)
+    {
+        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_LOADSCREEN = ", 1, "");
+    }
+    else if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
+    {
+        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_INTROSCREEN = ", 1, "");
+    }
+    else 
+    {
+        m_debugData->DebugPushUILineWholeNumber("GameState::Unknonw = ", 0, "");
+    }
+
+    if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_ = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_BMW)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_BMW = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_BMWALT)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_BMWALT = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_JI)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_JI = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_JI_TEST)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_JI_TEST = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_MANUAL)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_MANUAL = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_STARTSCREEN = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_STARTUP)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_STARTUP = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_STARTSCREEN = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_TEST01)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_TEST01 = ", 1, "");
+    }
+    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_NULL)
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_NULL = ", 1, "");
+    }
+    else
+    {
+        m_debugData->DebugPushUILineWholeNumber("LightingState:: Error = ", 0, "");
+    }
+    m_debugData->ToggleDebugOff();
+
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTru00 = ", m_isStartTriggerTrue00, "");
     m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue0 = ", m_isStartTriggerTrue0, "");
@@ -1296,7 +1373,7 @@ void Game::Render()
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
-        //DrawSky();
+        DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         /*
@@ -1669,6 +1746,22 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normalUV.png", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularUV.png", nullptr, m_specularAutoGame.ReleaseAndGetAddressOf()));
 
+    // updated start screen
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureStartScreen.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalStartScreen.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularStartScreen.ReleaseAndGetAddressOf()));
+
+    // Blueprint screen
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureBluePrint.png", nullptr, m_textureBluePrint.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularBluePrint.ReleaseAndGetAddressOf()));
+
+    // Top attack
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureTopAttack.png", nullptr, m_textureTopAttack.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapTopAttack.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularTopAttack.ReleaseAndGetAddressOf()));
+
+    
     // Textures for teaser trailer    
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/LogoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/NormalMapTeaser.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
@@ -4529,30 +4622,34 @@ void Game::DrawIntroScene()
 
     const float fadeInStart1 = startDelay;
     const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
-    //const float ravenStart = fadeInStart2 - 0.2f;
-    const float ravenStart = fadeInStart2 - 2.0f;
     const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
 
     const float fadeInEnd1 = startDelay + fadeDuration;
     //const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
     const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDurationBmwIn;
     const float fadeInEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
 
     const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
     const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
     const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod;
+    const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration;
 
     const float fadeOutEnd1 = startDelay + logoDisplayDuration;
     const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd3 = fadeOutStart3 + 2.0f;
+    const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
+    //const float fadeInStart4 = fadeOutEnd3 + 0.05f;
+    //const float fadeInEnd4 = fadeInStart4 + 0.1f;
+    //const float fadeOutStart4 = fadeInEnd4 + 0.1f;
+    //const float fadeOutEnd4 = fadeOutStart4 + 0.1f;
+
+    //const float ravenStart = fadeInStart2 - 0.2f;
+    const float ravenStart = fadeInStart2 - 2.0f;
 
     const float fadeDice = m_jiTriggerTime1 + m_jiTriggerTimeDice;
-
-    float fadeOutEnd3 = fadeOutStart3 + 2.0f;
-
-    float fadeInStart4 = fadeOutEnd3 + 0.05f;
-    float fadeInEnd4 = fadeInStart4 + 0.1f;
-    float fadeOutStart4 = fadeInEnd4 + 0.1f;
-    float fadeOutEnd4 = fadeOutStart4 + 0.1f;
 
     m_gamePlayStartOffSetTimer = fadeOutEnd4;
 
@@ -4611,7 +4708,6 @@ void Game::DrawIntroScene()
             }
         }
 
-       
         if (m_timer.GetTotalSeconds() < m_jiTriggerTime1)
         {
             m_effect->SetTexture(m_textureJI0.Get());
@@ -4786,6 +4882,7 @@ void Game::DrawIntroScene()
     /////////////////////////// 
     else if (timeStamp < fadeInStart3)
     {
+        /*
         m_currentGameState = GameState::GAMESTATE_LOADSCREEN;
        // m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
 
@@ -4796,13 +4893,12 @@ void Game::DrawIntroScene()
         //m_camera->SetPos(DirectX::SimpleMath::Vector3(850.0f, 90.0f, 1000.0f));
         m_camera->SetPos(DirectX::SimpleMath::Vector3(930.0f, 66.0f, 922.0f));
 
-
-
         m_effect->EnableDefaultLighting();
         m_effect->SetFogEnabled(false);
         m_effect->SetTexture(m_texture.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
+        */
 
         //m_effect->SetTexture(m_textureJI.Get());
         //m_effect->SetNormalTexture(m_normalMapJI.Get());
@@ -4813,7 +4909,10 @@ void Game::DrawIntroScene()
 
         //m_effect->EnableDefaultLighting();
 
-        /*
+        m_effect->SetTexture(m_textureStartScreen.Get());
+        m_effect->SetNormalTexture(m_normalStartScreen.Get());
+        m_effect->SetSpecularTexture(m_specularStartScreen.Get());
+        
         // render nothing
         float colorIntensity = (fadeInEnd3 - timeStamp) / (fadeDuration);
         colorIntensity = 0.0;
@@ -4822,6 +4921,12 @@ void Game::DrawIntroScene()
         SetFogVals3(testFogTarget3, colorIntensity);
         //SetTerrainGridDimmer(colorIntensity);
 
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
+        m_camera->SetPos(m_introCamPos);
+        m_camera->SetTargetPos(m_introCamTarg);
+
+        /*
         m_camera->SetCameraStartPos(m_introCamPos);
         m_camera->SetCameraEndPos(m_startScreenCamPos);
         m_camera->SetDestinationPos(m_startScreenCamPos);
@@ -4836,10 +4941,11 @@ void Game::DrawIntroScene()
     }
     else if (timeStamp < fadeOutEnd3) // Render Start Screen
     {
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
-        m_effect->SetTexture(m_textureAutoGame.Get());
-        m_effect->SetNormalTexture(m_normalMapAutoGame.Get());
-        m_effect->SetSpecularTexture(m_specularAutoGame.Get());
+  //      m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
+
+        m_effect->SetTexture(m_textureStartScreen.Get());
+        m_effect->SetNormalTexture(m_normalStartScreen.Get());
+        m_effect->SetSpecularTexture(m_specularStartScreen.Get());
 
         if (timeStamp < fadeInEnd3)  // fade in
         {
@@ -4871,6 +4977,7 @@ void Game::DrawIntroScene()
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
 
+            /*
             float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_startScreenCamZoomPos);
             float speed = distance / (fadeOutEnd3 - fadeOutStart3);
 
@@ -4881,6 +4988,7 @@ void Game::DrawIntroScene()
             m_camera->SetTargetStartPos(m_startScreenCamPos);
             m_camera->SetTargetEndPos(m_teaserCamTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
+            */
         }
         else
         {
@@ -4893,11 +5001,11 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart4)
     {
         // render nothing
-        DirectX::SimpleMath::Vector3 preZoomPos = m_startScreenCamZoomPos;
-        preZoomPos.y = 0.0;
+        //DirectX::SimpleMath::Vector3 preZoomPos = m_startScreenCamZoomPos;
+        //preZoomPos.y = 0.0;
 
-        m_camera->SetPos(m_gamePlayStartCamPos1);
-        m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
+        //m_camera->SetPos(m_gamePlayStartCamPos1);
+        //m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
 
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
 
@@ -4911,22 +5019,23 @@ void Game::DrawIntroScene()
         m_effect2->SetFogEnabled(false);
         m_effect3->SetFogEnabled(false);
     }
+    /*
     else
     {
         m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
         m_camera->SetPos(m_gamePlayStartCamPos1);
         m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
     }
-
-    /*
+    */ 
     else if (timeStamp < fadeOutEnd4)  // Render GamePlay Start Screen
     {
         if (timeStamp < fadeInEnd4)  // fade in
         {
+            /*
             m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
             m_camera->SetPos(m_gamePlayStartCamPos1);
             m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
-
+            */
             float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
@@ -4956,9 +5065,10 @@ void Game::DrawIntroScene()
 
     if (timeStamp > fadeOutEnd4)
     {
-
+        m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     }
-    */
+    
+
     
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
@@ -4968,6 +5078,10 @@ void Game::DrawIntroScene()
     else if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         //DrawStartScreen();
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        DrawLogoScreen();
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        /*
         m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
 
         //m_effect->EnableDefaultLighting();
@@ -4975,9 +5089,19 @@ void Game::DrawIntroScene()
         m_effect->SetTexture(m_normalMap.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
+        */
     }
     else
     {
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+        m_effect->EnableDefaultLighting();
+        m_effect->SetFogEnabled(false);
+        m_effect->SetTexture(m_normalMap.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        m_effect->SetSpecularTexture(m_specular.Get());
+
+
         m_audioEngine->SetReverb(m_jIGameReverb);
         // turn on player vehicle engine sound
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
@@ -5963,6 +6087,19 @@ void Game::OnDeviceLost()
     m_normalMapBMW2.Reset();
     m_specularBMW.Reset();
     m_textureBMW.Reset();
+
+    m_normalStartScreen.Reset();
+    m_specularStartScreen.Reset();
+    m_textureStartScreen.Reset();
+
+    m_normalMapBluePrint.Reset();
+    m_specularBluePrint.Reset();
+    m_textureBluePrint.Reset();
+
+    m_normalMapTopAttack.Reset();
+    m_specularTopAttack.Reset();
+    m_textureTopAttack.Reset();
+
     m_normalMapAutoGame.Reset();
     m_specularAutoGame.Reset();
     m_textureAutoGame.Reset();
@@ -8009,7 +8146,7 @@ void Game::TriggerFireWithAudio()
 
 void Game::UpdateAutoFire()
 {
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireOn() ", m_fireControl->GetIsAutoFireOn(), "");
     m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireTargetReadyTrue() ", m_fireControl->GetIsAutoFireTargetReadyTrue(), "");
     m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsFireCooldownTrue() ", m_fireControl->GetIsFireCooldownTrue(), "");
@@ -8028,7 +8165,6 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
     {
         m_isDemoTriggerTrue0 = false;
         SetUiTextDisplay("Deploying Target Drones");
-
     }
     if (m_isStartTriggerTrue0 == false)
     {

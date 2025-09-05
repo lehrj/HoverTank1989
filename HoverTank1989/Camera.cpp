@@ -1347,7 +1347,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	m_fireControl->SetCurrentCameraPos(m_position);
 
 
-	//m_debugData->ToggleDebugOnOverRide();
+	m_debugData->ToggleDebugOnOverRide();
 
 	if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{

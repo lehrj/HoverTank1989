@@ -230,12 +230,26 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBMW2;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularBMW;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureBMW;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalStartScreen;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularStartScreen;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureStartScreen;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapBluePrint;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularBluePrint;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureBluePrint;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack;
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTeaser;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTeaser;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTeaser;
+
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout2;
@@ -587,14 +601,14 @@ private:
     //const float m_startTrigger3 = 11.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
 
     
-    
+    /* last good sept 1
     const float m_startTrigger0 = 1.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     //const float m_startTrigger00 = 6.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger00 = 1.5f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger1 = 1.2f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger2 = 2.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger3 = 3.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
-    
+    */
 
     /*
     const float m_startTrigger0 = 6.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
@@ -611,6 +625,13 @@ private:
     const float m_startTrigger2 = 22.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
+
+    const float m_startOffset = 0.0f;
+    const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
+    const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
+    const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
+    const float m_startTrigger2 = 22.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
+    const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;

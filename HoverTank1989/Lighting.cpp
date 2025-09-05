@@ -15,6 +15,12 @@ DirectX::SimpleMath::Vector3 Lighting::GetLightDir()
 void Lighting::SetLighting(LightingState aLightState)
 {
     m_currentLightingState = aLightState;
+
+    if (aLightState == LightingState::LIGHTINGSTATE_STARTSCREEN)
+    {
+        int testBreak = 0;
+        testBreak++;
+    }
 }
 
 void Lighting::SetLightingNormColorTextureVertex(LightingState aLightState)
