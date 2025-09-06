@@ -80,6 +80,8 @@ private:
     void DrawIntroScene();
     void DrawLaunchSite();
     void DrawLogoScreen();
+    void DrawLogoScreenOld();
+
     void DrawSky();
     void DrawSky2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
     void DrawSky2MultisampleTest(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::BasicEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);
@@ -534,9 +536,22 @@ private:
     //const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
   //  const float                         m_logoDisplayDuration = 0.4f;
-    const float                         m_logoDisplayGap = 0.35f;
+    //const float                         m_logoDisplayGap = 0.35f;
+    const float                         m_logoDisplayGap = 0.55f;
     //const float                         m_startDelay = 5.5f;
     const float                         m_startDelay = 1.5f;
+
+    float m_logoZoomMod = 1.17f;
+    const float m_logoZoomModBMW = 1.6f;
+    const float m_logoZoomModJI = 1.17f;
+    const float m_logoZoomModBluePrint = 0.97f;
+
+    //float m_logoPosOffsetX = 0.0f;
+    float m_logoPosOffsetY = 0.0f;
+    const float m_logoPosOffsetYMax = 0.29f;
+    //const float m_logoPosOffsetXMax = 0.3f;
+
+    bool m_isLogoTriggerBMWTrue = false;
 
     bool m_isDemoTriggerTrue0 = false;
 
@@ -626,7 +641,7 @@ private:
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
-    const float m_startOffset = 0.0f;
+    const float m_startOffset = 70.0f;
     const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
     const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
     const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
@@ -637,7 +652,11 @@ private:
     const float                         m_fogGap2 = 10.0;
 
     DirectX::SimpleMath::Vector3        m_introCamPos = DirectX::SimpleMath::Vector3::Zero;
-    DirectX::SimpleMath::Vector3        m_introCamTarg = DirectX::SimpleMath::Vector3(1.1, 0.0, 0.0);
+    DirectX::SimpleMath::Vector3        m_introCamTarg = DirectX::SimpleMath::Vector3(1.1f, 0.0f, 0.0f);
+
+    const float m_logoBluePrintOffsetY = 0.0f;
+    DirectX::SimpleMath::Vector3        m_introCamPosBluePrint = DirectX::SimpleMath::Vector3(0.0f, m_logoBluePrintOffsetY, 0.0f);
+    DirectX::SimpleMath::Vector3        m_introCamTargBluePrint = DirectX::SimpleMath::Vector3(1.1f, m_logoBluePrintOffsetY, 0.0f);
 
     DirectX::SimpleMath::Vector3        m_introCamTarg2 = DirectX::SimpleMath::Vector3(.9, -0.03, 0.0);
     DirectX::SimpleMath::Vector3        m_introCamPos2 = DirectX::SimpleMath::Vector3(0.0, -0.03, 0.0);

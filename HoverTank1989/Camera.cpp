@@ -1347,7 +1347,7 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	m_fireControl->SetCurrentCameraPos(m_position);
 
 
-	m_debugData->ToggleDebugOnOverRide();
+	//m_debugData->ToggleDebugOnOverRide();
 
 	if (m_cameraState == CameraState::CAMERASTATE_SNAPCAM)
 	{
@@ -1364,6 +1364,10 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 	else if (m_cameraState == CameraState::CAMERASTATE_SNAPCAMSYNC)
 	{
 		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_SNAPCAMSYNC ", 0, "");
+	}
+	else if (m_cameraState == CameraState::CAMERASTATE_PRESWINGVIEW)
+	{
+		m_debugData->DebugPushUILineWholeNumber("CAMERASTATE_PRESWINGVIEW ", 0, "");
 	}
 	else
 	{
