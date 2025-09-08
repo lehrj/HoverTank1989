@@ -245,6 +245,15 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack;
 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack4;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack5;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack6;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack7;
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureAutoGame;

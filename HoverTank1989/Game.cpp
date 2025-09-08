@@ -1229,7 +1229,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     UpdateAudio(aTimer);
 
 
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_GAMEPLAY = ", 1, "");
@@ -1255,6 +1255,7 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_debugData->DebugPushUILineWholeNumber("GameState::Unknonw = ", 0, "");
     }
 
+    //m_debugData->ToggleDebugOnOverRide();
     if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_)
     {
         m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_ = ", 1, "");
@@ -1760,8 +1761,16 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureTopAttack.png", nullptr, m_textureTopAttack.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapTopAttack.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularTopAttack.ReleaseAndGetAddressOf()));
+    // Top attack flipbook
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack0.png", nullptr, m_textureTopAttack0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack1.png", nullptr, m_textureTopAttack1.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack2.png", nullptr, m_textureTopAttack2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack3.png", nullptr, m_textureTopAttack3.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack4.png", nullptr, m_textureTopAttack4.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack5.png", nullptr, m_textureTopAttack5.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack6.png", nullptr, m_textureTopAttack6.ReleaseAndGetAddressOf()));
 
-    
+
     // Textures for teaser trailer    
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/LogoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/NormalMapTeaser.png", nullptr, m_normalMapTeaser.ReleaseAndGetAddressOf()));
@@ -4936,7 +4945,8 @@ void Game::DrawIntroScene()
         SetFogVals3(testFogTarget3, colorIntensity);
         //SetTerrainGridDimmer(colorIntensity);
 
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
@@ -5074,7 +5084,7 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart5)
     {
         // render nothing
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
        // m_camera->SetPos(m_introCamPos2);
        // m_camera->SetTargetPos(m_introCamTarg2);
 
@@ -5085,7 +5095,8 @@ void Game::DrawIntroScene()
     {
         m_logoPosOffsetY = 0.0f;
         m_logoZoomMod = m_logoZoomModJI;
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_effect->SetTexture(m_textureTopAttack.Get());
         m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
         m_effect->SetSpecularTexture(m_specularTopAttack.Get());
@@ -5154,6 +5165,8 @@ void Game::DrawIntroScene()
         m_camera->SetPos(m_gamePlayStartCamPos1);
         m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
     }
+
+
     /*
     else
     {
@@ -5203,6 +5216,7 @@ void Game::DrawIntroScene()
        // m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
     }
     
+    // mod for Blueprint logo
     if (timeStamp > fadeInStart4 && timeStamp < fadeOutEnd4)
     {
         const float timeGap = fadeOutEnd4 - fadeInStart4;
@@ -5242,6 +5256,47 @@ void Game::DrawIntroScene()
         m_logoPosOffsetY = 0.0f;
     }
     
+    // Top attack flipbook
+    if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
+    {
+        const float timeGap = fadeOutEnd5 - fadeInStart5;
+        const float padding = timeGap * 0.25f;
+        const float paddingBack = timeGap * 0.04f;
+        const float timerLocal = timeStamp - fadeInStart5;
+
+        const float slideCount = 7.0f;
+        const float slideTime = (1.0f / slideCount) * timeGap;
+
+        if (timerLocal < (slideTime * 1.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack0.Get());
+        }
+        else if (timerLocal < (slideTime * 2.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack1.Get());
+        }
+        else if (timerLocal < (slideTime * 3.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack2.Get());
+        }
+        else if (timerLocal < (slideTime * 4.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack3.Get());
+        }
+        else if (timerLocal < (slideTime * 5.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack4.Get());
+        }
+        else if (timerLocal < (slideTime * 6.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack5.Get());
+        }
+        else if (timerLocal < (slideTime * 7.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack6.Get());
+        }
+    }
+
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         DrawLogoScreen();
@@ -6297,6 +6352,15 @@ void Game::OnDeviceLost()
     m_normalMapTopAttack.Reset();
     m_specularTopAttack.Reset();
     m_textureTopAttack.Reset();
+
+    m_textureTopAttack0.Reset();
+    m_textureTopAttack1.Reset();
+    m_textureTopAttack2.Reset();
+    m_textureTopAttack3.Reset();
+    m_textureTopAttack4.Reset();
+    m_textureTopAttack5.Reset();
+    m_textureTopAttack6.Reset();
+    m_textureTopAttack7.Reset();
 
     m_normalMapAutoGame.Reset();
     m_specularAutoGame.Reset();

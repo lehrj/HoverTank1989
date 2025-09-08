@@ -293,6 +293,13 @@
     <Image Include="Art\Textures\skyTexture.jpg" />
     <Image Include="Art\Textures\TestOP.png" />
     <Image Include="Art\Textures\textStartScreen.png" />
+    <Image Include="Art\Textures\textTopAttack0.png" />
+    <Image Include="Art\Textures\textTopAttack1.png" />
+    <Image Include="Art\Textures\textTopAttack2.png" />
+    <Image Include="Art\Textures\textTopAttack3.png" />
+    <Image Include="Art\Textures\textTopAttack4.png" />
+    <Image Include="Art\Textures\textTopAttack5.png" />
+    <Image Include="Art\Textures\textTopAttack6.png" />
     <Image Include="Art\Textures\textureBluePrint.png" />
     <Image Include="Art\Textures\textureTopAttack.png" />
     <Image Include="Art\Textures\textureUV.png" />
