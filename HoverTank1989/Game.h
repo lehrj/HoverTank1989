@@ -245,6 +245,28 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack;
 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack4;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack5;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack6;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack7;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack8;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTopAttack9;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack4;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack5;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack6;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack7;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack8;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack9;
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack0;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack1;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack2;
@@ -253,6 +275,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack5;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack6;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack7;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack8;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack9;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularAutoGame;
@@ -650,7 +674,10 @@ private:
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
-    const float m_startOffset = 70.0f;
+    const float m_logoDisplayTopAttackAddOnTime = 15.0f;
+    const float m_startOffset = 35.0f;
+
+
     const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
     const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
     const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;

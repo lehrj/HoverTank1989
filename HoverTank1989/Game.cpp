@@ -1678,29 +1678,6 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecText.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecTextBlack.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-
-    /*
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureJI0.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapJI0.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularJI0.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureJI1.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapJI1.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularJI1.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureJI2.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapJI2.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularJI2.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureJI3.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapJI3.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularJI3.ReleaseAndGetAddressOf()));
-
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureJI4.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapJI4.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularJI4.ReleaseAndGetAddressOf()));
-    */
-
     
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture0.png", nullptr, m_textureJI0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm0.png", nullptr, m_normalMapJI0.ReleaseAndGetAddressOf()));
@@ -1722,26 +1699,12 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm4.png", nullptr, m_normalMapJI4.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec4.png", nullptr, m_specularJI4.ReleaseAndGetAddressOf()));
     
-
-
-
-    // BMW textures
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoBMW.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW2.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW2.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularBMW.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
-
-    
+    // BMW texture
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW1.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW0.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specBMW0.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
     
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
-
     // Start screen textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureUV.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normalUV.png", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
@@ -1749,19 +1712,47 @@ void Game::CreateDeviceDependentResources()
 
     // updated start screen
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textStartScreen.png", nullptr, m_textureStartScreen.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalStartScreen.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularStartScreen.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normStartScreen.png", nullptr, m_normalStartScreen.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/NormalMap(52).png", nullptr, m_normalStartScreen.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularStartScreen.png", nullptr, m_specularStartScreen.ReleaseAndGetAddressOf()));
 
     // Blueprint screen
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureBluePrint.png", nullptr, m_textureBluePrint.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularBluePrint.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBlueprint.png", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/NormalMap(55).png", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/metalScarredNormal.jpg", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularBlueprint.png", nullptr, m_specularBluePrint.ReleaseAndGetAddressOf()));
 
     // Top attack
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureTopAttack.png", nullptr, m_textureTopAttack.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapTopAttack.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapTopAttack.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normalTopAttack.png", nullptr, m_normalMapTopAttack.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/NormalMap(59).png", nullptr, m_normalMapTopAttack.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularTopAttack.ReleaseAndGetAddressOf()));
     // Top attack flipbook
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack0.png", nullptr, m_normalMapTopAttack0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack1.png", nullptr, m_normalMapTopAttack1.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack2.png", nullptr, m_normalMapTopAttack2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack3.png", nullptr, m_normalMapTopAttack3.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack4.png", nullptr, m_normalMapTopAttack4.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack5.png", nullptr, m_normalMapTopAttack5.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack6.png", nullptr, m_normalMapTopAttack6.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack7.png", nullptr, m_normalMapTopAttack7.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack8.png", nullptr, m_normalMapTopAttack8.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normTopAttack9.png", nullptr, m_normalMapTopAttack9.ReleaseAndGetAddressOf()));
+
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack0.png", nullptr, m_specularTopAttack0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack1.png", nullptr, m_specularTopAttack1.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack2.png", nullptr, m_specularTopAttack2.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack3.png", nullptr, m_specularTopAttack3.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack4alt.png", nullptr, m_specularTopAttack4.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack5alt.png", nullptr, m_specularTopAttack5.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack6alt.png", nullptr, m_specularTopAttack6.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack7alt.png", nullptr, m_specularTopAttack7.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack8alt.png", nullptr, m_specularTopAttack8.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack9alt.png", nullptr, m_specularTopAttack9.ReleaseAndGetAddressOf()));
+
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack0.png", nullptr, m_textureTopAttack0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack1.png", nullptr, m_textureTopAttack1.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack2.png", nullptr, m_textureTopAttack2.ReleaseAndGetAddressOf()));
@@ -1769,7 +1760,9 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack4.png", nullptr, m_textureTopAttack4.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack5.png", nullptr, m_textureTopAttack5.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack6.png", nullptr, m_textureTopAttack6.ReleaseAndGetAddressOf()));
-
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack7.png", nullptr, m_textureTopAttack7.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack8.png", nullptr, m_textureTopAttack8.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack9.png", nullptr, m_textureTopAttack9.ReleaseAndGetAddressOf()));
 
     // Textures for teaser trailer    
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/LogoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
@@ -1804,7 +1797,6 @@ void Game::CreateDeviceDependentResources()
     m_effect->SetLightDirection(0, -DirectX::SimpleMath::Vector3::UnitY);
     m_effect->SetLightDirection(1, -DirectX::SimpleMath::Vector3::UnitY);
     m_effect->SetLightDirection(2, -DirectX::SimpleMath::Vector3::UnitY);
-    m_effect->SetAmbientLightColor(Colors::Blue);
 
     //m_effect->SetVertexColorEnabled(true);
 
@@ -4623,7 +4615,7 @@ void Game::DrawIntroScene()
     const float logoDisplayDuration = m_logoDisplayDuration;
     const float logoDisplayGap = m_logoDisplayGap;
     const float startDelay = m_startDelay;
-
+    const float topAttackDelay = m_logoDisplayTopAttackAddOnTime;
     const float fogGap1 = m_fogGap1;
     const float fogGap2 = m_fogGap2;
 
@@ -4648,16 +4640,18 @@ void Game::DrawIntroScene()
     const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
     const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod;
     const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration;
-    const float fadeOutStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
-    const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + topAttackDelay;
+    //const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + topAttackDelay;
 
     const float fadeOutEnd1 = startDelay + logoDisplayDuration;
     const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
     //const float fadeOutEnd3 = fadeOutStart3 + 2.0f;
     const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
     const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
+    //const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
 
     //const float fadeInStart4 = fadeOutEnd3 + 0.05f;
     //const float fadeInEnd4 = fadeInStart4 + 0.1f;
@@ -5165,16 +5159,6 @@ void Game::DrawIntroScene()
         m_camera->SetPos(m_gamePlayStartCamPos1);
         m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
     }
-
-
-    /*
-    else
-    {
-        m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
-        m_camera->SetPos(m_gamePlayStartCamPos1);
-        m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
-    }
-    */ 
     else if (timeStamp < fadeOutEnd6)  // Render GamePlay Start Screen
     {
         if (timeStamp < fadeInEnd6)  // fade in
@@ -5211,11 +5195,6 @@ void Game::DrawIntroScene()
         }
     }
 
-    if (timeStamp > fadeOutEnd4)
-    {
-       // m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
-    }
-    
     // mod for Blueprint logo
     if (timeStamp > fadeInStart4 && timeStamp < fadeOutEnd4)
     {
@@ -5264,36 +5243,73 @@ void Game::DrawIntroScene()
         const float paddingBack = timeGap * 0.04f;
         const float timerLocal = timeStamp - fadeInStart5;
 
-        const float slideCount = 7.0f;
+        const float slideCount = 10.0f;
         const float slideTime = (1.0f / slideCount) * timeGap;
 
         if (timerLocal < (slideTime * 1.0f))
         {
             m_effect->SetTexture(m_textureTopAttack0.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack0.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack0.Get());
         }
         else if (timerLocal < (slideTime * 2.0f))
         {
             m_effect->SetTexture(m_textureTopAttack1.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack1.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack1.Get());
         }
         else if (timerLocal < (slideTime * 3.0f))
         {
             m_effect->SetTexture(m_textureTopAttack2.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack2.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack2.Get());
         }
         else if (timerLocal < (slideTime * 4.0f))
         {
             m_effect->SetTexture(m_textureTopAttack3.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack3.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack3.Get());
         }
         else if (timerLocal < (slideTime * 5.0f))
         {
             m_effect->SetTexture(m_textureTopAttack4.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack4.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack4.Get());
         }
         else if (timerLocal < (slideTime * 6.0f))
         {
             m_effect->SetTexture(m_textureTopAttack5.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack5.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack5.Get());
         }
         else if (timerLocal < (slideTime * 7.0f))
         {
             m_effect->SetTexture(m_textureTopAttack6.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack6.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack6.Get());
+        }
+        else if (timerLocal < (slideTime * 8.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack7.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack7.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack7.Get());
+        }
+        else if (timerLocal < (slideTime * 9.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack8.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack8.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack8.Get());
+        }
+        else if (timerLocal < (slideTime * 10.0f))
+        {
+            m_effect->SetTexture(m_textureTopAttack9.Get());
+            m_effect->SetSpecularTexture(m_specularTopAttack9.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack9.Get());
+        }
+        else
+        {
+            int testBreak = 0;
+            testBreak++;
         }
     }
 
@@ -6353,6 +6369,28 @@ void Game::OnDeviceLost()
     m_specularTopAttack.Reset();
     m_textureTopAttack.Reset();
 
+    m_normalMapTopAttack0.Reset();
+    m_normalMapTopAttack1.Reset();
+    m_normalMapTopAttack2.Reset();
+    m_normalMapTopAttack3.Reset();
+    m_normalMapTopAttack4.Reset();
+    m_normalMapTopAttack5.Reset();
+    m_normalMapTopAttack6.Reset();
+    m_normalMapTopAttack7.Reset();
+    m_normalMapTopAttack8.Reset();
+    m_normalMapTopAttack9.Reset();
+
+    m_specularTopAttack0.Reset();
+    m_specularTopAttack1.Reset();
+    m_specularTopAttack2.Reset();
+    m_specularTopAttack3.Reset();
+    m_specularTopAttack4.Reset();
+    m_specularTopAttack5.Reset();
+    m_specularTopAttack6.Reset();
+    m_specularTopAttack7.Reset();
+    m_specularTopAttack8.Reset();
+    m_specularTopAttack9.Reset();
+
     m_textureTopAttack0.Reset();
     m_textureTopAttack1.Reset();
     m_textureTopAttack2.Reset();
@@ -6361,6 +6399,8 @@ void Game::OnDeviceLost()
     m_textureTopAttack5.Reset();
     m_textureTopAttack6.Reset();
     m_textureTopAttack7.Reset();
+    m_textureTopAttack8.Reset();
+    m_textureTopAttack9.Reset();
 
     m_normalMapAutoGame.Reset();
     m_specularAutoGame.Reset();
