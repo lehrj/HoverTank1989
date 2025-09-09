@@ -436,7 +436,7 @@ private:
     const float m_audioPlayerDriveMod = 0.3f;
     const float m_audioNPCMod = 0.7f;
     const float m_audioSpawnerMod = 0.0f;
-    const float m_audioLogoMod = 0.0f;
+    const float m_audioLogoMod = 0.7f;
 
     const float m_audioPlayerDriveVolMod = 0.6f;
     const float m_audioPlayerHoverVolMod = 0.4f;
@@ -560,19 +560,15 @@ private:
     */
 
     const float                         m_logoSize = 1.0f;
-    //const float                         m_fadeDuration = 1.5f;
     const float                         m_fadeDuration = 0.85f;
     const float                         m_fadeDurationRavenIn = 3.0f;
-    //const float                         m_logoDisplayDuration = 6.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
-    //const float                         m_logoDisplayDuration = 3.4f; // 7.4,5.1
-    //const float                         m_logoDisplayDuration = 0.8f; // 7.4,5.1
-  //  const float                         m_logoDisplayDuration = 0.4f;
+    //const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
+    //const float                         m_logoDisplayDuration = 1.4f;
     //const float                         m_logoDisplayGap = 0.35f;
     const float                         m_logoDisplayGap = 0.55f;
-    //const float                         m_startDelay = 5.5f;
-    const float                         m_startDelay = 1.5f;
+    const float                         m_startDelay = 3.5f;
 
     float m_logoZoomMod = 1.17f;
     const float m_logoZoomModBMW = 1.6f;
@@ -674,15 +670,23 @@ private:
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
-    const float m_logoDisplayTopAttackAddOnTime = 15.0f;
-    const float m_startOffset = 35.0f;
+    const float m_logoDisplayTopAttackAddOnTime = 4.0f;
+    const float m_startOffset = 0.0f + m_logoDisplayTopAttackAddOnTime;
 
+    const float m_startLogoDisplayCountMod = 6.0f;
+    /*
+    const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger2 = 22.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    */
+    const float m_startTrigger0 = 0.1f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger00 = 7.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger1 = 9.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger2 = 15.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger3 = 17.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
 
-    const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
-    const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
-    const float m_startTrigger1 = 16.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
-    const float m_startTrigger2 = 22.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
-    const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 3.0f) + m_startOffset;
 
     const float                         m_fogGap1 = 0.0;
     const float                         m_fogGap2 = 10.0;
@@ -712,6 +716,12 @@ private:
     DirectX::SimpleMath::Vector3        m_gamePlayStartCamTarg1 = DirectX::SimpleMath::Vector3(0.0, -3.8, 0.0);
     DirectX::SimpleMath::Vector3        m_gamePlayStartCamPos2 = DirectX::SimpleMath::Vector3(18.0f, 3.5, 0.0);
     DirectX::SimpleMath::Vector3        m_gamePlayStartCamTarg2 = DirectX::SimpleMath::Vector3(0.0, 5.0f, 0.0);
+
+    //const DirectX::SimpleMath::Vector3        m_gamePlayStartCamOverRide = DirectX::SimpleMath::Vector3(100.0f, 120.0, -700.0);
+    //const DirectX::SimpleMath::Vector3        m_gamePlayStartTargOverRide = DirectX::SimpleMath::Vector3(110.0, 120.0f, -700.0);
+    const DirectX::SimpleMath::Vector3        m_gamePlayStartCamOverRide = DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0);
+    const DirectX::SimpleMath::Vector3        m_gamePlayStartTargOverRide = DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0);
+
     float                               m_gamePlayStartOffSetTimer = 0.0f;
 
     DirectX::SimpleMath::Vector3        m_testNorm = DirectX::SimpleMath::Vector3::UnitZ;
@@ -726,7 +736,8 @@ private:
     DirectX::XMFLOAT4 m_testColor;
     const DirectX::XMFLOAT4 m_defaultStartTerrainColor = DirectX::XMFLOAT4(0.1f, 0.01f, 0.01f, 1.0f);
     const DirectX::XMFLOAT4 m_defaultGameTerrainColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 1.0f);
-    const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+    //const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+    const DirectX::SimpleMath::Vector4 m_terrainBaseColor = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
     const DirectX::SimpleMath::Vector4 m_terrainBaseColorCap = DirectX::XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 
     const float m_terrainTreeLineStart = 0.7f;

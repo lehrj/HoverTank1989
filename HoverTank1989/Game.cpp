@@ -1374,7 +1374,7 @@ void Game::Render()
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
-        DrawSky();
+        //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         /*
@@ -5144,20 +5144,38 @@ void Game::DrawIntroScene()
         //m_camera->SetPos(m_gamePlayStartCamPos1);
         //m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
 
+        /*
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
 
         //m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
 
-
         m_effect->SetFogStart(1.0);
         m_effect->SetFogEnd(5.0);
-        m_effect->SetFogEnabled(true);
+        m_effect->SetFogEnabled(false);
         m_effect2->SetFogEnabled(false);
         m_effect3->SetFogEnabled(false);
 
         m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
-        m_camera->SetPos(m_gamePlayStartCamPos1);
-        m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
+        
+        m_camera->SetPos(m_gamePlayStartCamPos2);
+        m_camera->SetTargetPos(m_gamePlayStartCamTarg2);
+        */
+
+        m_camera->SetPos(m_gamePlayStartCamOverRide);
+        m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
+
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
+        m_effect->EnableDefaultLighting();
+        m_effect->SetFogEnabled(false);
+        m_effect->SetTexture(m_normalMap.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        m_effect->SetSpecularTexture(m_specular.Get());
+
+        m_audioEngine->SetReverb(m_jIGameReverb);
+        // turn on player vehicle engine sound
+        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
+        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
     }
     else if (timeStamp < fadeOutEnd6)  // Render GamePlay Start Screen
     {
@@ -5190,8 +5208,16 @@ void Game::DrawIntroScene()
         }
         else
         {
+            m_effect->SetFogEnabled(false);
             m_effect2->SetFogEnabled(false);
-            //m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
+            m_effect3->SetFogEnabled(false);
+
+            m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
+
+            m_camera->SetPos(m_gamePlayStartCamOverRide);
+            m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
+
+            m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
         }
     }
 
@@ -5199,8 +5225,8 @@ void Game::DrawIntroScene()
     if (timeStamp > fadeInStart4 && timeStamp < fadeOutEnd4)
     {
         const float timeGap = fadeOutEnd4 - fadeInStart4;
-        const float padding = timeGap * 0.25f;
-        const float paddingBack = timeGap * 0.04f;
+        const float padding = timeGap * 0.35f;
+        const float paddingBack = timeGap * 0.01f;
         const float timerLocal = timeStamp - fadeInStart4;
 
         if (timerLocal < padding)
@@ -8466,7 +8492,7 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
     if (m_isDemoTriggerTrue0 == true)
     {
         m_isDemoTriggerTrue0 = false;
-        SetUiTextDisplay("Deploying Target Drones");
+        //SetUiTextDisplay("Deploying Target Drones");
     }
     if (m_isStartTriggerTrue0 == false)
     {
