@@ -5365,10 +5365,9 @@ void Game::DrawIntroScene()
         m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
         m_effect->EnableDefaultLighting();
         m_effect->SetFogEnabled(false);
-        m_effect->SetTexture(m_normalMap.Get());
+        m_effect->SetTexture(m_texture.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
-
 
         m_audioEngine->SetReverb(m_jIGameReverb);
         // turn on player vehicle engine sound
