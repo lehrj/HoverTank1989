@@ -267,6 +267,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack8;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack9;
 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureCloseUp0;
+
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack0;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack1;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack2;
@@ -564,8 +566,8 @@ private:
     const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
-    //const float                         m_logoDisplayDuration = 1.4f;
+   // const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
+    const float                         m_logoDisplayDuration = 1.4f;
     //const float                         m_logoDisplayGap = 0.35f;
     const float                         m_logoDisplayGap = 0.55f;
     const float                         m_startDelay = 3.5f;
@@ -670,10 +672,10 @@ private:
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
-    const float m_logoDisplayTopAttackAddOnTime = 4.0f;
-    const float m_startOffset = 0.0f + m_logoDisplayTopAttackAddOnTime;
+    const float m_logoDisplayTopAttackAddOnTime = 20.0f;
+    const float m_startOffset = 20.0f + m_logoDisplayTopAttackAddOnTime;
 
-    const float m_startLogoDisplayCountMod = 6.0f;
+    const float m_startLogoDisplayCountMod = 7.0f;
     /*
     const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
     const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;

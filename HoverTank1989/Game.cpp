@@ -1753,6 +1753,8 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack8alt.png", nullptr, m_specularTopAttack8.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack9alt.png", nullptr, m_specularTopAttack9.ReleaseAndGetAddressOf()));
 
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textCloseUp0.png", nullptr, m_textureCloseUp0.ReleaseAndGetAddressOf()));
+
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack0.png", nullptr, m_textureTopAttack0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack1.png", nullptr, m_textureTopAttack1.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack2.png", nullptr, m_textureTopAttack2.ReleaseAndGetAddressOf()));
@@ -4627,6 +4629,7 @@ void Game::DrawIntroScene()
     const float fadeInStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
     const float fadeInStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
     const float fadeInStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
 
     const float fadeInEnd1 = startDelay + fadeDuration;
     //const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
@@ -4635,6 +4638,7 @@ void Game::DrawIntroScene()
     const float fadeInEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
     const float fadeInEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
     const float fadeInEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
 
     const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
     const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
@@ -4642,7 +4646,8 @@ void Game::DrawIntroScene()
     const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration;
     const float fadeOutStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + topAttackDelay;
     //const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
-    const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + topAttackDelay;
+    const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayDuration + fadeDuration + topAttackDelay;
 
     const float fadeOutEnd1 = startDelay + logoDisplayDuration;
     const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
@@ -4651,16 +4656,10 @@ void Game::DrawIntroScene()
     const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
     const float fadeOutEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
     //const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
+    const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
 
-    //const float fadeInStart4 = fadeOutEnd3 + 0.05f;
-    //const float fadeInEnd4 = fadeInStart4 + 0.1f;
-    //const float fadeOutStart4 = fadeInEnd4 + 0.1f;
-    //const float fadeOutEnd4 = fadeOutStart4 + 0.1f;
-
-    //const float ravenStart = fadeInStart2 - 0.2f;
     const float ravenStart = fadeInStart2 - 2.0f;
-
     const float fadeDice = m_jiTriggerTime1 + m_jiTriggerTimeDice;
 
     m_gamePlayStartOffSetTimer = fadeOutEnd4;
@@ -4674,7 +4673,6 @@ void Game::DrawIntroScene()
         const auto pos = -1.0f * m_lighting->GetLightDir() * m_audioRavenDistance;
         AudioCreateSFX3D(pos, Utility::SoundFxType::SOUNDFXTYPE_RAVEN);
     }
-
 
     if (timeStamp < fadeInStart1)
     {
@@ -5073,23 +5071,19 @@ void Game::DrawIntroScene()
         }
     }
     ///////////////////////////////
-    ///    Render TopAttack     ///
+    ///    Render close up     ///
     ///////////////////////////////
     else if (timeStamp < fadeInStart5)
     {
         // render nothing
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-       // m_camera->SetPos(m_introCamPos2);
-       // m_camera->SetTargetPos(m_introCamTarg2);
 
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
-    }
+        }
     else if (timeStamp < fadeOutEnd5) // Render TopAttack Logo
-    {
+        {
         m_logoPosOffsetY = 0.0f;
         m_logoZoomMod = m_logoZoomModJI;
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_effect->SetTexture(m_textureTopAttack.Get());
         m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
@@ -5132,10 +5126,70 @@ void Game::DrawIntroScene()
             //m_effect->SetFogEnabled(false);
         }
     }
+    ///////////////////////////////
+    ///    Render TopAttack     ///
+    ///////////////////////////////
+    else if (timeStamp < fadeInStart6)
+    {
+        // render nothing
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
+       // m_camera->SetPos(m_introCamPos2);
+       // m_camera->SetTargetPos(m_introCamTarg2);
+
+        m_camera->SetPos(m_introCamPos);
+        m_camera->SetTargetPos(m_introCamTarg);
+    }
+    else if (timeStamp < fadeOutEnd6) // Render TopAttack Logo
+    {
+        m_logoPosOffsetY = 0.0f;
+        m_logoZoomMod = m_logoZoomModJI;
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        m_effect->SetTexture(m_textureTopAttack.Get());
+        m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
+        m_effect->SetSpecularTexture(m_specularTopAttack.Get());
+        if (timeStamp < fadeInEnd6)  // fade in
+        {
+            //float colorIntensity = (timeStamp - fadeInStart5) / (fadeDuration);
+            float colorIntensity = (timeStamp - fadeInStart6) / (fadeDuration);
+
+            float fogStart = colorIntensity + fogGap1;
+            float fogEnd = colorIntensity + fogGap2;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+
+            SetFogVals(testFogTarget1, colorIntensity);
+
+            m_debugValue1 = colorIntensity;
+            m_debugValue2 = fogStart;
+            m_debugValue3 = fogEnd;
+        }
+        else if (timeStamp > fadeOutStart6) // fade out // trouble spot?
+        {
+            float colorIntensity = (fadeOutEnd6 - timeStamp) / (fadeDuration);
+
+            float fogStart = colorIntensity + fogGap1;
+            float fogEnd = colorIntensity + fogGap2;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+
+            SetFogVals(testFogTarget1, colorIntensity);
+            //   SetFogVals2(testFogTarget2, colorIntensity);
+            //   SetFogVals3(testFogTarget3, colorIntensity);
+
+            m_debugValue1 = colorIntensity;
+            m_debugValue2 = fogStart;
+            m_debugValue3 = fogEnd;
+        }
+        else
+        {
+            //m_effect->SetFogEnabled(false);
+        }
+    }
     /////////////////////////////////////
     /// Render GamePlay Start         ///  endline?
     /////////////////////////////////////
-    else if (timeStamp < fadeInStart6)
+    else if (timeStamp < fadeInStart7)
     {
         // render nothing
         //DirectX::SimpleMath::Vector3 preZoomPos = m_startScreenCamZoomPos;
@@ -5177,16 +5231,16 @@ void Game::DrawIntroScene()
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
     }
-    else if (timeStamp < fadeOutEnd6)  // Render GamePlay Start Screen
+    else if (timeStamp < fadeOutEnd7)  // Render GamePlay Start Screen
     {
-        if (timeStamp < fadeInEnd6)  // fade in
+        if (timeStamp < fadeInEnd7)  // fade in
         {
             /*
             m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
             m_camera->SetPos(m_gamePlayStartCamPos1);
             m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
             */
-            float colorIntensity = (timeStamp - fadeInStart6) / (fadeDuration);
+            float colorIntensity = (timeStamp - fadeInStart7) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
 
@@ -5194,11 +5248,11 @@ void Game::DrawIntroScene()
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
         }
-        else if (timeStamp > fadeOutStart6) // fade out
+        else if (timeStamp > fadeOutStart7) // fade out
         {
             DirectX::SimpleMath::Vector3 testCameraPos = m_camera->GetPos();
 
-            float colorIntensity = (fadeOutEnd6 - timeStamp) / (fadeDuration);
+            float colorIntensity = (fadeOutEnd7 - timeStamp) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
 
@@ -5256,18 +5310,97 @@ void Game::DrawIntroScene()
         }
     }
 
+    // reset y value after blueprint 
     if (timeStamp > fadeInStart5)
     {
         m_logoPosOffsetY = 0.0f;
     }
     
-    // Top attack flipbook
+    // close up
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
     {
         const float timeGap = fadeOutEnd5 - fadeInStart5;
         const float padding = timeGap * 0.25f;
         const float paddingBack = timeGap * 0.04f;
         const float timerLocal = timeStamp - fadeInStart5;
+
+        const float slideCount = 6.0f;
+        const float slideTime = (1.0f / slideCount) * timeGap;
+
+        if (timerLocal < (slideTime * 1.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 2.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 3.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMapTopAttack2.Get());
+        }
+        else if (timerLocal < (slideTime * 4.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 5.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 6.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 7.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 8.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 9.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else if (timerLocal < (slideTime * 10.0f))
+        {
+            m_effect->SetTexture(m_textureCloseUp0.Get());
+            m_effect->SetSpecularTexture(m_specular.Get());
+            m_effect->SetNormalTexture(m_normalMap.Get());
+        }
+        else
+        {
+            int testBreak = 0;
+            testBreak++;
+        }
+    }
+
+    // Top attack flipbook
+    if (timeStamp > fadeInStart6 && timeStamp < fadeOutEnd6)
+    {
+        const float timeGap = fadeOutEnd6 - fadeInStart6;
+        const float padding = timeGap * 0.25f;
+        const float paddingBack = timeGap * 0.04f;
+        const float timerLocal = timeStamp - fadeInStart6;
 
         const float slideCount = 10.0f;
         const float slideTime = (1.0f / slideCount) * timeGap;
@@ -5337,6 +5470,10 @@ void Game::DrawIntroScene()
             int testBreak = 0;
             testBreak++;
         }
+
+        m_effect->SetTexture(m_textureCloseUp0.Get());
+        m_effect->SetSpecularTexture(m_specular.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
     }
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
@@ -6415,6 +6552,8 @@ void Game::OnDeviceLost()
     m_specularTopAttack7.Reset();
     m_specularTopAttack8.Reset();
     m_specularTopAttack9.Reset();
+
+    m_textureCloseUp0.Reset();
 
     m_textureTopAttack0.Reset();
     m_textureTopAttack1.Reset();

@@ -1460,7 +1460,7 @@ private:
     bool m_isTubeRippleFireTrue = true;
     bool m_isTubeDualFireTrue = true;
     MissileTubeSelected m_tubeFireSelected = MissileTubeSelected::MISSILETUBESELECTED_RIGHT;
-    bool m_isDualFireCoolDownOverRideTrue = true;
+    bool m_isDualFireCoolDownOverRideTrue = false;
 
     bool m_isAutoFireOn = false;
 
