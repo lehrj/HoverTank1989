@@ -268,6 +268,9 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack9;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureCloseUp0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularCloseUp0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapCloseUp0;
+
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack0;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack1;
@@ -566,8 +569,8 @@ private:
     const float                         m_fadeDurationRavenIn = 3.0f;
     //const float                         m_logoDisplayDuration = 12.4f; // 7.4,5.1
     //const float                         m_logoDisplayDuration = 7.4f; // 7.4,5.1
-   // const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
-    const float                         m_logoDisplayDuration = 1.4f;
+    const float                         m_logoDisplayDuration = 9.4f; // 7.4,5.1
+    //const float                         m_logoDisplayDuration = 1.4f;
     //const float                         m_logoDisplayGap = 0.35f;
     const float                         m_logoDisplayGap = 0.55f;
     const float                         m_startDelay = 3.5f;
