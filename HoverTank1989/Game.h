@@ -267,10 +267,21 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack8;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack9;
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureCloseUp0;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularCloseUp0;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapCloseUp0;
-
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy0;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy1;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy2;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy3;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy4;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy4;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy4;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack0;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack1;
@@ -289,7 +300,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapTeaser;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTeaser;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTeaser;
-
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout2;
