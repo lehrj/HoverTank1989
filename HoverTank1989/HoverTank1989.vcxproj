@@ -249,6 +249,7 @@
     <Image Include="Art\NormalMaps\normalUV.png" />
     <Image Include="Art\NormalMaps\normBMW.png" />
     <Image Include="Art\NormalMaps\normBMW2.png" />
+    <Image Include="Art\NormalMaps\normFinDeploy01.jpg" />
     <Image Include="Art\NormalMaps\normJI.png" />
     <Image Include="Art\NormalMaps\normJI3.png" />
     <Image Include="Art\NormalMaps\normJI4.png" />
@@ -264,6 +265,7 @@
     <Image Include="Art\SpecularMaps\JIspecText.png" />
     <Image Include="Art\SpecularMaps\JIspecTextBlack.png" />
     <Image Include="Art\SpecularMaps\specularBMW.png" />
+    <Image Include="Art\SpecularMaps\specularFinDeploy01.png" />
     <Image Include="Art\SpecularMaps\specularJI2.png" />
     <Image Include="Art\SpecularMaps\specularJI3.png" />
     <Image Include="Art\SpecularMaps\specularTeaser.png" />
@@ -292,6 +294,7 @@
     <Image Include="Art\Textures\rust_texture.jpg" />
     <Image Include="Art\Textures\skyTexture.jpg" />
     <Image Include="Art\Textures\TestOP.png" />
+    <Image Include="Art\Textures\textFinDeploy01.png" />
     <Image Include="Art\Textures\textStartScreen.png" />
     <Image Include="Art\Textures\textTopAttack0.png" />
     <Image Include="Art\Textures\textTopAttack1.png" />

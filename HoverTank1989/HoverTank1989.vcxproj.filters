@@ -282,6 +282,15 @@
     <Image Include="Art\Textures\textTopAttack6.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\Textures\textFinDeploy01.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy01.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy01.jpg">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

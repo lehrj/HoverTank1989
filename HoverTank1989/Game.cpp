@@ -1753,10 +1753,6 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack8alt.png", nullptr, m_specularTopAttack8.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularTopAttack9alt.png", nullptr, m_specularTopAttack9.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textCloseUp0.png", nullptr, m_textureFinDeploy0.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normalMapCloseUp0.png", nullptr, m_normalMapFinDeploy0.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularCloseUp1.png", nullptr, m_specularFinDeploy0.ReleaseAndGetAddressOf()));
-
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack0.png", nullptr, m_textureTopAttack0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack1.png", nullptr, m_textureTopAttack1.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack2.png", nullptr, m_textureTopAttack2.ReleaseAndGetAddressOf()));
@@ -1767,6 +1763,13 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack7.png", nullptr, m_textureTopAttack7.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack8.png", nullptr, m_textureTopAttack8.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack9.png", nullptr, m_textureTopAttack9.ReleaseAndGetAddressOf()));
+
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textCloseUp0.png", nullptr, m_textureFinDeploy0.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normalMapCloseUp0.png", nullptr, m_normalMapFinDeploy0.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularCloseUp1.png", nullptr, m_specularFinDeploy0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textFinDeploy01.png", nullptr, m_textureFinDeploy0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normFinDeploy01.jpg", nullptr, m_normalMapFinDeploy0.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularFinDeploy01.png", nullptr, m_specularFinDeploy0.ReleaseAndGetAddressOf()));
 
     // Textures for teaser trailer    
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/LogoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
