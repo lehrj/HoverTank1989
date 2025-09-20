@@ -291,6 +291,99 @@
     <Image Include="Art\NormalMaps\normFinDeploy01.jpg">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Art\Textures\textFinDeploy02.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy03.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy04.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy05.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy06.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy07.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy08.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy09.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy10.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\Textures\textFinDeploy11.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy02.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy03.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy04.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy05.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy06.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy07.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy08.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy09.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy10.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\SpecularMaps\specularFinDeploy11.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy01.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy02.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy03.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy04.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy05.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy06.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy07.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy08.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy09.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy10.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Art\NormalMaps\normFinDeploy11.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">

@@ -267,22 +267,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack8;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTopAttack9;
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy0;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy0;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy0;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy1;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy1;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy1;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy2;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy2;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy2;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy3;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy3;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy3;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy4;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy4;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy4;
-
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack0;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack1;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack2;
@@ -293,6 +277,40 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack7;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack8;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTopAttack9;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy01;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy01;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy01;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy02;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy02;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy02;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy03;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy03;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy03;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy04;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy04;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy04;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy05;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy05;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy05;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy06;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy06;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy06;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy07;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy07;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy07;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy08;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy08;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy08;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy09;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy09;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy09;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy10;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy10;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy10;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureFinDeploy11;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularFinDeploy11;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapFinDeploy11;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapAutoGame;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularAutoGame;
