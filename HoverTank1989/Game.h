@@ -703,7 +703,7 @@ private:
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
-    const float m_logoDisplayTopAttackAddOnTime = 20.0f;
+    const float m_logoDisplayTopAttackAddOnTime = 0.0f;
     const float m_startOffset = 20.0f + m_logoDisplayTopAttackAddOnTime;
 
     const float m_startLogoDisplayCountMod = 7.0f;

@@ -1807,13 +1807,13 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normFinDeploy09.png", nullptr, m_normalMapFinDeploy09.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularFinDeploy09.png", nullptr, m_specularFinDeploy09.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textFinDeploy01.png", nullptr, m_textureFinDeploy10.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normFinDeploy01.png", nullptr, m_normalMapFinDeploy10.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularFinDeploy01.png", nullptr, m_specularFinDeploy10.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textFinDeploy10.png", nullptr, m_textureFinDeploy10.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normFinDeploy10.png", nullptr, m_normalMapFinDeploy10.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularFinDeploy10.png", nullptr, m_specularFinDeploy10.ReleaseAndGetAddressOf()));
 
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textFinDeploy01.png", nullptr, m_textureFinDeploy11.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normFinDeploy01.png", nullptr, m_normalMapFinDeploy11.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularFinDeploy01.png", nullptr, m_specularFinDeploy11.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textFinDeploy11.png", nullptr, m_textureFinDeploy11.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normFinDeploy11.png", nullptr, m_normalMapFinDeploy11.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularFinDeploy11.png", nullptr, m_specularFinDeploy11.ReleaseAndGetAddressOf()));
 
     // Textures for teaser trailer    
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/LogoTeaser.png", nullptr, m_textureTeaser.ReleaseAndGetAddressOf()));
@@ -5365,7 +5365,7 @@ void Game::DrawIntroScene()
         m_logoPosOffsetY = 0.0f;
     }
     
-    // close up
+    // close up fin deploy
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
     {
         const float timeGap = fadeOutEnd5 - fadeInStart5;
@@ -5373,7 +5373,7 @@ void Game::DrawIntroScene()
         const float paddingBack = timeGap * 0.04f;
         const float timerLocal = timeStamp - fadeInStart5;
 
-        const float slideCount = 6.0f;
+        const float slideCount = 12.0f;
         const float slideTime = (1.0f / slideCount) * timeGap;
 
         if (timerLocal < (slideTime * 1.0f))
@@ -5390,51 +5390,63 @@ void Game::DrawIntroScene()
         }
         else if (timerLocal < (slideTime * 3.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy02.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy02.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy02.Get());
         }
         else if (timerLocal < (slideTime * 4.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy03.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy03.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy03.Get());
         }
         else if (timerLocal < (slideTime * 5.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy04.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy04.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy04.Get());
         }
         else if (timerLocal < (slideTime * 6.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy05.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy05.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy05.Get());
         }
         else if (timerLocal < (slideTime * 7.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy06.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy06.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy06.Get());
         }
         else if (timerLocal < (slideTime * 8.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy07.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy07.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy07.Get());
         }
         else if (timerLocal < (slideTime * 9.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy08.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy08.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy08.Get());
         }
         else if (timerLocal < (slideTime * 10.0f))
         {
-            m_effect->SetTexture(m_textureFinDeploy01.Get());
-            m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-            m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
+            m_effect->SetTexture(m_textureFinDeploy09.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy09.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy09.Get());
+        }
+        else if (timerLocal < (slideTime * 11.0f))
+        {
+            m_effect->SetTexture(m_textureFinDeploy10.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy10.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy10.Get());
+        }
+        else if (timerLocal < (slideTime * 12.0f))
+        {
+            m_effect->SetTexture(m_textureFinDeploy11.Get());
+            m_effect->SetSpecularTexture(m_specularFinDeploy11.Get());
+            m_effect->SetNormalTexture(m_normalMapFinDeploy11.Get());
         }
         else
         {
@@ -5519,10 +5531,6 @@ void Game::DrawIntroScene()
             int testBreak = 0;
             testBreak++;
         }
-
-        m_effect->SetTexture(m_textureFinDeploy01.Get());
-        m_effect->SetSpecularTexture(m_specularFinDeploy01.Get());
-        m_effect->SetNormalTexture(m_normalMapFinDeploy01.Get());
     }
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
