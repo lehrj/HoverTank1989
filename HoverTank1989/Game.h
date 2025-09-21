@@ -120,6 +120,7 @@ private:
     void SetUiDisplay(std::string aString);
     
     void TriggerFireWithAudio();
+    void TriggerFireWithAudioDemo();
 
     void ToggleMusicFadeOut();
     void TogglePause();

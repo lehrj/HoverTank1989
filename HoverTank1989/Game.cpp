@@ -224,6 +224,8 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
     {
+        TriggerFireWithAudioDemo();
+
         fx->fxType = aSfxType;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdRaven, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
 
@@ -1344,7 +1346,6 @@ void Game::Render()
     context->PSSetSamplers(0, 1, &sampler);
     context->IASetInputLayout(m_inputLayout.Get());
 
-
     m_effect->SetProjection(m_proj);
     m_effect->SetView(m_camera->GetViewMatrix());
     m_effect->SetWorld(m_world);
@@ -1354,16 +1355,7 @@ void Game::Render()
         DrawIntroScene();
     }
 
-    /*
-    auto ilights = dynamic_cast<DirectX::IEffectLights*>(m_effect.get());
-    if (ilights)
-    {
-        ilights->EnableDefaultLighting();
-        ilights->SetLightEnabled(0, true);
-        ilights->SetLightEnabled(1, true);
-        ilights->SetLightEnabled(2, true);
-    }
-    */
+    m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
@@ -1372,7 +1364,7 @@ void Game::Render()
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        //m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -8694,6 +8686,45 @@ void Game::TriggerFireWithAudio()
     fireFx->SetEmitter(fireEmitter);
 
     m_vehicle->FireMissile(fireFx, rocketFx);
+
+    m_soundFxVecTest.push_back(fireFx);
+    m_soundFxVecTest.push_back(rocketFx);
+}
+
+void Game::TriggerFireWithAudioDemo()
+{
+    // rocket fx
+    std::shared_ptr <Utility::SoundFx> rocketFx(new Utility::SoundFx());
+    rocketFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_MISSILE_ROCKET;
+    rocketFx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdRocketMotor, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
+    std::shared_ptr<DirectX::AudioEmitter> rocketEmitter = std::make_shared<DirectX::AudioEmitter>();
+    rocketEmitter->SetOmnidirectional();
+    rocketEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    rocketEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    rocketEmitter->CurveDistanceScaler = m_audioCurveDistScalarMissileRocket;
+    rocketEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+    rocketEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+    rocketEmitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
+
+    rocketFx->SetEmitter(rocketEmitter);
+
+    // trigger fire fx
+    std::shared_ptr <Utility::SoundFx> fireFx(new Utility::SoundFx());
+    fireFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG;
+    m_currentFxShotBang = GetRandomNonRepeatingFxIndex(m_currentFxShotBang, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG);
+    fireFx->fx = m_audioBank->CreateStreamInstance(m_currentFxShotBang, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+    std::shared_ptr<DirectX::AudioEmitter> fireEmitter = std::make_shared<DirectX::AudioEmitter>();
+    fireEmitter->SetOmnidirectional();
+    fireEmitter->pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
+    fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
+    fireEmitter->CurveDistanceScaler = m_audioCurveDistScalarMissileFin;
+    fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
+
+    fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+    fireEmitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
+    fireFx->SetEmitter(fireEmitter);
+
+    m_vehicle->FireMissileDemo(fireFx, rocketFx);
 
     m_soundFxVecTest.push_back(fireFx);
     m_soundFxVecTest.push_back(rocketFx);
