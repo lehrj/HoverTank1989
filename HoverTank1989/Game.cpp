@@ -224,8 +224,6 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
     {
-        TriggerFireWithAudioDemo();
-
         fx->fxType = aSfxType;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdRaven, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
 
@@ -5360,6 +5358,7 @@ void Game::DrawIntroScene()
     // close up fin deploy
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
     {
+        m_isLogoDisplayTrue = false;
         const float timeGap = fadeOutEnd5 - fadeInStart5;
         const float padding = timeGap * 0.25f;
         const float paddingBack = timeGap * 0.04f;
@@ -5445,6 +5444,10 @@ void Game::DrawIntroScene()
             int testBreak = 0;
             testBreak++;
         }
+    }
+    else
+    {
+        m_isLogoDisplayTrue = true;
     }
 
     // Top attack flipbook
@@ -5806,9 +5809,18 @@ void Game::DrawLogoScreen()
     logoPos += camPos;
     DirectX::SimpleMath::Matrix wMat = DirectX::SimpleMath::Matrix::Identity;
     wMat *= DirectX::SimpleMath::Matrix::CreateWorld(logoPos, logoForward, DirectX::SimpleMath::Vector3::UnitY);
-    m_effect->SetWorld(wMat);
-    m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
+    
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->PushDebugLinePositionIndicator(logoPos, 4.0f, 0.0f, DirectX::Colors::Red);
+    m_debugData->ToggleDebugOff();
+
+    if (m_isLogoDisplayTrue == true)
+    {
+        m_effect->SetWorld(wMat);
+        m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
+    }
 }
+
 void Game::DrawLogoScreenOld()
 {
     const DirectX::SimpleMath::Vector3 vertexNormal = -DirectX::SimpleMath::Vector3::UnitX;
@@ -7176,6 +7188,8 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.Space)
     {
+        TriggerFireWithAudioDemo();
+        /*
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             if (m_fireControl->GetIsMissileFireAvailable() == true)
@@ -7202,6 +7216,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 }  
             }
         }
+        */
     }
     if (m_kbStateTracker.pressed.J)
     {

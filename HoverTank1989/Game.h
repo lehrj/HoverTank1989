@@ -603,6 +603,7 @@ private:
     //const float                         m_logoDisplayGap = 0.35f;
     const float                         m_logoDisplayGap = 0.55f;
     const float                         m_startDelay = 3.5f;
+    bool                                m_isLogoDisplayTrue = true;
 
     float m_logoZoomMod = 1.17f;
     const float m_logoZoomModBMW = 1.6f;

@@ -10265,7 +10265,17 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
 
     //auto dragTest = CalcDragLinearCurrent(aProjectile, aProjectile->projectileData.q.velocity);
 
+    /*
     if (m_missileConsts.isMissileFreezeTrue == false)
+    {
+        q.velocity += velocityUpdate;
+        q.position += posUpdate;
+        q.angularMomentum += angularMomentumUpdate;
+        q.angularVelocity += angularVelocityUpdate;
+    }
+    */
+
+    if (aProjectile->isDemoTrue == false)
     {
         q.velocity += velocityUpdate;
         q.position += posUpdate;
@@ -15054,9 +15064,12 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
             //aMissile.projectileData.isDeleteTrue = true;
         }
 
-        aMissile.guidance.isExplodingTrue = true;
-        CreateExplosion(aMissile.projectileData.q.position, aMissile.projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
-        aMissile.projectileData.isDeleteTrue = true;
+        if (aMissile.isDemoTrue == false)
+        {
+            aMissile.guidance.isExplodingTrue = true;
+            CreateExplosion(aMissile.projectileData.q.position, aMissile.projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+            aMissile.projectileData.isDeleteTrue = true;
+        }
     }
 
     aMissile.guidance.targetPosition = aMissile.guidance.targetPositionWorld;
