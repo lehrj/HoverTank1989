@@ -5358,6 +5358,12 @@ void Game::DrawIntroScene()
     // close up fin deploy
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
     {
+        if (m_isLogoMissileToggleTrue == false)
+        {
+            m_isLogoMissileToggleTrue = true;
+            //TriggerFireWithAudioDemo();
+        }
+
         m_isLogoDisplayTrue = false;
         const float timeGap = fadeOutEnd5 - fadeInStart5;
         const float padding = timeGap * 0.25f;

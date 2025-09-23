@@ -1172,6 +1172,8 @@ void Vehicle::FireMissileDemo(std::shared_ptr<Utility::SoundFx> aFireFx, std::sh
         DirectX::SimpleMath::Vector3 upWorld;
         DirectX::SimpleMath::Vector3 recoilPosLocal;
         DirectX::SimpleMath::Vector3 recoilPosWorld;
+        
+        /*
         if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
         {
             posWorld = m_modelController->GetMissileTubePosRight();
@@ -1197,6 +1199,19 @@ void Vehicle::FireMissileDemo(std::shared_ptr<Utility::SoundFx> aFireFx, std::sh
             int testBreak = 0;
             testBreak++;
         }
+        */
+
+        auto testPos = DirectX::SimpleMath::Vector3::Zero;
+        testPos.x = 1.66f;
+
+        posWorld = testPos;
+        pos = testPos;
+        launchDir = DirectX::SimpleMath::Vector3::UnitZ;
+        launchDirWorld = DirectX::SimpleMath::Vector3::UnitZ;
+        velocity = DirectX::SimpleMath::Vector3::Zero;
+        up = DirectX::SimpleMath::Vector3::UnitY;
+        recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
+
 
         aFireFx->emitter->SetPosition(posWorld);
         aFireFx->emitter->SetVelocity(velocity);
