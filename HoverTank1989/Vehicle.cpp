@@ -956,6 +956,11 @@ void Vehicle::DrawVehicleProjectiles2(const DirectX::SimpleMath::Matrix aView, c
     m_fireControl->DrawFireControlObjects2(aView, aProj, aEffect, aInputLayout);
 }
 
+void Vehicle::DrawVehicleProjectiles2Demo(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    m_fireControl->DrawFireControlObjects2Demo(aView, aProj, aEffect, aInputLayout);
+}
+
 void Vehicle::FireWeapon()
 {
     if (m_fireControl->GetIsCoolDownActive() == false)

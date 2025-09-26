@@ -2066,9 +2066,12 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
 
             if (m_missileVec[i].guidance.altitude < 0.0f)
             {
-                CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
-                m_missileVec[i].guidance.isExplodingTrue = true;
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
+                if (m_missileVec[i].isDemoTrue == false)
+                {
+                    CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
+                    m_missileVec[i].guidance.isExplodingTrue = true;
+                    //m_missileVec[i].projectileData.isDeleteTrue = true;
+                }
             }
             else if (isProximityDetonationTrue == true)
             {
@@ -3105,9 +3108,15 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
     //DrawMissiles(aView, aProj, aEffect, aInputLayout);
     
     DrawLaser(aView, aProj, aEffect, aInputLayout);
-    DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
+    //DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
     //DrawMissilesWithLightingOld(aView, aProj, aEffect, aInputLayout);
 }
+
+void FireControl::DrawFireControlObjects2Demo(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
+{
+    DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
+}
+
 
 void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
@@ -4096,6 +4105,7 @@ void FireControl::DrawMissiles(const DirectX::SimpleMath::Matrix aView, const Di
 
 void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
+    aEffect->EnableDefaultLighting();
     const DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane;
     groundPlane.x = 0.0f;
@@ -4755,6 +4765,7 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
         aEffect->SetWorld(shadowDrawMat);
         m_ammoMissile.modelData.tailFinShape->Draw(aEffect.get(), aInputLayout.Get());
     }
+    aEffect->EnableDefaultLighting();
 }
 
 void FireControl::DrawMissilesWithLightingOld(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
@@ -15666,8 +15677,8 @@ void FireControl::FireSelectedWithAudio(const DirectX::SimpleMath::Vector3 aLaun
 
 void FireControl::FireSelectedWithAudioDemo(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp, std::shared_ptr<Utility::SoundFx> aFireFx, bool aDebugToggle)
 {
-    FireMissileWithAudioDemo(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx, true);
-    
+    //FireMissileWithAudioDemo(m_playerVehicle->GetMissleTubePosLeft(), m_playerVehicle->GetMissleTubeDirLeft(), aLauncherVelocity, m_playerVehicle->GetMissleTubeUpLeft(), 0.0f, aFireFx, true);
+    FireMissileWithAudioDemo(aLaunchPos, aLaunchDirectionForward, aLauncherVelocity, aUp, 0.0f, aFireFx, true);
     /*
     if (m_isCoolDownActive == false)
     {

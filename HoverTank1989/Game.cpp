@@ -1351,10 +1351,11 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         DrawIntroScene();
+        m_vehicle->DrawVehicleProjectiles2Demo(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+
     }
 
-    m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
+    
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -1362,7 +1363,7 @@ void Game::Render()
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-        //m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -1387,8 +1388,7 @@ void Game::Render()
         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
-    //m_effect->EnableDefaultLighting();
-   // m_effect->SetWorld(m_world);
+ 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -5109,24 +5109,36 @@ void Game::DrawIntroScene()
             //m_effect->SetFogEnabled(false);
         }
     }
-    ///////////////////////////////
-    ///    Render close up     ///
-    ///////////////////////////////
+    //////////////////////////////////
+    /// Render close up fin deploy ///
+    //////////////////////////////////
     else if (timeStamp < fadeInStart5)
     {
         // render nothing
 
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
-        }
-    else if (timeStamp < fadeOutEnd5) // Render TopAttack Logo
+
+        if (m_isLogoMissileToggleTrue == false)
         {
+            m_isLogoMissileToggleTrue = true;
+            TriggerFireWithAudioDemo();
+        }
+
+    }
+    else if (timeStamp < fadeOutEnd5) // Render close up fin deploy
+    {
         m_logoPosOffsetY = 0.0f;
         m_logoZoomMod = m_logoZoomModJI;
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        m_effect->SetTexture(m_textureTopAttack.Get());
-        m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
-        m_effect->SetSpecularTexture(m_specularTopAttack.Get());
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_DEFAULT);
+        //m_effect->SetTexture(m_textureTopAttack.Get());
+        //m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
+        //m_effect->SetSpecularTexture(m_specularTopAttack.Get());
+
+        m_effect->SetTexture(m_texture.Get());
+        m_effect->SetNormalTexture(m_normalMap.Get());
+        m_effect->SetSpecularTexture(m_specular.Get());
+
         if (timeStamp < fadeInEnd5)  // fade in
         {
             //float colorIntensity = (timeStamp - fadeInStart5) / (fadeDuration);
@@ -5358,12 +5370,6 @@ void Game::DrawIntroScene()
     // close up fin deploy
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
     {
-        if (m_isLogoMissileToggleTrue == false)
-        {
-            m_isLogoMissileToggleTrue = true;
-            //TriggerFireWithAudioDemo();
-        }
-
         m_isLogoDisplayTrue = false;
         const float timeGap = fadeOutEnd5 - fadeInStart5;
         const float padding = timeGap * 0.25f;

@@ -18,6 +18,7 @@ public:
         LIGHTINGSTATE_STARTUP,
         LIGHTINGSTATE_TEST01,
         LIGHTINGSTATE_,
+        LIGHTINGSTATE_DEFAULT,
     };
 
     //Lighting();
