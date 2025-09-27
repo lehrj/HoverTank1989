@@ -5378,7 +5378,7 @@ void Game::DrawIntroScene()
 
         const float slideCount = 12.0f;
         const float slideTime = (1.0f / slideCount) * timeGap;
-
+        /*
         if (timerLocal < (slideTime * 1.0f))
         {
             m_effect->SetTexture(m_textureFinDeploy01.Get());
@@ -5456,6 +5456,7 @@ void Game::DrawIntroScene()
             int testBreak = 0;
             testBreak++;
         }
+        */
     }
     else
     {

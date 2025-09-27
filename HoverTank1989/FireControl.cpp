@@ -2070,7 +2070,6 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
                 {
                     CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
                     m_missileVec[i].guidance.isExplodingTrue = true;
-                    //m_missileVec[i].projectileData.isDeleteTrue = true;
                 }
             }
             else if (isProximityDetonationTrue == true)
