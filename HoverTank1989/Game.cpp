@@ -1352,43 +1352,25 @@ void Game::Render()
     {
         DrawIntroScene();
         m_vehicle->DrawVehicleProjectiles2Demo(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
     }
-
-    
+ 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
-        /*
-        m_effect->SetTexture(m_textureBMW.Get());
-        m_effect->SetNormalTexture(m_normalMapBMW2.Get());
-        m_effect->SetSpecularTexture(m_specularBMW.Get());
-        */
-
-        //m_effect->Apply(context);
-
         DrawTestTrack();
         //DrawTestRangeMissile();
-
         //DrawSpawner();
         DrawSpawner1();
         //DrawSpawner2();
         DrawSpawner1to2();
-
        // DrawLaunchSite();
         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
-
- 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -1396,44 +1378,14 @@ void Game::Render()
     //context->RSSetState(m_states->CullNone());
     context->RSSetState(m_raster.Get());
     //m_effect->SetWorld(m_world);
-
     //m_effect->Apply(context);
 
     context->IASetInputLayout(m_inputLayout.Get());
 
-    /*
-    m_effect->SetTexture(m_textureBMW.Get());
-    m_effect->SetNormalTexture(m_normalMapBMW2.Get());
-    m_effect->SetSpecularTexture(m_specularBMW.Get());
-    */
-
     m_effect->Apply(context);
     sampler = m_states->LinearClamp();
     context->PSSetSamplers(0, 1, &sampler);
-
     context->IASetInputLayout(m_inputLayout.Get());
-
-   // m_effect->SetWorld(DirectX::SimpleMath::Matrix::Identity);
-   // m_effect->SetColorAndAlpha(DirectX::Colors::White);
-
-
-    //m_batch->Begin();
-
-    //m_billboardShape->Draw(m_effect.get(), m_inputLayout.Get());
-
-    //DrawLogoScreen();
-    //DrawIntroScene();
-
-    //m_batch->End();
-
-    /*
-    m_batch->Begin();
-    if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN || m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
-    {
-        // DrawIntroScene();
-    }
-    m_batch->End();
-    */
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1457,9 +1409,6 @@ void Game::Render()
         }
     }
     m_batch2->End();
-    //context->RSSetState(m_states->CullNone());
-   // context->RSSetState(m_raster.Get());
-
 
     m_effect3->SetWorld(m_world);
     m_effect3->Apply(context);
@@ -5366,6 +5315,7 @@ void Game::DrawIntroScene()
     {
         m_logoPosOffsetY = 0.0f;
     }
+    
     
     // close up fin deploy
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
