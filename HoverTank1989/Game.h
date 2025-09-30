@@ -192,7 +192,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureTest;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularTest;
 
-
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalMapMetalTest1;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_textureMetalTest1;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_specularMetalTest1;
@@ -606,6 +605,16 @@ private:
     bool                                m_isLogoDisplayTrue = true;
     bool                                m_isLogoMissileToggleTrue = false;
 
+    const float m_logoDisplayTopAttackAddOnTime = 0.0f;
+    const float m_startOffset = 0.0f + m_logoDisplayTopAttackAddOnTime;
+    const float m_startLogoDisplayCountMod = 6.0f;
+
+    const float m_startTrigger0 = 0.1f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger00 = 7.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger1 = 9.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger2 = 15.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+    const float m_startTrigger3 = 17.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
+
     float m_logoZoomMod = 1.17f;
     const float m_logoZoomModBMW = 1.6f;
     const float m_logoZoomModJI = 1.17f;
@@ -706,10 +715,7 @@ private:
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * 2.0f);
     */
 
-    const float m_logoDisplayTopAttackAddOnTime = 0.0f;
-    const float m_startOffset = 20.0f + m_logoDisplayTopAttackAddOnTime;
 
-    const float m_startLogoDisplayCountMod = 7.0f;
     /*
     const float m_startTrigger0 = 7.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
     const float m_startTrigger00 = 14.5f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
@@ -717,11 +723,6 @@ private:
     const float m_startTrigger2 = 22.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
     const float m_startTrigger3 = 24.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
     */
-    const float m_startTrigger0 = 0.1f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
-    const float m_startTrigger00 = 7.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
-    const float m_startTrigger1 = 9.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
-    const float m_startTrigger2 = 15.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
-    const float m_startTrigger3 = 17.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
 
 
     const float                         m_fogGap1 = 0.0;
