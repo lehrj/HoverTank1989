@@ -735,13 +735,11 @@ struct MissileConsts
     const float steeringAngPerSecDeltaMax = Utility::ToRadians(50.0f);
 
     const float tailFinAngMax = Utility::ToRadians(15.0f);
-    //const float tailFinAngPerSecDeltaMax = Utility::ToRadians(90.0f);
     const float tailFinAngPerSecDeltaMax = Utility::ToRadians(65.0f);
 
     const float thrustVecAudioPitchModMax = 0.9f;
     const float thrustVecAngMax = Utility::ToRadians(15.0f);
     const float thrustVecDeadZoneAng = Utility::ToRadians(10.0f);
-    //const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(40.0f);
     const float thrustVecAngPerSecDeltaMax = Utility::ToRadians(15.0f);
 
     const float mass = 12.0f;
@@ -753,13 +751,10 @@ struct MissileConsts
     const float climbOutDuration = 2.5f;
     const float climbOutAltMin = 100.0f;
 
-    //const float cruiseAltMin = 100.0f;
     const float cruiseAltMin = 200.0f;
     const float maxAlt = 200.0f;
     //const float terminalRange = 100.0f;
-    //const float terminalRange = 25.0f;
     const float terminalRange = 25.0f;
-
     const float navigationGain = 3.0f;
 
     const float hardBurnRadPerSec = Utility::ToRadians(25.0f);
@@ -811,6 +806,9 @@ struct MissileConsts
     const float recoilImpulseTimeMax = 0.3f;
     const float recoilTorqueMod = 1.0f;
     const float recoilMagnitudeMax = 7500.0f;
+
+    // intro demo consts
+    const float demoTimerOffset = -3.0f;
 };
 
 enum class ExplosionType

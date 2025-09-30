@@ -95,7 +95,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     fireEmitter->pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     //fireEmitter->pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
     fireEmitter->CurveDistanceScaler = 14.f;
-    
+
     auto pos = DirectX::SimpleMath::Vector3::Zero;
 
     if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER)
@@ -120,7 +120,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fireEmitter->InnerRadius = 10.0f;
         //fireEmitter->InnerRadiusAngle = X3DAUDIO_PI / 4.0f;
         fireEmitter->InnerRadiusAngle = Utility::ToRadians(40.0f);
-   
+
         fireEmitter->EnableDefaultMultiChannel(fx->fx->GetChannelCount(), 10.0f);
         */
         fireEmitter->EnableDefaultMultiChannel(fx->fx->GetChannelCount(), 10.0f);
@@ -160,7 +160,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->forward = -DirectX::SimpleMath::Vector3::UnitZ;
         fx->up = DirectX::SimpleMath::Vector3::UnitY;
         fireEmitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    
+
         pos = m_debugAudioPos;
         fx->fx->Play(true);
         */
@@ -173,10 +173,10 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 
         pos = aPos;
 
-       // fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+        // fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
 
         fx->fx->Play(true);
-        
+
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_DICE)
     {
@@ -219,7 +219,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI4, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
         pos = DirectX::SimpleMath::Vector3(0.0f, -40.0f, 0.0f);
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
-       
+
         fx->fx->Play(false);
     }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
@@ -257,7 +257,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
     {
         fx->fxType = aSfxType;
         fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdJI1, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
-        
+
         pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 4.0f);
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
         //fireEmitter->Velocity = -DirectX::SimpleMath::Vector3::UnitZ;
@@ -309,7 +309,7 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fx->fx->SetVolume(volume);
 
         fx->fx->SetPitch(m_audioSpawnerLightsPitchOn);
-       
+
         fireEmitter->Position = pos;
         fireEmitter->Velocity = DirectX::SimpleMath::Vector3::Zero;
         fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarSpawner;
@@ -326,10 +326,10 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 
 
     fireEmitter->SetPosition(pos);
-   // fx->pos = pos;
+    // fx->pos = pos;
 
     fx->SetEmitter(fireEmitter);
-    
+
     m_soundFxVecTest.push_back(fx);
 }
 
@@ -411,34 +411,34 @@ void Game::Initialize(HWND window, int width, int height)
     m_retryAudio = false;
     m_audioBank = std::make_unique<WaveBank>(m_audioEngine.get(), L"Art/Audio/audioBank.xwb");
 
-     //m_listener.SetOmnidirectional();
-     m_listener.pCone = (X3DAUDIO_CONE*)&c_listenerCone;
+    //m_listener.SetOmnidirectional();
+    m_listener.pCone = (X3DAUDIO_CONE*)&c_listenerCone;
 
 
-     //SetCone(X3DAUDIO_CONE)
-     
-    //float wavLength = m_audioBank->GetSampleDurationMS(21);
+    //SetCone(X3DAUDIO_CONE)
 
-    //m_soundEffect = std::make_unique<SoundEffect>(m_audioEngine.get(), L"Art/Audio/RocketBoostEngineLoop.wav");
-    //m_soundSource = m_soundEffect->CreateInstance();
-    //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
-    //m_soundSource->Play(true);
+   //float wavLength = m_audioBank->GetSampleDurationMS(21);
+
+   //m_soundEffect = std::make_unique<SoundEffect>(m_audioEngine.get(), L"Art/Audio/RocketBoostEngineLoop.wav");
+   //m_soundSource = m_soundEffect->CreateInstance();
+   //m_soundSource = m_soundEffect->CreateInstance(SoundEffectInstance_Use3D);
+   //m_soundSource->Play(true);
 
 
-    //m_soundSource = m_audioBank->CreateInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
-    //m_soundSource = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
-    //m_soundSource = m_audioBank->CreateStreamInstance(2);
+   //m_soundSource = m_audioBank->CreateInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
+   //m_soundSource = m_audioBank->CreateStreamInstance(XACT_WAVEBANK_AUDIOBANK_BRAVESPACEEXPLORERS);
+   //m_soundSource = m_audioBank->CreateStreamInstance(2);
 
-    //m_soundSource->Play(true);
+   //m_soundSource->Play(true);
 
-   // m_listener.pCone = const_cast<X3DAUDIO_CONE*>(&c_listenerCone);
+  // m_listener.pCone = const_cast<X3DAUDIO_CONE*>(&c_listenerCone);
 
-    
+
     m_emitter.pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_LFE_Curve);
     m_emitter.pReverbCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_emitter_Reverb_Curve);
     m_emitter.CurveDistanceScaler = 14.f;
     m_emitter.pCone = const_cast<X3DAUDIO_CONE*>(&c_emitterCone);
-    
+
 
     m_soundFxVecTest.clear();
 
@@ -646,14 +646,14 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         lineColor = baseColor;
 
         ////////////// Terrain Edit Start 
- 
+
         lineColor = DirectX::XMFLOAT4(0.0f, 0.292156899f, 0.0f, 0.0f);
         lineColor = DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f);
         baseColor.x = 0.0f;
         baseColor.y = 0.0f;
         baseColor.y = elevationPercentage * 0.292156899f;
         //baseColor.y = elevationPercentage * 0.292156899f + 0.292156899f;
-        
+
         baseColor.z = 0.0f;
 
         // cap color
@@ -667,7 +667,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         else
         {
             baseColor = m_terrainBaseColor;
-        }   
+        }
         /*
         baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
         baseColor.y = 0.0f;
@@ -688,7 +688,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
         {
             lineColor.y += 0.15f;
         }
-     
+
         /* for treenline / snowcap effect at higher elevations
         lineColor = DirectX::XMFLOAT4(0.0f, 0.584313798f, 0.0f, 0.0f);
         baseColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -728,7 +728,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
             spawnerPatchColor = m_spawnerColorTerrainPatch;
         }
         if (aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY || aTerrain.environType == EnvironmentType::ENVIRONMENTTYPE_GAMEPLAY_LIGHTS_ON)
-        {         
+        {
             /*
             // spawner 1
             if (i == 2249)
@@ -756,7 +756,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
                 aTerrain.terrainVertexArrayBase[i].color = spawnerPatchColor;
             }
             */
-            
+
             // spawner 2
             if (i == 2358)
             {
@@ -782,9 +782,9 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
             if (i == 2165)
             {
                 aTerrain.terrainVertexArrayBase[i].color = spawnerPatchColor;
-            }   
+            }
         }
-        
+
         if (aTerrain.terrainVertexArray[i].position.y >= maxY)
         {
             maxY = aTerrain.terrainVertexArray[i].position.y;
@@ -804,7 +804,7 @@ bool Game::InitializeTerrainArrayNew(Terrain& aTerrain)
     {
         gridLineOffSetY = 0.3f;
     }
-    
+
     /*
     gridLineOffSetY = 0.22f;
     const float gridLineOffSetY2 = 1.1f;
@@ -1167,7 +1167,7 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     // TODO: Add your game logic here.
     elapsedTime;
-    
+
     UpdateGameplayOnramp(aTimer);
 
     if (m_npcController->GetIsDebugPauseToggleTrue() == true)
@@ -1250,7 +1250,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     {
         m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_INTROSCREEN = ", 1, "");
     }
-    else 
+    else
     {
         m_debugData->DebugPushUILineWholeNumber("GameState::Unknonw = ", 0, "");
     }
@@ -1353,12 +1353,13 @@ void Game::Render()
         DrawIntroScene();
         m_vehicle->DrawVehicleProjectiles2Demo(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
- 
+
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
+        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -1368,8 +1369,8 @@ void Game::Render()
         DrawSpawner1();
         //DrawSpawner2();
         DrawSpawner1to2();
-       // DrawLaunchSite();
-        //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        // DrawLaunchSite();
+         //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1426,7 +1427,7 @@ void Game::Render()
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY || m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
         DrawDebugDataUI();
-       
+
         if (m_isDisplayCountdownTrue == true)
         {
             DrawUnlockUI();
@@ -1472,7 +1473,7 @@ void Game::Clear()
     // multisampling
     auto renderTarget = m_offscreenRenderTargetSRV.Get();
     auto depthStencil = m_depthStencilSRV.Get();
-    
+
     context->ClearRenderTargetView(renderTarget, Colors::Black);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
@@ -1558,7 +1559,7 @@ void Game::CreateDeviceDependentResources()
     // TODO: Initialize device dependent objects here (independent of window size).
     device;
 
-    
+
     // sky texture
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/skyTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureSky.ReleaseAndGetAddressOf()));
@@ -1592,7 +1593,7 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureFlameTest.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapFlameTest.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/blankSpecular.jpg", nullptr, m_specularFlameTest.ReleaseAndGetAddressOf()));
-    
+
     // Blank textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMap.ReleaseAndGetAddressOf()));
@@ -1607,7 +1608,7 @@ void Game::CreateDeviceDependentResources()
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/test.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normJI4.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI3.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-    
+
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoJI3.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/rust_texture.jpg", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
@@ -1617,7 +1618,7 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecText.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecTextBlack.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-    
+
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture0.png", nullptr, m_textureJI0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm0.png", nullptr, m_normalMapJI0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec0.png", nullptr, m_specularJI0.ReleaseAndGetAddressOf()));
@@ -1637,13 +1638,13 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture4.png", nullptr, m_textureJI4.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm4.png", nullptr, m_normalMapJI4.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec4.png", nullptr, m_specularJI4.ReleaseAndGetAddressOf()));
-    
+
     // BMW texture
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textBMW0.png", nullptr, m_textureBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW1.png", nullptr, m_normalMapBMW.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBMW0.png", nullptr, m_normalMapBMW2.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specBMW0.png", nullptr, m_specularBMW.ReleaseAndGetAddressOf()));
-    
+
     // Start screen textures
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureUV.png", nullptr, m_textureAutoGame.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normalUV.png", nullptr, m_normalMapAutoGame.ReleaseAndGetAddressOf()));
@@ -1764,7 +1765,7 @@ void Game::CreateDeviceDependentResources()
 
     m_world = DirectX::SimpleMath::Matrix::Identity;
     m_effect = std::make_unique<NormalMapEffect>(device);
-   
+
     // Make sure you called CreateDDSTextureFromFile and CreateWICTextureFromFile before this point!
     m_effect->SetTexture(m_texture.Get());
     m_effect->SetNormalTexture(m_normalMap.Get());
@@ -1867,7 +1868,7 @@ void Game::CreateDeviceDependentResources()
 
     const float spawnerHeight = m_spawnerDimensions.y;
     const float spawnerDiameter = m_spawnerDimensions.x;
-    const float spawnerThickness = m_spawnerShellThickness;   
+    const float spawnerThickness = m_spawnerShellThickness;
     const float spawnerScale = m_spawnerScale;
     const int spawnerSides = m_spawnerSides;
     m_spawnerOuterShape = DirectX::GeometricPrimitive::CreateTorus(context, spawnerDiameter, spawnerThickness, spawnerSides);
@@ -1877,7 +1878,7 @@ void Game::CreateDeviceDependentResources()
     auto spawnerTunnelPos1 = m_spawnerPos;
     spawnerTunnelPos1.y += 4.0f;
     m_spawnerOuterMat *= DirectX::SimpleMath::Matrix::CreateWorld(spawnerTunnelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
-    
+
     m_spawnerOuterMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerOuterMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
     m_spawnerOuterMat2 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, 1.0f, spawnerScale));
@@ -1899,13 +1900,13 @@ void Game::CreateDeviceDependentResources()
     auto archShadowTrans1 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     DirectX::SimpleMath::Matrix archShadowMat1 = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.93f, 0.99f, 0.93f));
     archShadowMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(archShadowTrans1);
-     archShadowMat1 *= m_spawnerOuterMat;
+    archShadowMat1 *= m_spawnerOuterMat;
     m_spawnerShellInteriorMat1 = archShadowMat1;
 
     DirectX::SimpleMath::Matrix archShadowMat2 = DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(0.93f, 0.99f, 0.93f));
     auto archShadowTrans2 = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
     archShadowMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(archShadowTrans2);
-     archShadowMat2 *= m_spawnerOuterMat2;
+    archShadowMat2 *= m_spawnerOuterMat2;
     m_spawnerShellInteriorMat2 = archShadowMat2;
 
     m_spawnerArmShape = DirectX::GeometricPrimitive::CreateBox(context, m_spawnerArmDimensions);
@@ -1963,7 +1964,7 @@ void Game::CreateDeviceDependentResources()
     m_spawnerBaseLowerMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerBaseLowerMat2 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerBaseLowerDimensions);
     m_spawnerBaseLowerMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerLowerPos2, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
- 
+
     // blast window
     m_spawnerBlastWindowMat1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerBlastWindowMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerBlastWindowDimensions);
@@ -2012,7 +2013,7 @@ void Game::CreateDeviceDependentResources()
     m_spawnerBaseRearMat1 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(90.0f));
     m_spawnerBaseRearMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3(m_spawnerRearPos2.x, m_spawnerRearPos2.y, -m_spawnerRearPos2.z), DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
-//////////////////
+    //////////////////
 
     m_spawnerMainAxelMat1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerMainAxelMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
@@ -2053,7 +2054,7 @@ void Game::CreateDeviceDependentResources()
     m_spawnerLightHousingMat1Pos2 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * 0.5f, 0.0f, 0.0f));
     m_spawnerLightHousingMat1Pos3 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -0.5f, 0.0f, 0.0f));
     m_spawnerLightHousingMat1Pos4 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(m_spawnerLightingSpacing * -1.5f, 0.0f, 0.0f));
-    
+
 
     m_spawnerLightInnerMat1Pos1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerLightInnerMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerLightInnerDimensions);
@@ -2078,7 +2079,7 @@ void Game::CreateDeviceDependentResources()
     m_spawnerLightHousingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_spawnerLightingCenterTrans);
     m_spawnerLightHousingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(180.0f));
     m_spawnerLightHousingMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerBasePos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-    
+
     m_spawnerLightInnerMat2Pos1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerLightInnerMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerLightInnerDimensions);
     m_spawnerLightInnerMat2Pos1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_spawnerLightAngle);
@@ -2108,7 +2109,7 @@ void Game::CreateDeviceDependentResources()
     // light ring
     m_spawnerLightRingShape = DirectX::GeometricPrimitive::CreateTorus(context, m_spawnerLightHousingDimensions.x - (m_spawnerLightingRingThickness * 1.0f), m_spawnerLightingRingThickness);
     m_spawnerLightRingMat1Pos1 = DirectX::SimpleMath::Matrix::Identity;
-    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, m_spawnerLightingRingScale,1.0f));
+    m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateScale(DirectX::SimpleMath::Vector3(1.0f, m_spawnerLightingRingScale, 1.0f));
     m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_spawnerLightRingTrans);
     m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_spawnerLightAngle);
     m_spawnerLightRingMat1Pos1 *= DirectX::SimpleMath::Matrix::CreateTranslation(m_spawnerLightingCenterTrans);
@@ -2143,8 +2144,8 @@ void Game::CreateDeviceDependentResources()
 
     // spawner lighting
     m_spawnerLightDirection1 = DirectX::SimpleMath::Vector3::UnitY;
-    m_spawnerLightDirection1 = DirectX::SimpleMath::Vector3::Transform(m_spawnerLightDirection1, 
-        DirectX::SimpleMath::Matrix::CreateRotationX( - m_spawnerLightAngle));
+    m_spawnerLightDirection1 = DirectX::SimpleMath::Vector3::Transform(m_spawnerLightDirection1,
+        DirectX::SimpleMath::Matrix::CreateRotationX(-m_spawnerLightAngle));
 
     m_spawnerLightDirection2 = DirectX::SimpleMath::Vector3::UnitY;
     m_spawnerLightDirection2 = DirectX::SimpleMath::Vector3::Transform(m_spawnerLightDirection2,
@@ -2175,25 +2176,25 @@ void Game::CreateDeviceDependentResources()
     // dual axels
     m_spawnerMainAxelShape = DirectX::GeometricPrimitive::CreateCylinder(context, m_spawnerMainGearDimensions.x, m_spawnerMainGearDimensions.y, 8);
     m_spawnerMainAxelCoreShape = DirectX::GeometricPrimitive::CreateCylinder(context, m_spawnerMainGearDimensions.x * 1.05f, m_spawnerMainGearDimensions.y, 3);
-    
+
     m_spawnerAxelDualShape2 = DirectX::GeometricPrimitive::CreateCylinder(context, m_spawnerAxelHeight2, m_spawnerAxelDiameter2, 8);
     m_spawnerAxelCoreDualShape2 = DirectX::GeometricPrimitive::CreateCylinder(context, m_spawnerAxelHeight2 * 1.05f, m_spawnerAxelDiameter2, 3);
-    
+
     m_spawnerAxelDualShape3 = DirectX::GeometricPrimitive::CreateCylinder(context, m_spawnerAxelHeight3, m_spawnerAxelDiameter3, 8);
     m_spawnerAxelCoreDualShape3 = DirectX::GeometricPrimitive::CreateCylinder(context, m_spawnerAxelHeight3 * 1.05f, m_spawnerAxelDiameter3, 3);
 
     m_spawnerMainGearPortMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerMainGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
- //   m_spawnerMainGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
-  //      DirectX::SimpleMath::Vector3(m_spawnerMainGearOffsetX, m_spawnerMainGearOffsetY, -m_spawnerMainGearOffsetZ));
+    //   m_spawnerMainGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+     //      DirectX::SimpleMath::Vector3(m_spawnerMainGearOffsetX, m_spawnerMainGearOffsetY, -m_spawnerMainGearOffsetZ));
     m_spawnerMainGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
         DirectX::SimpleMath::Vector3(0.0f, 0.0f, -m_spawnerMainGearOffsetZ));
     m_spawnerMainGearPortMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
     m_spawnerMainGearStarMat2 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerMainGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(90.0f));
-  //  m_spawnerMainGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
-  //      DirectX::SimpleMath::Vector3(m_spawnerMainGearOffsetX, m_spawnerMainGearOffsetY, m_spawnerMainGearOffsetZ));
+    //  m_spawnerMainGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
+    //      DirectX::SimpleMath::Vector3(m_spawnerMainGearOffsetX, m_spawnerMainGearOffsetY, m_spawnerMainGearOffsetZ));
     m_spawnerMainGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateTranslation(
         DirectX::SimpleMath::Vector3(0.0f, 0.0f, m_spawnerMainGearOffsetZ));
     m_spawnerMainGearStarMat2 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos2, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
@@ -2258,9 +2259,9 @@ void Game::CreateDeviceDependentResources()
         DirectX::SimpleMath::Vector3(-m_spawnerExtendGearOffsetX, m_spawnerExtendGearOffsetY, -m_spawnerExtendGearOffsetZ));
     m_spawnerExtenderGearStarMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
 
-////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
 
-    // launch pad or site
+        // launch pad or site
     m_shapeLaunchPad = DirectX::GeometricPrimitive::CreateBox(context, m_shapeLaunchPadDimensions);
     m_shapeLaunchPadMat = DirectX::SimpleMath::Matrix::Identity;
     m_shapeLaunchPadMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
@@ -2304,7 +2305,7 @@ void Game::CalculateSpawnerData()
     float blastShieldRatio1 = 0.0f;
     if (m_isSpawnerDoorActive1 == true)
     {
-        const float timerRatio = m_spawnerDoorTimer1/ m_spawnerDoorSwingTimeMax;
+        const float timerRatio = m_spawnerDoorTimer1 / m_spawnerDoorSwingTimeMax;
         if (timerRatio > 0.45f && timerRatio < 0.55f)
         {
             //m_isSpawnerLightOn1 = true;
@@ -2352,7 +2353,7 @@ void Game::CalculateSpawnerData()
 
             stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec, openVec, ratio1);
             stepVec1 = DirectX::SimpleMath::Vector3::SmoothStep(overCloseVec, openVec, ratio1);
-            smoothAng1 = - Utility::GetAngleBetweenVectors(compVec1, stepVec1);
+            smoothAng1 = -Utility::GetAngleBetweenVectors(compVec1, stepVec1);
             smoothAng1 -= Utility::ToRadians(-90.0f);
         }
         m_spawnerDoorTimer1 += static_cast<float>(m_timer.GetElapsedSeconds());
@@ -2420,9 +2421,9 @@ void Game::CalculateSpawnerData()
     DirectX::SimpleMath::Quaternion mainAxelQuat1 = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, angle1);
     DirectX::SimpleMath::Quaternion mainAxelQuatUpdate1 = DirectX::SimpleMath::Quaternion::Slerp(m_spawnerMainAxelQuat1, mainAxelQuat1, ratio1);
 
-/////////////
-// Spawner 2
-/////////////
+    /////////////
+    // Spawner 2
+    /////////////
     float angle2 = 0.0f;
     float quatAngle2 = 0.0f;
     float ratio2 = 0.0f;
@@ -2431,7 +2432,7 @@ void Game::CalculateSpawnerData()
     auto openVec2 = closedVec2;
     openVec2 = DirectX::SimpleMath::Vector3::Transform(openVec2, m_spawnerDoorOpenQuat2);
     overCloseVec2 = DirectX::SimpleMath::Vector3::Transform(overCloseVec2, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(
-    DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(80.0f)));
+        DirectX::SimpleMath::Vector3::UnitX, Utility::ToRadians(80.0f)));
 
     DirectX::SimpleMath::Vector3 stepVec2 = DirectX::SimpleMath::Vector3::UnitZ;
     DirectX::SimpleMath::Vector3 compVec = DirectX::SimpleMath::Vector3::UnitY;
@@ -2477,7 +2478,7 @@ void Game::CalculateSpawnerData()
         else if (m_spawnerDoorTimer2 < closeStartTime)
         {
             ratio2 = 1.0f;
-            
+
             stepVec2 = DirectX::SimpleMath::Vector3::SmoothStep(closedVec2, openVec2, ratio2);
             smoothAng2 = Utility::GetAngleBetweenVectors(closedVec2, stepVec2);
             m_altSpawnerAng2 = smoothAng2;
@@ -2557,7 +2558,7 @@ void Game::CalculateSpawnerData()
             m_isSpawnerLightOn2 = true;
         }
     }
-  
+
     if (smoothAng2 < 0.0f)
     {
         smoothAng2 = 0.0f;
@@ -2584,14 +2585,14 @@ void Game::CalculateSpawnerData()
     m_spawnerDatatMainAxelAngle1 = -angle1;
     m_spawnerMainAxelRatio1 = ratio1;
     m_spawnerBlastShieldRatio1 = blastShieldRatio1;
-    
+
     // extended door arms
     //const float extenderMod1 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
     //const float extenderMod2 = abs(cos(m_timer.GetTotalSeconds())) * m_spawnerExtenderDistanceMax;
     const float extenderMod1 = m_spawnerExtenderMod1 * m_spawnerExtenderDistanceMax;
     const float extenderMod2 = m_spawnerExtenderMod2 * m_spawnerExtenderDistanceMax;
 
-        // arm 
+    // arm 
     const float armOffsetX = (m_spawnerAxelDimensions.x * 0.5f) - (m_spawnerArmDimensions.x * 0.5f);
     const float armOffsetLowerY = m_spawnerArmDimensions.y - (m_spawnerExtendorDimensions.y * 0.5f);
     const float armOffsetUpperY = m_spawnerArmDimensions.y + (m_spawnerArmDimensions.y * 1.0f) + (m_spawnerExtendorDimensions.y * 0.5f);
@@ -2607,7 +2608,7 @@ void Game::CalculateSpawnerData()
     m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(armOffsetX, armOffsetUpperY, armOffsetZ + extenderMod1));
     m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateRotationX(m_spawnerDatatMainAxelAngle1);
     m_spawnerExtenderUpperPortMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(m_spawnerMainAxelPos1, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
- 
+
     m_spawnerExtenderLowerPortMat1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateScale(m_spawnerExtendorDimensions);
     m_spawnerExtenderLowerPortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(armOffsetX, armOffsetLowerY, armOffsetZ + extenderMod1));
@@ -2732,7 +2733,7 @@ void Game::CalculateSpawnerData()
     armBasePos1.x = 0.0f;
     m_spawnerArmBaseStarMat1 *= DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY);
     armBasePos1 = DirectX::SimpleMath::Vector3::Transform(armBasePos1, DirectX::SimpleMath::Matrix::CreateWorld(pos, DirectX::SimpleMath::Vector3::UnitZ, DirectX::SimpleMath::Vector3::UnitY));
-    
+
     // arm base port 1
     m_spawnerArmBasePortMat1 = DirectX::SimpleMath::Matrix::Identity;
     m_spawnerArmBasePortMat1 *= DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(
@@ -2884,7 +2885,7 @@ void Game::CalculateSpawnerData()
     // shadow extender arm port 2 
     lightDir2 = extendArmPortPos2 - m_spawnerLightPos2;
     lightDir2 = armBasePos2 - m_spawnerLightPos2;
-  
+
     lightDir2.x = 0.0f;
     lightDir2.Normalize();
     shadowTestMat = m_spawnerExtenderLowerPortMat2;
@@ -3012,7 +3013,7 @@ void Game::CalculateSpawnerData()
             m_isSpawnerLightOnAudioTrigger1 = false;
         }
     }
-    
+
     if (m_isSpawnerLightOn2 != m_isSpawnerLightOnAudioTrigger2)
     {
         if (m_isSpawnerLightOn2 == true)
@@ -3099,7 +3100,7 @@ void Game::DrawSpawner()
     */
     //m_effect->SetLightEnabled(2, true);
     //m_effect->SetLightDirection(2, m_spawnerLightDirection1);
-    
+
 ///////////////////////
 /////////////////////////
     //m_effect->SetLightEnabled(0, true);
@@ -3107,13 +3108,13 @@ void Game::DrawSpawner()
     //m_effect->SetLightEnabled(2, false);
 
     auto lightDir1 = m_spawnerPos - m_spawnerLightPos1;
-    
+
     lightDir1.x = 0.0f;
     lightDir1.Normalize();
-    
+
     //lightDir1 = DirectX::SimpleMath::Vector3(0.0f, -1.0f, 0.5f);
     //lightDir1.Normalize();
-    
+
     m_effect->SetLightDirection(0, lightDir1);
     m_effect->SetLightDirection(0, m_spawnerLightDirection1);
 
@@ -3126,7 +3127,7 @@ void Game::DrawSpawner()
     // light bars
     m_effect->SetLightDirection(0, -m_spawnerLightDirection1);
     if (m_isSpawnerLightOn1 == true)
-    {     
+    {
         /*
         m_effect->SetColorAndAlpha(m_spawnerColorLightOn);
         m_effect->SetWorld(m_spawnerLightInnerMat1Pos1);
@@ -3141,12 +3142,12 @@ void Game::DrawSpawner()
         m_effect->SetWorld(m_spawnerLightInnerMat1Pos4);
         m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
         */
-        
+
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat1Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
-        
+
     }
     else
     {
@@ -3213,7 +3214,7 @@ void Game::DrawSpawner()
     m_effect->SetWorld(m_spawnerExtenderUpperStarMat1);
     m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
     m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
-    
+
     m_effect->SetWorld(m_spawnerExtenderLowerStarMat1);
     m_effect->SetColorAndAlpha(m_spawnerColorExtenderArm);
     m_shapeNormCube->Draw(m_effect.get(), m_inputLayout.Get());
@@ -3264,12 +3265,12 @@ void Game::DrawSpawner()
     //m_shapeNormCube->Draw(m_spawnerGearBoxMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
     // main axel core
     m_effect->SetColorAndAlpha(m_spawnerColorAxelCore1);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1)* m_spawnerMainAxelMat1);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1) * m_spawnerMainAxelMat1);
     m_spawnerAxelShape->Draw(m_effect.get(), m_inputLayout.Get());
     //m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1)* m_spawnerMainAxelMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelCore1);
      // main axel 1
     m_effect->SetColorAndAlpha(m_spawnerColorAxel1);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1)* m_spawnerMainAxelMat1);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1) * m_spawnerMainAxelMat1);
     m_spawnerAxelShape2->Draw(m_effect.get(), m_inputLayout.Get());
     //m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle1)* m_spawnerMainAxelMat1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
     // second axel 1
@@ -3314,7 +3315,7 @@ void Game::DrawSpawner()
     lightDir1 = DirectX::SimpleMath::Vector3(0.0f, 1.0f, 0.5f);
     lightDir1.Normalize();
     m_effect->SetLightDirection(0, lightDir1);
-        
+
     //m_effect->SetSpecularColor(DirectX::Colors::Yellow);
 
     // blast windows bars
@@ -3521,8 +3522,8 @@ void Game::DrawSpawner()
     m_spawnerBaseShape->Draw(m_spawnerBaseBlastScaledMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorBlastWindowDeploy);
     m_shapeNormCube->Draw(m_spawnerGearBoxMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorGearBox);
 
-    m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelCore1);
-    m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
+    m_spawnerAxelShape->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxelCore1);
+    m_spawnerAxelShape2->Draw(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel1);
 
     m_spawnerAxelShape2->Draw(m_spawnerAxel2Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel2);
     m_spawnerAxelShape3->Draw(m_spawnerAxel3Spawner2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorAxel3);
@@ -3571,12 +3572,12 @@ void Game::DrawSpawner1()
         m_effect->DisableSpecular();
     }
 
-   // m_effect->SetLightDirection(1, mainLightDirection1);
+    // m_effect->SetLightDirection(1, mainLightDirection1);
 
 
-    //m_effect->SetLightEnabled(0, false);
-    //m_effect->SetLightEnabled(1, true);
-    //m_effect->SetLightEnabled(2, false);
+     //m_effect->SetLightEnabled(0, false);
+     //m_effect->SetLightEnabled(1, true);
+     //m_effect->SetLightEnabled(2, false);
 
     m_effect->SetColorAndAlpha(m_spawnerColorLightHousing);
     m_effect->SetWorld(m_spawnerLightHousingMat1Pos1);
@@ -3993,9 +3994,9 @@ void Game::DrawSpawner1to2()
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos3, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
-        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn); 
+        m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos4, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOn);
         */
-   
+
         m_effect->SetColorAndAlpha(m_spawnerColorLightOn);
         m_effect->SetWorld(m_spawnerLightInnerMat2Pos1);
         m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
@@ -4007,7 +4008,7 @@ void Game::DrawSpawner1to2()
         m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
 
         m_effect->SetWorld(m_spawnerLightInnerMat2Pos4);
-        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());     
+        m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
     }
     else
     {
@@ -4023,7 +4024,7 @@ void Game::DrawSpawner1to2()
 
         m_effect->SetWorld(m_spawnerLightInnerMat2Pos4);
         m_shapeNormCylinder->Draw(m_effect.get(), m_inputLayout.Get());
-        
+
         /*
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos1, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
         m_shapeNormCylinder->Draw(m_spawnerLightInnerMat2Pos2, m_camera->GetViewMatrix(), m_proj, m_spawnerColorLightOff);
@@ -4086,7 +4087,7 @@ void Game::DrawSpawner1to2()
     m_effect->SetWorld(m_spawnerExtenderGearStarMat2);
     m_shapeNormCylinderGear->Draw(m_effect.get(), m_inputLayout.Get());
 
-     // extender axel 1
+    // extender axel 1
     m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
     m_effect->SetWorld(m_spawnerExtenderGearPortMat2);
     m_shapeNormCylinderAxel->Draw(m_effect.get(), m_inputLayout.Get());
@@ -4119,50 +4120,50 @@ void Game::DrawSpawner1to2()
 
     // dual main axel
     m_effect->SetColorAndAlpha(m_spawnerColorAxel1);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainGearPortMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainGearPortMat2);
     m_spawnerMainAxelShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     m_effect->SetColorAndAlpha(m_spawnerColorAxel1);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainGearStarMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainGearStarMat2);
     m_spawnerMainAxelShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     // main axel core
     m_effect->SetColorAndAlpha(m_spawnerColorAxelCore1);
     m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2);
-   // m_spawnerAxelShape->Draw(m_effect.get(), m_inputLayout.Get());
+    // m_spawnerAxelShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     m_effect->SetColorAndAlpha(m_spawnerColorAxelCore1);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainGearPortMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainGearPortMat2);
     m_spawnerMainAxelCoreShape->Draw(m_effect.get(), m_inputLayout.Get());
 
     m_effect->SetColorAndAlpha(m_spawnerColorAxelCore1);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2)* m_spawnerMainGearStarMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainGearStarMat2);
     m_spawnerMainAxelCoreShape->Draw(m_effect.get(), m_inputLayout.Get());
 
-     // main axel 1
+    // main axel 1
     m_effect->SetColorAndAlpha(m_spawnerColorAxel1);
     m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY(m_spawnerDatatMainAxelAngle2) * m_spawnerMainAxelMat2);
     //m_spawnerAxelShape2->Draw(m_effect.get(), m_inputLayout.Get());
 
     // second dual axel
     m_effect->SetColorAndAlpha(m_spawnerColorAxel2);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((-m_spawnerDatatMainAxelAngle2 * 2.0f))* m_spawnerSecondGearStarMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((-m_spawnerDatatMainAxelAngle2 * 2.0f)) * m_spawnerSecondGearStarMat2);
     m_spawnerAxelDualShape2->Draw(m_effect.get(), m_inputLayout.Get());
     m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
     m_spawnerAxelCoreDualShape2->Draw(m_effect.get(), m_inputLayout.Get());
     m_effect->SetColorAndAlpha(m_spawnerColorAxel2);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((-m_spawnerDatatMainAxelAngle2 * 2.0f))* m_spawnerSecondGearPortMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((-m_spawnerDatatMainAxelAngle2 * 2.0f)) * m_spawnerSecondGearPortMat2);
     m_spawnerAxelDualShape2->Draw(m_effect.get(), m_inputLayout.Get());
     m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
     m_spawnerAxelCoreDualShape2->Draw(m_effect.get(), m_inputLayout.Get());
     // third dual axel
     m_effect->SetColorAndAlpha(m_spawnerColorAxel3);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((m_spawnerDatatMainAxelAngle2 * 4.0f))* m_spawnerThirdGearStarMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((m_spawnerDatatMainAxelAngle2 * 4.0f)) * m_spawnerThirdGearStarMat2);
     m_spawnerAxelDualShape3->Draw(m_effect.get(), m_inputLayout.Get());
     m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
     m_spawnerAxelCoreDualShape3->Draw(m_effect.get(), m_inputLayout.Get());
     m_effect->SetColorAndAlpha(m_spawnerColorAxel3);
-    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((m_spawnerDatatMainAxelAngle2 * 4.0f))* m_spawnerThirdGearPortMat2);
+    m_effect->SetWorld(DirectX::SimpleMath::Matrix::CreateRotationY((m_spawnerDatatMainAxelAngle2 * 4.0f)) * m_spawnerThirdGearPortMat2);
     m_spawnerAxelDualShape3->Draw(m_effect.get(), m_inputLayout.Get());
     m_effect->SetColorAndAlpha(m_spawnerColorAxelShaft);
     m_spawnerAxelCoreDualShape3->Draw(m_effect.get(), m_inputLayout.Get());
@@ -4222,7 +4223,7 @@ void Game::DrawSpawner1to2()
     m_effect->SetColorAndAlpha(m_spawnerColorStackFirstFloor);
     m_effect->SetWorld(m_spawnerBaseLowerMat2);
     m_spawnerBaseRoofShape->Draw(m_effect.get(), m_inputLayout.Get());
- 
+
     // rear base second floor 2
     m_effect->SetColorAndAlpha(m_spawnerColorStackSecondFloor);
     m_effect->SetWorld(m_spawnerBaseRearMat2);
@@ -4247,7 +4248,7 @@ void Game::DrawSpawner1to2()
     // shell interiors
     if (m_isSpawnerLightOn2 == true && m_spawnerDoorTimer2 < m_spawnerDoorSwingTimeMax * m_spawnerIntiorLightCutOffMod)
     {
-        const float modVal = m_spawnerDoorTimer2/ (m_spawnerDoorSwingTimeMax * m_spawnerIntiorLightCutOffMod);
+        const float modVal = m_spawnerDoorTimer2 / (m_spawnerDoorSwingTimeMax * m_spawnerIntiorLightCutOffMod);
         const float invsMod = 1.0f - modVal;
         /// <summary>
         /// /
@@ -4538,13 +4539,13 @@ void Game::DrawDebugDataUI()
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
-    
+
     std::string textLine = "Time   " + std::to_string(m_timer.GetTotalSeconds());
     DirectX::SimpleMath::Vector2 textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
     textLinePos.x = textLineOrigin.x + 20;
     m_bitwiseFont->DrawString(m_spriteBatch.get(), textLine.c_str(), textLinePos, Colors::White, 0.f, textLineOrigin);
     textLinePos.y += 30;
-  
+
     int npcCount = m_npcController->GetNpcCount();
     textLine = "NPC count = " + std::to_string(npcCount);
     textLineOrigin = m_bitwiseFont->MeasureString(textLine.c_str()) / 2.f;
@@ -4612,73 +4613,61 @@ void Game::DrawIntroScene()
     const float timeStamp = static_cast<float>(m_testTimer + m_debugStartTime);
 
     const float fadeInStart1 = startDelay;
-    const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart2a = fadeInStart1 + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart3a = fadeInStart2a + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart4a = fadeInStart3a + logoDisplayDuration + logoDisplayGap;
-
-    const float fadeInStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart5a = fadeInStart4a + logoDisplayDuration + logoDisplayGap;
-
-    const float fadeInStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart6a = fadeInStart5a + logoDisplayDuration + logoDisplayGap;
-
-    const float fadeInStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart7a = fadeInStart6a + logoDisplayDuration + logoDisplayGap;
+    //const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart2 = fadeInStart1 + logoDisplayDuration + logoDisplayGap;
+    //const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart3 = fadeInStart2 + logoDisplayDuration + logoDisplayGap;
+    //const float fadeInStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart4 = fadeInStart3 + logoDisplayDuration + logoDisplayGap;
+    //const float fadeInStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart5 = fadeInStart4 + logoDisplayDuration + logoDisplayGap;
+    //const float fadeInStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart6 = fadeInStart5 + logoDisplayDuration + logoDisplayGap;
+    //const float fadeInStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
+    const float fadeInStart7 = fadeInStart6 + logoDisplayDuration + logoDisplayGap;
 
     const float fadeInEnd1 = startDelay + fadeDuration;
     //const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
-    const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDurationBmwIn;
-    const float fadeInEnd2a = fadeInStart2a + fadeDurationBmwIn;
-    const float fadeInEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd3a = fadeInStart3a + fadeDuration;
-  
-    const float fadeInEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd4a = fadeInStart4a + fadeDuration;
-
-    const float fadeInEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd5a = fadeInStart5a + fadeDuration;
-
-    const float fadeInEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd6a = fadeInStart6a + fadeDuration;
-
-    const float fadeInEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd7a = fadeInStart6a + fadeDuration;
+    //const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDurationBmwIn;
+    const float fadeInEnd2 = fadeInStart2 + fadeDurationBmwIn;
+    //const float fadeInEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd3 = fadeInStart3 + fadeDuration;
+    //const float fadeInEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd4 = fadeInStart4 + fadeDuration;
+    //const float fadeInEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd5 = fadeInStart5 + fadeDuration;
+    //const float fadeInEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd6 = fadeInStart6 + fadeDuration;
+    //const float fadeInEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
+    const float fadeInEnd7 = fadeInStart6 + fadeDuration;
 
     const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
-    const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
-    const float fadeOutStart2a = fadeInStart2 + logoDisplayDuration - fadeDuration;
-
-    const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod;
-    const float fadeOutStart3a = fadeInStart3 + logoDisplayDuration - fadeDuration;
-
-    const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration;
-    const float fadeOutStart4a = fadeInStart4 + logoDisplayDuration - fadeDuration;
-
-    const float fadeOutStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + topAttackDelay;
-    const float fadeOutStart5a = fadeInStart5 + logoDisplayDuration - fadeDuration;
-
-    const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
-    const float fadeOutStart6a = fadeInStart6 + logoDisplayDuration - fadeDuration;
-
-    const float fadeOutStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayDuration + fadeDuration + topAttackDelay;
-    const float fadeOutStart7a = fadeInStart7 + logoDisplayDuration - fadeDuration;
+    //const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
+    const float fadeOutStart2 = fadeInStart2 + logoDisplayDuration - fadeDuration;
+    //const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod;
+    const float fadeOutStart3 = fadeInStart3 + logoDisplayDuration - fadeDuration;
+    //const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart4 = fadeInStart4 + logoDisplayDuration - fadeDuration;
+    //const float fadeOutStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + topAttackDelay;
+    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration - fadeDuration;
+    //const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart6 = fadeInStart6 + logoDisplayDuration - fadeDuration;
+    //const float fadeOutStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayDuration + fadeDuration + topAttackDelay;
+    const float fadeOutStart7 = fadeInStart7 + logoDisplayDuration - fadeDuration;
 
     const float fadeOutEnd1 = startDelay + logoDisplayDuration;
-    const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd2a = fadeInStart2 + logoDisplayDuration;
-    const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd3a = fadeInStart3 + logoDisplayDuration;
-    const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd4a = fadeInStart4 + logoDisplayDuration;
-    const float fadeOutEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
-    const float fadeOutEnd5a = fadeInStart5 + logoDisplayDuration;
-    const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd6a = fadeInStart6 + logoDisplayDuration;
-    const float fadeOutEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
-    const float fadeOutEnd7a = fadeInStart7 + logoDisplayDuration;
+    //const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd2 = fadeInStart2 + logoDisplayDuration;
+    //const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd3 = fadeInStart3 + logoDisplayDuration;
+    //const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd4 = fadeInStart4 + logoDisplayDuration;
+    //const float fadeOutEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
+    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration;
+    //const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+    const float fadeOutEnd6 = fadeInStart6 + logoDisplayDuration;
+    //const float fadeOutEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
+    const float fadeOutEnd7 = fadeInStart7 + logoDisplayDuration;
 
     const float ravenStart = fadeInStart2 - 2.0f;
     const float fadeDice = m_jiTriggerTime1 + m_jiTriggerTimeDice;
@@ -4754,7 +4743,7 @@ void Game::DrawIntroScene()
                 m_isLogoAudioTriggerTrue1 = true;
                 //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_GONG);
                 AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1);
-                
+
                 ++m_jiTriggerCount;
             }
 
@@ -4806,7 +4795,7 @@ void Game::DrawIntroScene()
             m_effect->SetNormalTexture(m_normalMapJI4.Get());
             m_effect->SetSpecularTexture(m_specularJI4.Get());
         }
-        
+
         if (timeStamp < fadeInEnd1)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
@@ -4837,7 +4826,7 @@ void Game::DrawIntroScene()
         {
             m_effect->SetFogEnabled(false);
 
-           
+
             SetFogVals(testFogTarget1, 1.0f);
         }
     }
@@ -4876,7 +4865,7 @@ void Game::DrawIntroScene()
         {
             //float colorIntensity = (timeStamp - fadeInStart2) / (fadeDuration);
             float colorIntensity = (timeStamp - fadeInStart2) / (fadeDurationBmwIn);
-            
+
 
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
@@ -4899,8 +4888,8 @@ void Game::DrawIntroScene()
             m_effect->SetFogEnd(fogEnd);
 
             SetFogVals(testFogTarget1, colorIntensity);
-         //   SetFogVals2(testFogTarget2, colorIntensity);
-         //   SetFogVals3(testFogTarget3, colorIntensity);
+            //   SetFogVals2(testFogTarget2, colorIntensity);
+            //   SetFogVals3(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -4949,7 +4938,7 @@ void Game::DrawIntroScene()
         m_effect->SetTexture(m_textureStartScreen.Get());
         m_effect->SetNormalTexture(m_normalStartScreen.Get());
         m_effect->SetSpecularTexture(m_specularStartScreen.Get());
-        
+
         // render nothing
         float colorIntensity = (fadeInEnd3 - timeStamp) / (fadeDuration);
         colorIntensity = 0.0;
@@ -4979,11 +4968,11 @@ void Game::DrawIntroScene()
     }
     else if (timeStamp < fadeOutEnd3) // Render Start Screen
     {
-  //      m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
+        //      m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
 
-    //    m_effect->SetTexture(m_textureStartScreen.Get());
-    //    m_effect->SetNormalTexture(m_normalStartScreen.Get());
-    //    m_effect->SetSpecularTexture(m_specularStartScreen.Get());
+          //    m_effect->SetTexture(m_textureStartScreen.Get());
+          //    m_effect->SetNormalTexture(m_normalStartScreen.Get());
+          //    m_effect->SetSpecularTexture(m_specularStartScreen.Get());
 
         if (timeStamp < fadeInEnd3)  // fade in
         {
@@ -4992,8 +4981,8 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
 
             SetFogVals(testFogTarget1, colorIntensity);
-            SetFogVals2(testFogTarget2, colorIntensity);
-            SetFogVals3(testFogTarget3, colorIntensity);
+            //SetFogVals2(testFogTarget2, colorIntensity);
+            //SetFogVals3(testFogTarget3, colorIntensity);
             //SetTerrainGridDimmer(colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -5007,8 +4996,8 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
 
             SetFogVals(testFogTarget1, colorIntensity);
-            SetFogVals2(testFogTarget2, colorIntensity);
-            SetFogVals3(testFogTarget3, colorIntensity);
+            //SetFogVals2(testFogTarget2, colorIntensity);
+            //SetFogVals3(testFogTarget3, colorIntensity);
             //SetTerrainGridDimmer(colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -5243,7 +5232,7 @@ void Game::DrawIntroScene()
         m_effect3->SetFogEnabled(false);
 
         m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
-        
+
         m_camera->SetPos(m_gamePlayStartCamPos2);
         m_camera->SetTargetPos(m_gamePlayStartCamTarg2);
         */
@@ -5255,6 +5244,9 @@ void Game::DrawIntroScene()
         m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
         m_effect->EnableDefaultLighting();
         m_effect->SetFogEnabled(false);
+        m_effect2->SetFogEnabled(false);
+        m_effect3->SetFogEnabled(false);
+
         m_effect->SetTexture(m_normalMap.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
@@ -5338,7 +5330,7 @@ void Game::DrawIntroScene()
             //ratVec = DirectX::SimpleMath::Vector3::Lerp(ratVec, DirectX::SimpleMath::Vector3::UnitY, ratio);
             ratVec = DirectX::SimpleMath::Vector3::SmoothStep(ratVec, DirectX::SimpleMath::Vector3::UnitY, ratio);
             ratio = ratVec.y;
-            
+
             m_logoPosOffsetY = -m_logoPosOffsetYMax + (ratio * (m_logoPosOffsetYMax * 2.0f));
         }
     }
@@ -5348,8 +5340,8 @@ void Game::DrawIntroScene()
     {
         m_logoPosOffsetY = 0.0f;
     }
-    
-    
+
+
     // close up fin deploy
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
     {
@@ -5559,15 +5551,15 @@ void Game::DrawIntroScene()
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
 
-    //    AudioCreateSFX3D(m_camera->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
+        //    AudioCreateSFX3D(m_camera->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
 
-        //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
-        //AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
+            //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
+            //AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
 
-    //    m_ssiTest = m_audioBank->CreateStreamInstance(44, SoundEffectInstance_Use3D);
-        
-        //m_emitter.ChannelCount = m_ssiTest->GetChannelCount();
-        
+        //    m_ssiTest = m_audioBank->CreateStreamInstance(44, SoundEffectInstance_Use3D);
+
+            //m_emitter.ChannelCount = m_ssiTest->GetChannelCount();
+
         for (int i = 0; i < m_emitter.ChannelCount; ++i)
         {
             //m_emitter.EmitterAzimuths[i] = Utility::ToRadians(0.0f);
@@ -5577,7 +5569,7 @@ void Game::DrawIntroScene()
         //m_emitter.EmitterAzimuths[0] = Utility::ToRadians(10.0f);
         //m_emitter.EmitterAzimuths[1] = Utility::ToRadians(-10.0f);
         //m_emitter->ChannelCount = m_ssiTest->GetChannelCount();
-       
+
     //    m_ssiTest->Play(true);
 
     }
@@ -5641,7 +5633,7 @@ void Game::DrawUIDisplayLaser()
     float fontScale = 3.0f;
 
     std::string textLine = m_uiAmmoDisplayString;
-    
+
     if (m_uiDisplayTimer < m_uiDisplayTypeDuration)
     {
         int textSize = static_cast<int>(textLine.size());
@@ -5767,7 +5759,7 @@ void Game::DrawLaunchSite()
     m_effect->SetSpecularTexture(m_specularJI0.Get());
     //m_effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(0.2f, 0.2f, 0.6f, 1.0f));
     m_effect->SetColorAndAlpha(DirectX::SimpleMath::Vector4(0.02352941f, 0.0f, 0.99215686f, 1.0f));
-   
+
     m_effect->SetWorld(m_shapeLaunchPadMat);
     m_shapeLaunchPad->Draw(m_effect.get(), m_inputLayout.Get());
 
@@ -5805,10 +5797,10 @@ void Game::DrawLogoScreen()
     logoPos += camPos;
     DirectX::SimpleMath::Matrix wMat = DirectX::SimpleMath::Matrix::Identity;
     wMat *= DirectX::SimpleMath::Matrix::CreateWorld(logoPos, logoForward, DirectX::SimpleMath::Vector3::UnitY);
-    
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLinePositionIndicator(logoPos, 4.0f, 0.0f, DirectX::Colors::Red);
-    m_debugData->ToggleDebugOff();
+
+    //m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->PushDebugLinePositionIndicator(logoPos, 4.0f, 0.0f, DirectX::Colors::Red);
+    //m_debugData->ToggleDebugOff();
 
     if (m_isLogoDisplayTrue == true)
     {
@@ -7059,7 +7051,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             const float zoom = m_camera->GetZoom();
             const float zoomMod = 1.0 - (zoom * m_gamePadZoomSpeedMod);
-            m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds())* zoomMod);
+            m_vehicle->InputWeaponPitch(static_cast<float>(aTimer.GetElapsedSeconds()) * zoomMod);
         }
     }
     if (kb.NumPad3)
@@ -7192,7 +7184,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             {
                 if (m_fireControl->GetIsMissileDualFireTrue() == true)
                 {
-                    TriggerFireWithAudio();             
+                    TriggerFireWithAudio();
                     TriggerFireWithAudio();
 
                     if (m_isQuckCameraToggleTrue == true)
@@ -7209,7 +7201,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                     {
                         m_camera->ActivateMissleTrackCamera();
                     }
-                }  
+                }
             }
         }
         */
@@ -7295,7 +7287,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_fireControl->ToggleDebug3();
-            
+
             m_camera->ResetSmoothStepVal();
             m_camera->SetCameraState(CameraState::CAMERASTATE_TARGETPAN);
         }
@@ -7359,7 +7351,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos1, m_introTarg1);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
             */
-            
+
         }
         m_audioVolumeGamePlay = 1.0f;
     }
@@ -7375,7 +7367,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
             */
-            
+
         }
         m_audioVolumeGamePlay = 0.0f;
     }
@@ -7492,7 +7484,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         if (pad.triggers.left > m_gamePadInputDeadZone || pad.triggers.right > m_gamePadInputDeadZone)
         {
             const float turnMod = m_gamePadInputRateBodyTurn;
-            
+
             //m_vehicle->InputGamePadStrafe((pad.triggers.left - pad.triggers.right)* turnMod);
 
             const float inputMod = m_gamePadInputCamHeight;
@@ -7529,7 +7521,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             }
             else
             {
-                m_camera->FovDown(static_cast<float>(pad.thumbSticks.rightY* aTimer.GetElapsedSeconds()));
+                m_camera->FovDown(static_cast<float>(pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
             }
         }
         if (pad.thumbSticks.rightY < -m_gamePadInputDeadZone)
@@ -7542,7 +7534,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             else
             {
                 m_camera->FovUp(static_cast<float>(-pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
-            }  
+            }
         }
         if (pad.IsRightShoulderPressed() == true)
         {
@@ -7595,7 +7587,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                
+
             }
         }
         if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
@@ -7658,7 +7650,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 m_vehicle->InputWeaponPitchToZero(static_cast<float>(aTimer.GetElapsedSeconds()));
             }
         }
-        
+
     }
     else
     {
@@ -7723,7 +7715,7 @@ void Game::UpdateAudio(DX::StepTimer const& aTimer)
     //m_emitter.EmitterAzimuths[1] = Utility::ToRadians(0.0f);
 
     //testForward += m_vehicle->GetPos();
-    
+
     auto posPrev = m_emitter.Position;
     auto velocity = (testForward - posPrev) / aTimer.GetElapsedSeconds();
     //m_emitter.Update(testForward, DirectX::SimpleMath::Vector3::UnitY, static_cast<float>(aTimer.GetElapsedSeconds()));
@@ -7757,7 +7749,7 @@ void Game::UpdateAudio(DX::StepTimer const& aTimer)
 
     ////////////////////
 
-    
+
     UpdateAudioEmitters(aTimer);
 }
 
@@ -7881,7 +7873,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->volume = volume;
 
             m_soundFxVecTest[i]->emitter->SetOrientation(DirectX::SimpleMath::Vector3::UnitX, DirectX::SimpleMath::Vector3::UnitY);
-         
+
             m_debugData->ToggleDebugOnOverRide();
             m_debugData->PushDebugLinePositionIndicator(pos, 5.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->ToggleDebugOff();
@@ -7908,7 +7900,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             float speed = m_timer.GetTotalSeconds() / 2.0f;
             testForward = DirectX::SimpleMath::Vector3(static_cast<float>(cos(speed)) * 5.f, 0.0f, static_cast<float>(sin(speed)) * -5.0f);
-       
+
             //testForward = DirectX::SimpleMath::Vector3::UnitX * 10.0f;
 
             testForward += m_vehicle->GetPos();
@@ -7931,7 +7923,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_debugData->DebugPushUILineDecimalNumber("m_testTimerOffset   = ", m_testTimerOffset, "");
             m_debugData->DebugPushUILineDecimalNumber("m_testTimer1   = ", m_testTimer1, "");
             m_debugData->DebugPushUILineDecimalNumber("m_testTimer2   = ", m_testTimer2, "");
-   
+
             m_debugData->ToggleDebugOff();
 
             //auto pos = m_debugAudioPos;
@@ -7943,18 +7935,18 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             float azmuth = 0.5f;
 
             //m_soundFxVecTest[i]->emitter->EmitterAzimuths = azmuth;
-            
+
             //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->emitter->Update(testForward, DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
 
             //m_soundFxVecTest[i]->emitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
-            
+
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
         {
             auto pos = m_audioRavenOffset;
-            pos = DirectX::SimpleMath::Vector3::Transform(pos, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX,- m_lighting->GetLightAngle() + Utility::ToRadians(35.0f)));
+            pos = DirectX::SimpleMath::Vector3::Transform(pos, DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::UnitX, -m_lighting->GetLightAngle() + Utility::ToRadians(35.0f)));
             auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
 
             m_soundFxVecTest[i]->emitter->OrientFront = m_vehicle->GetForward();
@@ -8001,7 +7993,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //auto volume = m_vehicle->GetThrottleTank();
             auto immersionRatio = m_vehicle->GetImmersionRatio();
             auto immersionRatioPrev = m_vehicle->GetImmersionRatioPrev();
-              
+
             const float deltaMax = 0.3f * static_cast<float>(aTimer.GetElapsedSeconds());
             const float timeDelta = static_cast<float>(aTimer.GetElapsedSeconds());
 
@@ -8014,12 +8006,12 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_audioHoverVal4 = m_audioHoverVal3;
             m_audioHoverVal3 = m_audioHoverVal2;
             m_audioHoverVal2 = m_audioHoverVal1;
-            
+
             volume = (immersionRatio + m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 6.0f;
             //m_audioHoverVal1 = immersionRatio;
             m_audioHoverVal = volume;
             m_audioHoverVal1 = volume;
-        
+
             ////////////////////////////////////////////////
 
             const float posKey0 = 0.0f;
@@ -8047,7 +8039,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             float cl;
             float curveDeltaRate;
             float clTarget;
-        
+
             if (inputAngle < angKey1)
             {
                 cl = inputAngle * deltaKey1;
@@ -8183,35 +8175,35 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_audioHoverVal3 = m_audioHoverVal2;
             m_audioHoverVal2 = m_audioHoverVal1;
 
-           // auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
+            // auto hoverDriveOutput = m_vehicle->GetHoverDriveOutput();
 
-            /*
-            m_audioHoverVal1 = hoverDriveOutput;
-            m_audioHoverVal5 = m_audioHoverVal4;
-            m_audioHoverVal4 = m_audioHoverVal3;
-            m_audioHoverVal3 = m_audioHoverVal2;
-            m_audioHoverVal2 = m_audioHoverVal1;
-            // m_audioHoverVal1 = m_audioHoverVal;
-            auto volumeForce = (m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 5.0f;
-            const float forceMax = 13640.0f;
-            const float forceMin = 8000.0f;
-            float volumeModed = 0.0f;
-            if (volumeForce > forceMax)
-            {
-                volumeModed = 1.0f;
-            }
-            else if (volumeForce < forceMin)
-            {
-                volumeModed = 0.0f;
-            }
-            else
-            {
-                //volumeModed = volumeForce / forceMax;
-                volumeModed = (volumeForce - forceMin) / (forceMax - forceMin);
-            }
+             /*
+             m_audioHoverVal1 = hoverDriveOutput;
+             m_audioHoverVal5 = m_audioHoverVal4;
+             m_audioHoverVal4 = m_audioHoverVal3;
+             m_audioHoverVal3 = m_audioHoverVal2;
+             m_audioHoverVal2 = m_audioHoverVal1;
+             // m_audioHoverVal1 = m_audioHoverVal;
+             auto volumeForce = (m_audioHoverVal1 + m_audioHoverVal2 + m_audioHoverVal3 + m_audioHoverVal4 + m_audioHoverVal5) / 5.0f;
+             const float forceMax = 13640.0f;
+             const float forceMin = 8000.0f;
+             float volumeModed = 0.0f;
+             if (volumeForce > forceMax)
+             {
+                 volumeModed = 1.0f;
+             }
+             else if (volumeForce < forceMin)
+             {
+                 volumeModed = 0.0f;
+             }
+             else
+             {
+                 //volumeModed = volumeForce / forceMax;
+                 volumeModed = (volumeForce - forceMin) / (forceMax - forceMin);
+             }
 
-            volume = volumeModed;
-            */
+             volume = volumeModed;
+             */
 
             auto pitch = volume;
             //pitch *= 0.5f;
@@ -8292,7 +8284,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->pos = pos;
 
             m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
-       
+
             //m_soundFxVecTest[i]->emitter->SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUp());
             //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
 
@@ -8318,7 +8310,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             auto volume = m_audioVolumeGamePlay * m_audioSpawnerMod;
             m_soundFxVecTest[i]->fx->SetVolume(volume);
             m_soundFxVecTest[i]->volume = volume;
- 
+
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
@@ -8350,7 +8342,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                 }
                 else
                 {
-                    m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume* m_audioLockToneVolMod);
+                    m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume * m_audioLockToneVolMod);
                 }
             }
             else
@@ -8367,8 +8359,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
         }
-        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON || 
-                    m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON ||
+            m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)
         {
             auto pos = m_soundFxVecTest[i]->pos;
             auto velocity = (m_soundFxVecTest[i]->pos - previousPosition) / aTimer.GetElapsedSeconds();
@@ -8403,8 +8395,8 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_debugData->PushDebugLinePositionIndicator(m_soundFxVecTest[i]->emitter->Position, 5.0f, 0.0f, DirectX::Colors::Red);
             m_debugData->ToggleDebugOff();
         }
-        else if ( m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2 
-                || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT1 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT2
+            || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANGALT3 || m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_GONG)
         {
             //if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SHOTBANG)
@@ -8447,7 +8439,7 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_EXPLOSION)
         {
-           
+
             auto pos = m_soundFxVecTest[i]->pos;
             auto velocity = (m_soundFxVecTest[i]->pos - previousPosition) / aTimer.GetElapsedSeconds();
 
@@ -8560,19 +8552,19 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
     // apply 3d
     for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
     {
-     //   auto pos = m_soundFxVecTest[i]->pos;
-       
-        //m_soundFxVecTest[i]->emitter->Position = pos;
-     //   m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
-        //m_soundFxVecTest[i]->emitter->Update(m_debugAudioPos, DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
-        //m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
+        //   auto pos = m_soundFxVecTest[i]->pos;
 
-     //   m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+           //m_soundFxVecTest[i]->emitter->Position = pos;
+        //   m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+           //m_soundFxVecTest[i]->emitter->Update(m_debugAudioPos, DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
+           //m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
+
+        //   m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
 
 
 
-        //m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
-        //m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+           //m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
+           //m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
     }
 
     // check if stopped
@@ -8801,7 +8793,7 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             snapTargPos.y *= 0.5f;
             m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_introPos2, m_introTarg2);
             //m_camera->SetSnapVals(m_introCamStep2, m_introTargStep2, m_introSlerp2, m_camera->GetPos(), m_camera->GetTargetPos());
-           
+
             //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMTRANSITION);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMSYNC);
             m_vehicle->ToggleAirDropTrigger();
@@ -8813,7 +8805,7 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
         {
             m_isStartTriggerTrue3 = true;
 
-            
+
 
             //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
@@ -8824,7 +8816,7 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
             //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
 
-            
+
         }
     }
 }

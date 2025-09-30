@@ -12774,7 +12774,7 @@ void FireControl::UpdateMuzzleFlashVec(const double aTimeDelta)
 
 void FireControl::UpdateNavData(MissileData& aMissile, const float aTimeDelta)
 {
-    if (m_missileConsts.isManualControlTrue == true)
+    if (m_missileConsts.isManualControlTrue == true || aMissile.isDemoTrue == true)
     {
         GuidanceManualVector(aMissile, aTimeDelta);
     }
@@ -15871,13 +15871,12 @@ void FireControl::FireMissileWithAudioDemo(const DirectX::SimpleMath::Vector3 aL
     const float low = 0.0f;
     const float high = 0.1f;
     const float timeOffset = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
-    firedMissile.projectileData.time += timeOffset;
+    //firedMissile.projectileData.time += timeOffset;
+    firedMissile.projectileData.time = m_missileConsts.demoTimerOffset;
     /////////////////////
 
     firedMissile.guidance.uniqueId = GetUniqueMissileID();
-
     firedMissile.guidance.type = m_currentMissileType;
-
     firedMissile.guidance.heading = aLaunchDirectionForward;
     firedMissile.guidance.targetID = m_currentTargetID;
     if (m_currentTargetID != -1)
@@ -15892,7 +15891,6 @@ void FireControl::FireMissileWithAudioDemo(const DirectX::SimpleMath::Vector3 aL
     firedMissile.guidance.targetDistance = (aLaunchPos - firedMissile.guidance.targetPosition).Length();
 
     firedMissile.audioFx = aFireFx;
-
     firedMissile.audioFx->fx->Pause();
 
     if (aDebugToggle == true)
