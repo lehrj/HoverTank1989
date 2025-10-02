@@ -4479,8 +4479,8 @@ void Game::DrawDebugDataUI()
 {
     std::vector<std::string> uiVector = m_debugData->DebugGetUIVector();
     DirectX::SimpleMath::Vector2 textLinePos = m_fontPos2;
-    textLinePos.x = 200;
-    textLinePos.y += 30;
+    textLinePos.x = m_fontBaseOffsetX;
+    textLinePos.y += m_fontOffsetY;
     for (int i = 0; i < uiVector.size(); ++i)
     {
         std::string textLine = uiVector[i];
@@ -4636,8 +4636,8 @@ void Game::DrawIntroScene()
 
     const float fadeInStart5 = fadeOutEnd4 + logoDisplayGap;
     const float fadeInEnd5 = fadeInStart5 + fadeDuration;
-    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration;
-    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration + 60.0f;
+    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration + 60.0f;
 
     const float fadeInStart6 = fadeOutEnd5 + logoDisplayGap;
     const float fadeInEnd6 = fadeInStart6 + fadeDuration;
@@ -5186,8 +5186,8 @@ void Game::DrawIntroScene()
         m_logoZoomMod = m_logoZoomModJI;
 
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_DEFAULT);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_DEFAULT);
         //m_effect->SetTexture(m_textureTopAttack.Get());
         //m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
         //m_effect->SetSpecularTexture(m_specularTopAttack.Get());
@@ -5464,6 +5464,7 @@ void Game::DrawIntroScene()
     // Top attack flipbook
     if (timeStamp > fadeInStart6 && timeStamp < fadeOutEnd6)
     {
+        m_isLogoDisplayTrue = true;
         const float timeGap = fadeOutEnd6 - fadeInStart6;
         const float padding = timeGap * 0.25f;
         const float paddingBack = timeGap * 0.04f;
@@ -5541,6 +5542,8 @@ void Game::DrawIntroScene()
  
     //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("fogVal1 = ", fogVal1, "");
+
+    m_debugData->PushDebugLineScreenUI(DirectX::SimpleMath::Vector3::UnitX, 0.0f, DirectX::Colors::Red);
 
     m_debugData->ToggleDebugOff();
 
@@ -6929,30 +6932,34 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (kb.Up)
     {
+        m_fireControl->ManualControlInputPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ManualControlInputPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
+            
         }
     }
     if (kb.Down)
     {
+        m_fireControl->ManualControlInputPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ManualControlInputPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
+            
         }
     }
     if (kb.Left)
     {
+        m_fireControl->ManualControlInputYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ManualControlInputYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
+            
         }
     }
     if (kb.Right)
     {
+        m_fireControl->ManualControlInputYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->ManualControlInputYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
+    
         }
     }
     if (m_kbStateTracker.pressed.OemQuestion)

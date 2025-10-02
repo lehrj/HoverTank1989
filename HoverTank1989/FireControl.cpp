@@ -2668,6 +2668,15 @@ void FireControl::DeleteProjectileFromVec(const unsigned int aIndex)
     }
 }
 
+void FireControl::DemoUnlockMissileMotion()
+{
+    if (m_missileVec.size() == 1)
+    {
+        //m_missileVec[0].projectileData.q.velocity = DirectX::SimpleMath::Vector3::Zero;
+        m_missileVec[0].isDemoTrue = false;
+    }
+}
+
 void FireControl::DeployMirv(ProjectileData& aProjectile)
 {
     AmmoData firedAmmo = m_ammoExplosive.ammoData;
@@ -10285,12 +10294,14 @@ void FireControl::RungeKutta4Missile(struct MissileData* aProjectile, double aTi
     }
     */
 
+
     if (aProjectile->isDemoTrue == false)
     {
-        q.velocity += velocityUpdate;
         q.position += posUpdate;
+        q.velocity += velocityUpdate;
         q.angularMomentum += angularMomentumUpdate;
         q.angularVelocity += angularVelocityUpdate;
+
     }
 
     aProjectile->projectileData.q.velocity = q.velocity;

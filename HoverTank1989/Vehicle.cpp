@@ -1213,6 +1213,7 @@ void Vehicle::FireMissileDemo(std::shared_ptr<Utility::SoundFx> aFireFx, std::sh
         pos = testPos;
         launchDir = DirectX::SimpleMath::Vector3::UnitZ;
         launchDirWorld = DirectX::SimpleMath::Vector3::UnitZ;
+        launchDirWorld = launchDir;
         velocity = DirectX::SimpleMath::Vector3::Zero;
         up = DirectX::SimpleMath::Vector3::UnitY;
         recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
@@ -1264,7 +1265,7 @@ void Vehicle::FireMissileDemo(std::shared_ptr<Utility::SoundFx> aFireFx, std::sh
             recoil.torqueArm = m_modelController->GetLocalizedTubeLeftPos();
         }
 
-        m_heli.impulseForceVec.push_back(recoil);
+        //m_heli.impulseForceVec.push_back(recoil);
     }
 }
 

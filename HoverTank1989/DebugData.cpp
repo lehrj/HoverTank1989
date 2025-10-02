@@ -61,6 +61,24 @@ void DebugData::PushDebugLinePositionIndicator(const DirectX::SimpleMath::Vector
     }
 }
 
+void DebugData::PushDebugLineScreenUI(const DirectX::SimpleMath::Vector3 aPoint, const float aOffset, const DirectX::XMVECTORF32 aColor)
+{
+    if (m_isDebugOn == true)
+    {
+        auto screenPos = DirectX::SimpleMath::Vector3::Zero;
+        auto lineLength = DirectX::SimpleMath::Vector3::Distance(aPoint, screenPos);
+        auto textLength = m_debugUIVector[m_debugUIVector.size()-1].length();
+
+
+        PushDebugLine(aPoint, DirectX::SimpleMath::Vector3::UnitX, lineLength, aOffset, aColor);
+        PushDebugLine(aPoint, DirectX::SimpleMath::Vector3::UnitY, lineLength, aOffset, aColor);
+        PushDebugLine(aPoint, DirectX::SimpleMath::Vector3::UnitZ, lineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -DirectX::SimpleMath::Vector3::UnitX, lineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -DirectX::SimpleMath::Vector3::UnitY, lineLength, aOffset, aColor);
+        PushDebugLine(aPoint, -DirectX::SimpleMath::Vector3::UnitZ, lineLength, aOffset, aColor);
+    }
+}
+
 void DebugData::PushDebugLinePositionIndicatorAligned(const DirectX::SimpleMath::Vector3 aPoint, const float aLineLength, const float aOffset, const DirectX::SimpleMath::Quaternion aQuat, const DirectX::XMVECTORF32 aColor)
 {
     if (m_isDebugOn == true)

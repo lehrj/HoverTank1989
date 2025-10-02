@@ -972,6 +972,7 @@ class FireControl
 {
 public:
     void CycleLoadedAmmo();
+    void DemoUnlockMissileMotion();
     void DetonateAllMissiles();
     void DrawFireControlObjects(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj);
     void DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout);

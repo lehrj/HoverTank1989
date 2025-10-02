@@ -348,6 +348,10 @@ private:
     DirectX::SimpleMath::Vector2                    m_bitwiseFontPos;
     std::unique_ptr<DirectX::SpriteBatch>           m_spriteBatch;
 
+    const float m_fontBaseOffsetX = 200.0f;
+    const float m_fontOffsetY = 30.0f;
+
+
     // Character Textures
     std::unique_ptr<AnimatedTexture>                m_character;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_characterTexture;
