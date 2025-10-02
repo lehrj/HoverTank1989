@@ -4612,25 +4612,15 @@ void Game::DrawIntroScene()
 
     const float timeStamp = static_cast<float>(m_testTimer + m_debugStartTime);
 
-
-
     const float fadeInStart1 = startDelay;   
-
-
     const float fadeInEnd1 = startDelay + fadeDuration;
     const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
-
-
-
-
     const float fadeOutEnd1 = startDelay + logoDisplayDuration;
 
     const float fadeInStart2 = fadeOutEnd1 + logoDisplayGap;
     const float fadeInEnd2 = fadeInStart2 + fadeDurationBmwIn;
     const float fadeOutStart2 = fadeInStart2 + logoDisplayDuration - fadeDuration;
-
     const float fadeOutEnd2 = fadeInStart2 + logoDisplayDuration;
-
 
     const float fadeInStart3 = fadeOutEnd2 + logoDisplayGap;
     const float fadeInEnd3 = fadeInStart3 + fadeDuration;
@@ -4639,18 +4629,14 @@ void Game::DrawIntroScene()
     const float fadeOutEnd3 = fadeInStart3 + logoDisplayDuration;
 
     const float fadeInStart4 = fadeOutEnd3 + logoDisplayGap;
-    //const float fadeInEnd4 = fadeInStart4 + fadeDuration;
-    const float fadeInEnd4 = 35.0499992f;
-  
-    const float fadeOutStart4 = fadeInStart4 + logoDisplayDuration;
-    const float fadeOutEnd4 = fadeInStart4 + logoDisplayDuration + fadeDuration;
-
-
+    const float fadeInEnd4 = fadeInStart4 + fadeDuration;
+    //const float fadeInEnd4 = 35.0499992f;
+    const float fadeOutStart4 = fadeInStart4 + logoDisplayDuration - fadeDuration;
+    const float fadeOutEnd4 = fadeInStart4 + logoDisplayDuration;
 
     const float fadeInStart5 = fadeOutEnd4 + logoDisplayGap;
     const float fadeInEnd5 = fadeInStart5 + fadeDuration;
     const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration;
-
     const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration;
 
     const float fadeInStart6 = fadeOutEnd5 + logoDisplayGap;
@@ -4660,11 +4646,21 @@ void Game::DrawIntroScene()
    
     const float fadeInStart7 = fadeOutEnd6 + logoDisplayGap;
     const float fadeInEnd7 = fadeInStart6 + fadeDuration;
-
     const float fadeOutStart7 = fadeInStart7 + logoDisplayDuration;
     const float fadeOutEnd7 = fadeInStart7 + logoDisplayDuration + fadeDuration;
 
 
+    auto startTrig0 = m_startTrigger0;
+    auto startTrig00 = m_startTrigger00;
+    auto startTrig1 = m_startTrigger1;
+    auto startTrig2 = m_startTrigger2;
+    auto startTrig3 = m_startTrigger3;
+
+    m_startTrigger0 = fadeOutEnd7 + 0.1f;
+    m_startTrigger00 = m_startTrigger0 + 6.9f;
+    m_startTrigger1 = m_startTrigger00 + 2.0f;
+    m_startTrigger2 = m_startTrigger1 + 6.0f;
+    m_startTrigger3 = m_startTrigger3 + 2.0f;
 
     float fogVal1 = 0.0f;
     float fogVal2 = 0.0f;
@@ -4676,7 +4672,8 @@ void Game::DrawIntroScene()
     const float ravenStart = fadeInStart2 - 2.0f;
     const float fadeDice = m_jiTriggerTime1 + m_jiTriggerTimeDice;
 
-    m_gamePlayStartOffSetTimer = fadeOutEnd4;
+    m_gamePlayStartOffSetTimer = fadeOutEnd7;
+
     m_debugData->ToggleDebugOnOverRide();
 
     if (timeStamp > ravenStart && m_isBMWLogoAudioTriggerTrue1 == false)
@@ -5088,10 +5085,17 @@ void Game::DrawIntroScene()
         else
         {
             //SetFogVals(testFogTarget1, 1.0f);
-
             //m_effect->SetFogEnabled(false);
 
- 
+            //float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
+            float colorIntensity = 1.0f;
+            //float colorIntensity = (timeStamp - fadeInStart4) / (fadeDurationBmwIn);
+            float fogStart = colorIntensity + fogGap1;
+            float fogEnd = colorIntensity + fogGap2;
+            m_effect->SetFogStart(fogStart);
+            m_effect->SetFogEnd(fogEnd);
+            fogVal1 = colorIntensity;
+            SetFogVals(testFogTarget1, colorIntensity);
 
         }
     }
@@ -5180,11 +5184,13 @@ void Game::DrawIntroScene()
     {
         m_logoPosOffsetY = 0.0f;
         m_logoZoomMod = m_logoZoomModJI;
+
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        m_effect->SetTexture(m_textureTopAttack.Get());
-        m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
-        m_effect->SetSpecularTexture(m_specularTopAttack.Get());
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_DEFAULT);
+        //m_effect->SetTexture(m_textureTopAttack.Get());
+        //m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
+        //m_effect->SetSpecularTexture(m_specularTopAttack.Get());
         if (timeStamp < fadeInEnd6)  // fade in
         {
             //float colorIntensity = (timeStamp - fadeInStart5) / (fadeDuration);
@@ -5220,8 +5226,10 @@ void Game::DrawIntroScene()
         }
         else
         {
-            //m_effect->SetFogEnabled(false);
+            m_effect->SetFogEnabled(false);
         }
+
+        
     }
     /////////////////////////////////////
     /// Render GamePlay Start         ///  endline?
