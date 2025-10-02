@@ -4612,67 +4612,72 @@ void Game::DrawIntroScene()
 
     const float timeStamp = static_cast<float>(m_testTimer + m_debugStartTime);
 
-    const float fadeInStart1 = startDelay;
-    //const float fadeInStart2 = startDelay + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart2 = fadeInStart1 + logoDisplayDuration + logoDisplayGap;
-    //const float fadeInStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart3 = fadeInStart2 + logoDisplayDuration + logoDisplayGap;
-    //const float fadeInStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart4 = fadeInStart3 + logoDisplayDuration + logoDisplayGap;
-    //const float fadeInStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart5 = fadeInStart4 + logoDisplayDuration + logoDisplayGap;
-    //const float fadeInStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart6 = fadeInStart5 + logoDisplayDuration + logoDisplayGap;
-    //const float fadeInStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap;
-    const float fadeInStart7 = fadeInStart6 + logoDisplayDuration + logoDisplayGap;
+
+
+    const float fadeInStart1 = startDelay;   
+
 
     const float fadeInEnd1 = startDelay + fadeDuration;
-    //const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration;
-    //const float fadeInEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDurationBmwIn;
-    const float fadeInEnd2 = fadeInStart2 + fadeDurationBmwIn;
-    //const float fadeInEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd3 = fadeInStart3 + fadeDuration;
-    //const float fadeInEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd4 = fadeInStart4 + fadeDuration;
-    //const float fadeInEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd5 = fadeInStart5 + fadeDuration;
-    //const float fadeInEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd6 = fadeInStart6 + fadeDuration;
-    //const float fadeInEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap + fadeDuration + logoDisplayDuration + logoDisplayGap;
-    const float fadeInEnd7 = fadeInStart6 + fadeDuration;
-
     const float fadeOutStart1 = startDelay + logoDisplayDuration - fadeDuration;
-    //const float fadeOutStart2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration;
-    const float fadeOutStart2 = fadeInStart2 + logoDisplayDuration - fadeDuration;
-    //const float fadeOutStart3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod;
-    const float fadeOutStart3 = fadeInStart3 + logoDisplayDuration - fadeDuration;
-    //const float fadeOutStart4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration;
-    const float fadeOutStart4 = fadeInStart4 + logoDisplayDuration - fadeDuration;
-    //const float fadeOutStart5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + topAttackDelay;
-    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration - fadeDuration;
-    //const float fadeOutStart6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration;
-    const float fadeOutStart6 = fadeInStart6 + logoDisplayDuration - fadeDuration;
-    //const float fadeOutStart7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration - fadeDuration + m_startScreenTimerMod + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayGap + logoDisplayDuration + fadeDuration + logoDisplayDuration + fadeDuration + topAttackDelay;
-    const float fadeOutStart7 = fadeInStart7 + logoDisplayDuration - fadeDuration;
+
+
+
 
     const float fadeOutEnd1 = startDelay + logoDisplayDuration;
-    //const float fadeOutEnd2 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
+    const float fadeInStart2 = fadeOutEnd1 + logoDisplayGap;
+    const float fadeInEnd2 = fadeInStart2 + fadeDurationBmwIn;
+    const float fadeOutStart2 = fadeInStart2 + logoDisplayDuration - fadeDuration;
+
     const float fadeOutEnd2 = fadeInStart2 + logoDisplayDuration;
-    //const float fadeOutEnd3 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
+
+
+    const float fadeInStart3 = fadeOutEnd2 + logoDisplayGap;
+    const float fadeInEnd3 = fadeInStart3 + fadeDuration;
+    //const float fadeInEnd3 = 24.2500000f;
+    const float fadeOutStart3 = fadeInStart3 + logoDisplayDuration - fadeDuration;
     const float fadeOutEnd3 = fadeInStart3 + logoDisplayDuration;
-    //const float fadeOutEnd4 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd4 = fadeInStart4 + logoDisplayDuration;
-    //const float fadeOutEnd5 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
-    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration;
-    //const float fadeOutEnd6 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration;
-    const float fadeOutEnd6 = fadeInStart6 + logoDisplayDuration;
-    //const float fadeOutEnd7 = startDelay + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + logoDisplayGap + logoDisplayDuration + topAttackDelay;
-    const float fadeOutEnd7 = fadeInStart7 + logoDisplayDuration;
+
+    const float fadeInStart4 = fadeOutEnd3 + logoDisplayGap;
+    //const float fadeInEnd4 = fadeInStart4 + fadeDuration;
+    const float fadeInEnd4 = 35.0499992f;
+  
+    const float fadeOutStart4 = fadeInStart4 + logoDisplayDuration;
+    const float fadeOutEnd4 = fadeInStart4 + logoDisplayDuration + fadeDuration;
+
+
+
+    const float fadeInStart5 = fadeOutEnd4 + logoDisplayGap;
+    const float fadeInEnd5 = fadeInStart5 + fadeDuration;
+    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration;
+
+    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration;
+
+    const float fadeInStart6 = fadeOutEnd5 + logoDisplayGap;
+    const float fadeInEnd6 = fadeInStart6 + fadeDuration;
+    const float fadeOutStart6 = fadeInStart6 + logoDisplayDuration;
+    const float fadeOutEnd6 = fadeInStart6 + logoDisplayDuration + fadeDuration;
+   
+    const float fadeInStart7 = fadeOutEnd6 + logoDisplayGap;
+    const float fadeInEnd7 = fadeInStart6 + fadeDuration;
+
+    const float fadeOutStart7 = fadeInStart7 + logoDisplayDuration;
+    const float fadeOutEnd7 = fadeInStart7 + logoDisplayDuration + fadeDuration;
+
+
+
+    float fogVal1 = 0.0f;
+    float fogVal2 = 0.0f;
+    float fogVal3 = 0.0f;
+    float fogDimmer1 = 0.0f;
+    float fogDimmer2 = 0.0f;
+    float fogDimmer3 = 0.0f;
 
     const float ravenStart = fadeInStart2 - 2.0f;
     const float fadeDice = m_jiTriggerTime1 + m_jiTriggerTimeDice;
 
     m_gamePlayStartOffSetTimer = fadeOutEnd4;
+    m_debugData->ToggleDebugOnOverRide();
 
     if (timeStamp > ravenStart && m_isBMWLogoAudioTriggerTrue1 == false)
     {
@@ -4701,6 +4706,8 @@ void Game::DrawIntroScene()
         m_effect->SetNormalTexture(m_normalMapMetalTest2.Get());
         //m_effect->SetSpecularTexture(m_specularJI.Get());
         m_effect->SetSpecularTexture(m_specularMetalTest2.Get());
+
+        fogVal1 = 0.0f;
 
         SetFogVals(testFogTarget1, 0.0f);
     }
@@ -4801,7 +4808,7 @@ void Game::DrawIntroScene()
             float colorIntensity = (timeStamp - fadeInStart1) / fadeDuration;
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -4815,7 +4822,7 @@ void Game::DrawIntroScene()
             float colorIntensity = (fadeOutEnd1 - timeStamp) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -4826,7 +4833,7 @@ void Game::DrawIntroScene()
         {
             m_effect->SetFogEnabled(false);
 
-
+            fogVal1 = 1.0f;
             SetFogVals(testFogTarget1, 1.0f);
         }
     }
@@ -4871,7 +4878,7 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -4942,9 +4949,11 @@ void Game::DrawIntroScene()
         // render nothing
         float colorIntensity = (fadeInEnd3 - timeStamp) / (fadeDuration);
         colorIntensity = 0.0;
+
+        fogVal1 = colorIntensity;
         SetFogVals(testFogTarget2, colorIntensity);
-        SetFogVals2(testFogTarget2, colorIntensity);
-        SetFogVals3(testFogTarget3, colorIntensity);
+        //SetFogVals2(testFogTarget2, colorIntensity);
+        //SetFogVals3(testFogTarget3, colorIntensity);
         //SetTerrainGridDimmer(colorIntensity);
 
         //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
@@ -4979,7 +4988,7 @@ void Game::DrawIntroScene()
             float colorIntensity = (timeStamp - fadeInStart3) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
             //SetFogVals2(testFogTarget2, colorIntensity);
             //SetFogVals3(testFogTarget3, colorIntensity);
@@ -4994,7 +5003,7 @@ void Game::DrawIntroScene()
             float colorIntensity = (fadeOutEnd3 - timeStamp) / (fadeDuration);
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
             //SetFogVals2(testFogTarget2, colorIntensity);
             //SetFogVals3(testFogTarget3, colorIntensity);
@@ -5019,6 +5028,7 @@ void Game::DrawIntroScene()
         }
         else
         {
+
             //m_effect->SetFogEnabled(false);
         }
     }
@@ -5039,7 +5049,7 @@ void Game::DrawIntroScene()
     }
     else if (timeStamp < fadeOutEnd4) // Render Blueprint Logo
     {
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_effect->SetTexture(m_textureBluePrint.Get());
         m_effect->SetNormalTexture(m_normalMapBluePrint.Get());
         m_effect->SetSpecularTexture(m_specularBluePrint.Get());
@@ -5051,7 +5061,7 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -5066,7 +5076,7 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
             //   SetFogVals2(testFogTarget2, colorIntensity);
             //   SetFogVals3(testFogTarget3, colorIntensity);
@@ -5077,7 +5087,12 @@ void Game::DrawIntroScene()
         }
         else
         {
+            //SetFogVals(testFogTarget1, 1.0f);
+
             //m_effect->SetFogEnabled(false);
+
+ 
+
         }
     }
     //////////////////////////////////
@@ -5119,7 +5134,7 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -5134,7 +5149,7 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
             //   SetFogVals2(testFogTarget2, colorIntensity);
             //   SetFogVals3(testFogTarget3, colorIntensity);
@@ -5145,7 +5160,7 @@ void Game::DrawIntroScene()
         }
         else
         {
-            //m_effect->SetFogEnabled(false);
+            m_effect->SetFogEnabled(false);
         }
     }
     ///////////////////////////////
@@ -5179,7 +5194,7 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
 
             m_debugValue1 = colorIntensity;
@@ -5194,7 +5209,7 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
             m_effect->SetFogEnd(fogEnd);
-
+            fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
             //   SetFogVals2(testFogTarget2, colorIntensity);
             //   SetFogVals3(testFogTarget3, colorIntensity);
@@ -5515,6 +5530,11 @@ void Game::DrawIntroScene()
             testBreak++;
         }
     }
+ 
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("fogVal1 = ", fogVal1, "");
+
+    m_debugData->ToggleDebugOff();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
     {
