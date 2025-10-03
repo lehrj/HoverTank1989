@@ -1608,7 +1608,6 @@ void Game::CreateDeviceDependentResources()
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/test.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normJI4.png", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI3.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/logoJI3.png", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/rust_texture.jpg", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/blankTexture.jpg", nullptr, m_textureJI.ReleaseAndGetAddressOf()));
@@ -1616,9 +1615,9 @@ void Game::CreateDeviceDependentResources()
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/rust_normal.jpg", nullptr, m_normalMapJI.ReleaseAndGetAddressOf()));
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularJI4.jpg", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecText.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
-
     //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIspecTextBlack.png", nullptr, m_specularJI.ReleaseAndGetAddressOf()));
 
+    // Jackson Industry textures to use
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/JIscratchLogoTexture0.png", nullptr, m_textureJI0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/JIscratchLogoNorm0.png", nullptr, m_normalMapJI0.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/JIscratchLogoSpec0.png", nullptr, m_specularJI0.ReleaseAndGetAddressOf()));
@@ -1659,9 +1658,6 @@ void Game::CreateDeviceDependentResources()
     // Blueprint screen
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureBluePrint.png", nullptr, m_textureBluePrint.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBlueprint.png", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/NormalMap(55).png", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/metalScarredNormal.jpg", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularBlueprint.png", nullptr, m_specularBluePrint.ReleaseAndGetAddressOf()));
 
     // Top attack
@@ -1704,9 +1700,7 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack8.png", nullptr, m_textureTopAttack8.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textTopAttack9.png", nullptr, m_textureTopAttack9.ReleaseAndGetAddressOf()));
 
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textCloseUp0.png", nullptr, m_textureFinDeploy0.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normalMapCloseUp0.png", nullptr, m_normalMapFinDeploy0.ReleaseAndGetAddressOf()));
-    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularCloseUp1.png", nullptr, m_specularFinDeploy0.ReleaseAndGetAddressOf()));
+    // fin depoy flibook
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textFinDeploy01.png", nullptr, m_textureFinDeploy01.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normFinDeploy01.png", nullptr, m_normalMapFinDeploy01.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularFinDeploy01.png", nullptr, m_specularFinDeploy01.ReleaseAndGetAddressOf()));
@@ -4636,8 +4630,8 @@ void Game::DrawIntroScene()
 
     const float fadeInStart5 = fadeOutEnd4 + logoDisplayGap;
     const float fadeInEnd5 = fadeInStart5 + fadeDuration;
-    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration + 60.0f;
-    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration + 60.0f;
+    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration + 0.0f;
+    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration + 0.0f;
 
     const float fadeInStart6 = fadeOutEnd5 + logoDisplayGap;
     const float fadeInEnd6 = fadeInStart6 + fadeDuration;
@@ -5173,27 +5167,34 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart6)
     {
         // render nothing
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-       // m_camera->SetPos(m_introCamPos2);
-       // m_camera->SetTargetPos(m_introCamTarg2);
 
+        m_effect->SetTexture(m_textureTopAttack0.Get());
+        m_effect->SetSpecularTexture(m_specularTopAttack0.Get());
+        m_effect->SetNormalTexture(m_normalMapTopAttack0.Get());
+
+        // render nothing
+        //float colorIntensity = (fadeInEnd3 - timeStamp) / (fadeDuration);
+        float colorIntensity = 0.0;
+        fogVal1 = colorIntensity;
+        SetFogVals(testFogTarget2, colorIntensity);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
+
+
     }
     else if (timeStamp < fadeOutEnd6) // Render TopAttack Logo
     {
-        m_logoPosOffsetY = 0.0f;
-        m_logoZoomMod = m_logoZoomModJI;
+        //m_logoPosOffsetY = 0.0f;
+        //m_logoZoomMod = m_logoZoomModJI;
 
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_DEFAULT);
+        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+
         //m_effect->SetTexture(m_textureTopAttack.Get());
         //m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
         //m_effect->SetSpecularTexture(m_specularTopAttack.Get());
         if (timeStamp < fadeInEnd6)  // fade in
         {
-            //float colorIntensity = (timeStamp - fadeInStart5) / (fadeDuration);
             float colorIntensity = (timeStamp - fadeInStart6) / (fadeDuration);
 
             float fogStart = colorIntensity + fogGap1;
@@ -5213,23 +5214,20 @@ void Game::DrawIntroScene()
 
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-            m_effect->SetFogStart(fogStart);
-            m_effect->SetFogEnd(fogEnd);
             fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
-            //   SetFogVals2(testFogTarget2, colorIntensity);
-            //   SetFogVals3(testFogTarget3, colorIntensity);
-
+      
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
+
         }
         else
         {
-            m_effect->SetFogEnabled(false);
+            //m_effect->SetFogEnabled(false);
         }
 
-        
+        //m_effect->SetFogEnabled(false);
     }
     /////////////////////////////////////
     /// Render GamePlay Start         ///  endline?
@@ -5478,12 +5476,16 @@ void Game::DrawIntroScene()
             m_effect->SetTexture(m_textureTopAttack0.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack0.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack0.Get());
+
+
+
         }
         else if (timerLocal < (slideTime * 2.0f))
         {
             m_effect->SetTexture(m_textureTopAttack1.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack1.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack1.Get());
+
         }
         else if (timerLocal < (slideTime * 3.0f))
         {
@@ -5496,12 +5498,14 @@ void Game::DrawIntroScene()
             m_effect->SetTexture(m_textureTopAttack3.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack3.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack3.Get());
+
         }
         else if (timerLocal < (slideTime * 5.0f))
         {
             m_effect->SetTexture(m_textureTopAttack4.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack4.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack4.Get());
+
         }
         else if (timerLocal < (slideTime * 6.0f))
         {
@@ -5514,24 +5518,30 @@ void Game::DrawIntroScene()
             m_effect->SetTexture(m_textureTopAttack6.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack6.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack6.Get());
+
         }
         else if (timerLocal < (slideTime * 8.0f))
         {
             m_effect->SetTexture(m_textureTopAttack7.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack7.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack7.Get());
+
         }
         else if (timerLocal < (slideTime * 9.0f))
         {
             m_effect->SetTexture(m_textureTopAttack8.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack8.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack8.Get());
+
+
         }
         else if (timerLocal < (slideTime * 10.0f))
         {
             m_effect->SetTexture(m_textureTopAttack9.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack9.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack9.Get());
+
+       
         }
         else
         {
@@ -7152,9 +7162,10 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
     if (m_kbStateTracker.pressed.R)
     {
+        m_fireControl->DetonateAllMissiles();
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_fireControl->DetonateAllMissiles();
+            
         }
     }
     if (m_kbStateTracker.pressed.U)
