@@ -4668,8 +4668,6 @@ void Game::DrawIntroScene()
 
     m_gamePlayStartOffSetTimer = fadeOutEnd7;
 
-    m_debugData->ToggleDebugOnOverRide();
-
     if (timeStamp > ravenStart && m_isBMWLogoAudioTriggerTrue1 == false)
     {
         m_audioEngine->SetReverb(m_bMWAudioReverb);
@@ -5028,22 +5026,19 @@ void Game::DrawIntroScene()
     ///////////////////////////////
     else if (timeStamp < fadeInStart4)
     {
+
+        m_effect->SetTexture(m_textureBluePrint.Get());
+        m_effect->SetNormalTexture(m_normalMapBluePrint.Get());
+        m_effect->SetSpecularTexture(m_specularBluePrint.Get());
+
         // render nothing
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
-        //m_camera->SetPos(m_introCamPos2);
-        //m_camera->SetTargetPos(m_introCamTarg2);
-
         m_logoZoomMod = m_logoZoomModBluePrint;
-
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_camera->SetPos(m_introCamPosBluePrint);
         m_camera->SetTargetPos(m_introCamTargBluePrint);
     }
     else if (timeStamp < fadeOutEnd4) // Render Blueprint Logo
     {
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        m_effect->SetTexture(m_textureBluePrint.Get());
-        m_effect->SetNormalTexture(m_normalMapBluePrint.Get());
-        m_effect->SetSpecularTexture(m_specularBluePrint.Get());
         if (timeStamp < fadeInEnd4)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
@@ -5065,12 +5060,8 @@ void Game::DrawIntroScene()
 
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
-            m_effect->SetFogStart(fogStart);
-            m_effect->SetFogEnd(fogEnd);
             fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
-            //   SetFogVals2(testFogTarget2, colorIntensity);
-            //   SetFogVals3(testFogTarget3, colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -5078,9 +5069,7 @@ void Game::DrawIntroScene()
         }
         else
         {
-            //SetFogVals(testFogTarget1, 1.0f);
-            //m_effect->SetFogEnabled(false);
-
+            /*
             //float colorIntensity = (timeStamp - fadeInStart4) / (fadeDuration);
             float colorIntensity = 1.0f;
             //float colorIntensity = (timeStamp - fadeInStart4) / (fadeDurationBmwIn);
@@ -5090,7 +5079,7 @@ void Game::DrawIntroScene()
             m_effect->SetFogEnd(fogEnd);
             fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
-
+            */
         }
     }
     //////////////////////////////////
@@ -5551,10 +5540,8 @@ void Game::DrawIntroScene()
     }
  
     //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineDecimalNumber("fogVal1 = ", fogVal1, "");
-
-    m_debugData->PushDebugLineScreenUI(DirectX::SimpleMath::Vector3::UnitX, 0.0f, DirectX::Colors::Red);
-
+    //m_debugData->DebugPushUILineDecimalNumber("fogVal1 = ", fogVal1, "");
+    //m_debugData->PushDebugLineScreenUI(DirectX::SimpleMath::Vector3::UnitX, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
