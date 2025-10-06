@@ -750,6 +750,54 @@ void Lighting::UpdateLighting(std::shared_ptr<DirectX::NormalMapEffect> aEffect,
             m_lightPos2 = light2;
         }
     }
+    else if (m_currentLightingState == LightingState::LIGHTINGSTATE_BLUEPRINT)
+    {
+        auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());
+        if (ilights)
+        {
+            ilights->EnableDefaultLighting();
+            ilights->SetLightEnabled(0, true);
+            ilights->SetLightEnabled(1, true);
+            ilights->SetLightEnabled(2, true);
+
+
+            const float yaw = cosf(-timeStamp * 1.2f);
+            const float roll = cosf(-timeStamp * 1.2f);
+            auto quat0 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(-Utility::ToRadians(10.0f), 0.0f, 0.0f);
+            auto quat1 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, Utility::ToRadians(10.0f), 0.0f);
+            auto quat2 = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, Utility::ToRadians(10.0f));
+            auto light0 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat0);
+            auto light1 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat1);
+            auto light2 = XMVector3Rotate(DirectX::SimpleMath::Vector3::UnitX, quat2);
+
+            auto time = static_cast<float>(aTimer);
+            const float roll2 = time * 3.1f;
+            auto quat = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0, roll2, 0.0);
+            DirectX::SimpleMath::Vector3 axis = -DirectX::SimpleMath::Vector3::UnitZ;
+            DirectX::SimpleMath::Vector3 light = XMVector3Rotate(axis, quat);
+            light.x += 1.0;
+
+            light.Normalize();
+            /*
+            light0 = light;
+            light1 = light;
+            light2 = light;
+
+            light0 = DirectX::SimpleMath::Vector3::UnitX;
+            light1 = DirectX::SimpleMath::Vector3::UnitX;
+            light2 = DirectX::SimpleMath::Vector3::UnitX;
+            */
+
+            ilights->SetLightDirection(0, light0);
+            ilights->SetLightDirection(1, light1);
+            ilights->SetLightDirection(2, light2);
+            //ilights->EnableDefaultLighting();
+            //ilights->SetAmbientLightColor(DirectX::SimpleMath::Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            m_lightPos0 = light0;
+            m_lightPos1 = light1;
+            m_lightPos2 = light2;
+        }
+    }
     else if (m_currentLightingState == LightingState::LIGHTINGSTATE_DEFAULT)
     {
         auto ilights = dynamic_cast<DirectX::IEffectLights*>(aEffect.get());

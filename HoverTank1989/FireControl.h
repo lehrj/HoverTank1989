@@ -808,7 +808,7 @@ struct MissileConsts
     const float recoilMagnitudeMax = 7500.0f;
 
     // intro demo consts
-    const float demoTimerOffset = -3.0f;
+    const float demoTimerOffset = -1.0f;
 };
 
 enum class ExplosionType

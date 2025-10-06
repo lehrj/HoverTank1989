@@ -351,7 +351,6 @@ private:
     const float m_fontBaseOffsetX = 200.0f;
     const float m_fontOffsetY = 30.0f;
 
-
     // Character Textures
     std::unique_ptr<AnimatedTexture>                m_character;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_characterTexture;
@@ -512,7 +511,6 @@ private:
     const int m_audioFxIdJI3 = 14;
     const int m_audioFxIdJI4 = 16;
     
-
     /*
     const int m_audioFxIdJI1 = 22;
     const int m_audioFxIdJI2 = 22;

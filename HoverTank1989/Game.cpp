@@ -1657,7 +1657,8 @@ void Game::CreateDeviceDependentResources()
 
     // Blueprint screen
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/Textures/textureBluePrint.png", nullptr, m_textureBluePrint.ReleaseAndGetAddressOf()));
-    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBlueprint.png", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
+    //DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/normBlueprint.png", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/NormalMaps/blankNormal.jpg", nullptr, m_normalMapBluePrint.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"../HoverTank1989/Art/SpecularMaps/specularBlueprint.png", nullptr, m_specularBluePrint.ReleaseAndGetAddressOf()));
 
     // Top attack
@@ -4598,6 +4599,9 @@ void Game::DrawIntroScene()
     const float fadeDuration = m_fadeDuration;
     const float fadeDurationBmwIn = m_fadeDuration + m_fadeDurationRavenIn;;
     const float logoDisplayDuration = m_logoDisplayDuration;
+    const float startDisplayDuration = 5.0f;
+    const float topAttackDisplayDurartion = 16.0f;
+
     const float logoDisplayGap = m_logoDisplayGap;
     const float startDelay = m_startDelay;
     const float topAttackDelay = m_logoDisplayTopAttackAddOnTime;
@@ -4619,8 +4623,10 @@ void Game::DrawIntroScene()
     const float fadeInStart3 = fadeOutEnd2 + logoDisplayGap;
     const float fadeInEnd3 = fadeInStart3 + fadeDuration;
     //const float fadeInEnd3 = 24.2500000f;
-    const float fadeOutStart3 = fadeInStart3 + logoDisplayDuration - fadeDuration;
-    const float fadeOutEnd3 = fadeInStart3 + logoDisplayDuration;
+    //const float fadeOutStart3 = fadeInStart3 + logoDisplayDuration - fadeDuration;
+    //const float fadeOutEnd3 = fadeInStart3 + logoDisplayDuration;
+    const float fadeOutStart3 = fadeInStart3 + startDisplayDuration - fadeDuration;
+    const float fadeOutEnd3 = fadeInStart3 + startDisplayDuration;
 
     const float fadeInStart4 = fadeOutEnd3 + logoDisplayGap;
     const float fadeInEnd4 = fadeInStart4 + fadeDuration;
@@ -4635,9 +4641,11 @@ void Game::DrawIntroScene()
 
     const float fadeInStart6 = fadeOutEnd5 + logoDisplayGap;
     const float fadeInEnd6 = fadeInStart6 + fadeDuration;
-    const float fadeOutStart6 = fadeInStart6 + logoDisplayDuration;
-    const float fadeOutEnd6 = fadeInStart6 + logoDisplayDuration + fadeDuration;
-   
+    //const float fadeOutStart6 = fadeInStart6 + logoDisplayDuration;
+    //const float fadeOutEnd6 = fadeInStart6 + logoDisplayDuration + fadeDuration;
+    const float fadeOutStart6 = fadeInStart6 + topAttackDisplayDurartion;
+    const float fadeOutEnd6 = fadeInStart6 + topAttackDisplayDurartion + fadeDuration;
+
     const float fadeInStart7 = fadeOutEnd6 + logoDisplayGap;
     const float fadeInEnd7 = fadeInStart6 + fadeDuration;
     const float fadeOutStart7 = fadeInStart7 + logoDisplayDuration;
@@ -4651,7 +4659,7 @@ void Game::DrawIntroScene()
     auto startTrig3 = m_startTrigger3;
 
     m_startTrigger0 = fadeOutEnd7 + 0.1f;
-    m_startTrigger00 = m_startTrigger0 + 6.9f;
+    m_startTrigger00 = m_startTrigger0 + 4.9f;
     m_startTrigger1 = m_startTrigger00 + 2.0f;
     m_startTrigger2 = m_startTrigger1 + 6.0f;
     m_startTrigger3 = m_startTrigger3 + 2.0f;
@@ -4902,33 +4910,6 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart3)
     {
         m_logoZoomMod = m_logoZoomModJI;
-        /*
-        m_currentGameState = GameState::GAMESTATE_LOADSCREEN;
-       // m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
-
-        //m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
-
-        m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(100.0f, 9000.0f, 0.0f));
-        //m_camera->SetPos(DirectX::SimpleMath::Vector3(850.0f, 90.0f, 1000.0f));
-        m_camera->SetPos(DirectX::SimpleMath::Vector3(930.0f, 66.0f, 922.0f));
-
-        m_effect->EnableDefaultLighting();
-        m_effect->SetFogEnabled(false);
-        m_effect->SetTexture(m_texture.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        m_effect->SetSpecularTexture(m_specular.Get());
-        */
-
-        //m_effect->SetTexture(m_textureJI.Get());
-        //m_effect->SetNormalTexture(m_normalMapJI.Get());
-        //m_effect->SetSpecularTexture(m_specularJI.Get());
-
-        //m_camera->SetPos(DirectX::SimpleMath::Vector3(0.0f, 50.0f, 10.0f));
-        //m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(100.0f, 200.0f, 0.0f));
-
-        //m_effect->EnableDefaultLighting();
-
         m_isLogoTriggerBMWTrue = false;
 
         m_effect->SetTexture(m_textureStartScreen.Get());
@@ -4941,37 +4922,14 @@ void Game::DrawIntroScene()
 
         fogVal1 = colorIntensity;
         SetFogVals(testFogTarget2, colorIntensity);
-        //SetFogVals2(testFogTarget2, colorIntensity);
-        //SetFogVals3(testFogTarget3, colorIntensity);
-        //SetTerrainGridDimmer(colorIntensity);
 
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_JI);
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        //m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BMW);
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
 
-        /*
-        m_camera->SetCameraStartPos(m_introCamPos);
-        m_camera->SetCameraEndPos(m_startScreenCamPos);
-        m_camera->SetDestinationPos(m_startScreenCamPos);
-        m_camera->SetTargetStartPos(m_introCamTarg);
-        m_camera->SetTargetEndPos(m_startScreenCamTarg);
-        m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
-        m_currentGameState = GameState::GAMESTATE_STARTSCREEN;
-
-        */
     }
     else if (timeStamp < fadeOutEnd3) // Render Start Screen
     {
-        //      m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN);
-
-          //    m_effect->SetTexture(m_textureStartScreen.Get());
-          //    m_effect->SetNormalTexture(m_normalStartScreen.Get());
-          //    m_effect->SetSpecularTexture(m_specularStartScreen.Get());
-
         if (timeStamp < fadeInEnd3)  // fade in
         {
             float colorIntensity = (timeStamp - fadeInStart3) / (fadeDuration);
@@ -4979,9 +4937,6 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
-            //SetFogVals2(testFogTarget2, colorIntensity);
-            //SetFogVals3(testFogTarget3, colorIntensity);
-            //SetTerrainGridDimmer(colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
@@ -4994,26 +4949,10 @@ void Game::DrawIntroScene()
             float fogEnd = colorIntensity + fogGap2;
             fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
-            //SetFogVals2(testFogTarget2, colorIntensity);
-            //SetFogVals3(testFogTarget3, colorIntensity);
-            //SetTerrainGridDimmer(colorIntensity);
 
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
-
-            /*
-            float distance = DirectX::SimpleMath::Vector3::Distance(m_camera->GetPos(), m_startScreenCamZoomPos);
-            float speed = distance / (fadeOutEnd3 - fadeOutStart3);
-
-            m_camera->SetTransitionSpeed(speed);
-            m_camera->SetCameraStartPos(m_startScreenCamPos);
-            m_camera->SetCameraEndPos(m_startScreenCamZoomPos);
-            m_camera->SetDestinationPos(m_startScreenCamZoomPos);
-            m_camera->SetTargetStartPos(m_startScreenCamPos);
-            m_camera->SetTargetEndPos(m_teaserCamTarg);
-            m_camera->SetCameraState(CameraState::CAMERASTATE_TRANSITION);
-            */
         }
         else
         {
@@ -5033,7 +4972,7 @@ void Game::DrawIntroScene()
 
         // render nothing
         m_logoZoomMod = m_logoZoomModBluePrint;
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
+        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BLUEPRINT);
         m_camera->SetPos(m_introCamPosBluePrint);
         m_camera->SetTargetPos(m_introCamTargBluePrint);
     }
@@ -5104,9 +5043,6 @@ void Game::DrawIntroScene()
         m_logoPosOffsetY = 0.0f;
         m_logoZoomMod = m_logoZoomModJI;
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_DEFAULT);
-        //m_effect->SetTexture(m_textureTopAttack.Get());
-        //m_effect->SetNormalTexture(m_normalMapTopAttack.Get());
-        //m_effect->SetSpecularTexture(m_specularTopAttack.Get());
 
         m_effect->SetTexture(m_texture.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
@@ -5114,7 +5050,6 @@ void Game::DrawIntroScene()
 
         if (timeStamp < fadeInEnd5)  // fade in
         {
-            //float colorIntensity = (timeStamp - fadeInStart5) / (fadeDuration);
             float colorIntensity = (timeStamp - fadeInStart5) / (fadeDuration);
 
             float fogStart = colorIntensity + fogGap1;
@@ -5138,9 +5073,7 @@ void Game::DrawIntroScene()
             m_effect->SetFogEnd(fogEnd);
             fogVal1 = colorIntensity;
             SetFogVals(testFogTarget1, colorIntensity);
-            //   SetFogVals2(testFogTarget2, colorIntensity);
-            //   SetFogVals3(testFogTarget3, colorIntensity);
-
+      
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
@@ -5169,8 +5102,6 @@ void Game::DrawIntroScene()
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_camera->SetPos(m_introCamPos);
         m_camera->SetTargetPos(m_introCamTarg);
-
-
     }
     else if (timeStamp < fadeOutEnd6) // Render TopAttack Logo
     {
@@ -5303,9 +5234,7 @@ void Game::DrawIntroScene()
 
             m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
 
-            m_camera->SetPos(m_gamePlayStartCamOverRide);
-            m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
-
+       
             m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
         }
     }
@@ -5350,7 +5279,6 @@ void Game::DrawIntroScene()
     {
         m_logoPosOffsetY = 0.0f;
     }
-
 
     // close up fin deploy
     if (timeStamp > fadeInStart5 && timeStamp < fadeOutEnd5)
@@ -5465,16 +5393,12 @@ void Game::DrawIntroScene()
             m_effect->SetTexture(m_textureTopAttack0.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack0.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack0.Get());
-
-
-
         }
         else if (timerLocal < (slideTime * 2.0f))
         {
             m_effect->SetTexture(m_textureTopAttack1.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack1.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack1.Get());
-
         }
         else if (timerLocal < (slideTime * 3.0f))
         {
@@ -5487,14 +5411,12 @@ void Game::DrawIntroScene()
             m_effect->SetTexture(m_textureTopAttack3.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack3.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack3.Get());
-
         }
         else if (timerLocal < (slideTime * 5.0f))
         {
             m_effect->SetTexture(m_textureTopAttack4.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack4.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack4.Get());
-
         }
         else if (timerLocal < (slideTime * 6.0f))
         {
@@ -5507,30 +5429,24 @@ void Game::DrawIntroScene()
             m_effect->SetTexture(m_textureTopAttack6.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack6.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack6.Get());
-
         }
         else if (timerLocal < (slideTime * 8.0f))
         {
             m_effect->SetTexture(m_textureTopAttack7.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack7.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack7.Get());
-
         }
         else if (timerLocal < (slideTime * 9.0f))
         {
             m_effect->SetTexture(m_textureTopAttack8.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack8.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack8.Get());
-
-
         }
         else if (timerLocal < (slideTime * 10.0f))
         {
             m_effect->SetTexture(m_textureTopAttack9.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack9.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack9.Get());
-
-       
         }
         else
         {
@@ -5539,9 +5455,6 @@ void Game::DrawIntroScene()
         }
     }
  
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->DebugPushUILineDecimalNumber("fogVal1 = ", fogVal1, "");
-    //m_debugData->PushDebugLineScreenUI(DirectX::SimpleMath::Vector3::UnitX, 0.0f, DirectX::Colors::Red);
     m_debugData->ToggleDebugOff();
 
     if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
@@ -5554,18 +5467,10 @@ void Game::DrawIntroScene()
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         DrawLogoScreen();
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        /*
-        m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
-
-        //m_effect->EnableDefaultLighting();
-        m_effect->SetFogEnabled(false);
-        m_effect->SetTexture(m_normalMap.Get());
-        m_effect->SetNormalTexture(m_normalMap.Get());
-        m_effect->SetSpecularTexture(m_specular.Get());
-        */
     }
     else
     {
+        m_isLogoDisplayTrue = false;
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
         m_effect->EnableDefaultLighting();
@@ -5574,31 +5479,23 @@ void Game::DrawIntroScene()
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
 
+        m_camera->SetPos(m_gamePlayStartCamOverRide);
+        m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
+        m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos0, m_introTarg0);
+
+        m_camera->SetPos(DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0));
+        m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(330.0, 425.0f, -580.0));
+        //m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0), DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0));
+        m_camera->SetSnapVals(0.9f, 0.15f, 0.9f, DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0), DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0));
+
+        m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
+
         m_audioEngine->SetReverb(m_jIGameReverb);
         // turn on player vehicle engine sound
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
 
         //    AudioCreateSFX3D(m_camera->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
-
-            //AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
-            //AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_DEBUG);
-
-        //    m_ssiTest = m_audioBank->CreateStreamInstance(44, SoundEffectInstance_Use3D);
-
-            //m_emitter.ChannelCount = m_ssiTest->GetChannelCount();
-
-        for (int i = 0; i < m_emitter.ChannelCount; ++i)
-        {
-            //m_emitter.EmitterAzimuths[i] = Utility::ToRadians(0.0f);
-        }
-
-        //m_emitter.EmitterAzimuths[0] = cos(m_timer.GetTotalSeconds());
-        //m_emitter.EmitterAzimuths[0] = Utility::ToRadians(10.0f);
-        //m_emitter.EmitterAzimuths[1] = Utility::ToRadians(-10.0f);
-        //m_emitter->ChannelCount = m_ssiTest->GetChannelCount();
-
-    //    m_ssiTest->Play(true);
 
     }
 }
@@ -8838,8 +8735,6 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
         {
             m_isStartTriggerTrue3 = true;
 
-
-
             //m_camera->SetSnapVals(m_gamePlayCamStep, m_gamePlayTargStep, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
             //m_camera->SetSnapVals(0.99f, 0.0099f, 0.99f, m_gamePlayCamPos, m_gamePlayTarg);
@@ -8848,8 +8743,6 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
 
             //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
-
-
         }
     }
 }

@@ -2832,7 +2832,6 @@ void FireControl::DetonateAllMissiles()
 {
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
-        
         m_missileVec[i].guidance.isSelfDestructTrue = true;
         m_missileVec[i].projectileData.isDeleteTrue = true; // placeholder till detonation pipeline is built
 
