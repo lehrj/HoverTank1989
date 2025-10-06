@@ -422,6 +422,7 @@ private:
     bool                                        m_retryAudio;
     float                                       m_musicVolume = 0.9f;
     float                                       m_sfxVolume = 0.5f;
+    float                                       m_demoMissileVolume = 1.0f;
 
     std::unique_ptr<DirectX::WaveBank>          m_audioBank;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioMusicStream;
@@ -499,7 +500,8 @@ private:
     const int m_audioFxIdNPCVehicle = 3;
     const int m_audioFxIdPlayerVehicle = 27;
     const int m_audioFxIdPlayerVehicleHover = 29;
-    const int m_audioFxIdAmbient = 44;
+    const int m_audioFxIdAmbient = 31;
+
     /*
     const int m_audioFxIdJI1 = 12;
     const int m_audioFxIdJI2 = 12;
@@ -526,6 +528,7 @@ private:
     const float m_audioSpawnerLightsPitchOn = 1.0f;
     const float m_audioSpawnerLightsPitchOff = 0.35f;
 
+    const int m_audioFxIdBlueprintUnroll = 48;
     const int m_audioFxIdRaven = 24;
     const int m_audioFxIdRavenAlt = 44;
 
@@ -636,6 +639,8 @@ private:
     bool m_isStartTriggerTrue1 = false;
     bool m_isStartTriggerTrue2 = false;
     bool m_isStartTriggerTrue3 = false;
+
+    bool m_isBlueprintAudioTriggerTrue = false;
 
     bool m_isLogoAudioTriggerTrueDice = false;
     bool m_isLogoAudioTriggerTrue1 = false;
@@ -1320,8 +1325,6 @@ private:
     const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3(475.0f, 10.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_introPos2 = DirectX::SimpleMath::Vector3(-23.0f, 0.0f, 0.0f);
     //const DirectX::SimpleMath::Vector3 m_introTarg2 = DirectX::SimpleMath::Vector3::Zero;
-
-
 
     const float m_introCamStep0 = 0.05f;
     const float m_introTargStep0 = 0.09f;

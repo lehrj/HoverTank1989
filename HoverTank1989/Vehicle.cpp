@@ -1177,34 +1177,6 @@ void Vehicle::FireMissileDemo(std::shared_ptr<Utility::SoundFx> aFireFx, std::sh
         DirectX::SimpleMath::Vector3 upWorld;
         DirectX::SimpleMath::Vector3 recoilPosLocal;
         DirectX::SimpleMath::Vector3 recoilPosWorld;
-        
-        /*
-        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
-        {
-            posWorld = m_modelController->GetMissileTubePosRight();
-            pos = m_modelController->GetLocalizedTubeRightPos();
-            launchDir = m_modelController->GetMissileTubeTurretLocalRightDir();
-            launchDirWorld = m_modelController->GetMissileTubeDirRight();
-            velocity = m_heli.q.velocity;
-            up = m_modelController->GetMissileTubeTurretLocalRightUp();
-            recoilPosLocal = m_modelController->GetLocalizedTubeRightPos();
-        }
-        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
-        {
-            posWorld = m_modelController->GetMissileTubePosLeft();
-            pos = m_modelController->GetLocalizedTubeLeftPos();
-            launchDir = m_modelController->GetMissileTubeTurretLocalLeftDir();
-            launchDirWorld = m_modelController->GetMissileTubeDirLeft();
-            velocity = m_heli.q.velocity;
-            up = m_modelController->GetMissileTubeTurretLocalLeftUp();
-            recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
-        }
-        else
-        {
-            int testBreak = 0;
-            testBreak++;
-        }
-        */
 
         auto testPos = DirectX::SimpleMath::Vector3::Zero;
         testPos.x = 1.66f;
@@ -1217,7 +1189,6 @@ void Vehicle::FireMissileDemo(std::shared_ptr<Utility::SoundFx> aFireFx, std::sh
         velocity = DirectX::SimpleMath::Vector3::Zero;
         up = DirectX::SimpleMath::Vector3::UnitY;
         recoilPosLocal = m_modelController->GetLocalizedTubeLeftPos();
-
 
         aFireFx->emitter->SetPosition(posWorld);
         aFireFx->emitter->SetVelocity(velocity);
@@ -1238,34 +1209,8 @@ void Vehicle::FireMissileDemo(std::shared_ptr<Utility::SoundFx> aFireFx, std::sh
         aRocketFx->isDestroyTrue = false;
         aRocketFx->forward = launchDirWorld;
         aRocketFx->fx->Play(true);
-        /*
-        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
-        {
-            m_fireControl->FireSelectedWithAudio(posWorld, launchDirWorld, velocity, up, aRocketFx, false);
-        }
-        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
-        {
-            m_fireControl->FireSelectedWithAudio(posWorld, launchDirWorld, velocity, up, aRocketFx, true);
-        }
-        */
+
         m_fireControl->FireSelectedWithAudioDemo(posWorld, launchDirWorld, velocity, up, aRocketFx, true);
-
-        Utility::ImpulseForce recoil = m_fireControl->GetRecoilImpulseForce(-launchDir);
-
-        DirectX::SimpleMath::Vector3 weaponForceNorm = launchDir;
-        weaponForceNorm.Normalize();
-        recoil.torqueForceNorm = weaponForceNorm;
-        recoil.directionNorm = -launchDir;
-        if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_RIGHT)
-        {
-            recoil.torqueArm = m_modelController->GetLocalizedTubeRightPos();
-        }
-        else if (m_fireControl->GetNextTubeToFire() == MissileTubeSelected::MISSILETUBESELECTED_LEFT)
-        {
-            recoil.torqueArm = m_modelController->GetLocalizedTubeLeftPos();
-        }
-
-        //m_heli.impulseForceVec.push_back(recoil);
     }
 }
 

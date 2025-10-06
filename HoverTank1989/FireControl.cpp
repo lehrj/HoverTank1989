@@ -2834,10 +2834,9 @@ void FireControl::DetonateAllMissiles()
     {
         m_missileVec[i].guidance.isSelfDestructTrue = true;
         m_missileVec[i].projectileData.isDeleteTrue = true; // placeholder till detonation pipeline is built
-
+        m_missileVec[i].projectileData.isDeleteTestingDebug = true;
         m_missileVec[i].audioFx->isDestroyTrue = true;
         //m_missileVec[i].explosionFx->isDestroyTrue = true;
-
         //m_missileVec[i].guidance.contrailLength = 0;
     }
 }
@@ -3115,7 +3114,7 @@ void FireControl::DrawFireControlObjects2(const DirectX::SimpleMath::Matrix aVie
     //DrawMissiles(aView, aProj, aEffect, aInputLayout);
     
     DrawLaser(aView, aProj, aEffect, aInputLayout);
-    //DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
+    DrawMissilesWithLighting(aView, aProj, aEffect, aInputLayout);
     //DrawMissilesWithLightingOld(aView, aProj, aEffect, aInputLayout);
 }
 
@@ -7008,6 +7007,11 @@ void FireControl::FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos
             }
         }
     }
+}
+
+float FireControl::GetDemoMissileTimerMax() const
+{
+    return m_missileConsts.demoTimerMax;
 }
 
 bool FireControl::GetIsMissileActiveTrue() const
@@ -12980,6 +12984,9 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
         //PrintFlightStateData(m_missileVec[i]);
         //PrintMissileData(m_missileVec[i], static_cast<float>(aTimeDelta));
         ResetMissileForceAccumulators(m_missileVec[i]);
+
+
+
         DebugDrawUpdate(m_missileVec[i]);
         m_debugDrawVec.clear();
     }
@@ -13002,6 +13009,13 @@ void FireControl::UpdateMissileVec(double aTimeDelta)
 
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
+        if (m_missileVec[i].isDemoTrue == true && m_missileVec[i].projectileData.time >= m_missileConsts.demoTimerMax)
+        {
+            m_missileVec[i].projectileData.isDeleteTrue = true;
+            m_missileVec[i].projectileData.isDeleteTestingDebug = true;
+            m_missileVec[i].audioFx->fx->Stop();
+        }
+
         UpdateMissileAudioData(m_missileVec[i], static_cast<float>(aTimeDelta));
     }
 }
@@ -15624,9 +15638,6 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
 
     aMissile.guidance.altitude = aMissile.projectileData.q.position.y - (m_environment->GetTerrainHeightAtPos(aMissile.projectileData.q.position));
 
-    //m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPosition, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
-    //m_npcController->UpdateMissleGuidance(m_currentTargetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
-
     m_npcController->UpdateMissleGuidance(aMissile.guidance.targetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward);
 
     if (m_npcController->UpdateMissleGuidanceBool(aMissile.guidance.targetID, aMissile.guidance.targetPositionWorld, aMissile.guidance.targetVelocity, aMissile.guidance.targetForward, aMissile.projectileData.q.position, aMissile.guidance.isTargetingLaserOn) == false)
@@ -15664,8 +15675,6 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
         aMissile.guidance.isVelocityForward = false;
     }
 
-
-    
     ///////////////////////////////////////
     auto targPosNormL = aMissile.guidance.targetPosLocal;
     targPosNormL.Normalize();
@@ -15689,9 +15698,7 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
     auto targPosUpCordNorm = targPosUpCord;
     targPosUpCordNorm.Normalize();
 
-
     bool isTargetBehindTrue;
-    //if (targPosL.x < 0.0f)
     if (targPosUpCord.y > 0.0f)
     {
         isTargetBehindTrue = true;
@@ -15704,12 +15711,6 @@ void FireControl::UpdateFlightDataIndependentVars(MissileData& aMissile, const d
     }
     
     aMissile.guidance.angleOfAttack = Utility::GetAngleBetweenVectors(DirectX::SimpleMath::Vector3::UnitX, aMissile.guidance.selfVelLocalNorm);
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->DebugPushUILineWholeNumber("static_cast<int>(isTargetBehindTrue)   ", static_cast<int>(isTargetBehindTrue) , "");
-    m_debugData->ToggleDebugOff();
-
-    //aMissile.guidance.isFacingDestTrue = isTargetBehindTrue;
-
 }
 
 void FireControl::UpdateFlightState(MissileData& aMissile, const double aTimeDelta)

@@ -809,6 +809,7 @@ struct MissileConsts
 
     // intro demo consts
     const float demoTimerOffset = -1.0f;
+    const float demoTimerMax = 10.0f;
 };
 
 enum class ExplosionType
@@ -1001,6 +1002,7 @@ public:
     void FireSelectedAmmo(const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity, const DirectX::SimpleMath::Vector3 aUp);    
     void FireDefaultProjectile(const AmmoType aAmmoType, const DirectX::SimpleMath::Vector3 aLaunchPos, const DirectX::SimpleMath::Vector3 aLaunchDirectionForward, const DirectX::SimpleMath::Vector3 aLauncherVelocity);
     AmmoType GetCurrentAmmoType() const { return m_currentAmmoType; };
+    float GetDemoMissileTimerMax() const;
     bool GetIsMissileActiveTrue() const;
     bool GetIsMissileExplodingTrue() const;
 

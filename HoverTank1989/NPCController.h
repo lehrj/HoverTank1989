@@ -135,14 +135,14 @@ private:
     const DirectX::SimpleMath::Vector3 m_startHeading = -DirectX::SimpleMath::Vector3::UnitZ;
 
     //float m_spawnerCooldown = 3.0f;
-    float m_spawnerCooldown = 0.7f;
+    float m_spawnerCooldown = 10.7f;
     const float m_spawnerCooldownTime = 4.0f;
 
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
 
-    const int m_spawnCountMax = 18;
-    //const int m_spawnCountMax = 1;
+    //const int m_spawnCountMax = 18;
+    const int m_spawnCountMax = 0;
 
     int m_spawnCount = 0;
     //const DirectX::SimpleMath::Vector3 m_spawnerPos = DirectX::SimpleMath::Vector3(600.0f, 10.0f, 900.0f);

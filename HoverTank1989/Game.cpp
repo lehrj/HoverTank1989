@@ -148,6 +148,19 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
         fireEmitter->OrientTop = m_vehicle->GetVehicleUp();
         fx->fx->Play(true);
     }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_BLUEPRINT_UNROLL)
+    {
+        fx->fxType = aSfxType;
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdBlueprintUnroll, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+
+        fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+        fireEmitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
+
+        pos = aPos;
+        fx->fx->Play(false);
+    }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_DEBUG)
     {
         /*
@@ -1228,90 +1241,9 @@ void Game::Update(DX::StepTimer const& aTimer)
 
     UpdateAudio(aTimer);
 
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest size = ", m_soundFxVecTest.size(), "");
 
-    //m_debugData->ToggleDebugOnOverRide();
-    if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
-    {
-        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_GAMEPLAY = ", 1, "");
-    }
-    else if (m_currentGameState == GameState::GAMESTATE_GAMEPLAYSTART)
-    {
-        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_GAMEPLAYSTART = ", 1, "");
-    }
-    else if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
-    {
-        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_STARTSCREEN = ", 1, "");
-    }
-    else if (m_currentGameState == GameState::GAMESTATE_LOADSCREEN)
-    {
-        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_LOADSCREEN = ", 1, "");
-    }
-    else if (m_currentGameState == GameState::GAMESTATE_INTROSCREEN)
-    {
-        m_debugData->DebugPushUILineWholeNumber("GameState::GAMESTATE_INTROSCREEN = ", 1, "");
-    }
-    else
-    {
-        m_debugData->DebugPushUILineWholeNumber("GameState::Unknonw = ", 0, "");
-    }
-
-    //m_debugData->ToggleDebugOnOverRide();
-    if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_ = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_BMW)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_BMW = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_BMWALT)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_BMWALT = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_JI)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_JI = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_JI_TEST)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_JI_TEST = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_MANUAL)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_MANUAL = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_STARTSCREEN = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_STARTUP)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_STARTUP = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_STARTSCREEN)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_STARTSCREEN = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_TEST01)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_TEST01 = ", 1, "");
-    }
-    else if (m_lighting->GetLightingState() == Lighting::LightingState::LIGHTINGSTATE_NULL)
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState::LIGHTINGSTATE_NULL = ", 1, "");
-    }
-    else
-    {
-        m_debugData->DebugPushUILineWholeNumber("LightingState:: Error = ", 0, "");
-    }
-    m_debugData->ToggleDebugOff();
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTru00 = ", m_isStartTriggerTrue00, "");
-    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue0 = ", m_isStartTriggerTrue0, "");
-    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue1 = ", m_isStartTriggerTrue1, "");
-    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue2 = ", m_isStartTriggerTrue2, "");
-    m_debugData->DebugPushUILineWholeNumber("m_isStartTriggerTrue3 = ", m_isStartTriggerTrue3, "");
     m_debugData->ToggleDebugOff();
 }
 #pragma endregion
@@ -1356,10 +1288,10 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-
+      
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -4600,7 +4532,10 @@ void Game::DrawIntroScene()
     const float fadeDurationBmwIn = m_fadeDuration + m_fadeDurationRavenIn;;
     const float logoDisplayDuration = m_logoDisplayDuration;
     const float startDisplayDuration = 5.0f;
+    //const float finDeployDisplayDuration = 5.0f;
+   // const float finDeployDisplayDuration = m_fireControl->GetDemoMissileTimerMax() - m_fadeDuration;
     const float topAttackDisplayDurartion = 16.0f;
+    //const float topAttackDisplayDurartion = m_fireControl->GetDemoMissileTimerMax() - m_fadeDuration;
 
     const float logoDisplayGap = m_logoDisplayGap;
     const float startDelay = m_startDelay;
@@ -4650,7 +4585,6 @@ void Game::DrawIntroScene()
     const float fadeInEnd7 = fadeInStart6 + fadeDuration;
     const float fadeOutStart7 = fadeInStart7 + logoDisplayDuration;
     const float fadeOutEnd7 = fadeInStart7 + logoDisplayDuration + fadeDuration;
-
 
     auto startTrig0 = m_startTrigger0;
     auto startTrig00 = m_startTrigger00;
@@ -4975,6 +4909,12 @@ void Game::DrawIntroScene()
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_BLUEPRINT);
         m_camera->SetPos(m_introCamPosBluePrint);
         m_camera->SetTargetPos(m_introCamTargBluePrint);
+
+        if (m_isBlueprintAudioTriggerTrue == false)
+        {
+            m_isBlueprintAudioTriggerTrue = true;
+            AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_BLUEPRINT_UNROLL);
+        }
     }
     else if (timeStamp < fadeOutEnd4) // Render Blueprint Logo
     {
@@ -5066,7 +5006,7 @@ void Game::DrawIntroScene()
         else if (timeStamp > fadeOutStart5) // fade out // trouble spot?
         {
             float colorIntensity = (fadeOutEnd5 - timeStamp) / (fadeDuration);
-
+            m_demoMissileVolume = colorIntensity;
             float fogStart = colorIntensity + fogGap1;
             float fogEnd = colorIntensity + fogGap2;
             m_effect->SetFogStart(fogStart);
@@ -5155,29 +5095,6 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart7)
     {
         // render nothing
-        //DirectX::SimpleMath::Vector3 preZoomPos = m_startScreenCamZoomPos;
-        //preZoomPos.y = 0.0;
-
-        //m_camera->SetPos(m_gamePlayStartCamPos1);
-        //m_camera->SetTargetPos(m_gamePlayStartCamTarg1);
-
-        /*
-        m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-
-        //m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
-
-        m_effect->SetFogStart(1.0);
-        m_effect->SetFogEnd(5.0);
-        m_effect->SetFogEnabled(false);
-        m_effect2->SetFogEnabled(false);
-        m_effect3->SetFogEnabled(false);
-
-        m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
-
-        m_camera->SetPos(m_gamePlayStartCamPos2);
-        m_camera->SetTargetPos(m_gamePlayStartCamTarg2);
-        */
-
         m_camera->SetPos(m_gamePlayStartCamOverRide);
         m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
 
@@ -5191,11 +5108,6 @@ void Game::DrawIntroScene()
         m_effect->SetTexture(m_normalMap.Get());
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
-
-        m_audioEngine->SetReverb(m_jIGameReverb);
-        // turn on player vehicle engine sound
-        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
-        AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
     }
     else if (timeStamp < fadeOutEnd7)  // Render GamePlay Start Screen
     {
@@ -5495,8 +5407,7 @@ void Game::DrawIntroScene()
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYER);
         AudioCreateSFX3D(m_vehicle->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_VEHICLEPLAYERHOVER);
 
-        //    AudioCreateSFX3D(m_camera->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
-
+        AudioCreateSFX3D(m_camera->GetPos(), Utility::SoundFxType::SOUNDFXTYPE_AMBIENT);
     }
 }
 
@@ -7106,8 +7017,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.Space)
     {
-        TriggerFireWithAudioDemo();
-        /*
+        //TriggerFireWithAudioDemo();
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             if (m_fireControl->GetIsMissileFireAvailable() == true)
@@ -7134,7 +7044,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 }
             }
         }
-        */
+        
     }
     if (m_kbStateTracker.pressed.J)
     {
@@ -7664,18 +7574,6 @@ void Game::UpdateAudio(DX::StepTimer const& aTimer)
 
     auto camVelocity = m_camera->GetVelocity();
 
-    m_debugData->DebugPushUILineDecimalNumber("testForward.x = ", testForward.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("testForward.y = ", testForward.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("testForward.z = ", testForward.z, "");
-
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->PushDebugLinePositionIndicator(testForward, 2.0f, 0.0f, DirectX::Colors::Red);
-
-    m_debugData->DebugPushUILineDecimalNumber("camVelocity.x = ", camVelocity.x, "");
-    m_debugData->DebugPushUILineDecimalNumber("camVelocity.y = ", camVelocity.y, "");
-    m_debugData->DebugPushUILineDecimalNumber("camVelocity.z = ", camVelocity.z, "");
-
-    m_debugData->ToggleDebugOff();
 
     ////////////////////
 
@@ -7872,6 +7770,17 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             //m_soundFxVecTest[i]->emitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_BLUEPRINT_UNROLL)
+        {
+            auto pos = m_audioRavenOffset;
+            m_soundFxVecTest[i]->emitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+            m_soundFxVecTest[i]->emitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
+
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = DirectX::SimpleMath::Vector3::Zero;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
         {
@@ -8210,30 +8119,14 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_AMBIENT)
         {
             auto pos = m_camera->GetPos();
-            //m_soundFxVecTest[i]->emitter->SetPosition(pos);
-            //m_soundFxVecTest[i]->pos = pos;
-
             m_soundFxVecTest[i]->volume = m_audioVolumeGamePlay * m_audioAmbientMod;
-
-            //m_soundFxVecTest[i]->emitter->SetOrientation(m_camera->GetForwardAudio(), m_camera->GetUp());
-            //m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
-
             auto velocity = (pos - previousPosition) / aTimer.GetElapsedSeconds();
             m_soundFxVecTest[i]->emitter->OrientFront = m_camera->GetForwardAudio();
             m_soundFxVecTest[i]->emitter->OrientTop = m_camera->GetUpAudio();
-
             m_soundFxVecTest[i]->emitter->Position = pos;
             m_soundFxVecTest[i]->emitter->Velocity = velocity;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-
-            m_debugData->ToggleDebugOnOverRide();
-            m_debugData->DebugPushUILineDecimalNumber("velocity.x = ", velocity.x, "");
-            m_debugData->DebugPushUILineDecimalNumber("velocity.y = ", velocity.y, "");
-            m_debugData->DebugPushUILineDecimalNumber("velocity.z = ", velocity.z, "");
-
-            m_debugData->ToggleDebugOff();
-
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_SPAWNER1)
         {
@@ -8367,6 +8260,21 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_MISSILE_ROCKET_DEMO)
+        {
+            auto pos = m_soundFxVecTest[i]->pos;
+            auto velocity = (m_soundFxVecTest[i]->pos - previousPosition) / aTimer.GetElapsedSeconds();
+
+            m_soundFxVecTest[i]->fx->SetVolume(m_demoMissileVolume);
+
+            m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = velocity;
+
+            m_soundFxVecTest[i]->emitter->OrientFront = m_soundFxVecTest[i]->forward;
+            m_soundFxVecTest[i]->emitter->OrientTop = m_soundFxVecTest[i]->up;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+        }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_EXPLOSION)
         {
 
@@ -8477,24 +8385,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
         }
-    }
-
-    // apply 3d
-    for (unsigned int i = 0; i < m_soundFxVecTest.size(); ++i)
-    {
-        //   auto pos = m_soundFxVecTest[i]->pos;
-
-           //m_soundFxVecTest[i]->emitter->Position = pos;
-        //   m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
-           //m_soundFxVecTest[i]->emitter->Update(m_debugAudioPos, DirectX::SimpleMath::Vector3::UnitY, aTimer.GetElapsedSeconds());
-           //m_soundFxVecTest[i]->emitter->SetVelocity(DirectX::SimpleMath::Vector3::Zero);
-
-        //   m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-
-
-
-           //m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter, false);
-           //m_fxEmitter.Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
     }
 
     // check if stopped
@@ -8628,7 +8518,8 @@ void Game::TriggerFireWithAudioDemo()
 {
     // rocket fx
     std::shared_ptr <Utility::SoundFx> rocketFx(new Utility::SoundFx());
-    rocketFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_MISSILE_ROCKET;
+    //rocketFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_MISSILE_ROCKET;
+    rocketFx->fxType = Utility::SoundFxType::SOUNDFXTYPE_MISSILE_ROCKET_DEMO;
     rocketFx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdRocketMotor, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);;
     std::shared_ptr<DirectX::AudioEmitter> rocketEmitter = std::make_shared<DirectX::AudioEmitter>();
     rocketEmitter->SetOmnidirectional();
