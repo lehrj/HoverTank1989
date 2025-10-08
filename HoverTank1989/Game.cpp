@@ -7583,7 +7583,6 @@ void Game::UpdateAudio(DX::StepTimer const& aTimer)
 
 void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 {
-
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
         m_audioVolumeTimer += aTimer.GetElapsedSeconds();
@@ -8180,7 +8179,6 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
 
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
-
         }
         else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_ON ||
             m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_OFF)

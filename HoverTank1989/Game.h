@@ -423,6 +423,7 @@ private:
     float                                       m_musicVolume = 0.9f;
     float                                       m_sfxVolume = 0.5f;
     float                                       m_demoMissileVolume = 1.0f;
+    float                                       m_demoTopAttackLaserVolume = 0.0f;
 
     std::unique_ptr<DirectX::WaveBank>          m_audioBank;
     std::unique_ptr<DirectX::SoundStreamInstance> m_audioMusicStream;
@@ -641,6 +642,7 @@ private:
     bool m_isStartTriggerTrue3 = false;
 
     bool m_isBlueprintAudioTriggerTrue = false;
+    bool m_isTopAttackLaserAudioTriggerTrue = false;
 
     bool m_isLogoAudioTriggerTrueDice = false;
     bool m_isLogoAudioTriggerTrue1 = false;
