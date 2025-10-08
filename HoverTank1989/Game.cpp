@@ -329,6 +329,24 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 
         fx->fx->Play(false);
     }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE_DEMO)
+    {
+        fx->fxType = aSfxType;
+        fx->fx = m_audioBank->CreateStreamInstance(m_audioFxIdLaserLockTone, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+        pos = aPos;
+        fx->pos = pos;
+        const float volume = m_audioVolumeGamePlay * m_demoTopAttackLaserVolume;
+        fx->volume = volume;
+        fx->fx->SetVolume(volume);
+
+        fx->fx->SetPitch(0.5f);
+
+        fireEmitter->Position = pos;
+        fireEmitter->Velocity = DirectX::SimpleMath::Vector3::Zero;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarSpawner;
+
+        fx->fx->Play(true);
+    }
     else
     {
         fx->fxType = Utility::SoundFxType::SOUNDFXTYPE_GONG;
@@ -1242,7 +1260,7 @@ void Game::Update(DX::StepTimer const& aTimer)
     UpdateAudio(aTimer);
 
     m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest size = ", m_soundFxVecTest.size(), "");
+    m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest.size() = ", m_soundFxVecTest.size(), "");
 
     m_debugData->ToggleDebugOff();
 }
@@ -5308,12 +5326,23 @@ void Game::DrawIntroScene()
         }
         else if (timerLocal < (slideTime * 2.0f))
         {
+            if (m_isTopAttackLaserAudioTriggerOnTrue == false)
+            {
+                m_isTopAttackLaserAudioTriggerOnTrue = true;
+                AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE_DEMO);
+            }
+
             m_effect->SetTexture(m_textureTopAttack1.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack1.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack1.Get());
         }
         else if (timerLocal < (slideTime * 3.0f))
         {
+            if (m_isTopAttackLaserAudioTriggerOffTrue == false)
+            {
+                m_isTopAttackLaserAudioTriggerOffTrue = true;
+            }
+
             m_effect->SetTexture(m_textureTopAttack2.Get());
             m_effect->SetSpecularTexture(m_specularTopAttack2.Get());
             m_effect->SetNormalTexture(m_normalMapTopAttack2.Get());
@@ -8175,6 +8204,35 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
                     m_soundFxVecTest[i]->volume = 1.0f;
                 }
                 m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume * m_audioLockToneVolMod);
+            }
+
+            m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_LASER_LOCK_TONE_DEMO)
+        {
+
+            if (m_soundFxVecTest[i]->volume < 0.0f)
+            {
+                m_soundFxVecTest[i]->fx->SetVolume(0.0f);
+                m_soundFxVecTest[i]->fx->Stop();
+                m_soundFxVecTest[i]->isDestroyTrue = true;
+            }
+            else if (m_soundFxVecTest[i]->volume > 1.0f)
+            {
+                m_soundFxVecTest[i]->volume = 1.0f;
+                m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume * m_audioLockToneVolMod);
+            }
+            else
+            {
+                m_soundFxVecTest[i]->fx->SetVolume(m_soundFxVecTest[i]->volume * m_audioLockToneVolMod);
+            }
+
+            if (m_isTopAttackLaserAudioTriggerOffTrue == true)
+            {
+                m_soundFxVecTest[i]->fx->SetVolume(0.0f);
+                m_soundFxVecTest[i]->fx->Stop();
+                m_soundFxVecTest[i]->isDestroyTrue = true;
             }
 
             m_soundFxVecTest[i]->emitter->Update(m_soundFxVecTest[i]->pos, m_soundFxVecTest[i]->up, aTimer.GetElapsedSeconds());

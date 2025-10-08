@@ -521,19 +521,20 @@ private:
     const int m_audioFxIdJI4 = 22;
     */
 
-    const int m_audioSpawner1 = 41;
-    const int m_audioSpawner2 = 41;
+    const unsigned int m_audioSpawner1 = 41;
+    const unsigned int m_audioSpawner2 = 41;
 
-    const int m_audioSpawnerLightsOn = 14;
-    const int m_audioSpawnerLightsOff = 14;
+    const unsigned int m_audioSpawnerLightsOn = 14;
+    const unsigned int m_audioSpawnerLightsOff = 14;
     const float m_audioSpawnerLightsPitchOn = 1.0f;
     const float m_audioSpawnerLightsPitchOff = 0.35f;
 
-    const int m_audioFxIdBlueprintUnroll = 48;
-    const int m_audioFxIdRaven = 24;
-    const int m_audioFxIdRavenAlt = 44;
+    const unsigned int m_audioFxIdBlueprintUnroll = 48;
+    const unsigned int m_audioFxIdRaven = 24;
+    const unsigned int m_audioFxIdRavenAlt = 44;
 
     const unsigned int m_audioFxIdRocketMotor = 3;
+    const unsigned int m_audioFxIdLaserLockTone = 21;
 
     //const float m_audioCurveDistanceScalarNPC = 19.0f;
     const float m_audioCurveDistanceScalarNPC = 9.0f;
@@ -642,7 +643,8 @@ private:
     bool m_isStartTriggerTrue3 = false;
 
     bool m_isBlueprintAudioTriggerTrue = false;
-    bool m_isTopAttackLaserAudioTriggerTrue = false;
+    bool m_isTopAttackLaserAudioTriggerOnTrue = false;
+    bool m_isTopAttackLaserAudioTriggerOffTrue = false;
 
     bool m_isLogoAudioTriggerTrueDice = false;
     bool m_isLogoAudioTriggerTrue1 = false;
