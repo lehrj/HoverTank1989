@@ -1258,11 +1258,6 @@ void Game::Update(DX::StepTimer const& aTimer)
     }
 
     UpdateAudio(aTimer);
-
-    m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_soundFxVecTest.size() = ", m_soundFxVecTest.size(), "");
-
-    m_debugData->ToggleDebugOff();
 }
 #pragma endregion
 
@@ -8612,13 +8607,6 @@ void Game::TriggerFireWithAudioDemo()
 
 void Game::UpdateAutoFire()
 {
-    //m_debugData->ToggleDebugOnOverRide();
-    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireOn() ", m_fireControl->GetIsAutoFireOn(), "");
-    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireTargetReadyTrue() ", m_fireControl->GetIsAutoFireTargetReadyTrue(), "");
-    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsFireCooldownTrue() ", m_fireControl->GetIsFireCooldownTrue(), "");
-    m_debugData->DebugPushUILineWholeNumber("m_fireControl->GetIsAutoFireTargetValidTrue() ", m_fireControl->GetIsAutoFireTargetValidTrue(), "");
-    m_debugData->ToggleDebugOff();
-
     if (m_fireControl->GetIsAutoFireOn() == true && m_fireControl->GetIsAutoFireTargetReadyTrue() == true && m_fireControl->GetIsFireCooldownTrue() == false && m_fireControl->GetIsAutoFireTargetValidTrue() == true)
     {
         TriggerFireWithAudio();
