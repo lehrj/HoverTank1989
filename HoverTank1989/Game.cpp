@@ -1301,7 +1301,6 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-      
         m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
@@ -4584,8 +4583,8 @@ void Game::DrawIntroScene()
 
     const float fadeInStart5 = fadeOutEnd4 + logoDisplayGap;
     const float fadeInEnd5 = fadeInStart5 + fadeDuration;
-    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration + 0.0f;
-    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration + 0.0f;
+    const float fadeOutStart5 = fadeInStart5 + logoDisplayDuration - 1.0f;
+    const float fadeOutEnd5 = fadeInStart5 + logoDisplayDuration + fadeDuration - 1.0f;
 
     const float fadeInStart6 = fadeOutEnd5 + logoDisplayGap;
     const float fadeInEnd6 = fadeInStart6 + fadeDuration;
@@ -4599,17 +4598,22 @@ void Game::DrawIntroScene()
     const float fadeOutStart7 = fadeInStart7 + logoDisplayDuration;
     const float fadeOutEnd7 = fadeInStart7 + logoDisplayDuration + fadeDuration;
 
+    /*
     auto startTrig0 = m_startTrigger0;
     auto startTrig00 = m_startTrigger00;
     auto startTrig1 = m_startTrigger1;
     auto startTrig2 = m_startTrigger2;
     auto startTrig3 = m_startTrigger3;
+    */
 
+    
     m_startTrigger0 = fadeOutEnd7 + 0.1f;
     m_startTrigger00 = m_startTrigger0 + 4.9f;
     m_startTrigger1 = m_startTrigger00 + 2.0f;
     m_startTrigger2 = m_startTrigger1 + 6.0f;
-    m_startTrigger3 = m_startTrigger3 + 2.0f;
+    //m_startTrigger3 = m_startTrigger3 + 2.0f;
+    m_startTrigger3 = m_startTrigger2 + 2.0f;
+    
 
     float fogVal1 = 0.0f;
     float fogVal2 = 0.0f;
