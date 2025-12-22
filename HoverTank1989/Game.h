@@ -767,8 +767,12 @@ private:
 
     //const DirectX::SimpleMath::Vector3        m_gamePlayStartCamOverRide = DirectX::SimpleMath::Vector3(100.0f, 120.0, -700.0);
     //const DirectX::SimpleMath::Vector3        m_gamePlayStartTargOverRide = DirectX::SimpleMath::Vector3(110.0, 120.0f, -700.0);
-    const DirectX::SimpleMath::Vector3        m_gamePlayStartCamOverRide = DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0);
-    const DirectX::SimpleMath::Vector3        m_gamePlayStartTargOverRide = DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0);
+    //const DirectX::SimpleMath::Vector3        m_gamePlayStartCamOverRide = DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0);
+    //const DirectX::SimpleMath::Vector3        m_gamePlayStartTargOverRide = DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0);
+    const DirectX::SimpleMath::Vector3        m_gamePlayStartCamOverRide = DirectX::SimpleMath::Vector3(530.0f, 125.0, -525.0);
+    const DirectX::SimpleMath::Vector3        m_gamePlayStartTargOverRide = DirectX::SimpleMath::Vector3(540.0, 325.0f, -675.0);
+
+    bool                                m_gamePlayStartTerrainOnTrue = false;
 
     float                               m_gamePlayStartOffSetTimer = 0.0f;
 

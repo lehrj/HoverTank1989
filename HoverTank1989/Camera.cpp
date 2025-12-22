@@ -1374,9 +1374,6 @@ void Camera::UpdateCamera(DX::StepTimer const& aTimer)
 		m_debugData->DebugPushUILineWholeNumber("NULL ", 0, "");
 	}
 
-	//m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldCamPos(), 10.0f, 0.0f, DirectX::Colors::Red);
-	//m_debugData->PushDebugLinePositionIndicator(GetVehicleHomeWorldTargPos(), 10.0f, 0.0f, DirectX::Colors::Green);
-
 	m_debugData->ToggleDebugOff();
 
 	m_camVelocity = (m_position - posPrev) / aTimer.GetElapsedSeconds();

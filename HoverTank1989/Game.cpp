@@ -1195,7 +1195,7 @@ void Game::TogglePause()
 void Game::Update(DX::StepTimer const& aTimer)
 {
     float elapsedTime = float(aTimer.GetElapsedSeconds());
-
+    
     // TODO: Add your game logic here.
     elapsedTime;
 
@@ -1301,18 +1301,28 @@ void Game::Render()
 
     if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
     {
-        m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        if (m_gamePlayStartTerrainOnTrue == true)
+        {
+            m_npcController->DrawNPCs(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
+        }
         m_modelController->DrawModel(context, *m_states, m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
         m_vehicle->DrawVehicleProjectiles2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
 
         //DrawSky();
         //DrawSky2(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
-        DrawTestTrack();
+
+        if (m_gamePlayStartTerrainOnTrue == true)
+        {
+            DrawTestTrack();
+            DrawSpawner1();
+            //DrawSpawner2();
+            DrawSpawner1to2();
+        }
         //DrawTestRangeMissile();
         //DrawSpawner();
-        DrawSpawner1();
+        //DrawSpawner1();
         //DrawSpawner2();
-        DrawSpawner1to2();
+        //DrawSpawner1to2();
         // DrawLaunchSite();
          //DrawSky2Base(m_camera->GetViewMatrix(), m_proj, m_effect, m_inputLayout);
     }
@@ -1344,14 +1354,19 @@ void Game::Render()
         //DrawTerrainNew(m_terrainGamePlay);
         //DrawTerrainNew(m_terrainStartScreen);
 
-        if (m_isSpawnerLightOn2 == true)
+        if (m_gamePlayStartTerrainOnTrue == true)
         {
-            DrawTerrainNew(m_terrainGamePlayLightsOn);
+            if (m_isSpawnerLightOn2 == true)
+            {
+                DrawTerrainNew(m_terrainGamePlayLightsOn);
+            }
+            else
+            {
+                DrawTerrainNew(m_terrainGamePlay);
+            }
         }
-        else
-        {
-            DrawTerrainNew(m_terrainGamePlay);
-        }
+
+        m_gamePlayStartTerrainOnTrue = true;
     }
     m_batch2->End();
 
@@ -5097,10 +5112,11 @@ void Game::DrawIntroScene()
             m_debugValue1 = colorIntensity;
             m_debugValue2 = fogStart;
             m_debugValue3 = fogEnd;
-
+            m_isLogoDisplayTrue = false;
         }
         else
         {
+            m_isLogoDisplayTrue = false;
             //m_effect->SetFogEnabled(false);
         }
 
@@ -5112,6 +5128,9 @@ void Game::DrawIntroScene()
     else if (timeStamp < fadeInStart7)
     {
         // render nothing
+        m_isLogoDisplayTrue = false;
+        m_camera->SetPos(m_gamePlayStartCamOverRide);
+        m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
         m_camera->SetPos(m_gamePlayStartCamOverRide);
         m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
 
@@ -5161,9 +5180,6 @@ void Game::DrawIntroScene()
             m_effect2->SetFogEnabled(false);
             m_effect3->SetFogEnabled(false);
 
-            m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
-
-       
             m_currentGameState = GameState::GAMESTATE_GAMEPLAYSTART;
         }
     }
@@ -5401,15 +5417,20 @@ void Game::DrawIntroScene()
     {
         DrawLogoScreen();
     }
+    /*
     else if (m_currentGameState == GameState::GAMESTATE_STARTSCREEN)
     {
         //DrawStartScreen();
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
-        DrawLogoScreen();
+        //DrawLogoScreen();
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
     }
+    */
     else
     {
+        m_camera->SetPos(m_gamePlayStartCamOverRide);
+        m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
+
         m_isLogoDisplayTrue = false;
         m_lighting->SetLighting(Lighting::LightingState::LIGHTINGSTATE_TEST01);
         m_currentGameState = GameState::GAMESTATE_GAMEPLAY;
@@ -5419,14 +5440,14 @@ void Game::DrawIntroScene()
         m_effect->SetNormalTexture(m_normalMap.Get());
         m_effect->SetSpecularTexture(m_specular.Get());
 
-        m_camera->SetPos(m_gamePlayStartCamOverRide);
-        m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
-        m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos0, m_introTarg0);
+       // m_camera->SetPos(m_gamePlayStartCamOverRide);
+       // m_camera->SetTargetPos(m_gamePlayStartTargOverRide);
+       // m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, m_introPos0, m_introTarg0);
 
-        m_camera->SetPos(DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0));
-        m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(330.0, 425.0f, -580.0));
+       // m_camera->SetPos(DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0));
+       // m_camera->SetTargetPos(DirectX::SimpleMath::Vector3(330.0, 825.0f, -580.0));
         //m_camera->SetSnapVals(m_introCamStep1, m_introTargStep1, m_introSlerp1, DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0), DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0));
-        m_camera->SetSnapVals(0.9f, 0.15f, 0.9f, DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0), DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0));
+      //  m_camera->SetSnapVals(0.9f, 0.15f, 0.9f, DirectX::SimpleMath::Vector3(230.0f, 140.0, -550.0), DirectX::SimpleMath::Vector3(330.0, 125.0f, -580.0));
 
         m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAMDEMO);
 
@@ -5661,10 +5682,6 @@ void Game::DrawLogoScreen()
     logoPos += camPos;
     DirectX::SimpleMath::Matrix wMat = DirectX::SimpleMath::Matrix::Identity;
     wMat *= DirectX::SimpleMath::Matrix::CreateWorld(logoPos, logoForward, DirectX::SimpleMath::Vector3::UnitY);
-
-    //m_debugData->ToggleDebugOnOverRide();
-    //m_debugData->PushDebugLinePositionIndicator(logoPos, 4.0f, 0.0f, DirectX::Colors::Red);
-    //m_debugData->ToggleDebugOff();
 
     if (m_isLogoDisplayTrue == true)
     {
