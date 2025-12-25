@@ -1502,5 +1502,9 @@ public:
     void ManualInputReset(FinType aFinType, const bool aIsResetAllTrue);
 
     void SetCurrentCameraPos(DirectX::SimpleMath::Vector3 aPos){m_currentCameraPos = aPos;};
+
+
+    float m_demoEyeTimer = 0.0f;
+    bool m_isDemoEyeTimerTrue = false;
 };
 

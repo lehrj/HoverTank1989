@@ -3126,6 +3126,7 @@ void FireControl::DrawFireControlObjects2Demo(const DirectX::SimpleMath::Matrix 
 
 void FireControl::DrawLaser(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
+
     if (m_isTargetingLaserOn == true)
     {
         float scale = m_playerLaser.distance;
@@ -4776,6 +4777,12 @@ void FireControl::DrawMissilesWithLighting(const DirectX::SimpleMath::Matrix aVi
 
 void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix aView, const DirectX::SimpleMath::Matrix aProj, std::shared_ptr<DirectX::NormalMapEffect> aEffect, Microsoft::WRL::ComPtr<ID3D11InputLayout> aInputLayout)
 {
+    m_isDemoEyeTimerTrue = false;
+
+    //m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineDecimalNumber("m_demoEyeTimer = ", m_demoEyeTimer, "");
+    m_debugData->ToggleDebugOff();
+
     aEffect->EnableDefaultLighting();
     const DirectX::SimpleMath::Vector3 lightDir = m_environment->GetLightDirectionPrime();
     DirectX::SimpleMath::Plane groundPlane;
@@ -4800,6 +4807,7 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
     aEffect->EnableDefaultLighting();
     for (unsigned int i = 0; i < m_missileVec.size(); ++i)
     {
+        m_isDemoEyeTimerTrue = true;
         const DirectX::SimpleMath::Matrix alignRotMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].projectileData.alignmentQuat);
         const DirectX::SimpleMath::Matrix posTransMat = DirectX::SimpleMath::Matrix::CreateTranslation(m_missileVec[i].projectileData.q.position);
         DirectX::SimpleMath::Matrix updateMat = DirectX::SimpleMath::Matrix::Identity;
@@ -4906,9 +4914,17 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
         aEffect->SetColorAndAlpha(m_ammoMissile.modelData.bodyColor);
         m_ammoMissile.modelData.noseConeShape->Draw(aEffect.get(), aInputLayout.Get());
 
+        // demo data
+        DirectX::SimpleMath::Matrix demoMat = DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(0.0f));
+        demoMat = DirectX::SimpleMath::Matrix::CreateRotationY(m_demoEyeTimer * 1.0f);
+        //demoMat *= DirectX::SimpleMath::Matrix::CreateRotationX(Utility::ToRadians(0.0f));
+        //demoMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(DirectX::SimpleMath::Quaternion::FromToRotation(-DirectX::SimpleMath::Vector3::UnitZ, m_missileVec[i].guidance.conDat.thrustVecNorm));
+        //demoMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].guidance.conDat.thrustVecQuat);
+
         // seeker housing
         updateMat = m_ammoMissile.modelData.localSeekerHousingMatrix;
-        updateMat *= m_missileVec[i].guidance.seekerHousingMat;
+        //updateMat *= m_missileVec[i].guidance.seekerHousingMat;
+        updateMat *= demoMat;
         updateMat *= m_ammoMissile.modelData.seekerHousingTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
@@ -4919,7 +4935,8 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
         // seeker lens
         updateMat = m_ammoMissile.modelData.localSeekerLensMatrix;
         updateMat *= m_ammoMissile.modelData.localSeekerLensTranslation;
-        updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        //updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        updateMat *= demoMat;
         updateMat *= m_ammoMissile.modelData.seekerLensTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
@@ -4930,7 +4947,9 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
         // seeker ring
         updateMat = m_ammoMissile.modelData.localSeekerRingMatrix;
         updateMat *= m_ammoMissile.modelData.localSeekerRingTranslation;
-        updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        //updateMat *= m_missileVec[i].guidance.seekerLensMat;
+        //updateMat *= DirectX::SimpleMath::Matrix::Identity;
+        updateMat *= demoMat;
         updateMat *= m_ammoMissile.modelData.seekerLensTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
@@ -11680,6 +11699,11 @@ void FireControl::UpdateFinForcesOld(const FinDataStatic& aStaticDat, FinDataDyn
 
 void FireControl::UpdateFireControl(double aTimeDelta)
 {
+    if (m_isDemoEyeTimerTrue == true)
+    {
+        m_demoEyeTimer += aTimeDelta;
+    }
+
     if (m_isTargetingLaserOn == true)
     {
         CastRayLaser();
