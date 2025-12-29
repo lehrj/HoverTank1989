@@ -1195,7 +1195,7 @@ void Game::TogglePause()
 void Game::Update(DX::StepTimer const& aTimer)
 {
     float elapsedTime = float(aTimer.GetElapsedSeconds());
-    
+
     // TODO: Add your game logic here.
     elapsedTime;
 

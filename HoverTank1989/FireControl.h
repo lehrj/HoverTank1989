@@ -1506,5 +1506,9 @@ public:
 
     float m_demoEyeTimer = 0.0f;
     bool m_isDemoEyeTimerTrue = false;
+    bool m_isDemmoEyeTimerStart = false;
+    const float m_demoEyeStartTime = 1.0f;
+    const float m_demoEyeEndTimer = 9.0f;
+    const float m_demoEyeTimerMax = 11.0f;
 };
 

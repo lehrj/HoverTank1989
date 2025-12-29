@@ -4779,8 +4779,12 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
 {
     m_isDemoEyeTimerTrue = false;
 
-    //m_debugData->ToggleDebugOnOverRide();
+    float percentage = m_demoEyeTimer / m_demoEyeTimerMax;
+    float percentageMod = (m_demoEyeTimer - m_demoEyeStartTime) / m_demoEyeTimerMax;
+    m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("m_demoEyeTimer = ", m_demoEyeTimer, "");
+    m_debugData->DebugPushUILineDecimalNumber("percentage     = ", percentage, "");
+    m_debugData->DebugPushUILineDecimalNumber("percentageMod  = ", percentageMod, "");
     m_debugData->ToggleDebugOff();
 
     aEffect->EnableDefaultLighting();
