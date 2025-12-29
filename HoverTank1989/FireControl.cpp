@@ -4781,7 +4781,7 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
 
     float percentage = m_demoEyeTimer / m_demoEyeTimerMax;
     float percentageMod = (m_demoEyeTimer - m_demoEyeStartTime) / m_demoEyeTimerMax;
-    m_debugData->ToggleDebugOnOverRide();
+    //m_debugData->ToggleDebugOnOverRide();
     m_debugData->DebugPushUILineDecimalNumber("m_demoEyeTimer = ", m_demoEyeTimer, "");
     m_debugData->DebugPushUILineDecimalNumber("percentage     = ", percentage, "");
     m_debugData->DebugPushUILineDecimalNumber("percentageMod  = ", percentageMod, "");
@@ -4925,10 +4925,32 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
         //demoMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(DirectX::SimpleMath::Quaternion::FromToRotation(-DirectX::SimpleMath::Vector3::UnitZ, m_missileVec[i].guidance.conDat.thrustVecNorm));
         //demoMat *= DirectX::SimpleMath::Matrix::CreateFromQuaternion(m_missileVec[i].guidance.conDat.thrustVecQuat);
 
+        // m_manualControlInput.y, m_manualTailPitch, m_manualThrustVecPitch
+        
+        demoMat = DirectX::SimpleMath::Matrix::Identity;
+        demoMat *= DirectX::SimpleMath::Matrix::CreateRotationY(Utility::ToRadians(-90.0f));
+        demoMat *= DirectX::SimpleMath::Matrix::CreateRotationY(m_manualControlInput.x * Utility::ToRadians(35.0f));
+        demoMat *= DirectX::SimpleMath::Matrix::CreateRotationZ(m_manualControlInput.y * Utility::ToRadians(60.0f));
+
+        /*
+        DirectX::SimpleMath::Matrix updateMat6 = DirectX::SimpleMath::Matrix::CreateWorld(DirectX::SimpleMath::Vector3::Zero, forwardToTargNormTest, DirectX::SimpleMath::Vector3::UnitY);
+        aMissile.guidance.seekerHousingMat = updateMat6;
+        aMissile.guidance.seekerLensMat = updateMat6;
+        */
+        auto updateMat6 = demoMat;
+        auto eularVec = updateMat6.ToEuler();
+        //aMissile.guidance.seekerHousingMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, 0.0f, 0.0f);
+        auto demoSeekerHousingMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, 0.0f, 0.0f);
+
+        //aMissile.guidance.seekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, eularVec.x, 0.0);
+        auto demoSeekerLensMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(eularVec.y, eularVec.x, 0.0);
+        
+
         // seeker housing
         updateMat = m_ammoMissile.modelData.localSeekerHousingMatrix;
         //updateMat *= m_missileVec[i].guidance.seekerHousingMat;
-        updateMat *= demoMat;
+        //updateMat *= demoMat;
+        updateMat *= demoSeekerHousingMat;
         updateMat *= m_ammoMissile.modelData.seekerHousingTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
@@ -4940,7 +4962,8 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
         updateMat = m_ammoMissile.modelData.localSeekerLensMatrix;
         updateMat *= m_ammoMissile.modelData.localSeekerLensTranslation;
         //updateMat *= m_missileVec[i].guidance.seekerLensMat;
-        updateMat *= demoMat;
+        //updateMat *= demoMat;
+        updateMat *= demoSeekerLensMat;
         updateMat *= m_ammoMissile.modelData.seekerLensTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
@@ -4953,7 +4976,8 @@ void FireControl::DrawMissilesWithLightingDemo(const DirectX::SimpleMath::Matrix
         updateMat *= m_ammoMissile.modelData.localSeekerRingTranslation;
         //updateMat *= m_missileVec[i].guidance.seekerLensMat;
         //updateMat *= DirectX::SimpleMath::Matrix::Identity;
-        updateMat *= demoMat;
+        //updateMat *= demoMat;
+        updateMat *= demoSeekerLensMat;
         updateMat *= m_ammoMissile.modelData.seekerLensTranslation;
         updateMat *= alignRotMat;
         updateMat *= posTransMat;
