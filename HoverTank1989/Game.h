@@ -623,6 +623,14 @@ private:
     float m_startTrigger2 = 15.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
     float m_startTrigger3 = 17.0f + m_startDelay + (m_logoDisplayDuration * m_startLogoDisplayCountMod) + m_startOffset;
 
+
+    const float m_startTrigger0Mod = -5.1f;
+    const float m_startTrigger00Mod = 8.9f;
+    const float m_startTrigger1Mod = 4.0f;
+    const float m_startTrigger2Mod = 6.0f;
+    const float m_startTrigger3Mod = 2.0f;
+
+
     float m_logoZoomMod = 1.17f;
     const float m_logoZoomModBMW = 1.6f;
     const float m_logoZoomModJI = 1.17f;

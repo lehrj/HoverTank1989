@@ -4621,14 +4621,28 @@ void Game::DrawIntroScene()
     auto startTrig3 = m_startTrigger3;
     */
 
-    
-    m_startTrigger0 = fadeOutEnd7 + 0.1f;
-    m_startTrigger00 = m_startTrigger0 + 4.9f;
-    m_startTrigger1 = m_startTrigger00 + 2.0f;
+    /*
+    //m_startTrigger0 = fadeOutEnd7 + 0.1f;
+    m_startTrigger0 = fadeOutEnd7 - 5.1f;
+    //m_startTrigger00 = m_startTrigger0 + 4.9f;
+    m_startTrigger00 = m_startTrigger0 + 8.9f;
+    //m_startTrigger1 = m_startTrigger00 + 2.0f;
+    m_startTrigger1 = m_startTrigger00 + 4.0f;
     m_startTrigger2 = m_startTrigger1 + 6.0f;
     //m_startTrigger3 = m_startTrigger3 + 2.0f;
     m_startTrigger3 = m_startTrigger2 + 2.0f;
-    
+    */
+
+    //m_startTrigger0 = fadeOutEnd7 + 0.1f;
+    m_startTrigger0 = fadeOutEnd7 + m_startTrigger0Mod;
+    //m_startTrigger00 = m_startTrigger0 + 4.9f;
+    m_startTrigger00 = m_startTrigger0 + m_startTrigger00Mod;
+    //m_startTrigger1 = m_startTrigger00 + 2.0f;
+    m_startTrigger1 = m_startTrigger00 + m_startTrigger1Mod;
+    m_startTrigger2 = m_startTrigger1 + m_startTrigger2Mod;
+    //m_startTrigger3 = m_startTrigger3 + 2.0f;
+    m_startTrigger3 = m_startTrigger2 + m_startTrigger3Mod;
+
 
     float fogVal1 = 0.0f;
     float fogVal2 = 0.0f;
@@ -7131,11 +7145,11 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     }
     if (m_kbStateTracker.pressed.Q)
     {
+        m_fireControl->ManualZeroInput();
+
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
             //m_vehicle->DebugToggle();
-            m_fireControl->ManualZeroInput();
-
         }
     }
     if (m_kbStateTracker.pressed.Z)
@@ -7474,7 +7488,14 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-
+                if (m_isQuckCameraToggleTrue == true)
+                {
+                    m_isQuckCameraToggleTrue = false;
+                }
+                else
+                {
+                    m_isQuckCameraToggleTrue = true;
+                }
             }
         }
         if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
@@ -8701,6 +8722,8 @@ void Game::UpdateGameplayOnramp(DX::StepTimer const& aTimer)
 
             //m_camera->SetSnapVals(m_gamePlayCamStep, 0.00001f, m_gamePlaySlerp, m_gamePlayCamPos, m_gamePlayTarg);
             m_camera->SetCameraState(CameraState::CAMERASTATE_SNAPCAM);
+
+            m_fireControl->ManualZeroInput();
         }
     }
 }
