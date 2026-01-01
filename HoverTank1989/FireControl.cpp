@@ -9250,6 +9250,14 @@ float FireControl::ManualInputUpdate(const float aCurrentVal, const float aInput
     return updateVal;
 }
 
+void FireControl::ManualZeroInput()
+{
+    m_isManualUpdatePitchTrue = false;
+    m_manualControlInput = DirectX::SimpleMath::Vector2::Zero;
+    m_manualThrustVecPitch = 0.0f;
+    m_manualThrustVecYaw = 0.0f;
+}
+
 void FireControl::PrintFinData(FinDataStatic& aFinStat, FinDataDynamic& aFinDyn, MissileData& aMissile)
 {
     const DirectX::SimpleMath::Vector3 pos = aMissile.projectileData.q.position;

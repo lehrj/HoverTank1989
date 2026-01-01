@@ -7133,7 +7133,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
     {
         if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
         {
-            m_vehicle->DebugToggle();
+            //m_vehicle->DebugToggle();
+            m_fireControl->ManualZeroInput();
+
         }
     }
     if (m_kbStateTracker.pressed.Z)

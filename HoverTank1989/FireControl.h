@@ -1500,6 +1500,7 @@ public:
 
     void ManualControlInput(FinType aFinType, const float aInput);
     void ManualInputReset(FinType aFinType, const bool aIsResetAllTrue);
+    void ManualZeroInput();
 
     void SetCurrentCameraPos(DirectX::SimpleMath::Vector3 aPos){m_currentCameraPos = aPos;};
 
