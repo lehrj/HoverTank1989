@@ -235,6 +235,17 @@ void Game::AudioCreateSFX3D(const DirectX::SimpleMath::Vector3 aPos, Utility::So
 
         fx->fx->Play(false);
     }
+    else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_COIN)
+    {
+        fx->fxType = aSfxType;
+        fx->fx = m_audioBank->CreateStreamInstance(1, SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters);
+  
+        pos = aPos;
+        fireEmitter->CurveDistanceScaler = m_audioCurveDistanceScalarLogo;
+        fireEmitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+        fireEmitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
+        fx->fx->Play(false);
+    }
     else if (aSfxType == Utility::SoundFxType::SOUNDFXTYPE_RAVEN)
     {
         fx->fxType = aSfxType;
@@ -4936,7 +4947,14 @@ void Game::DrawIntroScene()
         }
         else
         {
-
+            if (timeStamp > fadeOutStart3 - 2.0f)
+            {
+                if (m_isCoinAudioTriggerTrue == false)
+                {
+                    m_isCoinAudioTriggerTrue = true;
+                    AudioCreateSFX3D(DirectX::SimpleMath::Vector3::Zero, Utility::SoundFxType::SOUNDFXTYPE_COIN);
+                }
+            }
             //m_effect->SetFogEnabled(false);
         }
     }
@@ -7845,6 +7863,15 @@ void Game::UpdateAudioEmitters(DX::StepTimer const& aTimer)
             m_soundFxVecTest[i]->emitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
 
             m_soundFxVecTest[i]->emitter->Position = pos;
+            m_soundFxVecTest[i]->emitter->Velocity = DirectX::SimpleMath::Vector3::Zero;
+
+            m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);
+        }
+        else if (m_soundFxVecTest[i]->fxType == Utility::SoundFxType::SOUNDFXTYPE_COIN)
+        {
+            m_soundFxVecTest[i]->emitter->OrientFront = DirectX::SimpleMath::Vector3::UnitX;
+            m_soundFxVecTest[i]->emitter->OrientTop = DirectX::SimpleMath::Vector3::UnitY;
+            m_soundFxVecTest[i]->emitter->Position = DirectX::SimpleMath::Vector3::Zero;
             m_soundFxVecTest[i]->emitter->Velocity = DirectX::SimpleMath::Vector3::Zero;
 
             m_soundFxVecTest[i]->fx->Apply3D(m_listener, *m_soundFxVecTest[i]->emitter);

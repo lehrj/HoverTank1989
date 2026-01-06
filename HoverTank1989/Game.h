@@ -661,6 +661,8 @@ private:
     bool m_isLogoAudioTriggerTrue3 = false;
     bool m_isLogoAudioTriggerTrue4 = false;
 
+    bool m_isCoinAudioTriggerTrue = false;
+
     bool m_isBMWLogoAudioTriggerTrue1 = false;
 
     bool m_isJILogoAudioTriggerTrue1 = false;
