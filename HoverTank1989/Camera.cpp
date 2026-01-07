@@ -25,7 +25,7 @@ Camera::Camera(int aWidth, int aHeight)
 
 	m_missileTrackState = MissileTrackState::MISSILETRACKSTATE_SIDE;
 	m_missileTrackStatePrevious = MissileTrackState::MISSILETRACKSTATE_SIDE;
-	
+
 	//m_cameraState = CameraState::CAMERASTATE_SNAPCAM;
 	m_cameraState = CameraState::CAMERASTATE_PRESWINGVIEW;
 

@@ -1268,6 +1268,66 @@ void Game::Update(DX::StepTimer const& aTimer)
         m_isPauseOn = false;
     }
 
+    /*
+    m_debugData->ToggleDebugOnOverRide();
+    m_debugData->DebugPushUILineWholeNumber("m_isQuckCameraToggleTrue = ", m_isQuckCameraToggleTrue, "");
+
+    if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_REARVIEW)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_REARVIEW = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_TOPDOWN)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_TOPDOWN = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_FOLLOW)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_FOLLOW = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_SIDE)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_SIDE = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_TOPDOWNSTATIC)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_TOPDOWNSTATIC = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_TOTARGET)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_TOTARGET = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_SPRING)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_SPRING, = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_STEADYTOTARGET, = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_STEADYTOTARGET3QTR)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_STEADYTOTARGET3QTR, = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_TRACKALLCAM)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_TRACKALLCAM, = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_TRACKFROMVEHICLE)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_TRACKFROMVEHICLE,, = ", 1, "");
+    }
+    else if (m_camera->GetMissileState() == MissileTrackState::MISSILETRACKSTATE_EXPLOSION)
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_EXPLOSION,, = ", 1, "");
+    }
+    else
+    {
+        m_debugData->DebugPushUILineWholeNumber("MISSILETRACKSTATE_ Error = ", 0, "");
+    }
+
+    m_debugData->ToggleDebugOff();
+    */
+
     UpdateAudio(aTimer);
 }
 #pragma endregion
@@ -7145,6 +7205,9 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             {
                 m_isQuckCameraToggleTrue = true;
             }
+
+
+            //m_camera->CycleMissileTrackState();
         }
     }
     if (m_kbStateTracker.pressed.B)
@@ -7440,24 +7503,23 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             }
             else
             {
-                m_camera->FovDown(static_cast<float>(pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
+                m_camera->FovDown(static_cast<float>(pad.thumbSticks.rightY * aTimer.GetElapsedSeconds() * inputMod));
             }
         }
         if (pad.thumbSticks.rightY < -m_gamePadInputDeadZone)
         {
-            const float inputMod = m_gamePadInputRateBodySideStrafe;
+            const float inputMod = m_gamePadInputCamRotate;
             if (m_camera->GetCameraState() == CameraState::CAMERASTATE_FIRSTPERSON)
             {
                 m_camera->UpdatePitchYaw(static_cast<float>(pad.thumbSticks.rightY * inputMod * aTimer.GetElapsedSeconds()), 0.0f);
             }
             else
             {
-                m_camera->FovUp(static_cast<float>(-pad.thumbSticks.rightY * aTimer.GetElapsedSeconds()));
+                m_camera->FovUp(static_cast<float>(-pad.thumbSticks.rightY * aTimer.GetElapsedSeconds() * inputMod));
             }
         }
         if (pad.IsRightShoulderPressed() == true)
         {
-            //m_vehicle->FireWeapon();
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
                 if (m_fireControl->GetIsMissileFireAvailable() == true)
@@ -7469,6 +7531,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
 
                         if (m_isQuckCameraToggleTrue == true)
                         {
+                            m_fireControl->SetMissileCamID();
                             m_camera->ActivateMissleTrackCamera();
                         }
                     }
@@ -7499,11 +7562,12 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                m_camera->CycleMissileTrackState();
+                
             }
         }
-        if (m_buttons.b == GamePad::ButtonStateTracker::HELD)
+        if (m_buttons.b == GamePad::ButtonStateTracker::PRESSED)
         {
+            /*
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
                 if (m_isQuckCameraToggleTrue == true)
@@ -7514,19 +7578,38 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 {
                     m_isQuckCameraToggleTrue = true;
                 }
-            }
+            }       
+            */
         }
         if (m_buttons.x == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                m_camera->ActivateMissleTrackCamera();
+                //m_camera->CycleMissileTrackState();
+                //m_camera->ActivateMissleTrackCamera();
+
+
             }
         }
         if (m_buttons.y == GamePad::ButtonStateTracker::PRESSED)
         {
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
+                m_camera->CycleMissileTrackState();
+
+                if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+                {
+                    if (m_isQuckCameraToggleTrue == true)
+                    {
+                        m_isQuckCameraToggleTrue = false;
+                    }
+                    else
+                    {
+                        m_isQuckCameraToggleTrue = true;
+                    }
+                }
+
+                /*
                 if (m_camera->GetCameraState() == CameraState::CAMERASTATE_SNAPCAM)
                 {
                     m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
@@ -7539,6 +7622,7 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 {
                     m_camera->SetCameraState(CameraState::CAMERASTATE_FIRSTPERSON);
                 }
+                */
             }
         }
         if (m_buttons.dpadDown == GamePad::ButtonStateTracker::PRESSED)
@@ -7567,6 +7651,13 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
 
+            }
+        }
+        if (m_buttons.dpadLeft == GamePad::ButtonStateTracker::PRESSED)
+        {
+            if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
+            {
+                //m_camera->CycleMissileTrackState();
             }
         }
         if (m_buttons.rightStick == GamePad::ButtonStateTracker::HELD)

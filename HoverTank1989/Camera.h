@@ -96,6 +96,8 @@ public:
     DirectX::SimpleMath::Vector3 GetGamePlayDefaultCamPos() const { return m_gamePlayDefaultCamPos; };
     DirectX::SimpleMath::Vector3 GetGamePlayDefaultTargPos() const { return m_gamePlayDefaultTarg; };
 
+    MissileTrackState GetMissileState() const { return m_missileTrackState; };
+
     DirectX::SimpleMath::Vector3 GetHomePos() const { return m_homePosition; };
     float GetPitch() const { return m_pitch; };
     DirectX::SimpleMath::Vector3 GetPos() const { return m_position; };
