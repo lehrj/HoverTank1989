@@ -7625,39 +7625,32 @@ void Game::UpdateInput(DX::StepTimer const& aTimer)
                 */
             }
         }
-        if (m_buttons.dpadDown == GamePad::ButtonStateTracker::PRESSED)
+        if (m_buttons.dpadDown == GamePad::ButtonStateTracker::HELD)
         {
+            m_fireControl->ManualControlInputPitch(static_cast<float>(aTimer.GetElapsedSeconds()));
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                if (m_isQuckCameraToggleTrue == true)
-                {
-                    m_isQuckCameraToggleTrue = false;
-                }
-                else
-                {
-                    m_isQuckCameraToggleTrue = true;
-                }
             }
         }
-        if (m_buttons.dpadRight == GamePad::ButtonStateTracker::PRESSED)
+        if (m_buttons.dpadRight == GamePad::ButtonStateTracker::HELD)
         {
+            m_fireControl->ManualControlInputYaw(static_cast<float>(-aTimer.GetElapsedSeconds()));
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                m_camera->CycleMissileTrackState();
             }
         }
-        if (m_buttons.dpadUp == GamePad::ButtonStateTracker::PRESSED)
+        if (m_buttons.dpadUp == GamePad::ButtonStateTracker::HELD)
         {
+            m_fireControl->ManualControlInputPitch(static_cast<float>(-aTimer.GetElapsedSeconds()));
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-
             }
         }
-        if (m_buttons.dpadLeft == GamePad::ButtonStateTracker::PRESSED)
+        if (m_buttons.dpadLeft == GamePad::ButtonStateTracker::HELD)
         {
+            m_fireControl->ManualControlInputYaw(static_cast<float>(aTimer.GetElapsedSeconds()));
             if (m_currentGameState == GameState::GAMESTATE_GAMEPLAY)
             {
-                //m_camera->CycleMissileTrackState();
             }
         }
         if (m_buttons.rightStick == GamePad::ButtonStateTracker::HELD)
