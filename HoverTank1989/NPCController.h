@@ -138,6 +138,7 @@ private:
     bool m_isAltSpawnLocTrue = false;
     bool m_isSpawnerReady = false;
 
+    //const int m_spawnCountMax = 12;
     const int m_spawnCountMax = 12;
 
     int m_spawnCount = 0;

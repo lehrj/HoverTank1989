@@ -1292,7 +1292,7 @@ private:
     //const float m_gamePadInputCamStrafe = 1.5f;
     const float m_gamePadInputCamStrafe = 0.35f;
     //const float m_gamePadInputCamRotate = 0.35f;
-    const float m_gamePadInputCamRotate = 0.35f;
+    const float m_gamePadInputCamRotate = 0.69f;
     const float m_gamePadInputCamHeight = 0.4f;
 
     //const float m_gamePadZoomSpeedMod = 0.6f;

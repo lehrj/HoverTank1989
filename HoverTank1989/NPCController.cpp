@@ -215,12 +215,13 @@ bool NPCController::CheckExplosionCollisions(DirectX::BoundingSphere aBoundingSp
                     explosionImpulseForce.torqueArm = impactPos - m_npcVec[i]->GetPos();
                     explosionImpulseForce.torqueArm *= m_fireControl->GetExplosiveTorqueArmMod();
                     explosionImpulseForce.totalTime = impulseTimeTotal;
+                    explosionImpulseForce.totalTime *= 0.05f;
                     //explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
                     explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
                     explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
-                    explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
+                    //explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
                     //m_npcVec[i]->PushImpulseForce(explosionImpulseForce);
-
+                    explosionImpulseForce.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
                     //////////
     
                     DirectX::SimpleMath::Vector3 impactPosToCoM = impactPos - m_npcVec[i]->GetCenterOfMass();
@@ -903,11 +904,16 @@ bool NPCController::CheckProjectileCollisionsMissile(Utility::CollisionData& aPr
                     const float tol = 0.01f;
                     impulseToVec.totalTime = aProjectile.collisionDurationMod / tol;
                 }
-                impulseToVec.totalTime = 0.1f;
+
+
+                //impulseToVec.totalTime = 0.1f;
+                impulseToVec.totalTime = 0.03f;
+
+
                 impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FLAT;
                 //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_FRONTLOADCURVE;
-                //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
-                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
+                impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_LAGCURVE;
+                //impulseToVec.impulseType = Utility::ImpulseType::IMPULSETYPE_BELLCURVE;
 
                 impulseToVec.forceSum = (aProjectile.mass * impactVelocity);
                 impulseToVec.forceRemaining = impulseToVec.forceSum;

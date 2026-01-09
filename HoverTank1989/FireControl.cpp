@@ -2076,40 +2076,32 @@ void FireControl::CheckCollisionsMissile(const double aTimeDelta)
             {
                 CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
                 m_missileVec[i].guidance.isExplodingTrue = true;
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
             }
             else if (vehicleHitId != -1 && isHitTrue == true)
             {
                 CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_VEHICLESURFACE, vehicleHitId);
                 m_missileVec[i].guidance.isExplodingTrue = true;
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
             }
             else if (isHitTrue == true)
             {
                 CreateExplosion(m_missileVec[i].projectileData.q.position, DirectX::SimpleMath::Vector3::Zero, ExplosionType::EXPLOSIONTYPE_NONVEHICLE, -1);
                 m_missileVec[i].guidance.isExplodingTrue = true;
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
             }
             else if (m_missileVec[i].projectileData.time > m_missileLifeTimeMax)
             {
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
                 m_missileVec[i].guidance.isExplodingTrue = true;
                 m_missileVec[i].projectileData.isDeleteTestingDebug = true;
             }
             else if (m_missileVec[i].guidance.isSelfDestructTrue == true)
             {
                 CreateExplosion(m_missileVec[i].projectileData.q.position, m_missileVec[i].projectileData.q.velocity, ExplosionType::EXPLOSIONTYPE_DYNAMIC, -1);
-                //m_missileVec[i].projectileData.isDeleteTrue = true;
                 m_missileVec[i].guidance.isExplodingTrue = true;
                 m_missileVec[i].projectileData.isDeleteTestingDebug = true;
             }
         }
 
-        //if (m_missileVec[i].projectileData.isDeleteTrue == true)
         if (m_missileVec[i].guidance.isExplodingTrue == true)
         {
-            //m_missileVec[i].guidance.isExplodingTrue = true;
-
             m_missileVec[i].projectileData.liveTimeCountDown += static_cast<float>(aTimeDelta);
             if (m_missileVec[i].projectileData.liveTimeCountDown >= m_missileConsts.detonationDrawDelay)
             {
