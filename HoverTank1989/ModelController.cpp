@@ -12,17 +12,25 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     DirectX::SimpleMath::Vector3 defaultLightDir0 = DirectX::SimpleMath::Vector3(-0.5265408f, -0.5735765f, -0.6275069f);
     DirectX::SimpleMath::Vector3 defaultLightDir1 = DirectX::SimpleMath::Vector3(0.7198464f, 0.3420201f, 0.6040227f);
     DirectX::SimpleMath::Vector3 defaultLightDir2 = DirectX::SimpleMath::Vector3(0.4545195f, -0.7660444f, 0.4545195f);
-    
+
     m_environment->GetLightDirectionalVectors(defaultLightDir0, defaultLightDir1, defaultLightDir2);
 
     DirectX::SimpleMath::Vector3 lightDir0 = defaultLightDir0;
     DirectX::SimpleMath::Vector3 lightDir1 = defaultLightDir1;
     DirectX::SimpleMath::Vector3 lightDir2 = defaultLightDir2;
-
+    
     lightDir0 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir1 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir2 = DirectX::SimpleMath::Vector3::Lerp(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     
+
+    //auto tForward = m_tForward;
+    /*
+    lightDir0 = tForward;
+    lightDir1 = tForward;
+    lightDir2 = tForward;
+    */
+
     DirectX::SimpleMath::Vector4 color1 = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     DirectX::SimpleMath::Vector4 color2 = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -41,10 +49,16 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetWorld(aModel.worldRearGlowCenterMatrix);
     aEffect->SetColorAndAlpha(aModel.rearGlowCenterColor);
     aModel.rearGlowCenterShape->Draw(aEffect.get(), aInputLayout.Get());
-
+  
     lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
     lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(m_playerModel.glowLightDirectionBase, -m_playerModel.glowLightDirectionBase, m_playerModel.glowCenterVal);
+
+    /*
+    lightDir0 = tForward;
+    lightDir1 = tForward;
+    lightDir2 = tForward;
+    */
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -52,11 +66,17 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     aEffect->SetWorld(aModel.worldFrontGlowCenterMatrix);
     aEffect->SetColorAndAlpha(aModel.frontGlowCenterColor);
     aModel.frontGlowCenterShape->Draw(aEffect.get(), aInputLayout.Get());
-    aModel.frontGlowCenterShape->Draw(aModel.worldFrontGlowCenterMatrix, aView, aProjection, aModel.frontGlowCenterColor);
+    //aModel.frontGlowCenterShape->Draw(aModel.worldFrontGlowCenterMatrix, aView, aProjection, aModel.frontGlowCenterColor);
 
     lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
     lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowLeftVal);
+
+    /*
+    lightDir0 = tForward;
+    lightDir1 = tForward;
+    lightDir2 = tForward;
+    */
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -68,6 +88,12 @@ void ModelController::DrawTank(TankModel& aModel, ID3D11DeviceContext* deviceCon
     lightDir0 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir0, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
     lightDir1 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir1, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
     lightDir2 = DirectX::SimpleMath::Vector3::SmoothStep(defaultLightDir2, m_playerModel.glowLightDirectionBase, m_playerModel.glowRightVal);
+
+    /*
+    lightDir0 = tForward;
+    lightDir1 = tForward;
+    lightDir2 = tForward;
+    */
 
     aEffect->SetLightDirection(0, lightDir0);
     aEffect->SetLightDirection(1, lightDir1);
@@ -548,6 +574,7 @@ void ModelController::SetGlowColors(const DirectX::SimpleMath::Vector4 aColorCen
 
 void ModelController::SetGlowVals(const float aCenterVal, const float aLeftVal, const float aRightVal, const DirectX::SimpleMath::Vector3 aPos, const DirectX::SimpleMath::Vector3 aDir, const float aTimeStep)
 {
+    m_tForward = aDir;
     const float maxValDelta = 0.8f * aTimeStep;
     const float deltaCenter = aCenterVal - m_playerModel.glowCenterVal;
     if (abs(deltaCenter) > maxValDelta)
@@ -598,5 +625,12 @@ void ModelController::SetGlowVals(const float aCenterVal, const float aLeftVal, 
         m_playerModel.glowRightVal = aRightVal;
     }
     m_testPos = aPos;
+
+    /*
+    m_playerModel.glowCenterVal = 1.0f;
+    m_playerModel.glowLeftVal = 1.0f;
+    m_playerModel.glowRightVal = 1.0f;
+    */
     m_playerModel.glowLightDirectionBase = aDir;
+  
 }

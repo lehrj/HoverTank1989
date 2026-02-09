@@ -3877,6 +3877,8 @@ void Vehicle::UpdateModelColorValsNoHover(const float aTimeStep)
     rightVal += rightYawVal;
 
     m_modelController->SetGlowVals(centerVal, leftVal, rightVal, m_heli.q.position, m_heli.forward, aTimeStep);
+    //m_modelController->SetGlowVals(1.0f, 1.0f, 1.0f, m_heli.q.position, m_heli.right, aTimeStep);
+ 
 
     auto volume = centerVal + leftVal + rightVal;
     if (volume > 1.0f)

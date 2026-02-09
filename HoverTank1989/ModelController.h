@@ -184,5 +184,8 @@ private:
     const DirectX::SimpleMath::Matrix m_missileTubeMatLeft  = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(m_missileTubeHorizontalRot);
     const DirectX::SimpleMath::Matrix m_missileTubeMatRight = DirectX::SimpleMath::Matrix::CreateRotationZ(m_missileTubeVerticalRot) * DirectX::SimpleMath::Matrix::CreateRotationY(-m_missileTubeHorizontalRot);
 
+    DirectX::SimpleMath::Vector3 m_tForward = DirectX::SimpleMath::Vector3::UnitX;
+
+
 };
 
