@@ -1,48 +1,56 @@
 # HoverTank1989
-A retro themed physics-based hover tank game. Demo videos @[BaltimoreMagicWerks](https://www.youtube.com/playlist?list=PLKMR2Ppf1A4jEboMkoUcWpha-Y7QUaZ_o)
+
+HoverTank1989 is a retro-futuristic physics-based hover tank simulation built with C++, DirectX, and DirectXTK. Unlike many games that rely on the computationally cheaper Euler method, this project utilizes a Runge-Kutta fourth-order ODE (RK4) to handle physics, offering superior numerical stability and a more accurate modeling of reality. Every movement within the environment is strictly governed by the laws of physics.
 
 <p align="center">
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Trailer01.png">
 </p>
 
-YouTube trailer of weapons demo here : https://youtu.be/TSxC-AU32E0
+## Key Features
 
-On display are 3 kinetic ammo types: cannon, machine gun, and shotgun, as well as 2 explosive ammo types. 
-The kinetic ammo is “non-lethal” in that it does not apply damage to a target’s health, instead it applies Newton’s second law of motion (F = m * a) to play billiards with the NPC hover tanks. 
-
-There are two explosive ammo types; the first is a standard shell with a single an explosive area of effect charge that detonates on impact. The second is a MIRV style mid-air deployed cluster munition, to saturate a large area in physics inducing explosive fun. Any NPC hit with an explosive round or caught within its explosive radius will detonate in a secondary explosion, which in turn can detonate other nearby NPCs in a chain reaction
-
-YouTube trailer of NPC prototypes here : https://youtu.be/8a0KPadDvUc
-
-Autonomous figure 8 track racing with NPC hovercrafts shows off their ability to navigate the track via waypoints while attempting to avoid other NPCs. The center crossover point ensures that this is not always possible to demonstrate the vehicle collision physics. The NPC hovercrafts have the ability to jump with their thrusters which is unlocked midway through the video. The NPCs will use the jump boost to avoid or pass other vehicles
-
-<p align="center">
-  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/NpcSpawner.gif">
-</p>
-
-## Work in progress: Guided Missiles
-
-<p align="center">
-  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Deploy.gif">
-</p>
-
-The laser targeted self-guided missile system attempts to emulate the javelin anti-tank missile in both form & function. It utilizes a dual stage soft launch system, with the rocket ignition and wing deployment occurring after the missile is a safe distance from the launch vehicle.
-
-<p align="center">
-  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/FlightPath.png">
-</p>
-
-Once fully deployed the missile accelerates past stall speed, at which point it can safely gain altitude for a top-down attack.  
+### The Archimedes Hover Drive
+At the core of the vehicle's engineering is the Archimedes Hover Drive, a fictional technology designed for sci-fi levels of force. 
+*   **Buoyancy-Based Stability:** The engine’s power output is dictated by an algorithm based on the Archimedes principle, delivering force perpendicular to the terrain to suspend the vehicle in gravity.
+*   **Dual Motor Setup:** The tank utilizes two distinct motors: a hover motor for vertical lift and stability, and a drive motor for horizontal navigation controlled by the pilot or AI.
 
 <p align="center">
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/ImpactReverseAngle.gif">
 </p>
 
-Targeting is achieved with a vehicle mounted laser designator that changes color when a target is locked, along with an audio lock tone.  The missile is fire and forget, so once launched the user is able to acquire the next target immediately.
+### Advanced Physics-Based Combat
+The weaponry system is divided into two categories, each reacting dynamically with the physics engine:
+*   **Kinetic Weapons:** Includes cannons, machine guns, and shotguns. Impact force is calculated in Newtons based on projectile mass and relative velocities, with each ammo type possessing a unique drag coefficient and muzzle velocities affecting its trajectory.
+*   **Explosive Weapons:** Features standard explosives, MIRV cluster bombs, and guided missiles. These can trigger chain reactions and deliver significant kinetic impact within a blast sphere.
+*   **Recoil & Stabilization:** Every shot generates a recoil force on the vehicle. To help compensate for the inherent instability of a hover tank a bit of old tech was added to help, an auto stabilized turret. Drawing inspiration from the M-4 Sherman’s historically underutilized gyroscopic stabilizer, the game emphasizes the difficulty of maintaining accuracy under fire, often necessitating the use of guided munitions for long-range targets.
 
 <p align="center">
   <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Blueprint.png">
 </p>
+
+### FGM-148 Javelin Inspired Missile Dynamics
+The laser aimed guided missiles in HoverTank1989 are reverse-engineered from the flight dynamics of the Javelin anti-tank missile. Fired in pairs to neutralize yaw torque from recoil of their off-center launch position, they follow a complex six-phase flight path:
+1.  **Soft Launch:** The missile is ejected before the rocket fires to ensure safe deployment.
+2.  **Wing/Fin Deployment:** Center of pressure shift aft relative to the center of mass to reflect the missile shape transitions from cylinder to dart.
+3.  **Stall Prevention:** The missile must accelerate to generate lift, a challenge given the hover tank is never truly stationary. Missile launch failure can occur if launched while in reverse above 35kph. Launching under these conditions is not advised unless it is for fun.
+4.  **Climb:** The missile gains altitude for a top-down attack. Once airspeed is high enough for the airfoils to generate lift the missile is able to do this in a stable manor.
+5.  **Intercept Trajectory & Terminal Guidance:** The missile calculates an optimal path to connect with the moving the target kinetically and detonates on impact. If the missile anticipates that it cannot make direct impact it will attempt to hit the target with secondary shotgun cone detonation with a larger area of effect.
+6.  **Self Detonation Safety Switch:** If the missile’s target is destroyed prior to intercept it will self-detonate after climbing to a safe altitude. 
+
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/Deploy.gif">
+</p>
+
+### NPC AI & Autonomous Navigation
+NPC drones navigate the environment using waypoint-based movement and a sophisticated moving obstacle avoidance system. This is achieved through two detection volumes, one fixed and one projected ahead, allowing the AI to calculate the best path around moving objects [6]. If navigation is blocked, NPCs can utilize a boost jump to clear obstacles. This jump boost mode also includes a landing boost so soften the landing each time.
+
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/NpcSpawner.gif">
+</p>
+
+### "Code the Art" Visual Style
+To achieve its unique retro-futuristic aesthetic, the project employs a "code the art" approach. 
+*   **Geometric Primitives:** 3D shapes are created frame-by-frame using C++ to control geometric primitives in an **additive constructive method**, similar to a 3D printer.
+*   **Wire-frame Terrain:** The environment is rendered as a wire-frame height map generated from greyscale bitmap images, where pixel values determine the elevation of the terrain.
 
 ## Game Controls
 
@@ -90,4 +98,17 @@ Forward/Reverse/Strafe : Left Thumbstick
 
 Turret/Zoom : Right Thumbstick
 
-Rotate Tank : L/R Triggers
+Rotate Tank: L/R Triggers
+
+<p align="center">
+  <img width="600" src="https://github.com/lehrj/HoverTank1989/blob/master/Images/ImpactReverseAngle.gif">
+</p>
+
+## Videos
+
+YouTube video of guided missile here: https://youtu.be/3NURgkEC96w
+
+YouTube video of weapons demo here: https://youtu.be/TSxC-AU32E0
+
+YouTube video of NPC prototypes here: https://youtu.be/8a0KPadDvUc
+
